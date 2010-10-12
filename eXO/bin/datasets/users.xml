@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : users.xml
+    Created on : October 31, 2008, 4:24 PM
+    Author     : andy
+    Description:
+        Purpose of the document follows.
+        Create a set of user profiles and index them around
+        the overlay network.
+-->
+
+<!DOCTYPE test SYSTEM 'scenarios.dtd'>
+<test>
+<scenario>
+        <index_user>
+            <source>1</source>
+                <user>
+                    <user_address>manos@hotmail.com</user_address>
+                    <user_profile>
+                        <field>
+                            <name>sports</name>
+                            <keywords>football bike soccer olympiakos liverpool streetball SEF juventus "Real Madrid"</keywords>
+                        </field>
+                        <field>
+                            <name>music</name>
+                            <keywords>alternative rock post-rock rockabily progressive minimal indie jazz classical</keywords>
+                        </field>
+                        <field>
+                            <name>interests</name>
+                            <keywords>music painting sports literature</keywords>
+                        </field>
+                    </user_profile>
+                </user>
+                
+        </index_user>
+        <index_user>
+            <source>2</source>
+                <user>
+                    <user_address>antonis@hotmail.com</user_address>
+                    <user_profile>
+                        <field>
+                            <name>sports</name>
+                            <keywords>basketball PAO </keywords>
+                        </field>
+                        <field>
+                            <name>music</name>
+                            <keywords>Sfakianakis Kinky Tiesto house disco</keywords>
+                        </field>
+                        <field>
+                            <name>interests</name>
+                            <keywords>music sports</keywords>
+                        </field>
+                    </user_profile>
+                </user>
+                
+        </index_user>
+        
+        <index_user>
+            <source>3</source>
+                <user>
+                    <user_address>katerina@hotmail.com</user_address>
+                    <user_profile>
+                        <field>
+                            <name>dancing</name>
+                            <keywords>tango latin salsa</keywords>
+                        </field>
+                        <field>
+                            <name>music</name>
+                            <keywords>Paparizou alternative greek mainstream</keywords>
+                        </field>
+                        <field>
+                            <name>interests</name>
+                            <keywords>reading dancing surfing</keywords>
+                        </field>
+                    </user_profile>
+                </user>
+                
+        </index_user>
+        
+                
+        <index_user>
+            <source>4</source>
+                <user>
+                    <user_address>george@hotmail.com</user_address>
+                    <user_profile>
+                        <field>
+                            <name>music</name>
+                            <keywords>alternative drum'n'bass rock flamengo tango lounge chillout</keywords>
+                        </field>
+                        <field>
+                            <name>interests</name>
+                            <keywords>play guitar surfing </keywords>
+                        </field>
+                    </user_profile>
+                </user>
+                
+        </index_user>
+        
+                
+        <index_user>
+            <source>5</source>
+                <user>
+                    <user_address>mkos@hotmail.com</user_address>
+                    <user_profile>
+                        <field>
+                            <name>music</name>
+                            <keywords>greek oriental mpouzouki art</keywords>
+                        </field>
+                        <field>
+                            <name>interests</name>
+                            <keywords>poetry literature philosophy ancient history glossology</keywords>
+                        </field>
+                    </user_profile>
+                </user>
+        </index_user>
+
+<random_queries>
+        <num_type>2</num_type>
+        <num_keywords>2</num_keywords>
+        <num_queries>100</num_queries>
+        <num_results>10</num_results>
+</random_queries>
+
+    </scenario>
+</test>

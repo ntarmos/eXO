@@ -1,0 +1,695 @@
+<project name="pastry" default="compile" basedir="./">
+
+  <!-- Necessary properties and paths -->
+  <property name="src.dir" value="src"/>
+  <property name="jar.dir" value="jars"/>
+  <property name="license.dir" value="license"/>
+  <property name="build.dir" value="classes" />  
+  <property name="lib.dir" value="lib" />
+  <property name="pretty.dir" value="pretty" />
+  <property name="pretty.lib.dir" value="pretty/lib" />
+  <property name="docs.dir" value="docs" />
+  <property name="javadoc.dir" value="${docs.dir}/javadoc" />
+  <property name="license.file" value="License.txt"/>
+  <property name="license.path" value="${license.dir}/${license.file}"/>
+
+  
+  <!-- Jars that Pretty package needs -->
+  <path id="pretty.classpath">
+    <fileset dir="${pretty.lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- The classpath -->
+  <path id="project.classpath">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <pathelement path="${build.dir}"/>
+  </path>
+  
+  <!-- TASKS BELOW -->
+  
+     <!-- KILLERLOOP ***PROSOXH*** TREXEI MONO APO TO pastry.jar me jar="pastry.jar"--> <!--classname="rice.p2p.past.testing.PastRegrTest"-->
+  <target name="run">
+      <java classname="ceid.netcins.simulator.SimMain" 
+            fork="true">
+            <arg line="-node 100"/>
+            <jvmarg line="-Xmx128m -classpath classes/:lib/lucene-core-2.3.2.jar:lib/xmlpull_1_1_3_4a.jar:lib/bouncycastle.jar:lib/xpp3-1.1.3.4d_b2.jar:lib/commons-logging.jar:jars/freepastry/:lib/sbbi-upnplib-1.0.3.jar:lib/sbbi-upnplib-1.0.4.jar:lib/commons-jxpath-1.1.jar"/>
+      </java>
+  </target>
+    
+  <!-- PROFILER MANUAL SETTINGS!!!!!!!! -->
+  <target name="profile" description="Profile Project">
+    <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+    <nbprofiledirect>
+        <classpath> 
+            <pathelement location="lib/xmlpull_1_1_3_4a.jar"/>
+            <pathelement location="lib/bouncycastle.jar"/>
+            <pathelement location="lib/xpp3-1.1.3.4d_b2.jar"/>
+            <pathelement location="lib/commons-logging.jar"/>
+            <pathelement location="jars/freepastry/"/>
+            <pathelement location="lib/sbbi-upnplib-1.0.3.jar"/>
+            <pathelement location="lib/sbbi-upnplib-1.0.4.jar"/>
+            <pathelement location="lib/commons-jxpath-1.1.jar"/>
+            <pathelement location="lib/lucene-core-2.3.2.jar"/>
+            <pathelement path="${build.dir}"/> 
+        </classpath>
+    </nbprofiledirect>
+    <java classname="ceid.netcins.simulator.SimMain" fork="true">
+        <arg line="-nodes 1000"/>
+        <jvmarg value="${profiler.info.jvmargs.agent}"/>
+        <jvmarg line="-Xmx1000m -classpath classes/:lib/lucene-core-2.3.2.jar:lib/xmlpull_1_1_3_4a.jar:lib/bouncycastle.jar:lib/xpp3-1.1.3.4d_b2.jar:lib/commons-logging.jar:jars/freepastry/:lib/sbbi-upnplib-1.0.3.jar:lib/sbbi-upnplib-1.0.4.jar:lib/commons-jxpath-1.1.jar"/>
+    </java>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete file="pastry.jar"/>
+    <delete file="epost.jar"/>
+  </target>
+  
+  <!-- All the stuff that needs to be done before anything can happen -->
+  <target name="init">
+    <!-- make the directory to put all classes in -->
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="make_imap_parser" depends="init">
+    <antlr target="${src.dir}/rice/email/proxy/imap/parser/antlr/lexer.g">
+    	  <classpath><pathelement location="lib/antlr-2.7.5.jar"/></classpath>
+    	</antlr>
+    <antlr target="${src.dir}/rice/email/proxy/imap/parser/antlr/grammer.g">
+  	  <classpath><pathelement location="lib/antlr-2.7.5.jar"/></classpath>
+    	</antlr>
+  </target>
+
+  <target name="compile-epost" depends="make_imap_parser">
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}"
+           classpathref="project.classpath"
+           includes="**/*.java"
+           deprecation="yes"
+           target="1.5"
+    	       source="1.5"
+           debuglevel="lines,vars,source"
+           debug="true">           
+    </javac>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}"
+           classpathref="project.classpath"
+           includes="**/*.java"
+           deprecation="yes"
+           debuglevel="lines,vars,source"
+           debug="true">  
+    </javac>
+  </target>
+
+  <target name="compileappend" depends="init">
+    <javac srcdir="${pretty.lib.dir}"
+           destdir="."
+           deprecation="yes"
+           debuglevel="lines,vars,source"
+           debug="true">
+    </javac>
+  </target> 
+
+  
+  <target name="appendlicense" depends="compileappend">
+    <taskdef name="append" 
+             classname="Append"
+             classpath="."/>
+    <append srcfile="${license.path}">      
+      <fileset dir="${src.dir}" includes="**/*.java"/> 
+    </append>
+  </target>  
+  
+
+
+  <!-- todo add *.html, *.htm -->
+  <target name="javadoc" depends="init" unless="dontjavadoc">
+    <javadoc destdir="${javadoc.dir}"
+             classpathref="project.classpath"
+             windowtitle="Rice Pastry - API Specifications"
+             use="true">
+      <fileset dir="${src.dir}">
+        <include name="rice/*.java"/>
+        <include name="rice/environment/**/*.java"/>
+        <include name="rice/p2p/commonapi/**/*.java"/>
+        <include name="rice/p2p/glacier/*.java"/>
+        <include name="rice/p2p/glacier/v2/**/*.java"/>
+        <include name="rice/p2p/aggregation/**/*.java"/>
+        <include name="rice/p2p/multiring/**/*.java"/>
+        <include name="rice/p2p/past/**/*.java"/>
+        <include name="rice/p2p/replication/**/*.java"/>
+        <include name="rice/p2p/scribe/**/*.java"/>
+        <include name="rice/p2p/splitstream/**/*.java"/>
+        <include name="rice/p2p/util/**/*.java"/> 
+        <include name="rice/pastry/*.java"/>
+        <include name="rice/pastry/client/**/*.java"/>
+        <include name="rice/pastry/commonapi/**/*.java"/>
+        <include name="rice/pastry/direct/**/*.java"/>
+        <include name="rice/pastry/dist/**/*.java"/>
+        <include name="rice/pastry/join/**/*.java"/>
+        <include name="rice/pastry/leafset/**/*.java"/>
+        <include name="rice/pastry/messaging/**/*.java"/>
+        <include name="rice/pastry/routing/**/*.java"/>
+        <include name="rice/pastry/security/**/*.java"/>
+        <include name="rice/pastry/socket/**/*.java"/>
+        <exclude name="rice/pastry/socket/testing/*.java"/>
+        <include name="rice/pastry/standard/**/*.java"/>
+        <include name="rice/pastry/testing/**/*.java"/>
+        <include name="rice/persistence/**/*.java"/>
+        <include name="rice/selector/**/*.java"/>
+        <include name="rice/tutorial/**/*.java"/>
+      </fileset>
+       <doctitle>Rice Pastry API</doctitle>
+       <header>Rice Pastry API</header>
+       <bottom><![CDATA[<i>Copyright &#169; 2001-2005 - Rice Pastry.</i>]]></bottom>
+    </javadoc>
+  </target>
+
+	  <!-- todo add *.html, *.htm -->
+	  <target name="epost-javadoc" depends="init" unless="dontjavadoc">
+	    <javadoc destdir="${javadoc.dir}"
+	             classpathref="project.classpath"
+	             windowtitle="ePOST - API Specifications"
+	             use="true">
+	      <fileset dir="${src.dir}">
+	        <include name="rice/*.java"/>
+	        <include name="rice/environment/**/*.java"/>
+	        <include name="rice/p2p/commonapi/**/*.java"/>
+	        <include name="rice/p2p/glacier/*.java"/>
+	        <include name="rice/p2p/glacier/v2/**/*.java"/>
+	        <include name="rice/p2p/aggregation/**/*.java"/>
+	        <include name="rice/p2p/multiring/**/*.java"/>
+	        <include name="rice/p2p/past/**/*.java"/>
+	        <include name="rice/p2p/replication/**/*.java"/>
+	        <include name="rice/p2p/scribe/**/*.java"/>
+	        <include name="rice/p2p/splitstream/**/*.java"/>
+	        <include name="rice/p2p/util/**/*.java"/> 
+	        <include name="rice/pastry/*.java"/>
+	        <include name="rice/pastry/client/**/*.java"/>
+	        <include name="rice/pastry/commonapi/**/*.java"/>
+	        <include name="rice/pastry/direct/**/*.java"/>
+	        <include name="rice/pastry/dist/**/*.java"/>
+	        <include name="rice/pastry/join/**/*.java"/>
+	        <include name="rice/pastry/leafset/**/*.java"/>
+	        <include name="rice/pastry/messaging/**/*.java"/>
+	        <include name="rice/pastry/routing/**/*.java"/>
+	        <include name="rice/pastry/security/**/*.java"/>
+	        <include name="rice/pastry/socket/**/*.java"/>
+	        <exclude name="rice/pastry/socket/testing/*.java"/>
+	        <include name="rice/pastry/standard/**/*.java"/>
+	        <include name="rice/pastry/testing/**/*.java"/>
+	        <include name="rice/persistence/**/*.java"/>
+	        <include name="rice/selector/**/*.java"/>
+	        <include name="rice/tutorial/**/*.java"/>
+	        <include name="rice/email/**/*.java"/>
+	        <include name="rice/post/**/*.java"/>
+	        <include name="rice/proxy/**/*.java"/>
+	        <include name="rice/visualization/**/*.java"/>
+	      </fileset>
+	       <doctitle>ePOST API</doctitle>
+	       <header>ePOST API</header>
+	       <bottom><![CDATA[<i>Copyright &#169; 2001-2005 - Rice Pastry.</i>]]></bottom>
+	    </javadoc>
+	  </target>
+
+	
+  <!-- Distribution-related targets -->
+  <target name="jar" depends="compile">   
+    <!--<jar destfile="pastry.jar">
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+      <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+    </jar>-->
+    <jar destfile="Sim.jar">
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+      <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/> <!-- activate if u want to include freepastry.params -->
+      <!--<fileset dir="images" includes="*.gif" /> -->
+        <!--  KILLERLOOP   --> 
+        <!--<fileset dir="${lib.dir}" includes="**/*.jar" />-->
+        <manifest>
+        <attribute name="Main-Class" value="ceid.netcins.SimMain" /> 
+        <attribute name="Class-Path" value="jars/freepastry/ ./ lib/lucene-core-2.3.2.jar lib/xmlpull_1_1_3_4a.jar lib/bouncycastle.jar lib/xpp3-1.1.3.4d_b2.jar lib/commons-logging.jar lib/sbbi-upnplib-1.0.3.jar lib/sbbi-upnplib-1.0.4.jar lib/commons-jxpath-1.1.jar" />
+        </manifest>
+    </jar>
+  </target>
+  
+  <target name="readme" depends="jar">
+      <echo file="README.txt" append="false">
+**************** Copyright 2007 ******************
+
+This is a Beta Version 0.001 of the Social Network
+Autonomous Application.
+For any questions or bugfixes let me know.
+Thnx for your time.
+
+1.1 Booting
+
+Sonata depends on the FreePastry's overlay nerwork
+structure. FreePastry integrates the common Pastry
+algorithm, which is used as a basic routing 
+algorithm in a peer to peer network environment. 
+In order to use this logic we must first connect
+to the FP's ring. This function is achieved by 
+providing Sonata with a bootstrap IP address
+and Port. This remote socket is used as a first
+hint to find a connectable part of the peer to 
+peer network. After the bootstrapping have taken
+effect, our node is part of the peer to peer 
+network and it is ready to interact with the other
+nodes.
+
+1.2 Share a File
+
+In order to share some file a user must hit the 
+globe button on the left side of the action 
+toolbar. Alternatively, choose File->Share File...
+
+1.3 Searching
+
+Our searching mechanism isn't yet complete, so a
+user must write down the exact filename he/she
+wants to check for availability.
+
+1.4 Downloading
+
+From the available results in the searching tab
+a user can double click one. Immediately, the file
+downloading process can begin. A progress bar in 
+the download tab indicates the percentage of file
+downloading process.
+
+2. Logger
+
+The logger tab warns the user for important errors
+and informs him/her about the sequence of the 
+events that take effect in the program.
+
+**************************************************
+          
+      </echo>
+  </target>
+  
+  <target name="jarzip" depends="readme">
+      <zip destfile="SoNATA.zip">
+          <fileset dir=".">
+              <include name="README.txt"/>
+              <include name="SoNATA.jar"/>
+              <include name="images/*.gif"/>
+              <include name="images/*.png"/>
+              <include name="images/*.jpg"/>
+              <include name="images/*.jpeg"/>
+              <include name="user.params"/>
+              <include name="lib/xmlpull*.jar"/> 
+              <include name="lib/bouncy*.jar"/> 
+              <include name="lib/xpp*.jar"/> 
+              <include name="lib/sbbi*.jar"/>
+              <include name="lib/commons*.jar"/>
+              <include name="lib/trayicon.jar" />
+              <include name="lib/AbsoluteLayout.jar"/>
+              <include name="jars/freepastry/freepastry.params"/>
+          </fileset>
+      </zip>
+  </target>
+  
+
+  <!-- ********************** freepastry release section ********************* -->
+  
+  <target name="freepastry-jar" depends="compile-epost">
+    <jar destfile="pastry.jar" compress="true">
+      <fileset dir="${build.dir}">
+        <include name="rice/*.class"/>
+        <include name="rice/environment/**/*.class"/>
+        <include name="rice/p2p/commonapi/**/*.class"/>
+        <include name="rice/p2p/glacier/*.class"/>
+        <include name="rice/p2p/glacier/v2/**/*.class"/>
+        <include name="rice/p2p/aggregation/**/*.class"/>
+        <include name="rice/p2p/multiring/**/*.class"/>
+        <include name="rice/p2p/past/**/*.class"/>
+        <include name="rice/p2p/replication/**/*.class"/>
+        <include name="rice/p2p/scribe/**/*.class"/>
+        <include name="rice/p2p/splitstream/**/*.class"/>
+        <include name="rice/p2p/util/**/*.class"/> 
+        <include name="rice/pastry/*.class"/>
+        <include name="rice/pastry/client/**/*.class"/>
+        <include name="rice/pastry/commonapi/**/*.class"/>
+        <include name="rice/pastry/direct/**/*.class"/>
+        <include name="rice/pastry/dist/**/*.class"/>
+        <include name="rice/pastry/join/**/*.class"/>
+        <include name="rice/pastry/leafset/**/*.class"/>
+        <include name="rice/pastry/messaging/**/*.class"/>
+        <include name="rice/pastry/routing/**/*.class"/>
+        <include name="rice/pastry/security/**/*.class"/>
+        <include name="rice/pastry/socket/**/*.class"/>
+        <exclude name="rice/pastry/socket/testing/*.class"/>
+        <include name="rice/pastry/standard/**/*.class"/>
+        <include name="rice/pastry/testing/**/*.class"/>
+        <include name="rice/persistence/**/*.class"/>
+        <include name="rice/selector/**/*.class"/>
+        <include name="rice/tutorial/**/*.class"/>
+      </fileset>
+      <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+    </jar>
+  </target>
+
+  <!-- freepastry-core-jar: creates ./pastry-core.jar which excludes Glacier
+       and SplitStream, as well as rice.pastry.testing.* -->
+  <target name="freepastry-core-jar" depends="compile">
+    <jar destfile="pastry-core.jar" compress="true">
+      <fileset dir="${build.dir}">
+        <include name="rice/*.class"/>
+        <include name="rice/environment/**/*.class"/>
+        <include name="rice/p2p/commonapi/**/*.class"/>
+        <include name="rice/p2p/multiring/**/*.class"/>
+        <include name="rice/p2p/past/**/*.class"/>
+        <include name="rice/p2p/replication/**/*.class"/>
+        <include name="rice/p2p/scribe/**/*.class"/>
+        <include name="rice/p2p/util/**/*.class"/> 
+        <include name="rice/pastry/*.class"/>
+        <include name="rice/pastry/client/**/*.class"/>
+        <include name="rice/pastry/commonapi/**/*.class"/>
+        <include name="rice/pastry/direct/**/*.class"/>
+        <include name="rice/pastry/dist/**/*.class"/>
+        <include name="rice/pastry/join/**/*.class"/>
+        <include name="rice/pastry/leafset/**/*.class"/>
+        <include name="rice/pastry/messaging/**/*.class"/>
+        <include name="rice/pastry/routing/**/*.class"/>
+        <include name="rice/pastry/security/**/*.class"/>
+        <include name="rice/pastry/socket/**/*.class"/>
+        <include name="rice/pastry/standard/**/*.class"/>
+        <include name="rice/persistence/**/*.class"/>
+        <include name="rice/selector/**/*.class"/>
+        <exclude name="**/testing/*.class"/>
+      </fileset>
+      <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+    </jar>
+  </target>
+
+  <target name="freepastry-release" depends="freepastry-jar,javadoc,freepastry-tutorial">
+    <move file="pastry.jar" tofile="FreePastry-${freepastry-version}.jar"/>
+ <!--
+    <tar destfile="FreePastry-${freepastry-version}-all.tgz" compression="gzip">
+      <tarfileset dir="." includes="FreePastry-${freepastry-version}.jar"/>
+    </tar>
+    <zip destfile="FreePastry-${freepastry-version}-all.zip">
+      <zipfileset dir="." includes="FreePastry-${freepastry-version}.jar"/>
+    </zip>
+  -->   
+    
+    <tar destfile="FreePastry-${freepastry-version}-source.tgz" compression="gzip">
+      <tarfileset dir="${src.dir}" prefix="pastry-${freepastry-version}/src">
+        <include name="rice/*.java"/>
+        <include name="rice/environment/**/*.java"/>
+        <include name="rice/p2p/commonapi/**/*.java"/>
+        <include name="rice/p2p/glacier/*.java"/>
+        <include name="rice/p2p/glacier/v2/**/*.java"/>
+        <include name="rice/p2p/aggregation/**/*.java"/>
+        <include name="rice/p2p/multiring/**/*.java"/>
+        <include name="rice/p2p/past/**/*.java"/>
+        <include name="rice/p2p/replication/**/*.java"/>
+        <include name="rice/p2p/scribe/**/*.java"/>
+        <include name="rice/p2p/splitstream/**/*.java"/>
+        <include name="rice/p2p/util/**/*.java"/>
+        <include name="rice/pastry/*.java"/>
+        <include name="rice/pastry/client/**/*.java"/>
+        <include name="rice/pastry/commonapi/**/*.java"/>
+        <include name="rice/pastry/direct/**/*.java"/>
+        <include name="rice/pastry/dist/**/*.java"/>
+        <include name="rice/pastry/join/**/*.java"/>
+        <include name="rice/pastry/leafset/**/*.java"/>
+        <include name="rice/pastry/messaging/**/*.java"/>
+        <include name="rice/pastry/routing/**/*.java"/>
+        <include name="rice/pastry/security/**/*.java"/>
+        <include name="rice/pastry/socket/**/*.java"/>
+        <exclude name="rice/pastry/socket/testing/*.java"/>
+        <include name="rice/pastry/standard/**/*.java"/>
+        <include name="rice/pastry/testing/**/*.java"/>
+        <include name="rice/persistence/**/*.java"/>
+        <include name="rice/selector/**/*.java"/>
+        <include name="rice/tutorial/**/*.java"/>
+      </tarfileset>
+      <tarfileset dir="ant" includes="**/*" prefix="pastry-${freepastry-version}/ant"/>
+      <tarfileset dir="html" includes="**/*" prefix="pastry-${freepastry-version}/html"/>
+      <tarfileset dir="jars/freepastry" includes="freepastry.params" prefix="pastry-${freepastry-version}/jars/freepastry"/>
+      <tarfileset dir="license" includes="**/*" prefix="pastry-${freepastry-version}/license"/>
+      <tarfileset dir="licensing" includes="**/*" prefix="pastry-${freepastry-version}/licensing"/>
+      <tarfileset dir="tools/wireshark" includes="**/*" prefix="pastry-${freepastry-version}/tools/wireshark"/>
+      <tarfileset dir="${lib.dir}" prefix="pastry-${freepastry-version}/lib">
+        <include name="xmlpull*.jar"/> 
+        <include name="bouncy*.jar"/> 
+        <include name="xpp*.jar"/> 
+        <include name="sbbi*.jar"/>
+        <include name="commons*.jar"/>
+      </tarfileset> 
+      <tarfileset dir="${docs.dir}" includes="**/*" prefix="pastry-${freepastry-version}/docs" />
+      <tarfileset dir="." includes="build.xml" prefix="pastry-${freepastry-version}"/>
+    </tar>
+    <zip destfile="FreePastry-${freepastry-version}-source.zip">
+      <zipfileset dir="${src.dir}" prefix="pastry-${freepastry-version}/src">
+        <include name="rice/*.java"/>
+        <include name="rice/environment/**/*.java"/>
+        <include name="rice/p2p/commonapi/**/*.java"/>
+        <include name="rice/p2p/glacier/*.java"/>
+        <include name="rice/p2p/glacier/v2/**/*.java"/>
+        <include name="rice/p2p/aggregation/**/*.java"/>
+        <include name="rice/p2p/multiring/**/*.java"/>
+        <include name="rice/p2p/past/**/*.java"/>
+        <include name="rice/p2p/replication/**/*.java"/>
+        <include name="rice/p2p/scribe/**/*.java"/>
+        <include name="rice/p2p/splitstream/**/*.java"/>
+        <include name="rice/p2p/util/**/*.java"/>
+        <include name="rice/pastry/*.java"/>
+        <include name="rice/pastry/client/**/*.java"/>
+        <include name="rice/pastry/commonapi/**/*.java"/>
+        <include name="rice/pastry/direct/**/*.java"/>
+        <include name="rice/pastry/dist/**/*.java"/>
+        <include name="rice/pastry/join/**/*.java"/>
+        <include name="rice/pastry/leafset/**/*.java"/>
+        <include name="rice/pastry/messaging/**/*.java"/>
+        <include name="rice/pastry/routing/**/*.java"/>
+        <include name="rice/pastry/security/**/*.java"/>
+        <include name="rice/pastry/socket/**/*.java"/>
+        <exclude name="rice/pastry/socket/testing/*.java"/>
+        <include name="rice/pastry/standard/**/*.java"/>
+        <include name="rice/pastry/testing/**/*.java"/>
+        <include name="rice/persistence/**/*.java"/>
+        <include name="rice/selector/**/*.java"/>
+        <include name="rice/tutorial/**/*.java"/>
+      </zipfileset>
+      <zipfileset dir="ant" includes="**/*" prefix="pastry-${freepastry-version}/ant" />
+      <zipfileset dir="html" includes="**/*" prefix="pastry-${freepastry-version}/html" />
+      <zipfileset dir="jars/freepastry" includes="freepastry.params" prefix="pastry-${freepastry-version}/jars/freepastry" />
+      <zipfileset dir="license" includes="**/*" prefix="pastry-${freepastry-version}/license" />
+      <zipfileset dir="licensing" includes="**/*" prefix="pastry-${freepastry-version}/licensing" />
+      <zipfileset dir="tools/wireshark" includes="**/*" prefix="pastry-${freepastry-version}/tools/wireshark"/>
+      <zipfileset dir="${lib.dir}" prefix="pastry-${freepastry-version}/lib">
+        <include name="xmlpull*.jar"/> 
+        <include name="bouncy*.jar"/> 
+        <include name="xpp*.jar"/> 
+        <include name="sbbi*.jar"/>
+        <include name="commons*.jar"/>
+      </zipfileset> 
+      <zipfileset dir="${docs.dir}" includes="**/**" prefix="pastry-${freepastry-version}/docs" />
+      <zipfileset dir="." includes="build.xml" prefix="pastry-${freepastry-version}"/>
+    </zip>
+    <tar destfile="FreePastry-${freepastry-version}-docs.tgz" compression="gzip">
+      <tarfileset dir="license" includes="**/*" prefix="pastry-${freepastry-version}/license" />
+      <tarfileset dir="licensing" includes="**/*" prefix="pastry-${freepastry-version}/licensing" />
+      <tarfileset dir="${docs.dir}" prefix="pastry-${freepastry-version}/docs" />
+    </tar>
+    <zip destfile="FreePastry-${freepastry-version}-docs.zip">
+      <zipfileset dir="license" includes="**/*" prefix="pastry-${freepastry-version}/license" />
+      <zipfileset dir="licensing" includes="**/*" prefix="pastry-${freepastry-version}/licensing" />
+      <zipfileset dir="${docs.dir}" prefix="pastry-${freepastry-version}/docs" />
+    </zip>
+    <checksum fileext=".md5sum" todir="." algorithm="MD5">
+      <fileset dir=".">
+        <include name="FreePastry-${freepastry-version}.jar"/>
+ <!--    
+		<include name="FreePastry-${freepastry-version}-all.tgz"/>
+        <include name="FreePastry-${freepastry-version}-all.zip"/>
+ -->
+        <include name="FreePastry-${freepastry-version}-source.tgz"/>
+        <include name="FreePastry-${freepastry-version}-source.zip"/>
+        <include name="FreePastry-${freepastry-version}-docs.tgz"/>
+        <include name="FreePastry-${freepastry-version}-docs.zip"/>
+      </fileset>
+    </checksum>
+  </target>
+
+  <!-- perform variable substitutions to the tutorial -->
+  <target name="freepastry-tutorial">
+    <copy todir="tutorial">
+    	  <fileset dir="html/rawtutorial" excludes="tutorial.variables"/>
+      <filterset>
+	    <filtersfile file="html/rawtutorial/tutorial.variables"/>
+      </filterset>
+    </copy>
+  </target>
+  
+  <!-- ********************** epost section ********************* -->
+
+  <target name="epost-manifest-version" if="epost-version">
+  	<copy file="${jar.dir}/epost/Manifest.tmpl" tofile="${build.dir}/Manifest">
+  	  <filterset>
+  		<filter token="version" value="${epost-version}" />
+  	  </filterset>
+	</copy>
+  </target>
+  
+  <target name="epost-manifest-noversion" unless="epost-version">
+  	<copy file="${jar.dir}/epost/Manifest.tmpl" tofile="${build.dir}/Manifest">
+	</copy>
+  </target>
+  
+  <target name="epost-manifest" depends="epost-manifest-version,epost-manifest-noversion"/>
+  
+  <target name="epost-jar" depends="compile-epost,epost-manifest">
+    <jar destfile="epost.jar" manifest="${build.dir}/Manifest" compress="true">
+      <fileset dir="${build.dir}" includes="rice/Continuation*.class"/>
+      <fileset dir="${build.dir}" includes="rice/Executable*.class"/>
+      <fileset dir="${build.dir}" includes="rice/Destructable*.class"/>
+      <fileset dir="${build.dir}" includes="rice/email/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/environment/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/commonapi/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/glacier/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/aggregation/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/multiring/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/past/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/replication/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/scribe/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/p2p/util/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/pastry/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/persistence/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/post/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/proxy/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/selector/**/*.class"/>
+      <fileset dir="${build.dir}" includes="rice/visualization/**/*.class"/>
+      <fileset dir="${jar.dir}/epost" includes="ca.publickey,epost.params,ePOST_certificate.cer,ringcert.list,*.ringcert"/>
+      <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+    </jar>
+  </target>
+
+  <target name="certgenerator" depends="compile-epost">
+  	<jar destfile="certgenerator.jar" manifest="${jar.dir}/certgenerator/Manifest" compress="true">
+  	  <fileset dir="${build.dir}" includes="rice/certgenerator/*.class"/>
+  	</jar>
+  </target>
+	
+  <target name="epost" depends="epost-jar">
+    <signjar jar="epost.jar" alias="ePOST" storepass="monkey" keystore="jars/ePOST_keystore" />
+  </target>
+	
+  <target name="epost-beta" depends="clean,epost" >
+  	<move file="epost.jar" tofile="epost-${epost-version}.jar"/>
+  </target>
+
+  <target name="epost-release" depends="clean,epost">
+    <move file="epost.jar" tofile="epost-${epost-version}.jar"/>
+    <tar destfile="epost-${epost-version}-all.tgz" compression="gzip">
+      <tarfileset dir="." includes="epost-${epost-version}.jar" prefix="epost/"/>
+      <tarfileset dir="./lib" prefix="epost/lib/">
+        <include name="activation.jar"/>
+        <include name="antlr.jar"/>
+        <include name="bouncycastle.jar"/>
+        <include name="javamail.jar"/>
+        <include name="jcommon-0.9.1.jar"/>
+        <include name="jfreechart-0.9.16.jar"/>
+        <include name="xmlpull_1_1_3_4a.jar"/>
+        <include name="xpp3-1.1.3.4d_b2.jar"/>
+        <include name="sbbi-upnplib-1.0.3.jar"/>
+        <include name="commons-jxpath-1.1.jar"/>
+        <include name="commons-logging.jar"/>
+        <include name="epost.png"/>
+      </tarfileset>
+    </tar>
+    <zip destfile="epost-${epost-version}-all.zip">
+      <zipfileset dir="." includes="epost-${epost-version}.jar" prefix="epost/"/>
+      <zipfileset dir="./lib" prefix="epost/lib/">
+        <include name="activation.jar"/>
+        <include name="antlr.jar"/>
+        <include name="bouncycastle.jar"/>
+        <include name="javamail.jar"/>
+        <include name="jcommon-0.9.1.jar"/>
+        <include name="jfreechart-0.9.16.jar"/>
+        <include name="xmlpull_1_1_3_4a.jar"/>
+        <include name="xpp3-1.1.3.4d_b2.jar"/>
+        <include name="sbbi-upnplib-1.0.3.jar"/>
+        <include name="commons-jxpath-1.1.jar"/>
+        <include name="commons-logging.jar"/>
+        <include name="epost.png"/>
+      </zipfileset>
+    </zip>
+    <tar destfile="epost-${epost-version}-source.tgz" compression="gzip">
+      <tarfileset dir="${src.dir}" prefix="epost-${epost-version}/src">
+        <include name="rice/*.java"/>
+        <include name="rice/email/**/*.java"/>
+        <include name="rice/environment/**/*.java"/>
+        <include name="rice/p2p/commonapi/**/*.java"/>
+        <include name="rice/p2p/glacier/**/*.java"/>
+        <include name="rice/p2p/aggregation/**/*.java"/>
+        <include name="rice/p2p/multiring/**/*.java"/>
+        <include name="rice/p2p/past/**/*.java"/>
+        <include name="rice/p2p/replication/**/*.java"/>
+        <include name="rice/p2p/scribe/**/*.java"/>
+        <include name="rice/p2p/util/**/*.java"/>
+        <include name="rice/pastry/**/*.java"/>
+        <include name="rice/persistence/**/*.java"/>
+        <include name="rice/post/**/*.java"/>
+        <include name="rice/proxy/**/*.java"/>
+        <include name="rice/selector/**/*.java"/>
+        <include name="rice/visualization/**/*.java"/>
+        <include name="rice/email/proxy/imap/parser/antlr/*.g"/>
+      </tarfileset>
+      <tarfileset dir="ant" includes="**/*" prefix="epost-${epost-version}/ant"/>
+      <tarfileset dir="${lib.dir}" includes="*.jar" prefix="epost-${epost-version}/${lib.dir}"/>
+      <tarfileset dir="${jar.dir}/epost/" includes="**/*" prefix="epost-${epost-version}/${jar.dir}/epost/"/>
+      <tarfileset dir="${jar.dir}/freepastry/" includes="**/*" prefix="epost-${epost-version}/${jar.dir}/freepastry/"/>
+      <tarfileset dir="license" includes="**/*" prefix="epost-${epost-version}/license"/>
+      <tarfileset dir="." includes="build.xml" prefix="epost-${epost-version}"/>
+    </tar>
+    <zip destfile="epost-${epost-version}-source.zip">
+      <zipfileset dir="${src.dir}" prefix="epost-${epost-version}/src">
+        <include name="rice/*.java"/>
+        <include name="rice/email/**/*.java"/>
+        <include name="rice/environment/**/*.java"/>
+        <include name="rice/p2p/commonapi/**/*.java"/>
+        <include name="rice/p2p/glacier/**/*.java"/>
+        <include name="rice/p2p/aggregation/**/*.java"/>
+        <include name="rice/p2p/multiring/**/*.java"/>
+        <include name="rice/p2p/past/**/*.java"/>
+        <include name="rice/p2p/replication/**/*.java"/>
+        <include name="rice/p2p/scribe/**/*.java"/>
+        <include name="rice/p2p/util/**/*.java"/>
+        <include name="rice/pastry/**/*.java"/>
+        <include name="rice/persistence/**/*.java"/>
+        <include name="rice/post/**/*.java"/>
+        <include name="rice/proxy/**/*.java"/>
+        <include name="rice/selector/**/*.java"/>
+        <include name="rice/visualization/**/*.java"/>
+        <include name="rice/email/proxy/imap/parser/antlr/*.g"/>
+      </zipfileset>
+      <zipfileset dir="ant" includes="**/*" prefix="epost-${epost-version}/ant"/>
+      <zipfileset dir="${lib.dir}" includes="*.jar" prefix="epost-${epost-version}/${lib.dir}"/>
+      <zipfileset dir="${jar.dir}/epost/" includes="**/*" prefix="epost-${epost-version}/${jar.dir}/epost/"/>
+      <zipfileset dir="${jar.dir}/freepastry/" includes="**/*" prefix="epost-${epost-version}/${jar.dir}/freepastry/"/>
+      <zipfileset dir="license" includes="**/*" prefix="epost-${epost-version}/license"/>
+      <zipfileset dir="." includes="build.xml" prefix="epost-${epost-version}/" />
+    </zip>
+    <checksum fileext=".md5sum" todir="." algorithm="MD5">
+      <fileset dir=".">
+        <include name="epost-${epost-version}.jar"/>
+        <include name="epost-${epost-version}-all.tgz"/>
+        <include name="epost-${epost-version}-all.zip"/>
+        <include name="epost-${epost-version}-source.tgz"/>
+        <include name="epost-${epost-version}-source.zip"/>
+      </fileset>
+    </checksum>
+  </target>
+</project>

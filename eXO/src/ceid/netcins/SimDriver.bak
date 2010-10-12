@@ -1,0 +1,793 @@
+/*
+ * SimDriver.java
+ *
+ * Created on April 19, 2008, 6:47 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package ceid.netcins;
+
+/**
+ *
+ * @author andy
+ */
+
+import ceid.netcins.content.DummyContent;
+
+import rice.*;
+import rice.environment.Environment;
+import rice.p2p.commonapi.*;
+import rice.p2p.commonapi.testing.CommonAPITest;
+import rice.p2p.past.*;
+import rice.p2p.past.messaging.*;
+import rice.p2p.replication.*;
+import rice.pastry.PastryNode;
+import rice.pastry.commonapi.PastryIdFactory; // Used to create the FileIds(objectIds)
+import rice.pastry.testing.*;
+import rice.persistence.*;
+
+import java.io.*;
+import java.util.*;
+import java.net.*;
+import java.io.Serializable;
+
+
+public class SimDriver extends CommonAPITest {
+ 
+    // the storage services in the ring
+  /**
+   * DESCRIBE THE FIELD
+   */
+  protected StorageManager storages[];
+  
+  /**
+   * Our application instances over past
+   */
+  protected CatalogService pasts[];
+
+  /**
+   * DESCRIBE THE FIELD
+   */
+  protected boolean running = true;
+  protected boolean main_running = true;
+  
+  /**
+   * The synchronized queue of Requests
+   */
+  public Vector<Request> execRequests;
+
+  /**
+   * the name of our application
+   */
+  public static String INSTANCE = "PastRegrTest";
+
+  /**
+   * the replication factor of Past objects
+   */
+  public static int REPLICATION_FACTOR = 3;
+  
+  /*
+   * the number of default files 
+   */ 
+  public int NUM_FILES = 0;
+  
+  /*
+   * the root name of the files
+   */
+  public String FILE_ROOT_NAME = "default";
+ 
+  /**
+   * the number of messages to create
+   */
+  public int iterations = 1;
+          
+  public int INS_NUM_MSG = 0;
+  
+  public int REC_NUM_MSG = 0;
+  
+  public boolean sequentialMsgs = true;
+  
+  public boolean multipleRetrieves = false;
+  
+  public boolean multipleContinuousRetrieves = true;
+  
+  public int numOfCopies = -1;
+  
+  private Continuation[] conts = null;
+  
+  private boolean enableHopsCounting = false;
+  
+  public boolean initPastryNodes = false;
+  
+  public int insertions = 0;
+  
+  public int retrievals = 0;
+  
+  public int maxhops = 0;
+  
+  public int minhops = 0;
+  
+  public double avghops = 0;
+  
+  public int maxCeidMsgHops = 0;
+  
+  public int minCeidMsgHops = 0;
+  
+  public double avgCeidMsgHops = 0;
+  
+  public int maxLookupMsgHops = 0;
+  
+  public int minLookupMsgHops = 0;
+  
+  public double avgLookupMsgHops = 0;
+  
+  public Vector maxR, maxL, maxG, avgR, avgL, avgG;
+    
+  public SimDriver(Environment env) throws IOException{
+        
+        super(env);
+        pasts = new CatalogService[NUM_NODES];
+        storages = new StorageManager[NUM_NODES];
+        execRequests=new Vector<Request>();
+        
+        if (PROTOCOL == PROTOCOL_DIRECT) {
+            new Thread() {
+              public void run() {
+                while (running) {
+                  try {
+                    sleep(50);
+                    simulate();
+                  } catch (Exception e) {
+                    System.out.println(e + " blah");
+                  }
+                }
+              }
+            }.start();
+        }
+    }
+    
+   /**
+   * Overrided Method which creates the nodes
+   */
+  public void createNodes() {
+    for (int i = 0; i < NUM_NODES; i++) {
+      nodes[i] = createNode(i);
+
+      //simulate();
+
+      processNode(i, nodes[i]);
+      //simulate();
+
+      System.out.println("Created and Initialized node " + i + " with id " + ((PastryNode) nodes[i]).getNodeId().toStringFull());
+    }
+    
+    createFiles();
+  }
+  
+  /**
+   * Method which creates the requested defaut files for testing
+   */
+  public void createFiles(){
+      int num ;
+      for(int i = 0; i < NUM_FILES; i++){
+          num = environment.getRandomSource().nextInt(NUM_NODES);
+          File f=new File("FreePastry-Storage-Root/root-" + num + "/" + FILE_ROOT_NAME + i);
+          try{
+            f.createNewFile();
+            PastryIdFactory factory=new PastryIdFactory(environment);
+            Id fileId = factory.buildId(f.getName());
+//MARK            pasts[num].getFileMap().put(fileId,f.toString());
+          }catch(IOException ex){
+            //JOptionPane.showMessageDialog(null,"Exception Message:"+ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+          }
+      }
+  }
+
+  /**
+   * Overrided Method which starts the creation of nodes
+   */
+  public void start() {
+//    simulator.start();
+    createNodes();
+
+    System.out.println("\nTest Beginning\n");
+
+    runTest();
+  }
+    
+    /**
+   * Method which should process the given newly-created node
+   * It creates a new persistent+cache storage and
+   * a new instance of the PAST application
+   *
+   * @param node The newly created node
+   * @param num The number of this node
+   */
+  protected void processNode(int num, Node node) {
+    try {
+      storages[num] = new StorageManagerImpl(FACTORY,
+        new PersistentStorage(FACTORY, "root-" + num, ".", 1000000, environment),
+        new LRUCache(new MemoryStorage(FACTORY), 100000, environment));
+      pasts[num] = new CatalogService(node, storages[num], REPLICATION_FACTOR, INSTANCE);
+      File f=new File("FreePastry-Storage-Root/root-" + num);
+      File[] files=f.listFiles();
+      int i=0;
+      PastryIdFactory factory;
+      while(i<files.length){
+          factory=new PastryIdFactory(environment);
+          Id fileId = factory.buildId(files[i].getName());
+//MARK          pasts[num].getFileMap().put(fileId,files[i].toString());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  /**
+   * Method which should run the test - this is called once all of the nodes
+   * have been created and are ready.
+   */
+  protected void runTest() {
+    if (NUM_NODES < 2) {
+      System.out.println("The PastRegrTest must be run with at least 2 nodes for proper testing.  Use the '-nodes n' to specify the number of nodes.");
+      return;
+    }
+    // Enable The HopsCounting
+    enableHopsCounting = true;
+    
+    // Enable the Interaction in GUI/Shell statistics
+    initPastryNodes = true;
+    
+    // There is no support for more than one iterations of the same experiment in case of non sequentialMsgs
+    if(sequentialMsgs==false){
+        iterations = 1;
+    }
+    
+    // The total tables
+    maxG = new Vector();
+    maxL = new Vector();
+    maxR = new Vector();
+    avgG = new Vector();
+    avgL = new Vector();
+    avgR = new Vector();
+    // Enable the Interaction in GUI
+    initPastryNodes = true;
+    
+    // Run each test
+//MARK    testRouteRequest();
+    while (main_running) {
+      try {
+        while(!execRequests.isEmpty()){
+            serveRequest(execRequests.remove(0));
+        }
+        simulate(); //MARK
+      } catch (Exception e) {
+      }
+    }
+    enableHopsCounting = false;
+    initPastryNodes = false;
+  }
+  
+  /*
+   *  ---------- Test methods and classes ----------
+   */
+  /**
+   * Tests routing a set of Past requests to a random set of nodes.
+   */
+//  protected void testRouteRequest() {
+//    
+//        int i=0;
+//        insertions=0;
+//        retrievals=0;
+//        final int NUM_MSG=((INS_NUM_MSG>REC_NUM_MSG)?INS_NUM_MSG:REC_NUM_MSG);
+//        final int first = environment.getRandomSource().nextInt(NUM_NODES);
+//        final String nameCode = ""+iterations;
+//
+//        if(sequentialMsgs==true){
+//            conts=new TestCommand[REC_NUM_MSG+INS_NUM_MSG];
+//            int tmp=first;
+//            for(int t=0; t<INS_NUM_MSG; t++){
+//                final int t2 = t;
+//                final int appnum = environment.getRandomSource().nextInt(NUM_NODES);
+//                final int previous = tmp;
+//                conts[t]=new TestCommand(){
+//                          public void receive(Object result) throws Exception {
+//                          // run replica maintenance
+//                          _stepStart("#"+t2+" Insert File : test"+nameCode+".xml ,Source-Num = "+previous+", Source = "+pasts[previous].getNode().getId().toStringFull()+" ");
+//                          //runReplicaMaintence();
+//                          _stepDone();
+//                          
+//                          insertions++;
+//                          if(t2!=(REC_NUM_MSG+INS_NUM_MSG-1)){
+//                              if(t2==INS_NUM_MSG-1){
+//                                  if(multipleRetrieves==true && multipleContinuousRetrieves==true)
+//                                      pasts[appnum].retrieveFile("test"+nameCode+".xml", true, numOfCopies, conts[t2+1]);
+//                                  else
+//                                    pasts[appnum].retrieveFile("test"+nameCode+".xml", false, conts[t2+1]);
+//                              }else{
+//                                pasts[appnum].insertFile("test"+nameCode+".xml", null,conts[t2+1]);
+//                              }
+//                          }else{
+//                              getHops();
+//                              // Here we compute the results for each iteration
+//                              maxG.add(maxhops);
+//                              maxL.add(maxLookupMsgHops);
+//                              maxR.add(maxCeidMsgHops);
+//                              avgG.add(avghops);
+//                              avgL.add(avgLookupMsgHops);
+//                              avgR.add(avgCeidMsgHops);
+//                              iterations--;
+//                              if(iterations!=0){
+//                                clearHops();
+//                                testRouteRequest();
+//                              }
+//                          }
+//                      }
+//                    };
+//               tmp=appnum;
+//            }
+//            for(int t=INS_NUM_MSG; t<REC_NUM_MSG+INS_NUM_MSG; t++){
+//               final int t2 = t-INS_NUM_MSG;
+//               final int appnum = environment.getRandomSource().nextInt(NUM_NODES);
+//               final int previous = tmp;
+//               conts[t]=new TestCommand(){
+//                      public void receive(Object result) throws Exception{
+//                          //System.out.println("#"+t2+" FILE OBTAINED : "+result);
+//                          _stepStart("#"+t2+" Retrieve File : test"+nameCode+".xml, Source-Num = "+previous+", Source-NodeId = "+pasts[previous].getNode().getId().toStringFull()+" ");
+//                          _stepDone();
+//                          System.out.println("FILE OBTAINED : "+result+"\n");
+//                          retrievals++;
+//                          if(t2!=(REC_NUM_MSG-1)){
+//                              if(multipleRetrieves==true && multipleContinuousRetrieves==true)
+//                                  pasts[appnum].retrieveFile("test"+nameCode+".xml", true, numOfCopies, conts[t2+INS_NUM_MSG+1]);
+//                              else
+//                                  pasts[appnum].retrieveFile("test"+nameCode+".xml", false, conts[t2+INS_NUM_MSG+1]);
+//                          }else{
+//                              getHops();
+//                              // Here we compute the results for each iteration
+//                              maxG.add(maxhops);
+//                              maxL.add(maxLookupMsgHops);
+//                              maxR.add(maxCeidMsgHops);
+//                              avgG.add(avghops);
+//                              avgL.add(avgLookupMsgHops);
+//                              avgR.add(avgCeidMsgHops);
+//                              iterations--;
+//                              if(iterations!=0){
+//                                clearHops();
+//                                testRouteRequest();
+//                              }
+//                          }
+//                      }
+//                    }; 
+//               tmp=appnum;
+//            }
+//            if(INS_NUM_MSG!=0)
+//                pasts[first].insertFile("test"+nameCode+".xml", null,conts[0]);
+//            else if(REC_NUM_MSG!=0){
+//                if(multipleRetrieves==true && multipleContinuousRetrieves==true)
+//                    pasts[first].retrieveFile("test"+nameCode+".xml", true, numOfCopies, conts[0]);
+//                else
+//                    pasts[first].retrieveFile("test"+nameCode+".xml", false, conts[0]);
+//            }
+//
+//        }else{ // SIMULTANEOUS INSERT AND RETRIEVE REQUUESTS  
+//            while(i++<NUM_MSG)
+//            {
+//                final int j=i;
+//                if(i<=INS_NUM_MSG){
+//                      final int appnum = environment.getRandomSource().nextInt(NUM_NODES);
+//                      pasts[appnum].insertFile("test"+nameCode+".xml", null, 
+//                              new TestCommand(){
+//                          public void receive(Object result) throws Exception {
+//                              // run replica maintenance
+//                                 // _stepStart("#"+j+" Insert File : ");
+//                                  _stepStart("#"+j+" Insert File : test"+nameCode+".xml ,Source-Num = "+appnum+", Source = "+pasts[appnum].getNode().getId().toStringFull()+" ");
+//                                  runReplicaMaintence();
+//                                  _stepDone();
+//                                  insertions++;
+//                          }
+//                      });
+//                }
+//                if(i<=REC_NUM_MSG){
+//                     final int appnum = environment.getRandomSource().nextInt(NUM_NODES);
+//                     pasts[appnum].retrieveFile("test"+nameCode+".xml", false,
+//                          new TestCommand(){
+//                      public void receive(Object result){
+//
+//                          _stepStart("#"+j+" Retrieve File : test"+nameCode+".xml, Source-Num = "+appnum+", Source-NodeId = "+pasts[appnum].getNode().getId().toStringFull()+" ");
+//                          //System.out.println("#"+j+" FILE OBTAINED : "+result);
+//                          _stepDone();
+//                          System.out.println("#"+j+" FILE OBTAINED : "+result+"\n");
+//                          retrievals++;
+//
+//                      }
+//                    });
+//                    //simulate();
+//                }
+//            }
+//        }
+//
+//        try{
+//            Thread.sleep(10000);
+//        }catch(Exception ex){
+//            System.out.println("Thread Interrupted");
+//        }
+//    //    PastryIdFactory factory=new PastryIdFactory(environment);
+//    //    final Id fileId1 = factory.buildId("test.xml");
+//    //    pasts[environment.getRandomSource().nextInt(NUM_NODES)].lookup(fileId1, false,
+//    //        new TestCommand() {
+//    //       public void receive(Object result) throws Exception {
+//    //        System.out.println(" METAFILE OBTAINED : "+result);
+//    //        textarea.append("\n METAFILE OBTAINED : "+result+"\n");
+//    //        _stepDone();
+//    //       }
+//    //    });
+//  }
+  
+  private void clearHops(){
+//      for(int i=0;i<NUM_NODES;i++){
+//          pasts[i].maxhops=0;
+//          pasts[i].minhops=0;
+//          pasts[i].msgcount=0;
+//          pasts[i].sumhops=0;
+//          pasts[i].maxLookupMsgHops=0;
+//          pasts[i].minLookupMsgHops=0;
+//          pasts[i].lookupMsgCount=0;
+//          pasts[i].sumLookupMsgHops=0;
+//          pasts[i].maxCeidMsgHops=0;
+//          pasts[i].minCeidMsgHops=0;
+//          pasts[i].ceidMsgCount=0;
+//          pasts[i].sumCeidMsgHops=0;
+//      }
+  }
+  
+  /*
+   * This function is used in order to compute the Hops
+   * Before the function call all the nodes must be initialized !!!
+   */
+  public synchronized void getHops(){
+      if(enableHopsCounting==true){
+          int avg=0,count=0,avgCeidMsg=0,ceidMsgCount=0,avgLookupMsg=0,lookupMsgCount=0;
+          for(int i=0;i<NUM_NODES;i++){
+              // *** GENERAL ***
+//              if(pasts[i].maxhops>maxhops){
+//                  maxhops=pasts[i].maxhops;
+//              }
+//              if(minhops==0)
+//                  minhops=pasts[i].minhops;
+//              if(pasts[i].minhops<minhops && pasts[i].minhops!=0){
+//                  minhops=pasts[i].minhops;
+//              }
+//              avg+=pasts[i].sumhops;
+//              count+=pasts[i].msgcount;
+//              // *** CEIDMSG ***
+//              if(pasts[i].maxCeidMsgHops>maxCeidMsgHops){
+//                  maxCeidMsgHops=pasts[i].maxCeidMsgHops;
+//              }
+//              if(minCeidMsgHops==0)
+//                  minCeidMsgHops=pasts[i].minCeidMsgHops;
+//              if(pasts[i].minCeidMsgHops<minCeidMsgHops && pasts[i].minCeidMsgHops!=0){
+//                  minCeidMsgHops=pasts[i].minCeidMsgHops;
+//              }
+//              avgCeidMsg+=pasts[i].sumCeidMsgHops;
+//              ceidMsgCount+=pasts[i].ceidMsgCount;
+//              // *** LookupMSG ***
+//              if(pasts[i].maxLookupMsgHops>maxLookupMsgHops){
+//                  maxLookupMsgHops=pasts[i].maxLookupMsgHops;
+//              }
+//              if(minLookupMsgHops==0)
+//                  minLookupMsgHops=pasts[i].minLookupMsgHops;
+//              if(pasts[i].minLookupMsgHops<minLookupMsgHops && pasts[i].minLookupMsgHops!=0){
+//                  minLookupMsgHops=pasts[i].minLookupMsgHops;
+//              }
+//              avgLookupMsg+=pasts[i].sumLookupMsgHops;
+//              lookupMsgCount+=pasts[i].lookupMsgCount;
+          }
+          avghops=(1.0*avg)/count;
+          avgCeidMsgHops=(1.0*avgCeidMsg)/ceidMsgCount;
+          avgLookupMsgHops=(1.0*avgLookupMsg)/lookupMsgCount;
+      }
+  }
+  
+  /**
+   * Private method which initiates the replica maintenance on all of the nodes
+   */
+  private void runReplicaMaintence() {
+    for (int i = 0; i < NUM_NODES; i++) {
+      pasts[i].getReplication().replicate();
+    }
+
+    //simulate();
+  }
+  
+  /**
+   * Terminates the constructor frontend Thread
+   * and destroys the Selector ...
+   */
+  protected void cleanUp() {
+    running = false;
+    main_running = false;
+    environment.destroy();
+  }
+  
+  /**
+   * Getter for the environment
+   */
+  public Environment getEnvironment(){
+      return environment;
+  }
+  
+  /**
+   * Serves a set of user Past Requests sequentially
+   *
+   */
+  protected void resolveRequest(boolean type){
+//MARK
+//    final int first = environment.getRandomSource().nextInt(NUM_NODES);
+//    if(type==Request.INSERT){
+//        conts=new TestCommand[INS_NUM_MSG];
+//        int tmp=first;
+//        for(int t=0; t<INS_NUM_MSG; t++){
+//            final int t2 = t;
+//            final int appnum = environment.getRandomSource().nextInt(NUM_NODES);
+//            final int previous = tmp;
+//            conts[t]=new TestCommand(){
+//                      public void receive(Object result) throws Exception {
+//                      // run replica maintenance
+//                      _stepStart("#"+t2+" Insert File : test.xml ,Source-Num = "+previous+", Source = "+pasts[previous].getNode().getId().toStringFull()+" ");
+//                      runReplicaMaintence();
+//                      _stepDone();
+//                      insertions++;
+//                      if(t2!=(INS_NUM_MSG-1)){
+//                            pasts[appnum].insertFile("test.xml", null,conts[t2+1]);
+//                      }
+//                  }
+//                };
+//           tmp=appnum;
+//        }
+//        if(INS_NUM_MSG!=0)
+//            pasts[first].insertFile("test.xml", null,conts[0]);
+//    }else{
+//        conts=new TestCommand[REC_NUM_MSG];
+//        int tmp=first;
+//        for(int t=0; t<REC_NUM_MSG; t++){
+//           final int t2 = t;
+//           final int appnum = environment.getRandomSource().nextInt(NUM_NODES);
+//           final int previous = tmp;
+//           conts[t]=new TestCommand(){
+//                  public void receive(Object result) throws Exception{
+//                      //System.out.println("#"+t2+" FILE OBTAINED : "+result);
+//                      _stepStart("#"+t2+" Retrieve File : test.xml, Source-Num = "+previous+", Source-NodeId = "+pasts[previous].getNode().getId().toStringFull()+" ");
+//                      _stepDone();
+//                      System.out.println("FILE OBTAINED : "+result+"\n");
+//                      retrievals++;
+//                      if(t2!=(REC_NUM_MSG-1))
+//                        pasts[appnum].retrieveFile("test.xml", false, conts[t2+1]);
+//                  }
+//                }; 
+//           tmp=appnum;
+//        }
+//        if(REC_NUM_MSG!=0)
+//            pasts[first].retrieveFile("test.xml", false, conts[0]);
+//    }
+  }
+  
+  /** 
+   * Resolves the requested action
+   */
+  protected void serveRequest(Request req) throws Exception{
+      if(req.getRequester()==null){
+        resolveRequest(req.getType());
+      }else{
+          final String filename = req.getFile().getName(), requester = req.getRequester().getNode().getId().toStringFull();
+          final CatalogService source = req.getRequester();
+          if(req.getType()==req.INSERT){
+              source.insertFile(req.getFile().getName(), req.getFile().getParent(), 
+                      new TestCommand(){
+                  public void receive(Object result) throws Exception {
+                      // run replica maintenance
+                      _stepStart("Insert File : "+filename+", Source = "+requester+" ");
+                      runReplicaMaintence();
+                      _stepDone();
+                      insertions++;
+                      
+                  }
+              });
+              //simulate();
+          }else{
+              if(req.getMultipleLookups()){
+                  source.retrieveFile(req.getFile().getName(), true, req.getCopiesNum(),
+                          new TestCommand(){
+                      public void receive(Object result) {
+                          _stepStart("Multiple Retrieve File : "+filename+", Source = "+requester+" ");
+                          _stepDone();
+                          retrievals++;
+                          if(result instanceof HashMap){
+                            System.out.println("*** FILES OBTAINED ***");  
+                            HashMap hm = (HashMap)result;
+                            Iterator it = hm.keySet().iterator();
+                            while(it.hasNext()){
+                                Object t = it.next();
+                                System.out.println("Continuation Num -->"+t+ " File -->"+hm.get(t));
+                            }
+                            System.out.println("*** Totally Retrieved Files = "+hm.keySet().size()+" ***");
+                          }else
+                            System.out.println("FILES OBTAINED : "+result);
+                          System.out.println("********** Last Message Hops (Lookup Phase)  : "+source.lastMsgHops2+" ");
+                          System.out.println("********** Last Message Hops (Retrieve Phase): "+source.lastMsgHops1+" \n");
+                      }
+                  });
+              }else{
+                  source.retrieveFile(req.getFile().getName(), false, 
+                          new TestCommand(){
+                      public void receive(Object result) {
+                          _stepStart("Retrieve File : "+filename+", Source = "+requester+" ");
+                          _stepDone();
+                          retrievals++;
+                          System.out.println("FILE OBTAINED : "+result);
+                          System.out.println("********** Message Hops (Lookup Phase)  : "+source.lastMsgHops2+" ");
+                          System.out.println("********** Message Hops (Retrieve Phase): "+source.lastMsgHops1+" \n");
+                      }
+                  });
+                 // simulate();
+              }
+          }
+      }
+  }
+  
+  /**
+   * Common superclass for test commands.
+   *
+   * @version $Id$
+   * @author jeffh
+   */
+  protected class TestCommand implements Continuation {
+    /**
+     * DESCRIBE THE METHOD
+     *
+     * @param result DESCRIBE THE PARAMETER
+     */
+    public void receiveResult(Object result) {
+      try {
+        receive(result);
+      } catch (Exception e) {
+        receiveException(e);
+      }
+    }
+
+    /**
+     * DESCRIBE THE METHOD
+     *
+     * @param result DESCRIBE THE PARAMETER
+     * @exception Exception DESCRIBE THE EXCEPTION
+     */
+    public void receive(Object result) throws Exception {
+    }
+
+    /**
+     * DESCRIBE THE METHOD
+     *
+     * @param e DESCRIBE THE PARAMETER
+     */
+    public void receiveException(Exception e) {
+      _stepException(e);
+    }
+  }
+
+// ----- TESTING UTILITY METHODS -----
+
+  /**
+   * Method which prints the beginning of a test section.
+   *
+   * @param name The name of section
+   */
+  protected final void _sectionStart(String name) {
+    System.out.println(name);
+  }
+
+  /**
+   * Method which prints the end of a test section.
+   */
+  protected final void _sectionDone() {
+    System.out.println();
+  }
+
+  /**
+   * Method which prints the beginning of a test section step.
+   *
+   * @param name The name of step
+   */
+  protected final void _stepStart(String name) {
+    System.out.print(/*environment.getTimeSource().currentTimeMillis()+*/pad("  " + name));
+  }
+
+  /**
+   * Method which prints the end of a test section step, with an
+   * assumed success.
+   */
+  protected final void _stepDone() {
+    _stepDone(SUCCESS);
+  }
+
+  /**
+   * Method which prints the end of a test section step.
+   *
+   * @param status The status of step
+   */
+  protected final void _stepDone(String status) {
+    _stepDone(status, "");
+  }
+
+  /**
+   * Method which prints the end of a test section step, as
+   * well as a message.
+   *
+   * @param status The status of section
+   * @param message The message
+   */
+  protected final void _stepDone(String status, String message) {
+    System.out.println("[" + status + "]");
+
+    if ((message != null) && (! message.equals(""))) {
+      System.out.println("     " + message);
+    }
+
+    if(status.equals(FAILURE)) {
+      System.exit(1);
+    }
+  }
+
+  /**
+   * Method which prints an exception which occured during testing.
+   *
+   * @param e The exception which was thrown
+   */
+  protected final void _stepException(Exception e) {
+    logger.logException("\nException occurred during testing.",e);
+
+    System.exit(2);
+  }
+
+  /**
+   * Method which pads a given string with "." characters.
+   *
+   * @param start The string
+   * @return The result.
+   */
+  private final String pad(String start) {
+    if (start.length() >= PAD_SIZE) {
+      return start.substring(0, PAD_SIZE);
+    } else {
+      int spaceLength = PAD_SIZE - start.length();
+      char[] spaces = new char[spaceLength];
+      Arrays.fill(spaces, '.');
+
+      return start.concat(new String(spaces));
+    }
+  }
+
+  /**
+   * Throws an exception if the test condition is not met.
+   */
+  protected final void _assertTrue(String intention, boolean test) {
+    if (!test) {
+      _stepDone(FAILURE, "Assertion '" + intention + "' failed.");
+    }
+  }
+
+  /**
+   * Thows an exception if expected is not equal to actual.
+   */
+  protected final void _assertEquals(String description,
+                                    Object expected,
+                                    Object actual) {
+    if (!expected.equals(actual)) {
+      _stepDone(FAILURE, "Assertion '" + description +
+               "' failed, expected: '" + expected +
+               "' got: " + actual + "'");
+    }
+  }
+  
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : users.xml
+    Created on : October 31, 2008, 4:24 PM
+    Author     : andy
+    Description:
+        Purpose of the document follows.
+        Create a set of user profiles and tag them around
+        the overlay network.
+-->
+
+<!DOCTYPE test SYSTEM 'scenarios.dtd'>
+<test>
+<scenario>
+
+<tag>
+<source>28</source>
+<uid>2</uid>
+<cid>27466598</cid>
+<tags>
+tagged by andreas
+</tags>
+</tag>
+
+<tag>
+<source>30</source>
+<uid>2</uid>
+<cid>27566599</cid>
+<tags>
+stavro
+</tags>
+</tag>
+
+
+
+</scenario>
+</test>

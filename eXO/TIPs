@@ -1,0 +1,39 @@
+
+ 1. ***** Environment Parameters  ***** 
+
+	Most applications use the default constructor for the Environment. This will load a "default" parameter file from the jar called freepastry.params. If java can find a file in the working directory called "user.params" it will load this as the mutable parameter store. Any values in this file will overwrite the default configurations stored in the jar.
+
+	Right after you create the Environment, call getParameters().setXXX("param_name");
+
+	Thus if you want to add/modify the parameter "external_address" and set it to "123.45.67.89:1234" do the following.
+
+	    Environment env = new Environment();
+	    env.getParameters().setInetSocketAddress("external_address",new InetSocketAddress(InetAddress.getByName("123.45.67.89"),1234));
+
+
+2. ***** Before Exit Application *****
+
+	My JVM won't exit, or How should I get rid of an environment?
+	The SelectorManager and Processor both have non-daemon threads that are used to handle communication and processing for the PastryNode. For the JVM to be able to exit, you will need to properly destroy the environment, by calling environment.destroy(). This will call store on the parameters, and destroy the selector/processor threads. Of course, you can also call System.exit(), but that is generally considered bad form.
+
+3. ***** NodeHandle and How to get it! *****
+
+	# NodeHandle — This is a "reference" to a PastryNode. It is how you refer to a specific node in the network. A NodeHandle consists of a NodeId and whatever information the transport layer needs to find the node in the underlieing protocol. In this case an IP address and port. In this lesson, you will use a NodeHandle to bootstrap your node into the ring. You can get the NodeHandle to your local node by calling PastryNode.getLocalHandle(). In the distributed environment, you will need to get a NodeHandle to your bootstrap node(s) by asking the transport layer. In this case you are interested in acquiring a node handle from an IP address and port. The the Socket transport layer uses this information to open a socket to this address:port and requests a copy of the NodeHandle from the remote node. If it doesn't find a node at this location it returns null.
+
+
+4. ***** Endpoint and how to obtain *****
+
+	# Endpoint.java—This interface represents an endpoint which applications can use to send messages from. An endpoint is obtained by the registerApplication() method in Node. The endpoint represents the applications' view of the world.
+	The constructor generates an Endpoint from the node. The instance is designed to allow you to run the same app multiple times on the same node. The apps will not receive each other's messages. You will only be able to send messages to apps that generated endpoints with the same instance string. For most of your apps, you will only run one instance, so just make sure the instance is the same on all nodes. Note that there are 2 steps in registration, buildEndpoint() and endpoint.register(). This is because you may need the endpoint to complete construction, but do not want to receive messages until construction is complete.
+
+
+5. ***** Discreet FP Clock *****
+
+	Wait 10 seconds. Note that to be compatible with the discreet event simulator, it is important to use FreePastry's virtual clock rather than the system clock. This is why we call env.getTimeSource().sleep() rather than Thread.sleep().
+
+	    // wait 10 seconds
+	    env.getTimeSource().sleep(10000);
+
+
+
+

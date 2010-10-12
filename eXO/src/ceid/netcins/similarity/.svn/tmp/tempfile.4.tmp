@@ -1,0 +1,15 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ceid.netcins.similarity;
+
+/**
+ * This class represents a weight computed with the tf/idf.
+ * 
+ * @author andy
+ */
+public class TfIdfWeight {
+
+}

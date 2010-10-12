@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+    Document   : scenarios.dtd
+    Created on : 2008
+    Author     : andy
+    Description:
+        Purpose of the document follows.
+
+    TODO define vocabulary identification data
+    PUBLIC ID  : -//vendor//vocabulary//EN
+    SYSTEM ID  : http://server/path/scenarios.dtd
+-->
+
+<!ELEMENT test (nodes?,scenario*)>
+
+<!ELEMENT nodes EMPTY>
+<!ELEMENT scenario (index*,search*,retrieve*,tag*,random_queries*,index_pcontent*,index_user*)>
+
+<!-- SAX PARSER ONLY -->
+<!ELEMENT index_pcontent (source,pseydo_file)>
+<!ELEMENT index_user (source,user)>
+
+<!-- DOM PARSER -->
+<!ELEMENT index (source?,(directory|single_file|pseydo_file|user))>
+<!ELEMENT search (source?,query,number_of_results)>
+<!ELEMENT retrieve (source?,number_of_results,out_of)>
+<!ELEMENT tag (source?,uid,cid,tags)>
+
+<!-- DOM AND SAX -->
+<!ELEMENT random_queries (num_type,num_keywords,num_queries,num_results)>
+
+<!ELEMENT source (#PCDATA)>
+<!ELEMENT directory (#PCDATA)>
+<!ELEMENT single_file (#PCDATA)>
+<!ELEMENT pseydo_file (identifier,content_profile)>
+<!ELEMENT user (user_address,user_profile)>
+<!ELEMENT query (query_type,content)>
+
+<!-- content=0,content_enhanced=1,user=2,user_enhanced=3 -->
+<!ELEMENT query_type (#PCDATA)>
+<!ELEMENT content (keywords)>
+
+<!-- This is the K of TopK :-)  -->
+<!ELEMENT number_of_results (#PCDATA)>
+<!ELEMENT out_of (#PCDATA)>
+<!ELEMENT keywords (#PCDATA)>
+
+<!ELEMENT user_address (#PCDATA)>
+<!ELEMENT user_profile (field*|keywords)>
+<!-- This is a number, acts as a name and the checksum is build from this too  -->
+<!ELEMENT identifier (#PCDATA)>
+<!ELEMENT content_profile (field*|keywords)>
+
+<!ELEMENT field (name,keywords)>
+<!ELEMENT name (#PCDATA)>
+
+<!-- Elements of Tag -->
+<!ELEMENT uid (#PCDATA)>
+<!ELEMENT cid (#PCDATA)>
+<!ELEMENT tags (#PCDATA)>
+
+
+<!-- Elements of Random_Queries -->
+<!ELEMENT num_type (#PCDATA)>
+<!ELEMENT num_keywords (#PCDATA)>
+<!ELEMENT num_queries (#PCDATA)>
+<!ELEMENT num_results (#PCDATA)>
