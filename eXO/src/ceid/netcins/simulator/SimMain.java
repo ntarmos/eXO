@@ -1056,6 +1056,7 @@ public class SimMain {
 	}
 
 	// SAX parsing
+	@SuppressWarnings("unchecked")
 	public boolean parseXMLFileSAX(File f) {
 		try {
 			// Create the network only if it is not exist!
@@ -1699,11 +1700,7 @@ public class SimMain {
 							.getData().trim();
 
 					// Add the Request for tagging
-					tag_req.add(new TagContentRequest(tagTerms, cid, uid)); // Feed
-																			// all
-																			// the
-																			// tag
-																			// terms!
+					tag_req.add(new TagContentRequest(tagTerms, cid, uid)); // Feed all the tag terms!
 				}
 
 			}

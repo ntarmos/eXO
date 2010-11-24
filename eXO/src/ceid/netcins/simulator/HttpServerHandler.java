@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -53,95 +51,87 @@ public class HttpServerHandler implements HttpHandler {
 	}
 
 	public void handle(HttpExchange t) throws IOException {
-		try {
-
-			// Body of request http (GET or POST)
-			InputStream is = t.getRequestBody();
-			// read(is); // .. read the request body
-			Scanner sc = new Scanner(is);
-			while (sc.hasNextLine()) {
-				System.out.println(" Body : " + sc.nextLine());
-			}
-
-			// Headers of request http (GET or POST)
-			Headers h = t.getRequestHeaders();
-			Iterator<String> it = h.keySet().iterator();
-			while (it.hasNext()) {
-				System.out.println(" Header : " + h.get(it.next()));
-			}
-
-			// Requested URI Path
-			URI base = new URI("http://localhost:8000");
-			System.out.println(" Requested URI : " + t.getRequestURI()
-					+ ", Requested Path : " + t.getRequestURI().getPath());
-
-			// Response Preparation
-			String query = t.getRequestURI().getQuery();
-			int type = PAGEREQUEST;
-			if (query == null || query.isEmpty() || !query.startsWith("type")) {
-				type = PAGEREQUEST;
-			} else if (query.startsWith("type=0")) {
-				// Always we want the first as denoted by the protocol
-				// (http://bla?type=2&...)
-				// type = Integer.parseInt(query.split("&", 2)[0].split("=",
-				// 2)[1]);
-				type = 1;
-			} else if (query.startsWith("type=1")) {
-				type = 3;
-			}
-
-			switch (type) {
-
-			case INDEXCONTENTREQUEST:
-				if (requestDispatcher == null) {
-					String msg = "Nodes must have been created first.";
-					System.out.println(msg);
-					t.sendResponseHeaders(200, msg.getBytes().length);
-					OutputStream os = t.getResponseBody();
-					os.write(msg.getBytes());
-					os.close();
-					break;
-				}
-				// Add the Request for indexing the file
-				driver.execRequests.add(new IndexContentRequest(query.split(
-						"&", 2)[1].split("=", 2)[1], t));
-				this.doNotify();
-				break;
-
-			case SEARCHCONTENTREQUEST:
-				if (requestDispatcher == null) {
-					String msg = "Nodes must have been created first.";
-					System.out.println(msg);
-					t.sendResponseHeaders(200, msg.getBytes().length);
-					OutputStream os = t.getResponseBody();
-					os.write(msg.getBytes());
-					os.close();
-					break;
-				}
-				// Add the Request for indexing the file
-				driver.execRequests.add(new SearchContentRequest(query.split(
-						"&", 2)[1].split("=", 2)[1],
-						SearchContentRequest.RANDOMSOURCE, t));
-				this.doNotify();
-				break;
-
-			default:
-				// RESPONSE PAGE
-				byte[] b = readBin(t.getRequestURI().getPath().substring(1));
-				t.sendResponseHeaders(200, b.length);
-				OutputStream os = t.getResponseBody();
-				os.write(b);
-				os.close();
-				b = null;
-				break;
-			}
-
-			sc = null;
-		} catch (URISyntaxException ex) {
-			Logger.getLogger(HttpServerHandler.class.getName()).log(
-					Level.SEVERE, null, ex);
-			ex.printStackTrace();
+		// Body of request http (GET or POST)
+		InputStream is = t.getRequestBody();
+		// read(is); // .. read the request body
+		Scanner sc = new Scanner(is);
+		while (sc.hasNextLine()) {
+			System.out.println(" Body : " + sc.nextLine());
 		}
+
+		// Headers of request http (GET or POST)
+		Headers h = t.getRequestHeaders();
+		Iterator<String> it = h.keySet().iterator();
+		while (it.hasNext()) {
+			System.out.println(" Header : " + h.get(it.next()));
+		}
+
+		// Requested URI Path
+		System.out.println(" Requested URI : " + t.getRequestURI()
+				+ ", Requested Path : " + t.getRequestURI().getPath());
+
+		// Response Preparation
+		String query = t.getRequestURI().getQuery();
+		int type = PAGEREQUEST;
+		if (query == null || query.isEmpty() || !query.startsWith("type")) {
+			type = PAGEREQUEST;
+		} else if (query.startsWith("type=0")) {
+			// Always we want the first as denoted by the protocol
+			// (http://bla?type=2&...)
+			// type = Integer.parseInt(query.split("&", 2)[0].split("=",
+			// 2)[1]);
+			type = 1;
+		} else if (query.startsWith("type=1")) {
+			type = 3;
+		}
+
+		switch (type) {
+
+		case INDEXCONTENTREQUEST:
+			if (requestDispatcher == null) {
+				String msg = "Nodes must have been created first.";
+				System.out.println(msg);
+				t.sendResponseHeaders(200, msg.getBytes().length);
+				OutputStream os = t.getResponseBody();
+				os.write(msg.getBytes());
+				os.close();
+				break;
+			}
+			// Add the Request for indexing the file
+			driver.execRequests.add(new IndexContentRequest(query.split(
+					"&", 2)[1].split("=", 2)[1], t));
+			this.doNotify();
+			break;
+
+		case SEARCHCONTENTREQUEST:
+			if (requestDispatcher == null) {
+				String msg = "Nodes must have been created first.";
+				System.out.println(msg);
+				t.sendResponseHeaders(200, msg.getBytes().length);
+				OutputStream os = t.getResponseBody();
+				os.write(msg.getBytes());
+				os.close();
+				break;
+			}
+			// Add the Request for indexing the file
+			driver.execRequests.add(new SearchContentRequest(query.split(
+					"&", 2)[1].split("=", 2)[1],
+					SearchContentRequest.RANDOMSOURCE, t));
+			this.doNotify();
+			break;
+
+		default:
+			// RESPONSE PAGE
+			byte[] b = readBin(t.getRequestURI().getPath().substring(1));
+			t.sendResponseHeaders(200, b.length);
+			OutputStream os = t.getResponseBody();
+			os.write(b);
+			os.close();
+			b = null;
+			break;
+		}
+
+		sc = null;
 
 	}
 
