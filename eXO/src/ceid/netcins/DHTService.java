@@ -374,7 +374,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// now we have a bb
 
 					// read some bytes
-					//XXX: This used to do sort-of scatter-gather, only with just one ByteBuffer object
+					// XXX: This used to do sort-of scatter-gather, only with just one ByteBuffer object
 					if (socket.read(bb[0]) == -1) {
 						close(socket);
 					}
