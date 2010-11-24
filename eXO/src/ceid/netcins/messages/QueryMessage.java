@@ -216,7 +216,7 @@ public class QueryMessage extends ContinuationMessage {
 		hops = buf.readInt();
 
 		// Java deserialization
-		// TODO: optimization)
+		// TODO: optimization
 		queryPDU = (QueryPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 

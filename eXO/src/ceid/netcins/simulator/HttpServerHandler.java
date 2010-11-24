@@ -151,8 +151,8 @@ public class HttpServerHandler implements HttpHandler {
 	}
 
 	/**
-	 * Read the requested url file in memory, into a byte array. TODO : A more
-	 * efficient reading with nio
+	 * Read the requested url file in memory, into a byte array. 
+	 * TODO : A more efficient reading with nio
 	 * 
 	 * @param file
 	 * @return

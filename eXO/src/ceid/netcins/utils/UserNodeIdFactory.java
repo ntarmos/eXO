@@ -17,8 +17,8 @@ import rice.pastry.NodeIdFactory;
  * This class contains methods to generate a unique identifier (nodeID) for a
  * node in the pastry overlay network. The nodeId is also the so called "UID".
  * In other words represents both the network address and the user unique
- * identifier. Thus, it can be used to lookup and search queries. TODO :
- * uniqueness should be guaranteed through a centralized mechanism!
+ * identifier. Thus, it can be used to lookup and search queries. 
+ * TODO : uniqueness should be guaranteed through a centralized mechanism!
  * 
  * @author andy
  */
@@ -57,8 +57,7 @@ public class UserNodeIdFactory implements NodeIdFactory {
 			throw new RuntimeException("No SHA support!", e);
 		}
 
-		// TODO : Caution!! Check : different Charsets may conclude to the same
-		// uid
+		// TODO : Caution!! Check : different Charsets may conclude to the same uid
 		md.update(unique.getBytes());
 		byte[] digest = md.digest();
 

@@ -190,7 +190,7 @@ public class SocialQueryMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization)
+		// TODO: optimization
 		socialQueryPDU = (SocialQueryPDU) JavaSerializer.deserialize(buf,
 				endpoint);
 	}

@@ -412,8 +412,7 @@ public class SimDriver extends CommonAPITest {
 								System.out.println("File : "
 										+ ireq.getFilePath() + ", Source : "
 										+ nodeNum + " indexed successfully");
-								// TODO : Check the replicas if are updated
-								// correctly!
+								// TODO : Check the replicas if are updated correctly!
 								// run replica maintenance
 								// runReplicaMaintence();
 								if (result instanceof Boolean[]) {
@@ -518,11 +517,7 @@ public class SimDriver extends CommonAPITest {
 											execRequests.add(pendingScenarios
 													.remove(0));
 											if (sd != null) {
-												// TODO: Check if the
-												// monitorobject creates
-												// deadlock when multiple
-												// requests
-												// are issued simultaneously
+												// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 												synchronized (sd) {
 													sd.wasSignalled = true;
 													sd.notify();
@@ -560,10 +555,7 @@ public class SimDriver extends CommonAPITest {
 									}
 
 									if (sd != null) {
-										// TODO: Check if the monitorobject
-										// creates deadlock when multiple
-										// requests
-										// are issued simultaneously
+										// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 										synchronized (sd) {
 											sd.wasSignalled = true;
 											sd.notify();
@@ -609,8 +601,7 @@ public class SimDriver extends CommonAPITest {
 								System.out.println("URL : " + ireq.getURL()
 										+ ", Source : " + nodeNum
 										+ " indexed successfully");
-								// TODO : Check the replicas if are updated
-								// correctly!
+								// TODO : Check the replicas if are updated correctly!
 								// run replica maintenance
 								// runReplicaMaintence();
 								if (result instanceof Boolean[]) {
@@ -699,11 +690,7 @@ public class SimDriver extends CommonAPITest {
 											execRequests.add(pendingScenarios
 													.remove(0));
 											if (sd != null) {
-												// TODO: Check if the
-												// monitorobject creates
-												// deadlock when multiple
-												// requests
-												// are issued simultaneously
+												// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 												synchronized (sd) {
 													sd.wasSignalled = true;
 													sd.notify();
@@ -741,10 +728,7 @@ public class SimDriver extends CommonAPITest {
 									}
 
 									if (sd != null) {
-										// TODO: Check if the monitorobject
-										// creates deadlock when multiple
-										// requests
-										// are issued simultaneously
+										// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 										synchronized (sd) {
 											sd.wasSignalled = true;
 											sd.notify();
@@ -877,11 +861,7 @@ public class SimDriver extends CommonAPITest {
 														.add(new StatsRequest(
 																StatsRequest.CLEANGLOBALSTATS));
 												if (sd != null) {
-													// TODO: Check if the
-													// monitorobject creates
-													// deadlock when multiple
-													// requests
-													// are issued simultaneously
+													// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 													synchronized (sd) {
 														sd.wasSignalled = true;
 														sd.notify();
@@ -922,18 +902,7 @@ public class SimDriver extends CommonAPITest {
 																		.add(pendingScenarios
 																				.remove(0));
 																if (sd != null) {
-																	// TODO:
-																	// Check if
-																	// the
-																	// monitorobject
-																	// creates
-																	// deadlock
-																	// when
-																	// multiple
-																	// requests
-																	// are
-																	// issued
-																	// simultaneously
+																	// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 																	synchronized (sd) {
 																		sd.wasSignalled = true;
 																		sd
@@ -977,13 +946,7 @@ public class SimDriver extends CommonAPITest {
 															}
 														}
 														if (sd != null) {
-															// TODO: Check if
-															// the monitorobject
-															// creates deadlock
-															// when multiple
-															// requests
-															// are issued
-															// simultaneously
+															// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 															synchronized (sd) {
 																sd.wasSignalled = true;
 																sd.notify();
@@ -1020,18 +983,7 @@ public class SimDriver extends CommonAPITest {
 																		.add(pendingScenarios
 																				.remove(0));
 																if (sd != null) {
-																	// TODO:
-																	// Check if
-																	// the
-																	// monitorobject
-																	// creates
-																	// deadlock
-																	// when
-																	// multiple
-																	// requests
-																	// are
-																	// issued
-																	// simultaneously
+																	// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 																	synchronized (sd) {
 																		sd.wasSignalled = true;
 																		sd
@@ -1075,13 +1027,7 @@ public class SimDriver extends CommonAPITest {
 															}
 														}
 														if (sd != null) {
-															// TODO: Check if
-															// the monitorobject
-															// creates deadlock
-															// when multiple
-															// requests
-															// are issued
-															// simultaneously
+															// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 															synchronized (sd) {
 																sd.wasSignalled = true;
 																sd.notify();
@@ -1349,11 +1295,7 @@ public class SimDriver extends CommonAPITest {
 														.add(new StatsRequest(
 																StatsRequest.CLEANGLOBALSTATS));
 												if (sd != null) {
-													// TODO: Check if the
-													// monitorobject creates
-													// deadlock when multiple
-													// requests
-													// are issued simultaneously
+													// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 													synchronized (sd) {
 														sd.wasSignalled = true;
 														sd.notify();
@@ -1394,18 +1336,7 @@ public class SimDriver extends CommonAPITest {
 																		.add(pendingScenarios
 																				.remove(0));
 																if (sd != null) {
-																	// TODO:
-																	// Check if
-																	// the
-																	// monitorobject
-																	// creates
-																	// deadlock
-																	// when
-																	// multiple
-																	// requests
-																	// are
-																	// issued
-																	// simultaneously
+																	// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 																	synchronized (sd) {
 																		sd.wasSignalled = true;
 																		sd
@@ -1449,13 +1380,7 @@ public class SimDriver extends CommonAPITest {
 															}
 														}
 														if (sd != null) {
-															// TODO: Check if
-															// the monitorobject
-															// creates deadlock
-															// when multiple
-															// requests
-															// are issued
-															// simultaneously
+															// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 															synchronized (sd) {
 																sd.wasSignalled = true;
 																sd.notify();
@@ -1492,18 +1417,7 @@ public class SimDriver extends CommonAPITest {
 																		.add(pendingScenarios
 																				.remove(0));
 																if (sd != null) {
-																	// TODO:
-																	// Check if
-																	// the
-																	// monitorobject
-																	// creates
-																	// deadlock
-																	// when
-																	// multiple
-																	// requests
-																	// are
-																	// issued
-																	// simultaneously
+																	// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 																	synchronized (sd) {
 																		sd.wasSignalled = true;
 																		sd
@@ -1547,13 +1461,7 @@ public class SimDriver extends CommonAPITest {
 															}
 														}
 														if (sd != null) {
-															// TODO: Check if
-															// the monitorobject
-															// creates deadlock
-															// when multiple
-															// requests
-															// are issued
-															// simultaneously
+															// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 															synchronized (sd) {
 																sd.wasSignalled = true;
 																sd.notify();
@@ -1762,10 +1670,7 @@ public class SimDriver extends CommonAPITest {
 									execRequests
 											.add(pendingScenarios.remove(0));
 									if (sd != null) {
-										// TODO: Check if the monitorobject
-										// creates deadlock when multiple
-										// requests
-										// are issued simultaneously
+										// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 										synchronized (sd) {
 											sd.wasSignalled = true;
 											sd.notify();
@@ -1802,9 +1707,7 @@ public class SimDriver extends CommonAPITest {
 							}
 
 							if (sd != null) {
-								// TODO: Check if the monitorobject creates
-								// deadlock when multiple requests
-								// are issued simultaneously
+								// TODO: Check if the monitorobject creates deadlock when multiple requests are issued simultaneously
 								synchronized (sd) {
 									sd.wasSignalled = true;
 									sd.notify();

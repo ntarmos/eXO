@@ -20,8 +20,9 @@ import ceid.netcins.social.TagCloud;
 
 /**
  * This class represents a User entity. User includes all the necessary
- * information about a user. TODO : Privacy levels could be implemented! TODO :
- * Cache of friends IP addresses mapped with UIDs!
+ * information about a user.
+ * TODO : Privacy levels could be implemented! 
+ * TODO : Cache of friends IP addresses mapped with UIDs!
  * 
  * @author andy
  */

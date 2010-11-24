@@ -189,7 +189,7 @@ public class RetrieveContMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization)
+		// TODO: optimization
 		rcpdu = (RetrieveContPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 

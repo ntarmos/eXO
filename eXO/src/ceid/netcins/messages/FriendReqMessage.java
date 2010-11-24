@@ -190,7 +190,7 @@ public class FriendReqMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization)
+		// TODO: optimization
 		frPDU = (FriendReqPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 

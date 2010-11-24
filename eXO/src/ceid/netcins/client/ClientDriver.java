@@ -313,8 +313,7 @@ public class ClientDriver {
 								System.out.println("File : "
 										+ ireq.getFilePath()
 										+ ", indexed successfully");
-								// TODO : Check the replicas if are updated
-								// correctly!
+								// TODO : Check the replicas if are updated correctly!
 								// run replica maintenance
 								// runReplicaMaintence();
 								if (result instanceof Boolean[]) {

@@ -188,7 +188,7 @@ public class TagContentMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization)
+		// TODO: optimization
 		tcPDU = (TagContentPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 }

@@ -58,8 +58,7 @@ import ceid.netcins.messages.QueryPDU;
 public class SimMain {
 
 	// Convenience for the delimiter of terms(e.g. in query sentence)
-	// TODO : this should be replaced with a more proffesional way to give the
-	// param
+	// TODO : this should be replaced with a more proffesional way to give the param
 	public static final String DELIMITER = "::";
 
 	// Basic Simulator Commands' numcodes
