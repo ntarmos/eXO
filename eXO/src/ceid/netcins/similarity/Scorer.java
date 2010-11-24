@@ -77,6 +77,7 @@ public class Scorer {
 	 * 
 	 * @param remove
 	 */
+	@SuppressWarnings("unchecked")
 	private void serveRequest(SimilarityRequest req) {
 
 		Catalog catalog = req.getCatalog();
