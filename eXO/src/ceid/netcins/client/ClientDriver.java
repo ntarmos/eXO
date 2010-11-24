@@ -39,7 +39,6 @@ import ceid.netcins.StatsRequest;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.QueryPDU;
-//import ceid.netcins.similarity.Scorer;
 import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
