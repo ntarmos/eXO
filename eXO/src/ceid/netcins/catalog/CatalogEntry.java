@@ -5,12 +5,8 @@
 
 package ceid.netcins.catalog;
 
-import ceid.netcins.content.ContentField;
-import ceid.netcins.content.ContentProfile;
-import ceid.netcins.content.StoredField;
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
+
 import rice.p2p.commonapi.Id;
 
 /**
@@ -20,9 +16,14 @@ import rice.p2p.commonapi.Id;
  * @version 1.0
  * 
  */
+@SuppressWarnings("unchecked")
 public class CatalogEntry implements Serializable, Comparable{
 
-    // User identifier (or node Identifier)
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6930057763768157893L;
+	// User identifier (or node Identifier)
     private Id uid;
     
     public CatalogEntry(Id uid){
@@ -39,7 +40,8 @@ public class CatalogEntry implements Serializable, Comparable{
    * @param o DESCRIBE THE PARAMETER
    * @return DESCRIBE THE RETURN VALUE
    */
-   public boolean equals(Object o) {
+   @Override
+public boolean equals(Object o) {
       if (!(o instanceof CatalogEntry)) {
         return false;
       }
@@ -57,7 +59,8 @@ public class CatalogEntry implements Serializable, Comparable{
         return this.uid;
     }
     
-    public String toString(){
+    @Override
+	public String toString(){
         StringBuffer buf = new StringBuffer();
         buf.append("Catalog Entry : [UID] = ");
         buf.append(this.uid.toString());

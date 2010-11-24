@@ -13,6 +13,11 @@ package ceid.netcins.htmlparsing;
 public class ParseException extends Exception {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4190778516383041063L;
+
+/**
    * This constructor is used by the method "generateParseException"
    * in the generated parser.  Calling this constructor generates
    * a new object of this type with the fields "currentToken",
@@ -94,7 +99,8 @@ public class ParseException extends Exception {
    * of the final stack trace, and hence the correct error message
    * gets displayed.
    */
-  public String getMessage() {
+  @Override
+public String getMessage() {
     if (!specialConstructor) {
       return super.getMessage();
     }

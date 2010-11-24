@@ -13,30 +13,31 @@ package ceid.netcins.messages;
  *
  * @author andy
  */
-import rice.p2p.commonapi.Id;
-import rice.p2p.commonapi.*;
-import rice.p2p.past.messaging.*;
-import rice.p2p.commonapi.rawserialization.OutputBuffer;
-import rice.p2p.past.rawserialization.RawPastContent;
-import rice.p2p.commonapi.rawserialization.InputBuffer;
-import rice.p2p.past.rawserialization.PastContentDeserializer;
-
-//import java.util.SortedSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Collections;
-import java.util.TreeSet;
-import java.util.SortedSet;
-
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import rice.p2p.commonapi.Endpoint;
+import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.NodeHandle;
+import rice.p2p.commonapi.rawserialization.InputBuffer;
+import rice.p2p.commonapi.rawserialization.OutputBuffer;
+import rice.p2p.past.messaging.ContinuationMessage;
+import rice.p2p.past.rawserialization.PastContentDeserializer;
+import rice.p2p.past.rawserialization.RawPastContent;
 
 
 public class CatalogMessage extends ContinuationMessage{
   
-  public static final short TYPE = 8;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -465459501485739375L;
+
+public static final short TYPE = 8;
   
   // the id of the FileID
   private Id id;
@@ -154,7 +155,8 @@ public class CatalogMessage extends ContinuationMessage{
    *
    * @param handle The current local handle
    */
-  public void addHop(NodeHandle handle) {
+  @Override
+public void addHop(NodeHandle handle) {
     this.handle = handle;
     this.nodeHops.add(handle);
   }
@@ -164,13 +166,15 @@ public class CatalogMessage extends ContinuationMessage{
    *
    * @return A string representing this message
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[CatalogMessage with nodelist: " + nodeList + " Data " + response + "]";
   }
   
   /***************** Raw Serialization ***************************************/
   
-  public void serialize(OutputBuffer buf) throws IOException {
+  @Override
+public void serialize(OutputBuffer buf) throws IOException {
     buf.writeByte((byte)0); // version        
     if (response != null && response instanceof RawPastContent) {
       super.serialize(buf, false); 

@@ -5,18 +5,19 @@
 
 package ceid.netcins.messages;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+
+import rice.p2p.commonapi.Id;
+import rice.p2p.past.ContentHashPastContent;
+import rice.p2p.past.PastContent;
+import rice.p2p.past.PastException;
 import ceid.netcins.catalog.Catalog;
 import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.URLCatalogEntry;
 import ceid.netcins.catalog.UserCatalogEntry;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import rice.p2p.commonapi.Id;
-import rice.p2p.past.ContentHashPastContent;
-import rice.p2p.past.PastContent;
-import rice.p2p.past.PastException;
 
 /**This class represents the Protocol Data Unit (PDU) of the insert message of
  * our DHTService. This class will include mostly CatalogEntries or data 
@@ -27,7 +28,11 @@ import rice.p2p.past.PastException;
  */
 public class InsertPDU extends ContentHashPastContent implements Serializable{
     
-    Object data; // The packet data
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1904494570321601347L;
+	Object data; // The packet data
     
     
     public InsertPDU(Id tid, Object obj){
@@ -41,7 +46,8 @@ public class InsertPDU extends ContentHashPastContent implements Serializable{
      *
      * @return true if this object is mutable, else false
      */
-    public boolean isMutable() {
+    @Override
+	public boolean isMutable() {
         return true;
     }
     
@@ -67,7 +73,8 @@ public class InsertPDU extends ContentHashPastContent implements Serializable{
    * @exception PastException DESCRIBE THE EXCEPTION
    */
 
-   public PastContent checkInsert(Id id, PastContent existingContent) throws PastException {
+   @Override
+public PastContent checkInsert(Id id, PastContent existingContent) throws PastException {
        
     // only allow correct content hash key
     if (!id.equals(getId())) {

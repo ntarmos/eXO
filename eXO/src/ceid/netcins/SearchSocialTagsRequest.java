@@ -5,8 +5,6 @@
 
 package ceid.netcins;
 
-import rice.p2p.commonapi.Id;
-
 /**
  * A request for social query.
  *

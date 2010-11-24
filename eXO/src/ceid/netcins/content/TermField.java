@@ -17,7 +17,11 @@ import java.io.Serializable;
  */
 public class TermField extends ContentField implements Serializable{
     
-    String fieldData;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5325607261905749524L;
+	String fieldData;
 
     public TermField(String name, String fieldData){
         super(name);

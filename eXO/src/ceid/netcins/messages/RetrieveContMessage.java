@@ -5,8 +5,8 @@
 
 package ceid.netcins.messages;
 
-import ceid.netcins.utils.JavaSerializer;
 import java.io.IOException;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -15,7 +15,7 @@ import rice.p2p.commonapi.rawserialization.OutputBuffer;
 import rice.p2p.past.messaging.ContinuationMessage;
 import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
-import rice.pastry.socket.SocketNodeHandle;
+import ceid.netcins.utils.JavaSerializer;
 
 /**
  * This class represents a message which is sent to the source of a shared
@@ -25,7 +25,12 @@ import rice.pastry.socket.SocketNodeHandle;
  */
 public class RetrieveContMessage extends ContinuationMessage {
     
-  public static final short TYPE = 12;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2929433230379969486L;
+
+public static final short TYPE = 12;
 
   // the id to fetch
   private Id id;
@@ -85,7 +90,8 @@ public class RetrieveContMessage extends ContinuationMessage {
    *
    * @param handle The current local handle
    */
-  public void addHop(NodeHandle handle) {
+  @Override
+public void addHop(NodeHandle handle) {
     this.handle = handle;
   }
 
@@ -112,7 +118,8 @@ public class RetrieveContMessage extends ContinuationMessage {
    *
    * @return A string representing this message
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[RetrieveContMessage for " + id + " data " + response + "]";
   }
   
@@ -121,7 +128,8 @@ public class RetrieveContMessage extends ContinuationMessage {
     return TYPE;
   }
   
-  public void serialize(OutputBuffer buf) throws IOException {
+  @Override
+public void serialize(OutputBuffer buf) throws IOException {
     buf.writeByte((byte)0); // version        
     if (response != null && response instanceof RawPastContent) {
       super.serialize(buf, false); 

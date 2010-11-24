@@ -5,7 +5,6 @@
 
 package ceid.netcins.similarity;
 
-import java.io.Serializable;
 
 /**
  * Abstract interface which defines in general the Similarity measurement.

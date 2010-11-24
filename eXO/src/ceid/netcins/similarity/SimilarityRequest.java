@@ -5,10 +5,10 @@
 
 package ceid.netcins.similarity;
 
+import rice.Continuation;
 import ceid.netcins.catalog.Catalog;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.messages.QueryPDU;
-import rice.Continuation;
 
 /**
  * A request to the Scorer thread

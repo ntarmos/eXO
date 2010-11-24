@@ -5,8 +5,40 @@
 
 package ceid.netcins;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import rice.Continuation;
+import rice.Continuation.MultiContinuation;
+import rice.Continuation.NamedContinuation;
+import rice.Continuation.StandardContinuation;
+import rice.environment.logging.Logger;
+import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.IdFactory;
+import rice.p2p.commonapi.Message;
+import rice.p2p.commonapi.Node;
+import rice.p2p.commonapi.NodeHandle;
+import rice.p2p.commonapi.NodeHandleSet;
+import rice.p2p.past.PastContent;
+import rice.p2p.past.PastException;
+import rice.p2p.past.messaging.CacheMessage;
+import rice.p2p.past.messaging.FetchHandleMessage;
+import rice.p2p.past.messaging.FetchMessage;
+import rice.p2p.past.messaging.InsertMessage;
+import rice.p2p.past.messaging.LookupHandlesMessage;
+import rice.p2p.past.messaging.LookupMessage;
+import rice.p2p.past.messaging.PastMessage;
+import rice.persistence.StorageManager;
 import ceid.netcins.catalog.Catalog;
-import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.ScoreCatalog;
 import ceid.netcins.catalog.SocialCatalog;
@@ -40,40 +72,6 @@ import ceid.netcins.social.URLBookMark;
 import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-import rice.Continuation;
-import rice.Continuation.MultiContinuation;
-import rice.Continuation.NamedContinuation;
-import rice.Continuation.StandardContinuation;
-import rice.environment.logging.Logger;
-import rice.p2p.commonapi.Id;
-import rice.p2p.commonapi.IdFactory;
-import rice.p2p.commonapi.Message;
-import rice.p2p.commonapi.Node;
-import rice.p2p.commonapi.NodeHandle;
-import rice.p2p.commonapi.NodeHandleSet;
-import rice.p2p.past.PastContent;
-import rice.p2p.past.PastException;
-import rice.p2p.past.messaging.CacheMessage;
-import rice.p2p.past.messaging.FetchHandleMessage;
-import rice.p2p.past.messaging.FetchMessage;
-import rice.p2p.past.messaging.InsertMessage;
-import rice.p2p.past.messaging.LookupHandlesMessage;
-import rice.p2p.past.messaging.LookupMessage;
-import rice.p2p.past.messaging.PastMessage;
-import rice.persistence.StorageManager;
 
 /**
  *
@@ -198,7 +196,7 @@ public class CatalogService extends DHTService implements SocService {
      */
     public String[] tokenizeTags(String tags) throws IOException{
         TreeSet<String> ts = cpf.termSet(new StringReader(tags));
-        return (String[]) ts.toArray(new String[ts.size()]);
+        return ts.toArray(new String[ts.size()]);
     }
     
     /**
@@ -436,7 +434,7 @@ public class CatalogService extends DHTService implements SocService {
                                 SocialCatalog scat = user.getTagContentList().get(tag);
                                 if(scat == null)
                                     scat = new SocialCatalog(tag);
-                                Vector ccatEntries = scat.getContentCatalogEntries();
+                                Vector<?> ccatEntries = scat.getContentCatalogEntries();
                                 if(!ccatEntries.contains(cce))
                                     scat.addContentCatalogEntry(cce);
                                 user.addTagContentList(tag, scat);
@@ -1009,7 +1007,7 @@ public class CatalogService extends DHTService implements SocService {
             querytid = factory.buildId(qterms[i]);
             
             final int num = i;
-            final Id tid = querytid;
+            //final Id tid = querytid;
             final QueryPDU qPDU;
             if(queryType == QueryPDU.CONTENT_ENHANCEDQUERY || queryType == QueryPDU.USER_ENHANCEDQUERY 
                     || queryType == QueryPDU.HYBRID_ENHANCEDQUERY ){
@@ -1069,7 +1067,7 @@ public class CatalogService extends DHTService implements SocService {
             public boolean isDone() throws Exception {
                 int numSuccess = 0;
                 for (int i=0; i<haveResult.length; i++)
-                    if ((haveResult[i]) && (result[i] instanceof Vector))  // The check "instanceof" is important, The vector of social catalogs
+                    if ((haveResult[i]) && (result[i] instanceof Vector<?>))  // The check "instanceof" is important, The vector of social catalogs
                         numSuccess++;
 
                 if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
@@ -1087,7 +1085,7 @@ public class CatalogService extends DHTService implements SocService {
             public Object getResult() {
                 Boolean[] b = new Boolean[result.length];
                 for (int i=0; i<b.length; i++)
-                    b[i] = new Boolean((result[i] == null) || result[i] instanceof Vector);    // The check "instanceof" is important
+                    b[i] = new Boolean((result[i] == null) || result[i] instanceof Vector<?>);    // The check "instanceof" is important
                 return b;
             }
         };
@@ -1112,10 +1110,11 @@ public class CatalogService extends DHTService implements SocService {
             lookup(destId, false, sqPDU,
                       new NamedContinuation("SocialQueryMessage (SocialQueryPDU) for " + destId, multi.getSubContinuation(i)){
 
-                    public void receiveResult(Object result) {
+                    @SuppressWarnings("unchecked")
+					public void receiveResult(Object result) {
                         System.out.println("\n\nSocialTagsQuery  : "+tags.toString()+", #"+num+" result (success) for destination ID = "+uid);
-                        if(result instanceof Vector){
-                            Vector<SocialCatalog> v = (Vector)result;
+                        if(result instanceof Vector<?>){
+                            Vector<SocialCatalog> v = (Vector<SocialCatalog>)result;
                             Iterator<SocialCatalog> it = v.iterator();
                             while(it.hasNext())
                                 System.out.println(it.next());
@@ -1144,7 +1143,8 @@ public class CatalogService extends DHTService implements SocService {
      * @param cat
      * @return
      */
-    private String printQueryResults(Catalog cat){
+    @SuppressWarnings("unused")
+	private String printQueryResults(Catalog cat){
         
         StringBuffer buffer=new StringBuffer();
         if(cat.getURLCatalogEntries()!=null && !cat.getURLCatalogEntries().isEmpty()){ // URLContentCatalogEntry PART
@@ -1741,7 +1741,7 @@ public class CatalogService extends DHTService implements SocService {
         
         //Search Social Catalogs corresponding to our query terms.
         Map<String,SocialCatalog> invertedMap = user.getTagContentList();
-        SocialCatalog scat=null;
+        //SocialCatalog scat=null;
         for(String term : qtags){
             if(invertedMap.containsKey(term)){
                 vec.add(invertedMap.get(term));
@@ -1857,7 +1857,7 @@ public class CatalogService extends DHTService implements SocService {
               NodeHandle handle = lmsg.getPreviousNodeHandle();
               if (logger.level <= Logger.FINE) logger.log("Pushing cached copy of " + ((PastContent) o).getId() + " to " + handle);
               
-              CacheMessage cmsg = new CacheMessage(getUID(), (PastContent) o, getLocalNodeHandle(), handle.getId());    
+              //CacheMessage cmsg = new CacheMessage(getUID(), (PastContent) o, getLocalNodeHandle(), handle.getId());    
               //endpoint.route(null, cmsg, handle);
             }
           }

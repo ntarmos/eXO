@@ -5,15 +5,6 @@
 
 package ceid.netcins.client;
 
-import ceid.netcins.FriendsRequest;
-import ceid.netcins.IndexContentRequest;
-import ceid.netcins.IndexUserRequest;
-import ceid.netcins.Request;
-import ceid.netcins.SearchContentRequest;
-import ceid.netcins.SearchUserRequest;
-import ceid.netcins.StatsRequest;
-import ceid.netcins.content.ContentProfileFactory;
-import ceid.netcins.simulator.HttpServerHandler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -23,13 +14,24 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
 import rice.environment.Environment;
+import ceid.netcins.FriendsRequest;
+import ceid.netcins.IndexContentRequest;
+import ceid.netcins.IndexUserRequest;
+import ceid.netcins.Request;
+import ceid.netcins.SearchContentRequest;
+import ceid.netcins.SearchUserRequest;
+import ceid.netcins.StatsRequest;
+import ceid.netcins.content.ContentProfileFactory;
 
 /**
  *
@@ -820,7 +822,7 @@ public static final int FRIENDS = 10;
               
               // number_of_results
               currentNode = children.item(2);
-              int k = Integer.parseInt(((Text)currentNode.getFirstChild()).getData().trim());
+              //int k = Integer.parseInt(((Text)currentNode.getFirstChild()).getData().trim());
               
               // Add the Request for search
               this.driver.execRequests.add(new SearchContentRequest(queryTerms, sourceNum)); // Feed the whole query!
@@ -848,7 +850,7 @@ public static final int FRIENDS = 10;
               
               // number_of_results
               currentNode = children.item(1);
-              int k = Integer.parseInt(((Text)currentNode.getFirstChild()).getData().trim());
+              //int k = Integer.parseInt(((Text)currentNode.getFirstChild()).getData().trim());
               
               // Add the Request for search
               this.driver.execRequests.add(new SearchContentRequest(queryTerms)); // Feed the whole query!
@@ -912,7 +914,7 @@ public static final int FRIENDS = 10;
   
   private void directoryIndexing(File f,int sourceNum){
       File innerf;
-      LinkedList dir = new LinkedList();
+      LinkedList<File> dir = new LinkedList<File>();
       dir.add(f);
       while (!dir.isEmpty()) {
 
@@ -951,6 +953,7 @@ public static final int FRIENDS = 10;
    */
   private BufferedReader in;
   private Environment env;
+  @SuppressWarnings("unused")
   private ContentProfileFactory cpf;
   private String lastarg;
   private ClientDriver driver;

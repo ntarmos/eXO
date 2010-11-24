@@ -5,8 +5,8 @@
 
 package ceid.netcins.messages;
 
-import ceid.netcins.utils.JavaSerializer;
 import java.io.IOException;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -15,6 +15,7 @@ import rice.p2p.commonapi.rawserialization.OutputBuffer;
 import rice.p2p.past.messaging.ContinuationMessage;
 import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
+import ceid.netcins.utils.JavaSerializer;
 
 /**
  * This class will extend the LookupMessage functionality with the QueryPDU
@@ -25,6 +26,11 @@ import rice.p2p.past.rawserialization.RawPastContent;
  */
 public class QueryMessage extends ContinuationMessage {
     
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3323551882785233815L;
+
 public static final short TYPE = 7;
 
   // the id to fetch
@@ -89,7 +95,8 @@ public static final short TYPE = 7;
    *
    * @param handle The current local handle
    */
-  public void addHop(NodeHandle handle) {
+  @Override
+public void addHop(NodeHandle handle) {
     this.handle = handle;
   }
 
@@ -132,7 +139,8 @@ public static final short TYPE = 7;
    *
    * @return A string representing this message
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[QueryMessage for " + id + " data " + response + "]";
   }
   
@@ -141,7 +149,8 @@ public static final short TYPE = 7;
     return TYPE;
   }
   
-  public void serialize(OutputBuffer buf) throws IOException {
+  @Override
+public void serialize(OutputBuffer buf) throws IOException {
     buf.writeByte((byte)0); // version        
     if (response != null && response instanceof RawPastContent) {
       super.serialize(buf, false); 

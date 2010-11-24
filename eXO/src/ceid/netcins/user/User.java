@@ -5,18 +5,18 @@
 
 package ceid.netcins.user;
 
-import ceid.netcins.catalog.ContentCatalogEntry;
-import ceid.netcins.catalog.SocialCatalog;
-import ceid.netcins.content.ContentProfile;
-import ceid.netcins.social.SocialBookMark;
-import ceid.netcins.social.SocialLink;
-import ceid.netcins.social.TagCloud;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import rice.p2p.commonapi.Id;
+import ceid.netcins.catalog.SocialCatalog;
+import ceid.netcins.content.ContentProfile;
+import ceid.netcins.social.SocialBookMark;
+import ceid.netcins.social.SocialLink;
+import ceid.netcins.social.TagCloud;
 
 /**This class represents a User entity.
  * User includes all the necessary information about a user.
@@ -70,7 +70,8 @@ public class User {
     private Map<Id,SocialBookMark> bookMarks;
     
     // TODO: Implement this, Describe design etc.
-    private Map<Id,SocialLink> sociallinks;
+    @SuppressWarnings("unused")
+	private Map<Id,SocialLink> sociallinks;
     
     // This map holds the ''tagclouds'' for evey content object
     // Map<File,Tagcloud> tags
@@ -136,7 +137,7 @@ public class User {
         return userProfile;
     }
     
-    public List getFriends(){
+    public List<Friend> getFriends(){
         return friends;
     }
     
@@ -148,11 +149,11 @@ public class User {
         return username;
     }
     
-    public Vector getPendingFReq(){
+    public Vector<FriendRequest> getPendingFReq(){
         return pendingFReq;
     }
     
-    public Vector getPendingFAppr(){
+    public Vector<Id> getPendingFAppr(){
         return pendingFAppr;
     }
     

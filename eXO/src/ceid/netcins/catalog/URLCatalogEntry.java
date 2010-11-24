@@ -5,19 +5,25 @@
 
 package ceid.netcins.catalog;
 
-import ceid.netcins.content.ContentProfile;
 import java.io.Serializable;
 import java.net.URL;
+
 import rice.p2p.commonapi.Id;
+import ceid.netcins.content.ContentProfile;
 
 /**
  * This class is used as an entry in the catalog
  *
  * @author andy
  */
+@SuppressWarnings("unchecked")
 public class URLCatalogEntry extends ContentCatalogEntry implements Serializable, Comparable{
     
-    // The url for this entry
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1571553467344918199L;
+	// The url for this entry
     private URL url;
     
     /**
@@ -52,7 +58,8 @@ public class URLCatalogEntry extends ContentCatalogEntry implements Serializable
    * @param o DESCRIBE THE PARAMETER
    * @return DESCRIBE THE RETURN VALUE
    */
-   public boolean equals(Object o) {
+   @Override
+public boolean equals(Object o) {
       if (!(o instanceof URLCatalogEntry)) {
         return false;
       }
@@ -67,7 +74,8 @@ public class URLCatalogEntry extends ContentCatalogEntry implements Serializable
     * 
     * @return
     */
-   public String toString(){
+   @Override
+public String toString(){
         StringBuffer buf = new StringBuffer();
         buf.append("Catalog Entry : [UID] = ");
         buf.append(this.getUID().toString());
@@ -95,7 +103,8 @@ public class URLCatalogEntry extends ContentCatalogEntry implements Serializable
      * @param arg0
      * @return
      */
-    public int compareTo(Object arg0) {      
+    @Override
+	public int compareTo(Object arg0) {      
         if (!(arg0 instanceof URLCatalogEntry)) {
             throw new ClassCastException();
       }

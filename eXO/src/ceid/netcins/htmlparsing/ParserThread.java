@@ -17,7 +17,7 @@ package ceid.netcins.htmlparsing;
  * limitations under the License.
  */
 
-import java.io.*;
+import java.io.IOException;
 
 class ParserThread extends Thread {
   HTMLParser parser;
@@ -26,7 +26,8 @@ class ParserThread extends Thread {
     parser = p;
   }
 
-  public void run() {				  // convert pipeOut to pipeIn
+  @Override
+public void run() {				  // convert pipeOut to pipeIn
     try {
       try {					  // parse document to pipeOut
         parser.HTMLDocument();

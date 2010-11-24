@@ -14,6 +14,67 @@ package ceid.netcins;
  * @author andy
  */
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.Hashtable;
+import java.util.WeakHashMap;
+
+import rice.Continuation;
+import rice.Continuation.ListenerContinuation;
+import rice.Continuation.NamedContinuation;
+import rice.Continuation.StandardContinuation;
+import rice.environment.Environment;
+import rice.environment.logging.Logger;
+import rice.environment.params.Parameters;
+import rice.p2p.commonapi.Application;
+import rice.p2p.commonapi.CancellableTask;
+import rice.p2p.commonapi.Endpoint;
+import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.IdFactory;
+import rice.p2p.commonapi.IdRange;
+import rice.p2p.commonapi.IdSet;
+import rice.p2p.commonapi.Message;
+import rice.p2p.commonapi.Node;
+import rice.p2p.commonapi.NodeHandle;
+import rice.p2p.commonapi.NodeHandleSet;
+import rice.p2p.commonapi.RouteMessage;
+import rice.p2p.commonapi.appsocket.AppSocket;
+import rice.p2p.commonapi.appsocket.AppSocketReceiver;
+import rice.p2p.commonapi.rawserialization.InputBuffer;
+import rice.p2p.commonapi.rawserialization.MessageDeserializer;
+import rice.p2p.past.Past;
+import rice.p2p.past.PastContent;
+import rice.p2p.past.PastContentHandle;
+import rice.p2p.past.PastException;
+import rice.p2p.past.PastPolicy;
+import rice.p2p.past.PastPolicy.DefaultPastPolicy;
+import rice.p2p.past.messaging.CacheMessage;
+import rice.p2p.past.messaging.ContinuationMessage;
+import rice.p2p.past.messaging.FetchHandleMessage;
+import rice.p2p.past.messaging.FetchMessage;
+import rice.p2p.past.messaging.InsertMessage;
+import rice.p2p.past.messaging.LookupHandlesMessage;
+import rice.p2p.past.messaging.LookupMessage;
+import rice.p2p.past.messaging.MessageLostMessage;
+import rice.p2p.past.messaging.PastMessage;
+import rice.p2p.past.rawserialization.DefaultSocketStrategy;
+import rice.p2p.past.rawserialization.JavaPastContentDeserializer;
+import rice.p2p.past.rawserialization.JavaPastContentHandleDeserializer;
+import rice.p2p.past.rawserialization.PastContentDeserializer;
+import rice.p2p.past.rawserialization.PastContentHandleDeserializer;
+import rice.p2p.past.rawserialization.SocketStrategy;
+import rice.p2p.replication.Replication;
+import rice.p2p.replication.manager.ReplicationManager;
+import rice.p2p.replication.manager.ReplicationManagerClient;
+import rice.p2p.replication.manager.ReplicationManagerImpl;
+import rice.p2p.util.MathUtils;
+import rice.p2p.util.rawserialization.SimpleInputBuffer;
+import rice.p2p.util.rawserialization.SimpleOutputBuffer;
+import rice.persistence.Cache;
+import rice.persistence.LockManager;
+import rice.persistence.LockManagerImpl;
+import rice.persistence.StorageManager;
 import ceid.netcins.messages.FriendApprMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
@@ -28,33 +89,6 @@ import ceid.netcins.messages.TagContentMessage;
 import ceid.netcins.messages.TagContentPDU;
 import ceid.netcins.similarity.Scorer;
 import ceid.netcins.similarity.SimilarityRequest;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.util.*;
-import java.util.logging.*;
-
-import rice.*;
-import rice.Continuation.*;
-import rice.environment.Environment;
-import rice.environment.logging.Logger;
-import rice.environment.params.Parameters;
-import rice.p2p.commonapi.*;
-import rice.p2p.commonapi.appsocket.*;
-import rice.p2p.commonapi.rawserialization.*;
-import rice.p2p.past.PastPolicy.*;
-import rice.p2p.past.messaging.*;
-import rice.p2p.past.rawserialization.*;
-import rice.p2p.replication.*;
-import rice.p2p.replication.manager.*;
-import rice.p2p.util.MathUtils;
-import rice.p2p.util.rawserialization.*;
-import rice.persistence.*;
-
-import rice.p2p.past.Past;
-import rice.p2p.past.PastPolicy;
-import rice.p2p.past.PastContent;
-import rice.p2p.past.PastContentHandle;
-import rice.p2p.past.PastException;
 
 /**
  * 
@@ -103,10 +137,10 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
   private int id;
 
   // the hashtable of outstanding messages
-  private Hashtable outstanding;
+  private Hashtable<Integer, Continuation> outstanding;
   
   // the hashtable of outstanding timer tasks
-  private Hashtable timers;
+  private Hashtable<Integer, CancellableTask> timers;
 
   // the factory for manipulating ids
   protected IdFactory factory;
@@ -248,8 +282,8 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
     
     
     this.id = Integer.MIN_VALUE;
-    this.outstanding = new Hashtable();
-    this.timers = new Hashtable();
+    this.outstanding = new Hashtable<Integer, Continuation>();
+    this.timers = new Hashtable<Integer, CancellableTask>();
     this.replicationFactor = replicas;
     
     //   log.addHandler(new ConsoleHandler());
@@ -450,7 +484,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
    * 
    * Used for receiving the objects.
    */
-  WeakHashMap pendingSocketTransactions = new WeakHashMap();
+  WeakHashMap<AppSocket, ByteBuffer[]> pendingSocketTransactions = new WeakHashMap<AppSocket, ByteBuffer[]>();
   
   private void sendViaSocket(final NodeHandle handle, final PastMessage m, final Continuation c) {
     if (c != null) {
@@ -1433,7 +1467,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
               NodeHandle handle = lmsg.getPreviousNodeHandle();
               if (logger.level <= Logger.FINE) logger.log("Pushing cached copy of " + ((PastContent) o).getId() + " to " + handle);
               
-              CacheMessage cmsg = new CacheMessage(getUID(), (PastContent) o, getLocalNodeHandle(), handle.getId());    
+              //CacheMessage cmsg = new CacheMessage(getUID(), (PastContent) o, getLocalNodeHandle(), handle.getId());    
               //endpoint.route(null, cmsg, handle);
             }
           }

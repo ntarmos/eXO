@@ -17,7 +17,10 @@ package ceid.netcins.htmlparsing;
  * limitations under the License.
  */
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.LineNumberReader;
 
 class Test {
   public static void main(String[] argv) throws IOException, InterruptedException {

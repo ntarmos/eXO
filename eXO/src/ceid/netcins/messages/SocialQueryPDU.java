@@ -5,8 +5,9 @@
 
 package ceid.netcins.messages;
 
-import ceid.netcins.content.ContentProfile;
 import java.io.Serializable;
+
+import ceid.netcins.content.ContentProfile;
 
 /**
  * Holds the tags (query terms) to search in each social node
@@ -15,7 +16,11 @@ import java.io.Serializable;
  */
 public class SocialQueryPDU implements Serializable{
     
-    // All the ENHANCED QUERIES use the similarity of source user's profile
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5093183142130751857L;
+	// All the ENHANCED QUERIES use the similarity of source user's profile
     private int type = CONTENTQUERY; //default
     public static final int CONTENTQUERY = 0;
     public static final int CONTENT_ENHANCEDQUERY =1;

@@ -6,6 +6,7 @@
 package ceid.netcins.messages;
 
 import java.io.IOException;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -24,7 +25,12 @@ import rice.p2p.past.rawserialization.RawPastContent;
  */
 public class FriendApprMessage extends ContinuationMessage{
 
-  public static final short TYPE = 9;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7419229279778572351L;
+
+public static final short TYPE = 9;
 
   // the id to fetch
   private Id id;
@@ -80,7 +86,8 @@ public class FriendApprMessage extends ContinuationMessage{
    *
    * @param handle The current local handle
    */
-  public void addHop(NodeHandle handle) {
+  @Override
+public void addHop(NodeHandle handle) {
     this.handle = handle;
   }
 
@@ -98,7 +105,8 @@ public class FriendApprMessage extends ContinuationMessage{
    *
    * @return A string representing this message
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[FriendApprMessage for " + id + " data " + response + "]";
   }
   
@@ -107,7 +115,8 @@ public class FriendApprMessage extends ContinuationMessage{
     return TYPE;
   }
   
-  public void serialize(OutputBuffer buf) throws IOException {
+  @Override
+public void serialize(OutputBuffer buf) throws IOException {
     buf.writeByte((byte)0); // version        
     if (response != null && response instanceof RawPastContent) {
       super.serialize(buf, false); 

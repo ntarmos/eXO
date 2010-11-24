@@ -5,7 +5,6 @@
 
 package ceid.netcins;
 
-import ceid.netcins.content.ContentProfile;
 import com.sun.net.httpserver.HttpExchange;
 
 /**

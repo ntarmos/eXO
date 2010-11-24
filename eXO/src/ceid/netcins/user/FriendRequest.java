@@ -5,8 +5,8 @@
 
 package ceid.netcins.user;
 
-import ceid.netcins.messages.FriendReqPDU;
 import rice.p2p.commonapi.Id;
+import ceid.netcins.messages.FriendReqPDU;
 
 /**
  *
@@ -42,7 +42,8 @@ public class FriendRequest {
    * @param o The comparing friend request
    * @return True if are the same.
    */
-   public boolean equals(Object o) {
+   @Override
+public boolean equals(Object o) {
       if (!(o instanceof FriendRequest)) {
         return false;
       }

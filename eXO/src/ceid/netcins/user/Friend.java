@@ -6,6 +6,7 @@
 package ceid.netcins.user;
 
 import java.net.InetAddress;
+
 import rice.p2p.commonapi.Id;
 
 /**
@@ -66,7 +67,8 @@ public class Friend {
    * @param o The other friend to compare
    * @return True if are the same friend.
    */
-   public boolean equals(Object o) {
+   @Override
+public boolean equals(Object o) {
       if (!(o instanceof Friend)) {
         return false;
       }
@@ -75,7 +77,8 @@ public class Friend {
       return f.getUID().equals(uid); 
    }
    
-   public String toString(){
+   @Override
+public String toString(){
        StringBuffer buffer = new StringBuffer();
        buffer.append("\n - Friend UID : "+this.uid);
        if(screenName!=null)

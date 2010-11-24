@@ -9,12 +9,14 @@
 
 package ceid.netcins.content;
 
-import rice.p2p.past.ContentHashPastContent;    // Class to extend for the content creation
-import rice.p2p.commonapi.Id;                   // Abstract Id
-import rice.p2p.past.PastContent;               // Interface for Content
-import rice.p2p.past.PastException;             // Exception to use in unpredicted situations
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import java.util.*;
+import rice.p2p.commonapi.Id;
+import rice.p2p.past.ContentHashPastContent;
+import rice.p2p.past.PastContent;
+import rice.p2p.past.PastException;
 
 /**
  *
@@ -22,7 +24,12 @@ import java.util.*;
  */
 public class DummyContent extends ContentHashPastContent {
     
-    //NodeId content;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8449056284245401117L;
+
+	//NodeId content;
     SortedSet<Id> nodeList;
     
     //Version of the content
@@ -43,7 +50,8 @@ public class DummyContent extends ContentHashPastContent {
    *
    * @return true if this object is mutable, else false
    */
-  public boolean isMutable() {
+  @Override
+public boolean isMutable() {
     return true;
   }
 
@@ -60,7 +68,8 @@ public class DummyContent extends ContentHashPastContent {
    *      stored on the local node.
    * @exception PastException DESCRIBE THE EXCEPTION
    */
-  public PastContent checkInsert(Id id, PastContent existingContent) throws PastException {
+  @Override
+public PastContent checkInsert(Id id, PastContent existingContent) throws PastException {
     // can overwrite content hash objects
       /* TODO : edw 8a ginetai h enhmerwsh
        * tou content tou NodeLIST dhladh
@@ -90,7 +99,8 @@ public class DummyContent extends ContentHashPastContent {
    * @param o DESCRIBE THE PARAMETER
    * @return DESCRIBE THE RETURN VALUE
    */
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
       if (!(o instanceof DummyContent)) {
         return false;
       }
@@ -102,7 +112,8 @@ public class DummyContent extends ContentHashPastContent {
   /**
    * A descriptive toString()
    */
-    public String toString(){
+    @Override
+	public String toString(){
      return "NodeList Content : [ "+nodeList+" ]";   
     }
     

@@ -5,17 +5,18 @@
 
 package ceid.netcins.simulator;
 
-import ceid.netcins.IndexContentRequest;
+import java.util.Stack;
+import java.util.Vector;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.helpers.DefaultHandler;
+
 import ceid.netcins.IndexPseydoContentRequest;
 import ceid.netcins.IndexUserRequest;
 import ceid.netcins.RandomQueriesRequest;
 import ceid.netcins.Request;
 import ceid.netcins.ScenarioRequest;
-import org.xml.sax.helpers.DefaultHandler;
-import java.util.Stack;
-import java.util.Vector;
-import org.xml.sax.Locator;
-import org.xml.sax.Attributes;
 
 /**
  *
@@ -25,32 +26,36 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 
     private Vector<Request> scenarios;
 
-    private Stack stack;
+    private Stack<Object> stack;
     private boolean isStackReadyForText;
 
     // Points to the last place an event occurred
-    private Locator locator;
+    @SuppressWarnings("unused")
+	private Locator locator;
 
     String lastFieldName;
 
     // -----
 
     public SAXTestUnmarshaller() {
-	stack = new Stack();
-    scenarios = new Vector();
+	stack = new Stack<Object>();
+    scenarios = new Vector<Request>();
 	isStackReadyForText = false;
     lastFieldName = null;
     }
 
-    public Vector getScenarios() { return scenarios; }
+    @SuppressWarnings("unchecked")
+	public Vector getScenarios() { return scenarios; }
 
     // ----- callbacks: -----
 
-    public void setDocumentLocator( Locator rhs ) { locator = rhs; }
+    @Override
+	public void setDocumentLocator( Locator rhs ) { locator = rhs; }
 
     // -----
 
-    public void startElement( String uri, String localName, String qName,
+    @Override
+	public void startElement( String uri, String localName, String qName,
 			      Attributes attribs ) {
 
 	isStackReadyForText = false;
@@ -90,7 +95,8 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 
     // -----
 
-    public void endElement( String uri, String localName, String qName ) {
+    @Override
+	public void endElement( String uri, String localName, String qName ) {
 
 	// recognized text is always content of an element
 	// when the element closes, no more text should be expected
@@ -170,7 +176,8 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 
     // -----
 
-    public void characters( char[] data, int start, int length ) {
+    @Override
+	public void characters( char[] data, int start, int length ) {
 
 	// if stack is not ready, data is not content of recognized element
 	if( isStackReadyForText == true ) {
@@ -182,7 +189,8 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 
     // -----
 
-    private String resolveAttrib( String uri, String localName,
+    @SuppressWarnings("unused")
+	private String resolveAttrib( String uri, String localName,
 			          Attributes attribs, String defaultValue ) {
 
 	String tmp = attribs.getValue( uri, localName );

@@ -5,8 +5,9 @@
 
 package ceid.netcins.messages;
 
-import ceid.netcins.catalog.Catalog;
 import java.io.Serializable;
+
+import ceid.netcins.catalog.Catalog;
 
 /**
  * This class is used to provide a container for the data that is returned by the
@@ -16,7 +17,12 @@ import java.io.Serializable;
  */
 public class ResponsePDU implements Serializable{
     
-    // This var holds the hops or messages for the whole roundtrip of the request-response
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7913630514597439259L;
+
+	// This var holds the hops or messages for the whole roundtrip of the request-response
     private int messagesCounter;
     
     // This holds the entries returned

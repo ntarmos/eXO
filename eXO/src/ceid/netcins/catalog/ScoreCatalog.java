@@ -7,6 +7,7 @@ package ceid.netcins.catalog;
 
 import java.io.Serializable;
 import java.util.Vector;
+
 import rice.p2p.commonapi.Id;
 
 /**
@@ -17,7 +18,11 @@ import rice.p2p.commonapi.Id;
  */
 public class ScoreCatalog extends Catalog implements Serializable{
     
-    private Vector<Float> scoreValues;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7733473333205719161L;
+	private Vector<Float> scoreValues;
 
     /**
      * rows and scoreValues must be sorted appropriately in Scorer!
@@ -26,7 +31,7 @@ public class ScoreCatalog extends Catalog implements Serializable{
      * @param rows
      * @param scoreValues
      */
-    public ScoreCatalog(Id tid, Vector catalogEntries, Vector<Float> scoreValues){
+    public ScoreCatalog(Id tid, Vector<?> catalogEntries, Vector<Float> scoreValues){
         super(tid,catalogEntries);
         this.scoreValues = scoreValues;
     }
@@ -35,7 +40,8 @@ public class ScoreCatalog extends Catalog implements Serializable{
         return scoreValues;
     }
     
-    public double computeBytes(){
+    @Override
+	public double computeBytes(){
         double counter = 0;
         counter += super.computeBytes();
         counter += Float.SIZE * scoreValues.size();

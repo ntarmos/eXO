@@ -5,8 +5,9 @@
 
 package ceid.netcins.social;
 
-import ceid.netcins.content.ContentProfile;
 import java.net.URL;
+
+import ceid.netcins.content.ContentProfile;
 
 /**
  * URL bookmarks are stored "addresses" of interesting to the user content.

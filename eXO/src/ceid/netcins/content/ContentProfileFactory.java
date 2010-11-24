@@ -14,21 +14,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import ceid.netcins.htmlparsing.HTMLParser;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.DateTools;
+
+import ceid.netcins.htmlparsing.HTMLParser;
 
 /**
  *
@@ -328,7 +328,7 @@ public class ContentProfileFactory {
   public Map<File,ContentProfile> buildFromDir(File root) throws FileNotFoundException, IOException{
       
       Map<File,ContentProfile> map = new HashMap<File,ContentProfile>();
-      LinkedList dir = new LinkedList();
+      LinkedList<File> dir = new LinkedList<File>();
       dir.add(root);
       while (!dir.isEmpty()) {
           

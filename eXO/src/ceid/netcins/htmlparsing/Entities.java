@@ -17,10 +17,10 @@ package ceid.netcins.htmlparsing;
  * limitations under the License.
  */
 
-import java.util.*;
+import java.util.Hashtable;
 
 public class Entities {
-  static final Hashtable decoder = new Hashtable(300);
+  static final Hashtable<String, String> decoder = new Hashtable<String, String>(300);
   static final String[]  encoder = new String[0x100];
 
   static final String decode(String entity) {

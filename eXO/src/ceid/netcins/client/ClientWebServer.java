@@ -5,13 +5,6 @@
 
 package ceid.netcins.client;
 
-import ceid.netcins.IndexContentRequest;
-import ceid.netcins.SearchContentRequest;
-import ceid.netcins.simulator.SimDriver;
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,11 +12,18 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import ceid.netcins.IndexContentRequest;
+import ceid.netcins.SearchContentRequest;
+
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * This class represents an HttpHandler for the user side web server. This server
@@ -77,7 +77,8 @@ public class ClientWebServer  implements HttpHandler{
             }
 
             // Requested URI Path
-            URI base = new URI("http://localhost:8000");
+            @SuppressWarnings("unused")
+			URI base = new URI("http://localhost:8000");
             System.out.println(" Requested URI : " +t.getRequestURI()+", Requested Path : "+t.getRequestURI().getPath());
             
             // Response Preparation

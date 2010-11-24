@@ -5,8 +5,9 @@
 
 package ceid.netcins.simulator;
 
-import ceid.netcins.Request;
 import java.util.Vector;
+
+import ceid.netcins.Request;
 
 /**
  * This class holds counters to mark the end and start of a set of request.

@@ -1,46 +1,19 @@
 
 package ceid.netcins.client;
 
-import ceid.netcins.CatalogService;
-import ceid.netcins.FriendsRequest;
-import ceid.netcins.IndexContentRequest;
-import ceid.netcins.IndexUserRequest;
-import ceid.netcins.Request;
-import ceid.netcins.SearchContentRequest;
-import ceid.netcins.SearchUserRequest;
-import ceid.netcins.StatsRequest;
-import ceid.netcins.content.ContentProfile;
-import ceid.netcins.messages.FriendReqPDU;
-import ceid.netcins.messages.QueryPDU;
-import ceid.netcins.similarity.Scorer;
-import ceid.netcins.user.Friend;
-import ceid.netcins.user.FriendRequest;
 import java.io.File;
-import java.io.RandomAccessFile;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
-import java.util.HashMap;
-import java.util.TreeSet;
-import java.util.prefs.Preferences;
-import java.awt.EventQueue;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JTextArea;
-import javax.swing.JProgressBar;
-import javax.swing.ImageIcon;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.Timer;
-import javax.swing.JOptionPane;
-import java.nio.channels.FileChannel;
-import java.nio.MappedByteBuffer;
+import java.util.logging.Level;
 
 import rice.Continuation;
 import rice.environment.Environment;
-import rice.environment.processing.WorkRequest;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
 import rice.pastry.NodeIdFactory;
@@ -55,12 +28,21 @@ import rice.persistence.PersistentStorage;
 import rice.persistence.Storage;
 import rice.persistence.StorageManager;
 import rice.persistence.StorageManagerImpl;
-
+import ceid.netcins.CatalogService;
+import ceid.netcins.FriendsRequest;
+import ceid.netcins.IndexContentRequest;
+import ceid.netcins.IndexUserRequest;
+import ceid.netcins.Request;
+import ceid.netcins.SearchContentRequest;
+import ceid.netcins.SearchUserRequest;
+import ceid.netcins.StatsRequest;
+import ceid.netcins.content.ContentProfile;
+import ceid.netcins.messages.FriendReqPDU;
+import ceid.netcins.messages.QueryPDU;
+//import ceid.netcins.similarity.Scorer;
+import ceid.netcins.user.Friend;
+import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * ClientDriver is a driver class between the real frontend and the decentrelized
@@ -76,8 +58,8 @@ public class ClientDriver {
   
   // Our Scorer thread functionality (SINGLE THREAD)
   // TODO : Think and implement a multiple scorer threading scenario
-  private Scorer scorer;
-  private Thread scorerThread;
+  //private Scorer scorer;
+  //private Thread scorerThread;
   
   // Signals the end of init()
   boolean initializationStateOK = false;
@@ -275,7 +257,8 @@ public class ClientDriver {
    /**
    * Private method which initiates the replica maintenance on all of the nodes
    */
-  private void runReplicaMaintence() {
+  @SuppressWarnings("unused")
+private void runReplicaMaintence() {
       past.getReplication().replicate();
   }
   
@@ -308,7 +291,7 @@ public class ClientDriver {
  * @param req
  * @throws java.lang.Exception
  */
-  protected void serveRequest(Request req) throws Exception{
+protected void serveRequest(Request req) throws Exception{
       
       if(req instanceof IndexContentRequest){
           

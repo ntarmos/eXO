@@ -5,8 +5,17 @@
 
 package ceid.netcins.similarity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.TreeSet;
+import java.util.Vector;
+
 import ceid.netcins.catalog.Catalog;
-import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.ScoreCatalog;
 import ceid.netcins.catalog.UserCatalogEntry;
@@ -16,16 +25,6 @@ import ceid.netcins.content.TermField;
 import ceid.netcins.content.TokenizedField;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.TreeSet;
-import java.util.Vector;
 
 /**
  * This object defines the methods of the "Scorer" thread 
@@ -416,7 +415,7 @@ public class Scorer {
           // TODO: Fix this part!!!!
           Vector<UserCatalogEntry> v1 = new Vector<UserCatalogEntry>();
           v1.addAll(sortedScoreBoard.keySet());
-          Vector<Float> v2 = new Vector();
+          Vector<Float> v2 = new Vector<Float>();
           v2.addAll(sortedScoreBoard.values());
           
           // Select the k results that will be returned
@@ -498,9 +497,10 @@ public class Scorer {
    * @param passedMap
    * @return
    */
-  public LinkedHashMap<ContentCatalogEntry,Float> sortHashMapByValuesD(HashMap<ContentCatalogEntry, Float> passedMap) {
-    List mapKeys = new ArrayList(passedMap.keySet());
-    List mapValues = new ArrayList(passedMap.values());
+  @SuppressWarnings("unchecked")
+public LinkedHashMap<ContentCatalogEntry,Float> sortHashMapByValuesD(HashMap<ContentCatalogEntry, Float> passedMap) {
+    List<ContentCatalogEntry> mapKeys = new ArrayList<ContentCatalogEntry>(passedMap.keySet());
+    List<Float> mapValues = new ArrayList<Float>(passedMap.values());
     Collections.sort(mapValues);
     Collections.sort(mapKeys);
     
@@ -508,13 +508,13 @@ public class Scorer {
     Collections.reverse(mapKeys);
     Collections.reverse(mapValues);
         
-    LinkedHashMap sortedMap = 
-        new LinkedHashMap();
+    LinkedHashMap<ContentCatalogEntry, Float> sortedMap = 
+        new LinkedHashMap<ContentCatalogEntry, Float>();
     
-    Iterator valueIt = mapValues.iterator();
+    Iterator<Float> valueIt = mapValues.iterator();
     while (valueIt.hasNext()) {
         Object val = valueIt.next();
-        Iterator keyIt = mapKeys.iterator();
+        Iterator<ContentCatalogEntry> keyIt = mapKeys.iterator();
         
         while (keyIt.hasNext()) {
             Object key = keyIt.next();
@@ -524,7 +524,7 @@ public class Scorer {
             if (comp1.equals(comp2)){
                 passedMap.remove(key);
                 mapKeys.remove(key);
-                sortedMap.put(key, val);
+                sortedMap.put((ContentCatalogEntry)key, (Float)val);
                 break;
             }
 
@@ -541,9 +541,10 @@ public class Scorer {
    * @param passedMap
    * @return
    */
-  public LinkedHashMap<UserCatalogEntry,Float> sortHashMapByValuesU(HashMap<UserCatalogEntry, Float> passedMap) {
-    List mapKeys = new ArrayList(passedMap.keySet());
-    List mapValues = new ArrayList(passedMap.values());
+  @SuppressWarnings("unchecked")
+public LinkedHashMap<UserCatalogEntry,Float> sortHashMapByValuesU(HashMap<UserCatalogEntry, Float> passedMap) {
+    List<UserCatalogEntry> mapKeys = new ArrayList<UserCatalogEntry>(passedMap.keySet());
+    List<Float> mapValues = new ArrayList<Float>(passedMap.values());
     Collections.sort(mapValues);
     Collections.sort(mapKeys);
     
@@ -551,13 +552,13 @@ public class Scorer {
     Collections.reverse(mapKeys);
     Collections.reverse(mapValues);
         
-    LinkedHashMap sortedMap = 
-        new LinkedHashMap();
+    LinkedHashMap<UserCatalogEntry, Float> sortedMap = 
+        new LinkedHashMap<UserCatalogEntry, Float>();
     
-    Iterator valueIt = mapValues.iterator();
+    Iterator<Float> valueIt = mapValues.iterator();
     while (valueIt.hasNext()) {
         Object val = valueIt.next();
-        Iterator keyIt = mapKeys.iterator();
+        Iterator<UserCatalogEntry> keyIt = mapKeys.iterator();
         
         while (keyIt.hasNext()) {
             Object key = keyIt.next();
@@ -567,7 +568,7 @@ public class Scorer {
             if (comp1.equals(comp2)){
                 passedMap.remove(key);
                 mapKeys.remove(key);
-                sortedMap.put(key, val);
+                sortedMap.put((UserCatalogEntry)key, (Float)val);
                 break;
             }
 

@@ -17,7 +17,12 @@ import java.util.TreeSet;
  */
 public class TokenizedField extends ContentField implements Serializable {
     
-    // Terms are provided in sorted order;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3889036995034671146L;
+
+	// Terms are provided in sorted order;
     String[] terms;
     
     // Tf are one-to-one associated with term positions in terms array

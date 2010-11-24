@@ -5,13 +5,14 @@
 
 package ceid.netcins.catalog;
 
-import ceid.netcins.content.ContentField;
-import ceid.netcins.content.ContentProfile;
-import ceid.netcins.content.StoredField;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+
 import rice.p2p.commonapi.Id;
+import ceid.netcins.content.ContentField;
+import ceid.netcins.content.ContentProfile;
+import ceid.netcins.content.StoredField;
 
 /**
  * This class extends the user catalog entries to contain content information
@@ -20,9 +21,14 @@ import rice.p2p.commonapi.Id;
  * 
  * @author andy
  */
+@SuppressWarnings("unchecked")
 public class ContentCatalogEntry extends UserCatalogEntry implements Serializable, Comparable{
     
-    // The profile for a specific shared content object 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2355147651372821335L;
+	// The profile for a specific shared content object 
     private ContentProfile contentProfile;
     
     public ContentCatalogEntry(Id uid, ContentProfile cp, ContentProfile usrp){
@@ -39,7 +45,8 @@ public class ContentCatalogEntry extends UserCatalogEntry implements Serializabl
    * @param o DESCRIBE THE PARAMETER
    * @return DESCRIBE THE RETURN VALUE
    */
-   public boolean equals(Object o) {
+   @Override
+public boolean equals(Object o) {
       if (!(o instanceof ContentCatalogEntry)) {
         return false;
       }
@@ -61,7 +68,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements Serializabl
    public String getCheckSum() {
        
       List<ContentField> list = contentProfile.getFields();
-      Iterator<ContentField> it = contentProfile.getFields().iterator();
+      Iterator<ContentField> it = list.iterator();
       ContentField cf;
       while(it.hasNext()){
           cf =it.next();
@@ -81,7 +88,8 @@ public class ContentCatalogEntry extends UserCatalogEntry implements Serializabl
             return this.contentProfile;
     }
     
-    public String toString(){
+    @Override
+	public String toString(){
         StringBuffer buf = new StringBuffer();
         buf.append("Catalog Entry : [UID] = ");
         buf.append(this.getUID().toString());
@@ -99,7 +107,8 @@ public class ContentCatalogEntry extends UserCatalogEntry implements Serializabl
     }
     
     // TODO : implement this
-    public int compareTo(Object arg0) {      
+    @Override
+	public int compareTo(Object arg0) {      
         if (!(arg0 instanceof ContentCatalogEntry)) {
             throw new ClassCastException();
       }
@@ -123,7 +132,8 @@ public class ContentCatalogEntry extends UserCatalogEntry implements Serializabl
      * 
      * @return A sum of the ContentCatalogEntry data in bytes
      */
-    public double computeTotalBytes(){
+    @Override
+	public double computeTotalBytes(){
         double counter = 0;
         counter += this.getUID().getByteArrayLength();
         if(this.getUserProfile()!=null)

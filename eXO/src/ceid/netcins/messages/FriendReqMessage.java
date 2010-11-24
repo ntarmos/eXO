@@ -5,8 +5,8 @@
 
 package ceid.netcins.messages;
 
-import ceid.netcins.utils.JavaSerializer;
 import java.io.IOException;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -15,6 +15,7 @@ import rice.p2p.commonapi.rawserialization.OutputBuffer;
 import rice.p2p.past.messaging.ContinuationMessage;
 import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
+import ceid.netcins.utils.JavaSerializer;
 
 /**
  * This class will carry the friend request message.
@@ -25,7 +26,12 @@ import rice.p2p.past.rawserialization.RawPastContent;
  */
 public class FriendReqMessage extends ContinuationMessage{
 
-  public static final short TYPE = 8;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2691881047725823901L;
+
+public static final short TYPE = 8;
 
   // the id to fetch
   private Id id;
@@ -94,7 +100,8 @@ public class FriendReqMessage extends ContinuationMessage{
    *
    * @param handle The current local handle
    */
-  public void addHop(NodeHandle handle) {
+  @Override
+public void addHop(NodeHandle handle) {
     this.handle = handle;
   }
 
@@ -112,7 +119,8 @@ public class FriendReqMessage extends ContinuationMessage{
    *
    * @return A string representing this message
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[FriendReqMessage for " + id + " data " + response + "]";
   }
   
@@ -121,7 +129,8 @@ public class FriendReqMessage extends ContinuationMessage{
     return TYPE;
   }
   
-  public void serialize(OutputBuffer buf) throws IOException {
+  @Override
+public void serialize(OutputBuffer buf) throws IOException {
     buf.writeByte((byte)0); // version        
     if (response != null && response instanceof RawPastContent) {
       super.serialize(buf, false); 

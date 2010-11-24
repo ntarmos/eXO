@@ -5,7 +5,6 @@
 
 package ceid.netcins.social;
 
-import ceid.netcins.content.TokenizedField;
 import java.util.Iterator;
 import java.util.TreeMap;
 
@@ -66,7 +65,8 @@ public class TagCloud {
          * 
          * @return
          */
-        public String toString(){
+        @Override
+		public String toString(){
             StringBuffer buf = new StringBuffer();
             buf.append("TagCloud : [");
             Iterator<String> it = tfm.keySet().iterator();

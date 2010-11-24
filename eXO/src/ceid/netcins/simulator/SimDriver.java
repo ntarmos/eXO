@@ -14,12 +14,45 @@ package ceid.netcins.simulator;
  * @author andy
  */
 
-import ceid.netcins.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
+import rice.Continuation;
+import rice.environment.Environment;
+import rice.environment.logging.Logger;
+import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.Node;
+import rice.p2p.commonapi.testing.CommonAPITest;
+import rice.pastry.PastryNode;
+import rice.persistence.LRUCache;
+import rice.persistence.MemoryStorage;
+import rice.persistence.PersistentStorage;
+import rice.persistence.StorageManager;
+import rice.persistence.StorageManagerImpl;
+import ceid.netcins.CatalogService;
+import ceid.netcins.FriendsRequest;
+import ceid.netcins.IndexContentRequest;
+import ceid.netcins.IndexPseydoContentRequest;
+import ceid.netcins.IndexURLRequest;
+import ceid.netcins.IndexUserRequest;
+import ceid.netcins.RandomQueriesRequest;
+import ceid.netcins.Request;
+import ceid.netcins.RetrieveContRequest;
+import ceid.netcins.ScenarioRequest;
+import ceid.netcins.SearchContentRequest;
+import ceid.netcins.SearchSocialTagsRequest;
+import ceid.netcins.SearchURLRequest;
+import ceid.netcins.SearchUserRequest;
+import ceid.netcins.StatsRequest;
+import ceid.netcins.TagContentRequest;
 import ceid.netcins.catalog.ScoreCatalog;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.content.DummyContent;
-
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
@@ -31,27 +64,6 @@ import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
 import ceid.netcins.utils.UserNodeIdFactory;
-import java.util.logging.Level;
-import rice.*;
-import rice.environment.logging.*;
-import rice.environment.Environment;
-import rice.p2p.commonapi.*;
-import rice.p2p.commonapi.testing.CommonAPITest;
-import rice.p2p.past.*;
-import rice.p2p.past.messaging.*;
-import rice.p2p.replication.*;
-import rice.pastry.PastryNode;
-import rice.pastry.commonapi.PastryIdFactory; // Used to create the FileIds(objectIds)
-import rice.pastry.testing.*;
-import rice.persistence.*;
-import rice.Continuation;
-
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import java.io.Serializable;
-import rice.pastry.direct.DirectPastryNodeFactory;
-import rice.pastry.dist.DistPastryNodeFactory;
 
 
 public class SimDriver extends CommonAPITest {
@@ -215,7 +227,7 @@ public class SimDriver extends CommonAPITest {
         new PersistentStorage(FACTORY, "root-" + num, ".", -1, environment),
         new LRUCache(new MemoryStorage(FACTORY), 100000, environment));
       pasts[num] = new CatalogService(node, storages[num], REPLICATION_FACTOR, INSTANCE, scorer);
-      File f=new File("FreePastry-Storage-Root/root-" + num);
+ //     File f=new File("FreePastry-Storage-Root/root-" + num);
       
       // User entities created with the RandomGenerated NodeIds
       pasts[num].registerUser(new User(pasts[num].getLocalNodeHandle().getId()));

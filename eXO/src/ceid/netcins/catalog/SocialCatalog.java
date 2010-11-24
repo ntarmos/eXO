@@ -34,17 +34,18 @@ public class SocialCatalog {
         urlCatalogEntries = new Vector<URLCatalogEntry>();
     }
     
-    public SocialCatalog(String tag,Vector catalogEntries){
+    @SuppressWarnings("unchecked")
+	public SocialCatalog(String tag,Vector catalogEntries){
         this.tag = tag;
         if(catalogEntries.firstElement()==null){
             this.contentCatalogEntries = null;
             this.userCatalogEntries = null;
         }else if(catalogEntries.firstElement() instanceof URLCatalogEntry){
-            this.urlCatalogEntries = (Vector<URLCatalogEntry>)catalogEntries;
+            this.urlCatalogEntries = (Vector<URLCatalogEntry>) catalogEntries;
             this.contentCatalogEntries = null;
             this.userCatalogEntries = null;
         }else if(catalogEntries.firstElement() instanceof ContentCatalogEntry){
-            this.contentCatalogEntries = (Vector<ContentCatalogEntry>)catalogEntries;
+            this.contentCatalogEntries = (Vector<ContentCatalogEntry>) catalogEntries;
             this.userCatalogEntries = null;
             this.urlCatalogEntries = null;
         }else if(catalogEntries.firstElement() instanceof UserCatalogEntry){

@@ -6,6 +6,7 @@
 package ceid.netcins.xml;
 
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,15 +19,15 @@ import javax.xml.bind.annotation.XmlType;
 public class Scenario {
     
     @XmlElement
-    public List index;
+    public List<?> index;
     
     @XmlElement
-    public List search;
+    public List<?> search;
     
     @XmlElement
-    public List retrieve;
+    public List<?> retrieve;
 
     @XmlElement
-    public List tag;
+    public List<?> tag;
     
 }

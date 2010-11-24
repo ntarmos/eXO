@@ -21,7 +21,12 @@ import java.util.Random;
  */
 public class ContentProfile implements Serializable{
     
-    List fields = new ArrayList();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3971044346421201440L;
+	
+	List<ContentField> fields = new ArrayList<ContentField>();
     
      
     /** Adds a ContentField object (any of three types)
@@ -37,7 +42,7 @@ public class ContentProfile implements Serializable{
      * 
      * @return a list with all ContentFields
      */
-    public List getFields(){
+    public List<ContentField> getFields(){
         return fields;
     }
     
@@ -45,10 +50,11 @@ public class ContentProfile implements Serializable{
      * 
      * @return A full representation of the ContentProfile data
      */
-    public String toString(){
+    @Override
+	public String toString(){
         
         StringBuffer buffer = new StringBuffer();
-        Iterator it = this.fields.iterator();
+        Iterator<ContentField> it = this.fields.iterator();
         
         while(it.hasNext()){
         
@@ -96,7 +102,7 @@ public class ContentProfile implements Serializable{
     public String toStringWithoutTF(){
         
         StringBuffer buffer = new StringBuffer();
-        Iterator it = this.fields.iterator();
+        Iterator<ContentField> it = this.fields.iterator();
         
         while(it.hasNext()){
         
@@ -136,7 +142,7 @@ public class ContentProfile implements Serializable{
     public double computeTotalBytes(){
         
         double counter = 0;
-        Iterator it = this.fields.iterator();
+        Iterator<ContentField> it = this.fields.iterator();
         
         while(it.hasNext()){
         

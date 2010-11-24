@@ -5,12 +5,13 @@
 
 package ceid.netcins.utils;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import rice.environment.Environment;
 import rice.environment.logging.Logger;
-import rice.environment.random.RandomSource;
-import rice.pastry.*;
-
-import java.security.*;
+import rice.pastry.Id;
+import rice.pastry.NodeIdFactory;
 
 /**
  * This class contains methods to generate a unique identifier (nodeID)

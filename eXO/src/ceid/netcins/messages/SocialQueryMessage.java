@@ -5,8 +5,8 @@
 
 package ceid.netcins.messages;
 
-import ceid.netcins.utils.JavaSerializer;
 import java.io.IOException;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -15,6 +15,7 @@ import rice.p2p.commonapi.rawserialization.OutputBuffer;
 import rice.p2p.past.messaging.ContinuationMessage;
 import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
+import ceid.netcins.utils.JavaSerializer;
 
 /**
  * Represents a message for a social query request (friends/neighbor etc. query)
@@ -23,6 +24,11 @@ import rice.p2p.past.rawserialization.RawPastContent;
  */
 public class SocialQueryMessage extends ContinuationMessage {
     
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6936712542065074966L;
+
 public static final short TYPE = 11;
 
   // the id to fetch (The destination node)
@@ -83,7 +89,8 @@ public static final short TYPE = 11;
    *
    * @param handle The current local handle
    */
-  public void addHop(NodeHandle handle) {
+  @Override
+public void addHop(NodeHandle handle) {
     this.handle = handle;
   }
 
@@ -110,7 +117,8 @@ public static final short TYPE = 11;
    *
    * @return A string representing this message
    */
-  public String toString() {
+  @Override
+public String toString() {
     return "[SocialSocialQueryMessage for " + id + " data " + response + "]";
   }
   
@@ -119,7 +127,8 @@ public static final short TYPE = 11;
     return TYPE;
   }
   
-  public void serialize(OutputBuffer buf) throws IOException {
+  @Override
+public void serialize(OutputBuffer buf) throws IOException {
     buf.writeByte((byte)0); // version        
     if (response != null && response instanceof RawPastContent) {
       super.serialize(buf, false); 

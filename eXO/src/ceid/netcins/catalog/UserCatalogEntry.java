@@ -5,9 +5,10 @@
 
 package ceid.netcins.catalog;
 
-import ceid.netcins.content.ContentProfile;
 import java.io.Serializable;
+
 import rice.p2p.commonapi.Id;
+import ceid.netcins.content.ContentProfile;
 
 /**
  * An extension of the CatalogEntry which is used to offer user indexing 
@@ -15,9 +16,14 @@ import rice.p2p.commonapi.Id;
  * 
  * @author andy
  */
+@SuppressWarnings("unchecked")
 public class UserCatalogEntry extends CatalogEntry implements Serializable, Comparable{
     
-    // The profile of the user we want to have indexed.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7850151060272447739L;
+	// The profile of the user we want to have indexed.
     private ContentProfile userProfile;
     
     public UserCatalogEntry(Id uid, ContentProfile usrp){
@@ -34,7 +40,8 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable, Comp
             return this.userProfile;
     }
     
-    public String toString(){
+    @Override
+	public String toString(){
         StringBuffer buf = new StringBuffer();
         buf.append("UserCatalog Entry : [UID] = ");
         buf.append(getUID().toString());

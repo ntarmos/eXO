@@ -5,9 +5,10 @@
 
 package ceid.netcins;
 
-import ceid.netcins.content.ContentProfileFactory;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import ceid.netcins.content.ContentProfileFactory;
 
 /**
  * Used for simulation purposes on large datasets

@@ -6,6 +6,7 @@
 package ceid.netcins.catalog;
 
 import java.util.Vector;
+
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.ContentHashPastContent;
 import rice.p2p.past.PastContent;
@@ -19,7 +20,12 @@ import rice.p2p.past.PastException;
  */
 public class Catalog extends ContentHashPastContent{
     
-    // The Content CatalogEntries
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6819758682396530715L;
+
+	// The Content CatalogEntries
     private Vector<ContentCatalogEntry> contentCatalogEntries;
     
     // the user catalog entries
@@ -35,17 +41,18 @@ public class Catalog extends ContentHashPastContent{
         urlCatalogEntries = new Vector<URLCatalogEntry>();
     }
     
-    public Catalog(Id tid, Vector catalogEntries){
+    @SuppressWarnings("unchecked")
+	public Catalog(Id tid, Vector<?> catalogEntries){
         super(tid);
         if(catalogEntries.firstElement()==null){
             this.contentCatalogEntries = null;
             this.userCatalogEntries = null;
         }else if(catalogEntries.firstElement() instanceof URLCatalogEntry){
-            this.urlCatalogEntries = (Vector<URLCatalogEntry>)catalogEntries;
+            this.urlCatalogEntries = (Vector<URLCatalogEntry>) catalogEntries;
             this.contentCatalogEntries = null;
             this.userCatalogEntries = null;
         }else if(catalogEntries.firstElement() instanceof ContentCatalogEntry){
-            this.contentCatalogEntries = (Vector<ContentCatalogEntry>)catalogEntries;
+            this.contentCatalogEntries = (Vector<ContentCatalogEntry>) catalogEntries;
             this.userCatalogEntries = null;
             this.urlCatalogEntries = null;
         }else if(catalogEntries.firstElement() instanceof UserCatalogEntry){
@@ -178,7 +185,8 @@ public class Catalog extends ContentHashPastContent{
      *
      * @return true if this object is mutable, else false
      */
-    public boolean isMutable() {
+    @Override
+	public boolean isMutable() {
         return true;
     }
     
@@ -193,7 +201,8 @@ public class Catalog extends ContentHashPastContent{
    * @exception PastException DESCRIBE THE EXCEPTION
    */
 
-   public PastContent checkInsert(Id id, PastContent existingContent) throws PastException {
+   @Override
+public PastContent checkInsert(Id id, PastContent existingContent) throws PastException {
 
     // only allow correct content hash key
     if (!id.equals(getId())) {
@@ -202,7 +211,8 @@ public class Catalog extends ContentHashPastContent{
     return this;
    }
    
-   public String toString(){
+   @Override
+public String toString(){
        StringBuffer buf = new StringBuffer();
        buf.append("Catalog [TID="+this.myId+"]");
        buf.append("\n [Content Catalog Entries] \n");

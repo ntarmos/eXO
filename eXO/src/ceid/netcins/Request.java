@@ -9,10 +9,6 @@
 
 package ceid.netcins;
 
-import rice.p2p.commonapi.Id;
-//import ceid.netcins.user.Profile;
-//import ceid.netcins.user.UserLogin;
-
 /**
  * Requests are sent by the Frontend thread to RequestDispatcher
  * and they are executed asynchronously by the Selector thread.

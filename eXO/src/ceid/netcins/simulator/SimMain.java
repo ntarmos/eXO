@@ -9,6 +9,31 @@
 
 package ceid.netcins.simulator;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import rice.environment.Environment;
 import ceid.netcins.FriendsRequest;
 import ceid.netcins.IndexContentRequest;
 import ceid.netcins.IndexPseydoContentRequest;
@@ -24,47 +49,7 @@ import ceid.netcins.SearchURLRequest;
 import ceid.netcins.SearchUserRequest;
 import ceid.netcins.StatsRequest;
 import ceid.netcins.TagContentRequest;
-import ceid.netcins.content.ContentProfile;
-import ceid.netcins.content.ContentProfileFactory;
-import ceid.netcins.content.StoredField;
-import ceid.netcins.content.TermField;
-import ceid.netcins.content.TokenizedField;
 import ceid.netcins.messages.QueryPDU;
-import ceid.netcins.xml.Scenario;
-import ceid.netcins.xml.Test;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.Arrays;
-import java.io.FileInputStream;
-import org.xml.sax.InputSource;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-import rice.environment.Environment;
-import rice.p2p.commonapi.Id;
 
 
 /**
@@ -129,7 +114,7 @@ public static final int RANDOMQUERIES = 19;
     public void preTest(){
         
         // Deletes all the files in the FreePastry-Storage-Root dir
-        LinkedList delme = new LinkedList();
+        LinkedList<File> delme = new LinkedList<File>();
         delme.add(new File("FreePastry-Storage-Root"));
         while (!delme.isEmpty()) {
           File f = (File) delme.removeFirst();
@@ -1107,7 +1092,6 @@ public static final int RANDOMQUERIES = 19;
       // Vectors to fill in with requests
       Vector<Request> index_req = new Vector<Request>();
       Vector<Request> search_req = new Vector<Request>();
-      Vector<Request> retrieve_req = new Vector<Request>();
       Vector<Request> tag_req = new Vector<Request>();
       Vector<Request> randomQueries_req = new Vector<Request>();
  
@@ -1559,7 +1543,7 @@ public static final int RANDOMQUERIES = 19;
   
   private IndexContentRequest directoryIndexing(File f,int sourceNum){
       File innerf;
-      LinkedList dir = new LinkedList();
+      LinkedList<File> dir = new LinkedList<File>();
       dir.add(f);
       while (!dir.isEmpty()) {
 
@@ -1604,6 +1588,7 @@ public static final int RANDOMQUERIES = 19;
   private SimDriver driver;
   private Thread requestDispatcher;
   private boolean cliEnv = true;
-  private HttpServerHandler hsh;
+  @SuppressWarnings("unused")
+private HttpServerHandler hsh;
   
 }

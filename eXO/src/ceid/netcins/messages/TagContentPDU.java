@@ -6,6 +6,7 @@
 package ceid.netcins.messages;
 
 import java.io.Serializable;
+
 import rice.p2p.commonapi.Id;
 
 /**
@@ -15,7 +16,12 @@ import rice.p2p.commonapi.Id;
  */
 public class TagContentPDU implements Serializable{
     
-    // The checksum of the taging object
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2339647551267755148L;
+
+	// The checksum of the taging object
     private Id contentId;
     
     private String[] tags;

@@ -17,7 +17,11 @@ import java.io.Serializable;
  */
 public abstract class ContentField implements Serializable{
     
-  String name;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3881344031651483680L;
+String name;
   //Object fieldData;
   
   public ContentField(String name){

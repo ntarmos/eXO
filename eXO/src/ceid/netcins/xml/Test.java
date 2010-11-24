@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -30,7 +31,7 @@ public class Test {
         
     }
     
-    public Test (List scenarios) {
+    public Test (List<Scenario> scenarios) {
         this.scenario = scenarios;
     }
     
