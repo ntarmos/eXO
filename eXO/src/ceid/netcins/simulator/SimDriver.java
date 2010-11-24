@@ -161,13 +161,24 @@ public class SimDriver extends CommonAPITest {
 	 */
 	@Override
 	protected Node createNode(int num) {
-		PastryNode ret;
+		PastryNode ret = null;
 		if (num == 0) {
-			ret = factory.newNode((rice.pastry.NodeHandle) null,
-					UserNodeIdFactory.generateNodeId("user" + num));
+			try {
+				ret = factory.newNode(UserNodeIdFactory.generateNodeId("user" + num));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ret.boot((rice.pastry.NodeHandle) null);
 		} else {
-			ret = factory.newNode(getBootstrap(), UserNodeIdFactory
-					.generateNodeId("user" + num));
+			try {
+				ret = factory.newNode(UserNodeIdFactory
+						.generateNodeId("user" + num));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ret.boot(getBootstrap());
 		}
 		synchronized (ret) {
 			while (!ret.isReady()) {
@@ -302,6 +313,7 @@ public class SimDriver extends CommonAPITest {
 	 * Private method which initiates the replica maintenance on all of the
 	 * nodes
 	 */
+	@SuppressWarnings("unused")
 	private void runReplicaMaintence() {
 		for (int i = 0; i < NUM_NODES; i++) {
 			pasts[i].getReplication().replicate();
@@ -375,6 +387,7 @@ public class SimDriver extends CommonAPITest {
 	 * @param req
 	 * @throws java.lang.Exception
 	 */
+	@SuppressWarnings("unchecked")
 	protected void serveRequest(Request req) throws Exception {
 
 		if (req instanceof IndexContentRequest) {

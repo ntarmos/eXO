@@ -77,6 +77,7 @@ import ceid.netcins.user.User;
  * 
  * @author andy
  */
+@SuppressWarnings("unchecked")
 public class CatalogService extends DHTService implements SocService {
 
 	// Factory which used to obtain the content profile data
@@ -1296,7 +1297,6 @@ public class CatalogService extends DHTService implements SocService {
 					"SocialQueryMessage (SocialQueryPDU) for " + destId, multi
 							.getSubContinuation(i)) {
 
-				@SuppressWarnings("unchecked")
 				public void receiveResult(Object result) {
 					System.out.println("\n\nSocialTagsQuery  : "
 							+ tags.toString() + ", #" + num

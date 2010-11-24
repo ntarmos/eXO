@@ -97,6 +97,7 @@ import ceid.netcins.similarity.SimilarityRequest;
  * 
  *      This is an implementation of the Past interface.
  */
+@SuppressWarnings("unchecked")
 public class DHTService implements Past, Application, ReplicationManagerClient {
 
 	// ----- STATIC FIELDS -----
@@ -350,7 +351,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 						// read the size
 						bb = new ByteBuffer[1];
 						bb[0] = ByteBuffer.allocate(4);
-						if (socket.read(bb, 0, 1) == -1) {
+						if (socket.read(bb[0]) == -1) {
 							close(socket);
 							return;
 						}
@@ -373,7 +374,8 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// now we have a bb
 
 					// read some bytes
-					if (socket.read(bb, 0, 1) == -1) {
+					//XXX: This used to do sort-of scatter-gather, only with just one ByteBuffer object
+					if (socket.read(bb[0]) == -1) {
 						close(socket);
 					}
 
@@ -609,7 +611,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// outs[0] = out;
 					// socket.write(outs, 0, 1);
 
-					socket.write(bb, 0, 1);
+					socket.write(bb[0]);
 				} catch (IOException ioe) {
 					if (c != null)
 						c.receiveException(ioe);

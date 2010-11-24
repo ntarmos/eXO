@@ -204,7 +204,8 @@ public class ClientDriver {
 
 		// construct a node, passing the null boothandle on the first loop will
 		// cause the node to start its own ring
-		PastryNode node = factory.newNode((rice.pastry.NodeHandle) bootHandle);
+		PastryNode node = factory.newNode();
+		node.boot((rice.pastry.NodeHandle) bootHandle);
 
 		// the node may require sending several messages to fully boot into the
 		// ring
@@ -296,6 +297,7 @@ public class ClientDriver {
 	 * @param req
 	 * @throws java.lang.Exception
 	 */
+	@SuppressWarnings("unchecked")
 	protected void serveRequest(Request req) throws Exception {
 
 		if (req instanceof IndexContentRequest) {

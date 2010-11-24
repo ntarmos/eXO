@@ -30,6 +30,7 @@ public class SimilarityRequest {
 
 	// The result which will fill in the Scorer thread and the response will be
 	// routed
+	@SuppressWarnings("unchecked")
 	private Continuation result;
 
 	// The number of results to return
@@ -48,6 +49,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
+	@SuppressWarnings("unchecked")
 	public SimilarityRequest(Catalog catalog, String[] query,
 			Continuation result) {
 		this.catalog = catalog;
@@ -68,6 +70,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
+	@SuppressWarnings("unchecked")
 	public SimilarityRequest(Catalog catalog, String[] query, int type, int k,
 			Continuation result) {
 		this.catalog = catalog;
@@ -92,6 +95,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
+	@SuppressWarnings("unchecked")
 	public SimilarityRequest(Catalog catalog, String[] query, int type, int k,
 			ContentProfile userProfile, Continuation result) {
 		this.catalog = catalog;
@@ -116,6 +120,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
+	@SuppressWarnings("unchecked")
 	public SimilarityRequest(Catalog catalog, String[] query, int type, int k,
 			ContentProfile userProfile, Continuation result, int msgcounter) {
 		this.catalog = catalog;
@@ -147,6 +152,7 @@ public class SimilarityRequest {
 		return catalog;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Continuation getContinuation() {
 		return result;
 	}
