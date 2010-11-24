@@ -12,22 +12,22 @@ package ceid.netcins.messages;
  */
 public class FriendReqPDU {
 
-    // A message written from the request source user
-    private String message; 
-    
-    // Source user's name.
-    private String screenname;
-    
-    public FriendReqPDU(String data, String screenname){
-        this.message = data;
-        this.screenname = screenname;
-    }
-    
-    public String getMessage(){
-        return message;
-    }
-    
-    public String getScreenName(){
-        return screenname;
-    }
+	// A message written from the request source user
+	private String message;
+
+	// Source user's name.
+	private String screenname;
+
+	public FriendReqPDU(String data, String screenname) {
+		this.message = data;
+		this.screenname = screenname;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public String getScreenName() {
+		return screenname;
+	}
 }

@@ -14,81 +14,82 @@ import rice.pastry.Id;
 import rice.pastry.NodeIdFactory;
 
 /**
- * This class contains methods to generate a unique identifier (nodeID)
- * for a node in the pastry overlay network. The nodeId is also the so
- * called "UID". In other words represents both the network address and
- * the user unique identifier. Thus, it can be used to lookup and search
- * queries.
- * TODO : uniqueness should be guaranteed through a centralized mechanism!
+ * This class contains methods to generate a unique identifier (nodeID) for a
+ * node in the pastry overlay network. The nodeId is also the so called "UID".
+ * In other words represents both the network address and the user unique
+ * identifier. Thus, it can be used to lookup and search queries. TODO :
+ * uniqueness should be guaranteed through a centralized mechanism!
  * 
  * @author andy
  */
-public class UserNodeIdFactory  implements NodeIdFactory {
+public class UserNodeIdFactory implements NodeIdFactory {
 
-  private String unique;  
-  protected Logger logger;
-  
-  /**
-   * Constructor.
-   */
+	private String unique;
+	protected Logger logger;
 
-  public UserNodeIdFactory(Environment env, String unique) {
-    this.logger = env.getLogManager().getLogger(getClass(), null);
-    this.unique = unique;
-  }
-  
-  public void setUnique(String unique){
-      this.unique = unique;
-  }
+	/**
+	 * Constructor.
+	 */
 
-  /**
-   * generate a nodeId
-   * 
-   * @return the new nodeId
-   */
+	public UserNodeIdFactory(Environment env, String unique) {
+		this.logger = env.getLogManager().getLogger(getClass(), null);
+		this.unique = unique;
+	}
 
-  public Id generateNodeId() {
+	public void setUnique(String unique) {
+		this.unique = unique;
+	}
 
-    MessageDigest md = null;
-    try {
-      md = MessageDigest.getInstance("SHA");
-    } catch (NoSuchAlgorithmException e) {
-      if (logger.level <= Logger.SEVERE) logger.log(
-          "No SHA support!");
-      throw new RuntimeException("No SHA support!",e);
-    }
+	/**
+	 * generate a nodeId
+	 * 
+	 * @return the new nodeId
+	 */
 
-    // TODO : Caution!! Check : different Charsets may conclude to the same uid
-    md.update(unique.getBytes());
-    byte[] digest = md.digest();
+	public Id generateNodeId() {
 
-    Id nodeId = Id.build(digest);
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA");
+		} catch (NoSuchAlgorithmException e) {
+			if (logger.level <= Logger.SEVERE)
+				logger.log("No SHA support!");
+			throw new RuntimeException("No SHA support!", e);
+		}
 
-    return nodeId;
-  }
-  
-    /**
-   * generate a nodeId
-   * 
-   * @return the new nodeId
-   */
+		// TODO : Caution!! Check : different Charsets may conclude to the same
+		// uid
+		md.update(unique.getBytes());
+		byte[] digest = md.digest();
 
-  public static Id generateNodeId(String unique) {
+		Id nodeId = Id.build(digest);
 
-    MessageDigest md = null;
-    try {
-      md = MessageDigest.getInstance("SHA");
-    } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException("No SHA support!",e);
-    }
+		return nodeId;
+	}
 
-    // TODO : Caution!! Check : different Charsets may conclude to the same uid
-    md.update(unique.getBytes());
-    byte[] digest = md.digest();
+	/**
+	 * generate a nodeId
+	 * 
+	 * @return the new nodeId
+	 */
 
-    Id nodeId = Id.build(digest);
+	public static Id generateNodeId(String unique) {
 
-    return nodeId;
-  }
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA");
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("No SHA support!", e);
+		}
+
+		// TODO : Caution!! Check : different Charsets may conclude to the same
+		// uid
+		md.update(unique.getBytes());
+		byte[] digest = md.digest();
+
+		Id nodeId = Id.build(digest);
+
+		return nodeId;
+	}
 
 }

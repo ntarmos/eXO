@@ -19,181 +19,202 @@ import ceid.netcins.Request;
 import ceid.netcins.ScenarioRequest;
 
 /**
- *
+ * 
  * @author andy
  */
 public class SAXTestUnmarshaller extends DefaultHandler {
 
-    private Vector<Request> scenarios;
+	private Vector<Request> scenarios;
 
-    private Stack<Object> stack;
-    private boolean isStackReadyForText;
+	private Stack<Object> stack;
+	private boolean isStackReadyForText;
 
-    // Points to the last place an event occurred
-    @SuppressWarnings("unused")
+	// Points to the last place an event occurred
+	@SuppressWarnings("unused")
 	private Locator locator;
 
-    String lastFieldName;
+	String lastFieldName;
 
-    // -----
+	// -----
 
-    public SAXTestUnmarshaller() {
-	stack = new Stack<Object>();
-    scenarios = new Vector<Request>();
-	isStackReadyForText = false;
-    lastFieldName = null;
-    }
-
-    @SuppressWarnings("unchecked")
-	public Vector getScenarios() { return scenarios; }
-
-    // ----- callbacks: -----
-
-    @Override
-	public void setDocumentLocator( Locator rhs ) { locator = rhs; }
-
-    // -----
-
-    @Override
-	public void startElement( String uri, String localName, String qName,
-			      Attributes attribs ) {
-
-	isStackReadyForText = false;
-
-	// if next element is complex, push a new instance on the stack
-	// if element has attributes, set them in the new instance
-	if( localName.equals( "scenario" ) ) {
-	    stack.push( new ScenarioRequest() );
-
-	}else if( localName.equals( "index_pcontent" ) ) {
-	    stack.push( new IndexPseydoContentRequest() );
-
-	}else if( localName.equals( "index_user" ) ) {
-        IndexUserRequest i = new IndexUserRequest();
-        i.setDelimiter("::");
-	    stack.push( i );
-
-	}else if( localName.equals( "random_queries" ) ) {
-	    stack.push( new RandomQueriesRequest() );
-
+	public SAXTestUnmarshaller() {
+		stack = new Stack<Object>();
+		scenarios = new Vector<Request>();
+		isStackReadyForText = false;
+		lastFieldName = null;
 	}
-	// if next element is simple, push StringBuffer
-	// this makes the stack ready to accept character text
-	else if( localName.equals( "source" ) || localName.equals( "keywords" ) ||
-		 localName.equals( "identifier"  ) || localName.equals( "name"  ) ||
-         localName.equals( "num_type" ) || localName.equals( "num_keywords" ) ||
-         localName.equals( "num_queries" ) || localName.equals( "num_results" ) ||
-         localName.equals( "user_address" )) {
-	    stack.push( new StringBuffer() );
-	    isStackReadyForText = true;
+
+	@SuppressWarnings("unchecked")
+	public Vector getScenarios() {
+		return scenarios;
 	}
-	// if none of the above, it is an unexpected element
-	else{
-	    // do nothing
+
+	// ----- callbacks: -----
+
+	@Override
+	public void setDocumentLocator(Locator rhs) {
+		locator = rhs;
 	}
-    }
 
-    // -----
+	// -----
 
-    @Override
-	public void endElement( String uri, String localName, String qName ) {
+	@Override
+	public void startElement(String uri, String localName, String qName,
+			Attributes attribs) {
 
-	// recognized text is always content of an element
-	// when the element closes, no more text should be expected
-	isStackReadyForText = false;
+		isStackReadyForText = false;
 
-	// pop stack and add to 'parent' element, which is next on the stack
-	// important to pop stack first, then peek at top element!
-    if(stack.empty())
-        return;
-    Object tmp = stack.pop();
+		// if next element is complex, push a new instance on the stack
+		// if element has attributes, set them in the new instance
+		if (localName.equals("scenario")) {
+			stack.push(new ScenarioRequest());
 
-	if( localName.equals( "scenario" ) ) {
-	    scenarios.add((ScenarioRequest)tmp);
+		} else if (localName.equals("index_pcontent")) {
+			stack.push(new IndexPseydoContentRequest());
 
-	}else if( localName.equals( "index_pcontent" ) ) {
-	    ((ScenarioRequest)stack.peek()).index_submitted.add( (IndexPseydoContentRequest)tmp );
+		} else if (localName.equals("index_user")) {
+			IndexUserRequest i = new IndexUserRequest();
+			i.setDelimiter("::");
+			stack.push(i);
 
-	}else if( localName.equals( "index_user" ) ) {
-	    ((ScenarioRequest)stack.peek()).index_submitted.add( (IndexUserRequest)tmp );
-        
+		} else if (localName.equals("random_queries")) {
+			stack.push(new RandomQueriesRequest());
 
-	}else if( localName.equals( "random_queries" ) ) {
-	    ((ScenarioRequest)stack.peek()).randomQueries_submitted.add( (RandomQueriesRequest)tmp );
+		}
+		// if next element is simple, push StringBuffer
+		// this makes the stack ready to accept character text
+		else if (localName.equals("source") || localName.equals("keywords")
+				|| localName.equals("identifier") || localName.equals("name")
+				|| localName.equals("num_type")
+				|| localName.equals("num_keywords")
+				|| localName.equals("num_queries")
+				|| localName.equals("num_results")
+				|| localName.equals("user_address")) {
+			stack.push(new StringBuffer());
+			isStackReadyForText = true;
+		}
+		// if none of the above, it is an unexpected element
+		else {
+			// do nothing
+		}
 	}
-	// for simple elements, pop StringBuffer and convert to String
-	else if( localName.equals( "source" ) ) {
-        Object obj = stack.peek();
-        if(obj instanceof IndexPseydoContentRequest){
-            ((IndexPseydoContentRequest)obj).setSource( Integer.parseInt(tmp.toString()) );
-        }else if(obj instanceof IndexUserRequest){
-            ((IndexUserRequest)obj).setSource( Integer.parseInt(tmp.toString()) );
-        }
 
-	}else if( localName.equals( "keywords" ) ) {
-        Object obj = stack.peek();
-        if(obj instanceof IndexPseydoContentRequest){
-            if(this.lastFieldName!=null){
-                ((IndexPseydoContentRequest)obj).addToContentProfile( this.lastFieldName,tmp.toString() );
-                lastFieldName=null;
-            }else{
-                ((IndexPseydoContentRequest)obj).addToContentProfile( "content description",tmp.toString() );
-            }
-        }else if(obj instanceof IndexUserRequest){
-            if(this.lastFieldName!=null){
-                ((IndexUserRequest)obj).addToUserProfile(this.lastFieldName,tmp.toString() );
-                lastFieldName=null;
-            }else{
-                ((IndexUserRequest)obj).addToUserProfile("user description",tmp.toString() );
-            }
-        }
+	// -----
 
-    }else if( localName.equals( "user_address" ) ) {
-	    ((IndexUserRequest)stack.peek()).addToUserProfile( "user address",tmp.toString() );
+	@Override
+	public void endElement(String uri, String localName, String qName) {
 
-    }else if( localName.equals( "name" ) ) {
-        this.lastFieldName = tmp.toString();
+		// recognized text is always content of an element
+		// when the element closes, no more text should be expected
+		isStackReadyForText = false;
 
-	}else if( localName.equals( "identifier" ) ) {
-	    ((IndexPseydoContentRequest)stack.peek()).addToContentProfile( "Identifier",tmp.toString() );
-        ((IndexPseydoContentRequest)stack.peek()).setIdentifier( tmp.toString() );
+		// pop stack and add to 'parent' element, which is next on the stack
+		// important to pop stack first, then peek at top element!
+		if (stack.empty())
+			return;
+		Object tmp = stack.pop();
 
-	}else if( localName.equals( "num_type" ) ) {
-	    ((RandomQueriesRequest)stack.peek()).setType( Integer.parseInt(tmp.toString()) );
-    }else if( localName.equals( "num_keywords" ) ) {
-	    ((RandomQueriesRequest)stack.peek()).setKeywords( Integer.parseInt(tmp.toString()) );
-    }else if( localName.equals( "num_queries" ) ) {
-	    ((RandomQueriesRequest)stack.peek()).setQueries( Integer.parseInt(tmp.toString()) );
-    }else if( localName.equals( "num_results" ) ) {
-	    ((RandomQueriesRequest)stack.peek()).setK( Integer.parseInt(tmp.toString()) );
+		if (localName.equals("scenario")) {
+			scenarios.add((ScenarioRequest) tmp);
+
+		} else if (localName.equals("index_pcontent")) {
+			((ScenarioRequest) stack.peek()).index_submitted
+					.add((IndexPseydoContentRequest) tmp);
+
+		} else if (localName.equals("index_user")) {
+			((ScenarioRequest) stack.peek()).index_submitted
+					.add((IndexUserRequest) tmp);
+
+		} else if (localName.equals("random_queries")) {
+			((ScenarioRequest) stack.peek()).randomQueries_submitted
+					.add((RandomQueriesRequest) tmp);
+		}
+		// for simple elements, pop StringBuffer and convert to String
+		else if (localName.equals("source")) {
+			Object obj = stack.peek();
+			if (obj instanceof IndexPseydoContentRequest) {
+				((IndexPseydoContentRequest) obj).setSource(Integer
+						.parseInt(tmp.toString()));
+			} else if (obj instanceof IndexUserRequest) {
+				((IndexUserRequest) obj).setSource(Integer.parseInt(tmp
+						.toString()));
+			}
+
+		} else if (localName.equals("keywords")) {
+			Object obj = stack.peek();
+			if (obj instanceof IndexPseydoContentRequest) {
+				if (this.lastFieldName != null) {
+					((IndexPseydoContentRequest) obj).addToContentProfile(
+							this.lastFieldName, tmp.toString());
+					lastFieldName = null;
+				} else {
+					((IndexPseydoContentRequest) obj).addToContentProfile(
+							"content description", tmp.toString());
+				}
+			} else if (obj instanceof IndexUserRequest) {
+				if (this.lastFieldName != null) {
+					((IndexUserRequest) obj).addToUserProfile(
+							this.lastFieldName, tmp.toString());
+					lastFieldName = null;
+				} else {
+					((IndexUserRequest) obj).addToUserProfile(
+							"user description", tmp.toString());
+				}
+			}
+
+		} else if (localName.equals("user_address")) {
+			((IndexUserRequest) stack.peek()).addToUserProfile("user address",
+					tmp.toString());
+
+		} else if (localName.equals("name")) {
+			this.lastFieldName = tmp.toString();
+
+		} else if (localName.equals("identifier")) {
+			((IndexPseydoContentRequest) stack.peek()).addToContentProfile(
+					"Identifier", tmp.toString());
+			((IndexPseydoContentRequest) stack.peek()).setIdentifier(tmp
+					.toString());
+
+		} else if (localName.equals("num_type")) {
+			((RandomQueriesRequest) stack.peek()).setType(Integer.parseInt(tmp
+					.toString()));
+		} else if (localName.equals("num_keywords")) {
+			((RandomQueriesRequest) stack.peek()).setKeywords(Integer
+					.parseInt(tmp.toString()));
+		} else if (localName.equals("num_queries")) {
+			((RandomQueriesRequest) stack.peek()).setQueries(Integer
+					.parseInt(tmp.toString()));
+		} else if (localName.equals("num_results")) {
+			((RandomQueriesRequest) stack.peek()).setK(Integer.parseInt(tmp
+					.toString()));
+		}
+		// if none of the above, it is an unexpected element:
+		// necessary to push popped element back!
+		else {
+			stack.push(tmp);
+		}
 	}
-	// if none of the above, it is an unexpected element:
-	// necessary to push popped element back!
-	else{
-	    stack.push( tmp );
+
+	// -----
+
+	@Override
+	public void characters(char[] data, int start, int length) {
+
+		// if stack is not ready, data is not content of recognized element
+		if (isStackReadyForText == true) {
+			((StringBuffer) stack.peek()).append(data, start, length);
+		} else {
+			// read data which is not part of recognized element
+		}
 	}
-    }
 
-    // -----
+	// -----
 
-    @Override
-	public void characters( char[] data, int start, int length ) {
+	@SuppressWarnings("unused")
+	private String resolveAttrib(String uri, String localName,
+			Attributes attribs, String defaultValue) {
 
-	// if stack is not ready, data is not content of recognized element
-	if( isStackReadyForText == true ) {
-	    ((StringBuffer)stack.peek()).append( data, start, length );
-	}else{
-	    // read data which is not part of recognized element
+		String tmp = attribs.getValue(uri, localName);
+		return (tmp != null) ? (tmp) : (defaultValue);
 	}
-    }
-
-    // -----
-
-    @SuppressWarnings("unused")
-	private String resolveAttrib( String uri, String localName,
-			          Attributes attribs, String defaultValue ) {
-
-	String tmp = attribs.getValue( uri, localName );
-	return (tmp!=null)?(tmp):(defaultValue);
-    }
 }

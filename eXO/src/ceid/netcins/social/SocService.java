@@ -9,20 +9,20 @@
 
 package ceid.netcins.social;
 
-
 /**
- *
+ * 
  * @author andy
  * 
- * This interface holds the main API methods which must be implemented
- * to provide users with Social Network functionality
+ *         This interface holds the main API methods which must be implemented
+ *         to provide users with Social Network functionality
  * 
  */
 public interface SocService {
 
- /**createUSer :
-  * 
-  * @param 
-  */    
-    
+	/**
+	 * createUSer :
+	 * 
+	 * @param
+	 */
+
 }

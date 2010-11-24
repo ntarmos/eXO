@@ -10,20 +10,20 @@ package ceid.netcins.similarity;
  * 
  * @author andy
  */
-public class TfIdfWeight extends TermWeight{
+public class TfIdfWeight extends TermWeight {
 
-    public TfIdfWeight(String term){
-        super(term);
-    }
+	public TfIdfWeight(String term) {
+		super(term);
+	}
 
-    /**
-     * Always returns 1 (as the rem is presented)
-     * when this method is called with a term in our set!
-     *
-     * @return
-     */
-    @Override
-    public float getWeight() {
-        return 1;
-    }
+	/**
+	 * Always returns 1 (as the rem is presented) when this method is called
+	 * with a term in our set!
+	 * 
+	 * @return
+	 */
+	@Override
+	public float getWeight() {
+		return 1;
+	}
 }
