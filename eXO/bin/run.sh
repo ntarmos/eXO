@@ -1,7 +1,8 @@
 #!/bin/sh
 
-EXOROOT=/home/Work/Research/Code/eXO
-FPROOT=/home/Work/Research/Code/FreePastry.git/pastry
+PROJECT_ROOT=$PWD/../
+EXOROOT=$PROJECT_ROOT/eXO
+FPROOT=$PROJECT_ROOT/FreePastry.git/pastry
 
 EXOCP=$EXOROOT/classes:$EXOROOT/jars/freepastry
 for jar in $EXOROOT/lib/*.jar; do

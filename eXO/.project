@@ -18,7 +18,7 @@
 		<link>
 			<name>FreePastry.git-src</name>
 			<type>2</type>
-			<location>/home/Work/Research/Code/FreePastry.git/pastry/src</location>
+			<locationURI>DEV_ROOT/FreePastry.git/pastry/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
