@@ -1,0 +1,11 @@
+# generic files
+*~
+*.lock
+*.swp
+*.out
+
+# java specific
+*.class
+
+# specific folders
+eXO/classes
