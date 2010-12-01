@@ -1,0 +1,101 @@
+eXO TODOs
+---------
+
+   *** Make sure the application (CatalogService/DHTService?) has ***
+   ***            direct access to the methods below!             ***
+
+   1. Virtual split of User and Content profiles into a public and a private part.
+      - Keep just one "Profile" data structure per user/content.
+        o Private part: all tags in the profile.
+        o Public part: tags the owner has flagged as public (i.e., add a
+          flag per Tag stating if it is public or not; this way we avoid
+          duplication of tags and make tagging and query processing
+          easier).
+        o CAUTION: public tags are also stored on the DHT! This means
+          that updates (insertions/deletions) should also propagate to
+          the respective Catalogue nodes!
+        o Queries from non-friends should consider only tags with a
+          "public" flag.
+      - FUTURE WORK:
+        For performance reasons, we may opt to maintain separate
+        public/private profile structures, but for ease of query
+        processing we should make sure the public part is always a
+        subset of the private part (e.g., have some hooks
+        updating/removing tags from the public profile if they're
+        updated/removed from the private one, etc.)
+          
+   2. Profile updates.
+      - Update user profiles (add/remove tags).
+      - Update content profiles (add/remove tags).
+      - Update profile tags to select between private and public sharing
+        modes.
+
+   3. Build tag clouds and use them to augment queries.
+      - Add/remove tags from local tag clouds.
+      - Augment queries:
+        o Retrieve tag clouds along with query results.
+        o Take 1 (needs UI): Let the user select the tags:
+          Show tag clouds to users and allow them to select some of them
+          to add to a new query (this variant needs only present the tag
+          cloud to the user).
+        o Take 2 (non-UI): Flip a coin for whether we need to augment
+          the query or check if less than k results have arrived; if
+          negative, return; if positive, reservoir-sample between
+          original query tags and tags from the returned cloud and pose
+          a new query.
+
+   4. Friend lists.
+      - List of friends per node (UID/IP/PORT).
+      - Friend request/response messages.
+      - List of incoming pending friend requests (HashMap on the UID).
+        o Accept/reject friend requests on a per pending-list-entry
+          basis (e.g., acceptRequest(UID), rejectRequest(UID)).
+        o Feedback messages being sent to the requesting node on
+          accept/reject.
+      - List of outgoing pending friend requests (HashMap on the UID).
+        o Update when feedback is received.
+      - Friend discovery.
+        o Method that searches the DHT by keyword, creates a "candidate
+          friends" list, and returns the UIDs of the top-k matching
+          users.
+        o Method that selects UIDs from this list and stores them in
+          the list of friends for this node.
+        o Make query processing friend-aware: incoming queries from UIDs
+          in the friend list should be able to access non-public tags.
+        o FUTURE-WORK:
+          * The search method creates a named list of relevant
+            UID/IP/PORTs (e.g., each such search gets an internal ID,
+            also attached to a new candidate friends list, used to allow
+            us to remove stale candidate friend lists and/or to have
+            several outstanding friend discovery queries), and returns
+            the UIDs and list ID.
+          * Method that removes a candidate friend list by its ID.
+          * Method that selects UIDs from a named list and stores them
+            in the list of friends for this node.
+        o FUTURE-FUTURE-WORK:
+          * Several friend lists per node, each with its own ID plus the
+            a set of tags for which these friends are good for.
+          * ...
+
+   5. Unstructured social networks.
+      - Selecting whether queries will be run on unstructured social
+        networks, over the DHT, or both.
+        o What changes is the UID/IP/PORTs we query.
+          * Social network only: send queries to UIDs of the friend
+            list.
+          * DHT network only: send queries to UIDs of relevant Catalogue
+            nodes.
+
+--
+
+Replace the first two charachters of each line with [-+=][NA], where:
+  +: write lock.
+  -: partial implementation, released write lock.
+  =: complete implementation.
+  A: Last status change by Andreas.
+  N: Last status change by Nikos.
+
+*** Always obtain write lock before starting to _look into_ an issue ***
+***     -- i.e., not just when making changes to the codebase --     ***
+***                 to avoid duplication of effort!                  ***
+
