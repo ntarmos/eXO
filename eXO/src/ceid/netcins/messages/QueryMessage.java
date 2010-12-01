@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -21,7 +18,7 @@ import ceid.netcins.utils.JavaSerializer;
  * This class will extend the LookupMessage functionality with the QueryPDU
  * content!
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class QueryMessage extends ContinuationMessage {

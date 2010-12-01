@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -11,7 +8,7 @@ import java.util.Vector;
  * This is a Catalog type (inverted List) with a set of CatalogEntries, which
  * correspond to tager's taged objects.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SocialCatalog {
 

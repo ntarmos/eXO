@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.utils;
 
 import java.io.ByteArrayInputStream;
@@ -19,7 +14,7 @@ import rice.p2p.util.rawserialization.JavaSerializationException;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class JavaSerializer {
 

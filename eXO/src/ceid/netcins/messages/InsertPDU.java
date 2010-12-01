@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -24,7 +21,7 @@ import ceid.netcins.catalog.UserCatalogEntry;
  * our DHTService. This class will include mostly CatalogEntries or data for the
  * update of the Catalog entries.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class InsertPDU extends ContentHashPastContent implements Serializable {

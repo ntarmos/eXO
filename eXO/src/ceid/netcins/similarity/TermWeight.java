@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 /**
  * Associates a weight to a specific term
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public abstract class TermWeight implements Weight {
 

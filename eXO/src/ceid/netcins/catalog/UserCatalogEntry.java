@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -14,7 +11,7 @@ import ceid.netcins.content.ContentProfile;
  * An extension of the CatalogEntry which is used to offer user indexing
  * functionality
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 @SuppressWarnings("unchecked")
 public class UserCatalogEntry extends CatalogEntry implements Serializable,

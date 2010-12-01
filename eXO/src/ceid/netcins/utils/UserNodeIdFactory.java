@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.utils;
 
 import java.security.MessageDigest;
@@ -20,7 +15,7 @@ import rice.pastry.NodeIdFactory;
  * identifier. Thus, it can be used to lookup and search queries. 
  * TODO : uniqueness should be guaranteed through a centralized mechanism!
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class UserNodeIdFactory implements NodeIdFactory {
 

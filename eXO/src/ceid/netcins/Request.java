@@ -13,7 +13,7 @@ package ceid.netcins;
  * Requests are sent by the Frontend thread to RequestDispatcher and they are
  * executed asynchronously by the Selector thread.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public abstract class Request {
 

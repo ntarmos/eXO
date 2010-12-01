@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -13,7 +10,7 @@ import ceid.netcins.content.ContentProfileFactory;
 /**
  * Used for simulation purposes on large datasets
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class IndexPseydoContentRequest extends Request {
 

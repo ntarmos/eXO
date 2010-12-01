@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 /**
  * This class implements the Vector Space Model.
  * 
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class CosineSimilarity implements Similarity {

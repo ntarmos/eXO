@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 /**
- * Represents a simple binary weight! 1 = term is present, 0 = term not present
+ * Represents a simple binary weight! 1 = term exists, 0 = term does not exist
  * in document
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class BinaryWeight extends TermWeight {

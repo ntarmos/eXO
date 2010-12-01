@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -10,7 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 /**
  * Request for content indexing.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class IndexContentRequest extends Request {
 

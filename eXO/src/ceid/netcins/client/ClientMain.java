@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.client;
 
@@ -39,7 +36,7 @@ import ceid.netcins.content.ContentProfileFactory;
  * thread which initiates user requests and sends them to the Dispatcher thread
  * in ClientDriver class.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class ClientMain {
 

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.simulator;
 
@@ -13,7 +10,7 @@ import ceid.netcins.Request;
  * This class holds counters to mark the end and start of a set of request. The
  * permitted requests are listed in scenarios.dtd
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class Scenario {
 

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -11,7 +8,7 @@ import rice.p2p.commonapi.Id;
  * A request by the user to retrieve some content object with any tagclouds if
  * requested.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class RetrieveContRequest extends Request {
 

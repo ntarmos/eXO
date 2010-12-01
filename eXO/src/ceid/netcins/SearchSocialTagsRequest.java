@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
 /**
  * A request for social query.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SearchSocialTagsRequest extends Request {
 

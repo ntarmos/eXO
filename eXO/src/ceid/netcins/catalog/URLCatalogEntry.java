@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -14,7 +11,7 @@ import ceid.netcins.content.ContentProfile;
 /**
  * This class is used as an entry in the catalog
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 @SuppressWarnings("unchecked")
 public class URLCatalogEntry extends ContentCatalogEntry implements

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -12,7 +9,7 @@ import java.util.Map;
  * This is the request from ui to dispatcher thread for URL indexing to the
  * corresponding.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class IndexURLRequest extends Request {
 

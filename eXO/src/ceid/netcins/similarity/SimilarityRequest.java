@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 import rice.Continuation;
@@ -13,7 +8,7 @@ import ceid.netcins.messages.QueryPDU;
 /**
  * A request to the Scorer thread
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class SimilarityRequest {

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -14,7 +11,7 @@ import rice.p2p.commonapi.Id;
  * This class represents a Catalog enhanced with some scoring of the
  * CatalogEntries
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class ScoreCatalog extends Catalog implements Serializable {

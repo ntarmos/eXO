@@ -11,7 +11,7 @@ package ceid.netcins.simulator;
 
 /**
  *
- * @author andy
+ * @author Andreas Loupasakis
  */
 
 import java.io.File;

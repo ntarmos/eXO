@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.user;
 
 import java.io.File;
@@ -24,7 +19,7 @@ import ceid.netcins.social.TagCloud;
  * TODO : Privacy levels could be implemented! 
  * TODO : Cache of friends IP addresses mapped with UIDs!
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class User {
 
@@ -53,7 +48,7 @@ public class User {
 	// buildId(String) to obtain the Id instance.
 	private Map<Id, File> sharedContent;
 
-	// Checksum or synonym Id withe the corresponding content profile
+	// Checksum or synonym Id with the the corresponding content profile
 	// TODO : This should be later be merged with the sharedContent!
 	private Map<Id, ContentProfile> sharedContentProfile;
 

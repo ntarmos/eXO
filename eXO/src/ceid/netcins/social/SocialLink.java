@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.social;
 
@@ -14,7 +11,7 @@ package ceid.netcins.social;
  * he or his content has been "tagged"/"pointed".
  * 
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SocialLink {
 

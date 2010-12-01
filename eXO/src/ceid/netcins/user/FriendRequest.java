@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.user;
 
 import rice.p2p.commonapi.Id;
@@ -10,7 +5,7 @@ import ceid.netcins.messages.FriendReqPDU;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class FriendRequest {
 

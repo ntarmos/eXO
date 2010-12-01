@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.social;
 
@@ -11,7 +8,7 @@ import java.util.TreeMap;
 /**
  * This is a set of social terms/tags with a corresponding weight = TF
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TagCloud {
 

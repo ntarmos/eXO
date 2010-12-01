@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -21,7 +18,7 @@ import rice.p2p.past.rawserialization.RawPastContent;
  * by the end user and now the source user must be informed.
  * 
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class FriendApprMessage extends ContinuationMessage {
 

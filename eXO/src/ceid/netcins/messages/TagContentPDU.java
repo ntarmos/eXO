@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -12,7 +9,7 @@ import rice.p2p.commonapi.Id;
 /**
  * This class contains the data (tags,contentId,UserId) for the social tagging
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TagContentPDU implements Serializable {
 

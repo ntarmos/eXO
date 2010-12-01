@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -11,7 +8,7 @@ import java.util.Vector;
  * This request initiates a Scenario object in SimDriver that handles the
  * counters which count the submitted and finished requests in the simulation.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class ScenarioRequest extends Request {
 

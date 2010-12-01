@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -19,7 +16,7 @@ import ceid.netcins.utils.JavaSerializer;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TagContentMessage extends ContinuationMessage {
 

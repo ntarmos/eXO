@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.content;
 
@@ -31,7 +28,7 @@ import ceid.netcins.htmlparsing.HTMLParser;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * 
  *         This is a fundamental class which is used to build a set of fields
  *         which include the terms of a Content object! Content Profile is

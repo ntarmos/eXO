@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -17,7 +14,7 @@ import ceid.netcins.content.ContentProfileFactory;
  * 
  * TODO : Include extra details such as user credentials, addresses etc.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class IndexUserRequest extends Request {
 

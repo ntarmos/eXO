@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.user;
 
 import rice.p2p.commonapi.Id;
@@ -11,7 +6,7 @@ import rice.pastry.commonapi.PastryIdFactory;
 /**
  * This is utility class to create a user entity in the network
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class UserFactory {
 

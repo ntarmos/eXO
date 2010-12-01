@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.simulator;
 
@@ -20,7 +17,7 @@ import ceid.netcins.ScenarioRequest;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SAXTestUnmarshaller extends DefaultHandler {
 

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -16,7 +13,7 @@ import rice.p2p.past.PastException;
  * A Catalog is a table of CatalogEntries for a specific term identifier(TID).
  * TID is a SHA-1 output of an indexing term. This class is very fundamental!
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class Catalog extends ContentHashPastContent {

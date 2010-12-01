@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.content;
 
@@ -14,7 +11,7 @@ import java.util.TreeSet;
  * This ContentField type contains a set of "terms" (String values) obtained
  * from the analysis of some file and the corresponding "term frequencies" (tf)
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TokenizedField extends ContentField implements Serializable {
 

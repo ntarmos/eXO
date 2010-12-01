@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.content;
 
@@ -13,7 +10,7 @@ import java.io.Serializable;
  * node. This fieldData is just stored in a Catalog entry. Examples of such
  * ContentField are "filesize", "SHA-1", "modified" etc.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class StoredField extends ContentField implements Serializable {
 

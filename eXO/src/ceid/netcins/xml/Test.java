@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.xml;
 
 import java.io.File;
@@ -18,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 
 @XmlRootElement(name = "test")

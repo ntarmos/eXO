@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 import java.util.ArrayList;
@@ -33,7 +28,7 @@ import ceid.netcins.messages.ResponsePDU;
  * 
  * TODO : REFINEMENT
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public class Scorer {
@@ -52,7 +47,6 @@ public class Scorer {
 	private boolean main_running;
 
 	public Scorer() {
-
 		similarityRequests = new Vector<SimilarityRequest>();
 		main_running = true;
 	}
@@ -75,7 +69,7 @@ public class Scorer {
 	/**
 	 * This method executes the corresponding scoring request!
 	 * 
-	 * @param remove
+	 * @param req The similarity request to be served.
 	 */
 	@SuppressWarnings("unchecked")
 	private void serveRequest(SimilarityRequest req) {
@@ -84,7 +78,8 @@ public class Scorer {
 		String[] query = req.getQuery();
 
 		// ************** CONTENT SEARCHING PART **************
-		if ((req.getType() == QueryPDU.CONTENTQUERY || req.getType() == QueryPDU.CONTENT_ENHANCEDQUERY)
+		if ((req.getType() == QueryPDU.CONTENTQUERY 
+				|| req.getType() == QueryPDU.CONTENT_ENHANCEDQUERY)
 				&& catalog.getContentCatalogEntries() != null
 				&& !catalog.getContentCatalogEntries().isEmpty()) {
 
@@ -277,7 +272,7 @@ public class Scorer {
 				// How many to print from the randomSet?
 				int answer = req.getK() - startOfTies;
 				int choice;
-				// Pick radomly a CCE and put it in the printed
+				// Pick randomly a CCE and put it in the printed
 				Random random = new Random();
 				for (int l = 0; l < answer; l++) {
 					choice = random.nextInt(randomSet.size());
@@ -294,7 +289,8 @@ public class Scorer {
 					new ResponsePDU(req.getMessagesCounter(), topK));
 
 			// ************** USER SEARCHING PART **************
-		} else if ((req.getType() == QueryPDU.USERQUERY || req.getType() == QueryPDU.USER_ENHANCEDQUERY)
+		} else if ((req.getType() == QueryPDU.USERQUERY 
+				|| req.getType() == QueryPDU.USER_ENHANCEDQUERY)
 				&& catalog.getUserCatalogEntries() != null
 				&& !catalog.getUserCatalogEntries().isEmpty()) {
 
@@ -468,7 +464,7 @@ public class Scorer {
 				// How many to print from the randomSet?
 				int answer = req.getK() - startOfTies;
 				int choice;
-				// Pick radomly a CCE and put it in the printed
+				// Pick randomly a CCE and put it in the printed
 				Random random = new Random();
 				for (int l = 0; l < answer; l++) {
 					choice = random.nextInt(randomSet.size());

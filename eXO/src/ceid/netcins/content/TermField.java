@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.content;
 
@@ -13,7 +10,7 @@ import java.io.Serializable;
  * contrast with StoredField is that this fieldData is going to be hashed and
  * indexed in a corresponding Catalog node.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TermField extends ContentField implements Serializable {
 

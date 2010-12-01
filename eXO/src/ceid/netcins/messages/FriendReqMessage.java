@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -21,7 +18,7 @@ import ceid.netcins.utils.JavaSerializer;
  * This class will carry the friend request message. Specifically, this class
  * will not have to carry any extra data than LookupMessage.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class FriendReqMessage extends ContinuationMessage {
 

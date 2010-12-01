@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -12,7 +9,7 @@ import rice.p2p.commonapi.Id;
 /**
  * This is a sum of data in a Catalog row!
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  * 
  */

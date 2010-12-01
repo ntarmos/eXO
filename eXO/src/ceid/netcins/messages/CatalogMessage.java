@@ -11,7 +11,7 @@ package ceid.netcins.messages;
 
 /**
  *
- * @author andy
+ * @author Andreas Loupasakis
  */
 import java.io.IOException;
 import java.util.Collections;

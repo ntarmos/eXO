@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.simulator;
 
 /**
  * This class will hold the total and average results.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class Results {
 

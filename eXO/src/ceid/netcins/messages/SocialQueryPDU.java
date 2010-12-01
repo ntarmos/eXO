@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -12,7 +9,7 @@ import ceid.netcins.content.ContentProfile;
 /**
  * Holds the tags (query terms) to search in each social node
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SocialQueryPDU implements Serializable {
 

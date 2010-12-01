@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -20,7 +17,7 @@ import ceid.netcins.utils.JavaSerializer;
 /**
  * Represents a message for a social query request (friends/neighbor etc. query)
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SocialQueryMessage extends ContinuationMessage {
 

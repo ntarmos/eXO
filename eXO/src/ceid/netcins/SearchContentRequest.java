@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -14,7 +11,7 @@ import com.sun.net.httpserver.HttpExchange;
  * Represents a request for searching specific content through a number of
  * content terms
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SearchContentRequest extends Request {
 

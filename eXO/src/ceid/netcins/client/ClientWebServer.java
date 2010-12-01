@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.client;
 
@@ -32,7 +29,7 @@ import com.sun.net.httpserver.HttpServer;
  * which communicate by using GET or POST in normal or asynchronous http
  * packets. A usefull choice is AJAX.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class ClientWebServer implements HttpHandler {
 

@@ -11,7 +11,7 @@ package ceid.netcins;
 
 /**
  *
- * @author andy
+ * @author Andreas Loupasakis
  */
 
 import java.io.IOException;

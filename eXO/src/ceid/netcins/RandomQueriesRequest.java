@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -9,7 +6,7 @@ import ceid.netcins.messages.QueryPDU;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class RandomQueriesRequest extends Request {
 

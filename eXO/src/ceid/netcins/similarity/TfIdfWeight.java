@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 /**
  * This class represents a weight computed with the tf/idf.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TfIdfWeight extends TermWeight {
 
@@ -17,7 +12,7 @@ public class TfIdfWeight extends TermWeight {
 	}
 
 	/**
-	 * Always returns 1 (as the rem is presented) when this method is called
+	 * Always returns 1 (if the term is presented) when this method is called
 	 * with a term in our set!
 	 * 
 	 * @return

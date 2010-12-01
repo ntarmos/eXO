@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.catalog;
 
@@ -19,7 +16,7 @@ import ceid.netcins.content.StoredField;
  * bundled with the user indexed content.
  * 
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 @SuppressWarnings("unchecked")
 public class ContentCatalogEntry extends UserCatalogEntry implements

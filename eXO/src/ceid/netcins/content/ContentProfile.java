@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.content;
 
@@ -16,7 +13,7 @@ import java.util.Random;
  * stored in a Catalog Entry. When an indexing process is in progress this
  * object is "serialized" and send to the corresponding Catalog nodes.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class ContentProfile implements Serializable {
 

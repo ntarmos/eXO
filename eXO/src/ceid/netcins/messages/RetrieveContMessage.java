@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -21,7 +18,7 @@ import ceid.netcins.utils.JavaSerializer;
  * This class represents a message which is sent to the source of a shared
  * object to begin downloading of the content.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class RetrieveContMessage extends ContinuationMessage {
 

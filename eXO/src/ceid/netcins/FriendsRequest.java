@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -9,7 +6,7 @@ package ceid.netcins;
  * This Request type represents a friendship request or approval. It depends on
  * the pendingFReq and pendingAppReq in order to determine the type.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class FriendsRequest extends Request {
 

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.user;
 
 import java.net.InetAddress;
@@ -15,7 +10,7 @@ import rice.p2p.commonapi.Id;
  * name of the user's friend. IP address may be null indicating that we are in
  * simulation mode.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class Friend {
 

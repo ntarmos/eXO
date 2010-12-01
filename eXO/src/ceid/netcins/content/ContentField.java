@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.content;
 
@@ -14,7 +11,7 @@ import java.io.Serializable;
  * TOKENIZED fields with an array of "tf" values a "String" object for STORED
  * and UNTOKENIZED
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public abstract class ContentField implements Serializable {
 

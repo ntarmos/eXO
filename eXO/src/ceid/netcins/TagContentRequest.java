@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -10,7 +7,7 @@ import rice.p2p.commonapi.Id;
 /**
  * A request by the tager to the tagee's node for taging some content object
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class TagContentRequest extends Request {
 

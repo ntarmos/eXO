@@ -48,7 +48,7 @@ import ceid.netcins.user.User;
  * the high level user requests. Theser operations are handled by the
  * REQUESTDISPATCHER Thread.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class ClientDriver {
 

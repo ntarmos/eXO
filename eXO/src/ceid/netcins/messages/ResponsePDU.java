@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -13,7 +10,7 @@ import ceid.netcins.catalog.Catalog;
  * This class is used to provide a container for the data that is returned by
  * the Catalog nodes or User nodes generally.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class ResponsePDU implements Serializable {
 

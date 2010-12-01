@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.simulator;
 
@@ -25,7 +22,7 @@ import com.sun.net.httpserver.HttpServer;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class HttpServerHandler implements HttpHandler {
 

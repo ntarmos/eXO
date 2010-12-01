@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -9,7 +6,7 @@ package ceid.netcins;
  * This is the request to the dispatcher thread for statistic previews such as
  * shared content observation, pending user requests etc.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class StatsRequest extends Request {
 

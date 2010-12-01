@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ceid.netcins.similarity;
 
 /**
  * Abstract interface which defines in general the Similarity measurement.
  * Subclasses implement search scoring functions.
  * 
- * @author andy
+ * @author Andreas Loupasakis
  * @version 1.0
  */
 public abstract interface Similarity {

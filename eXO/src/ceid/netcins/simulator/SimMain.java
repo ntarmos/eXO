@@ -53,7 +53,7 @@ import ceid.netcins.messages.QueryPDU;
 
 /**
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SimMain {
 

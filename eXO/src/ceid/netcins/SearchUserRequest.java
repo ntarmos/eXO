@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins;
 
@@ -11,7 +8,7 @@ import ceid.netcins.simulator.SimMain;
 /**
  * This is a search request
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class SearchUserRequest extends Request {
 

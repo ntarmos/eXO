@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ceid.netcins.messages;
 
@@ -12,7 +9,7 @@ import rice.p2p.commonapi.Id;
 /**
  * Holds the File Checksum (the File identifier).
  * 
- * @author andy
+ * @author Andreas Loupasakis
  */
 public class RetrieveContPDU implements Serializable {
 
