@@ -7,6 +7,9 @@
 # java specific
 *.class
 
-# specific folders
+# project specific files
+load.list
+
+# project specific folders
 eXO/classes
 eXO/FreePastry.git

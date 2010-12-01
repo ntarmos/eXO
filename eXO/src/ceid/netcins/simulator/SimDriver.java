@@ -1,12 +1,3 @@
-/*
- * SimDriver.java
- *
- * Created on April 19, 2008, 6:47 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package ceid.netcins.simulator;
 
 /**
@@ -217,7 +208,6 @@ public class SimDriver extends CommonAPITest {
 		scorer = new Scorer();
 
 		// Start the "Scorer" thread to be waiting!
-		// One thread per node!
 		scorerThread = new Thread(new Runnable() {
 
 			public void run() {

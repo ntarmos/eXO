@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.content;
 
 import java.io.Serializable;
