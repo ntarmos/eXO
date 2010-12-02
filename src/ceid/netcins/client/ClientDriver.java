@@ -41,6 +41,7 @@ import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
+import ceid.netcins.user.UserNodeIdFactory;
 
 /**
  * ClientDriver is a driver class between the real frontend and the
@@ -180,8 +181,8 @@ public class ClientDriver {
 
 		// Generate the NodeIds Randomly RandomNodeIdFactory, IPNodeIdFactory
 		// (alternative)
-		NodeIdFactory nidFactory = new IPNodeIdFactory(localAddress, BINDPORT,
-				environment);
+		NodeIdFactory nidFactory = new UserNodeIdFactory("dummy username",
+				new IPNodeIdFactory(localAddress, BINDPORT, environment));
 
 		// used for generating PastContent object Ids.
 		// this implements the "hash function" for our DHT
