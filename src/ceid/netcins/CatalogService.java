@@ -563,8 +563,8 @@ public class CatalogService extends DHTService implements SocService {
 				&& bookMarks.get(tid) instanceof URLBookMark) {
 			SocialBookMark ubm = bookMarks.get(tid);
 			oldtags = ubm.getTags();
-			List<ContentField> oldfields = oldtags.getFields();
-			List<ContentField> fields = tags.getFields();
+			List<ContentField> oldfields = oldtags.getPublicFields();
+			List<ContentField> fields = tags.getPublicFields();
 			Iterator<ContentField> it1 = oldfields.listIterator();
 			Iterator<ContentField> it2 = fields.listIterator();
 			ContentField cf1, cf2;
@@ -663,7 +663,7 @@ public class CatalogService extends DHTService implements SocService {
 
 			// Check in the user's sharedContent map to see if we have already
 			// indexed it!
-			List<ContentField> fields = cp.getFields();
+			List<ContentField> fields = cp.getPublicFields();
 			Iterator<ContentField> it = fields.listIterator();
 			ContentField cf;
 			Id checksum = null;
@@ -811,7 +811,7 @@ public class CatalogService extends DHTService implements SocService {
 		UserCatalogEntry uce = new UserCatalogEntry(user.getUID(), cp);
 
 		// Create MultiContinuation
-		List<ContentField> fields = cp.getFields();
+		List<ContentField> fields = cp.getPublicFields();
 		Iterator<ContentField> it = fields.iterator();
 		ContentField cf;
 		Vector<String> indexingTerms = new Vector<String>(); // holds the
@@ -936,7 +936,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		// Check in the user's sharedContent map to see if we have already
 		// indexed it!
-		List<ContentField> fields = cp.getFields();
+		List<ContentField> fields = cp.getPublicFields();
 		Iterator<ContentField> it = fields.listIterator();
 		ContentField cf;
 		Id checksum = null;
@@ -1351,7 +1351,7 @@ public class CatalogService extends DHTService implements SocService {
 				buffer.append("\n\n*** Entry " + i + " ***\n");
 				uce = it.next();
 				cprof = uce.getContentProfile();
-				listFields = cprof.getFields();
+				listFields = cprof.getAllFields();
 				itf = listFields.iterator();
 				// Fore every ContentField
 				while (itf.hasNext()) {
@@ -1402,7 +1402,7 @@ public class CatalogService extends DHTService implements SocService {
 				buffer.append("\n\n*** Entry " + i + " ***\n");
 				cce = it.next();
 				cprof = cce.getContentProfile();
-				listFields = cprof.getFields();
+				listFields = cprof.getAllFields();
 				itf = listFields.iterator();
 				// Fore every ContentField
 				while (itf.hasNext()) {
@@ -1454,7 +1454,7 @@ public class CatalogService extends DHTService implements SocService {
 				uce = it.next();
 				buffer.append("User : " + uce.getUID().toStringFull() + "\n");
 				cprof = uce.getUserProfile();
-				listFields = cprof.getFields();
+				listFields = cprof.getAllFields();
 				itf = listFields.iterator();
 				// Fore every ContentField
 				while (itf.hasNext()) {
@@ -1649,7 +1649,7 @@ public class CatalogService extends DHTService implements SocService {
 						+ "\n");
 				buffer.append("   Content Profile : {");
 				cprof = tempCCE.getContentProfile();
-				listFields = cprof.getFields();
+				listFields = cprof.getAllFields();
 				itf = listFields.iterator();
 				// Fore every ContentField
 				while (itf.hasNext()) {
@@ -1814,7 +1814,7 @@ public class CatalogService extends DHTService implements SocService {
 						+ "\n");
 				buffer.append("   User Profile : {");
 				cprof = tempUCE.getUserProfile();
-				listFields = cprof.getFields();
+				listFields = cprof.getAllFields();
 				itf = listFields.iterator();
 				// Fore every ContentField
 				while (itf.hasNext()) {

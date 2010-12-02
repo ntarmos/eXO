@@ -64,7 +64,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 	 */
 	public String getCheckSum() {
 
-		List<ContentField> list = contentProfile.getFields();
+		List<ContentField> list = contentProfile.getAllFields();
 		Iterator<ContentField> it = list.iterator();
 		ContentField cf;
 		while (it.hasNext()) {

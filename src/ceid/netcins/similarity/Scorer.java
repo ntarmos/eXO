@@ -119,7 +119,7 @@ public class Scorer {
 				// get Source User Profile and compute global term set
 				cprof = req.getSourceUserProfile();
 				if (cprof != null) {
-					itcf = cprof.getFields().iterator();
+					itcf = cprof.getAllFields().iterator();
 					// Iterate through every ContentField
 					while (itcf.hasNext()) {
 						cfield = itcf.next();
@@ -159,7 +159,7 @@ public class Scorer {
 
 				// Content Profile
 				cprof = entry.getContentProfile();
-				itcf = cprof.getFields().iterator();
+				itcf = cprof.getAllFields().iterator();
 				// Iterate through every ContentField
 				while (itcf.hasNext()) {
 					cfield = itcf.next();
@@ -195,7 +195,7 @@ public class Scorer {
 					// User Profile
 					cprof = entry.getUserProfile();
 					if (cprof != null) {
-						itcf = cprof.getFields().iterator();
+						itcf = cprof.getAllFields().iterator();
 						// Iterate through every ContentField
 						while (itcf.hasNext()) {
 							cfield = itcf.next();
@@ -330,7 +330,7 @@ public class Scorer {
 				// get Source User Profile and compute global term set
 				cprof = req.getSourceUserProfile();
 				if (cprof != null) {
-					itcf = cprof.getFields().iterator();
+					itcf = cprof.getAllFields().iterator();
 					// Iterate through every ContentField
 					while (itcf.hasNext()) {
 						cfield = itcf.next();
@@ -371,7 +371,7 @@ public class Scorer {
 
 				// User Profile
 				cprof = entry.getUserProfile();
-				itcf = cprof.getFields().iterator();
+				itcf = cprof.getAllFields().iterator();
 				// Iterate through every ContentField
 				while (itcf.hasNext()) {
 					cfield = itcf.next();

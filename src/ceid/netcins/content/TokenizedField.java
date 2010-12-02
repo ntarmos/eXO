@@ -22,8 +22,8 @@ public class TokenizedField extends ContentField implements Serializable {
 	int[] tf;
 
 	// TODO : some error checking
-	public TokenizedField(String name, TreeMap<String, Integer> tfm) {
-		super(name);
+	public TokenizedField(String name, TreeMap<String, Integer> tfm, boolean isPublic) {
+		super(name, isPublic);
 
 		// Allocate the necessary size
 		int size = tfm.size();
@@ -43,14 +43,18 @@ public class TokenizedField extends ContentField implements Serializable {
 		}
 	}
 
+	public TokenizedField(String name, TreeMap<String, Integer> tfm) {
+		this(name, tfm, ContentField.defaultAccessMode);
+	}
+
 	/**
 	 * Constructor which must be used if we dont have term frequencies
 	 * 
 	 * @param name
 	 * @param tfm
 	 */
-	public TokenizedField(String name, TreeSet<String> tfm) {
-		super(name);
+	public TokenizedField(String name, TreeSet<String> tfm, boolean isPublic) {
+		super(name, isPublic);
 
 		// Allocate the necessary size
 		int size = tfm.size();
@@ -67,6 +71,10 @@ public class TokenizedField extends ContentField implements Serializable {
 			terms[i] = tmp;
 			i++;
 		}
+	}
+
+	public TokenizedField(String name, TreeSet<String> tfm) {
+		this(name, tfm, ContentField.defaultAccessMode);
 	}
 
 	/**
@@ -86,5 +94,40 @@ public class TokenizedField extends ContentField implements Serializable {
 
 	public int[] getTF() {
 		return this.tf;
+	}
+
+	/* (non-Javadoc)
+	 * @see ceid.netcins.content.ContentField#size()
+	 */
+	public int size() {
+		int sum = 0;
+		for (int i = 0; i < terms.length; i++)
+			sum += terms[i].getBytes().length;
+		return super.size() + sum;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("Tokenized Field " + name);
+		for (int i = 0; i < terms.length; i++) {
+			buffer.append("\n Term: " + terms[i]);
+			if (tf != null)
+				buffer.append(", TF : " + tf[i]);
+		}
+		buffer.append("\n");
+		return buffer.toString();
+	}
+
+	public String toStringWithoutTF() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("Tokenized Field " + name);
+		for (int i = 0; i < terms.length; i++) {
+			buffer.append("\n Term: " + terms[i]);
+		}
+		buffer.append("\n");
+		return buffer.toString();
 	}
 }

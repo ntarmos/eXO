@@ -26,4 +26,11 @@ public class StoredField extends ContentField implements Serializable {
 	public String getFieldData() {
 		return this.fieldData;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return new String("Stored Field " + name + "\nStored FieldData " + fieldData + "\n");
+	}
 }

@@ -2,7 +2,6 @@ package ceid.netcins.content;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -30,10 +29,23 @@ public class ContentProfile implements Serializable {
 
 	/**
 	 * 
-	 * @return a list with all ContentFields
+	 * @return a list with all public ContentFields
 	 */
-	public List<ContentField> getFields() {
-		return fields;
+	public List<ContentField> getPublicFields() {
+		List<ContentField> ret = new ArrayList<ContentField>();
+		for (ContentField f : fields)
+			if (f.isPublic())
+				ret.add(f);
+		return ret;
+	}
+
+	/**
+	 *
+	 * @return a list with all (public and private) ContentFields
+	 */
+	public List<ContentField> getAllFields() {
+		// TODO: which is better to return: a live reference or a copy?
+		return new ArrayList<ContentField>(fields);
 	}
 
 	/**
@@ -42,44 +54,14 @@ public class ContentProfile implements Serializable {
 	 */
 	@Override
 	public String toString() {
-
 		StringBuffer buffer = new StringBuffer();
-		Iterator<ContentField> it = this.fields.iterator();
-
-		while (it.hasNext()) {
-
-			Object obj = it.next();
-
-			if (obj instanceof TokenizedField) {
-
-				TokenizedField tokf = (TokenizedField) obj;
-				buffer.append("\nTokenized Field " + tokf.getFieldName());
-				String[] terms = tokf.getTerms();
-				int[] tfs = tokf.getTF();
-				if (tfs != null) {
-					for (int i = 0; i < tokf.getTerms().length; i++) {
-						buffer.append("\nTerm : " + terms[i] + ", TF : "
-								+ tfs[i]);
-					}
-				} else {
-					for (int i = 0; i < tokf.getTerms().length; i++) {
-						buffer.append("\nTerm : " + terms[i]);
-					}
-				}
-
-			} else if (obj instanceof TermField) {
-
-				TermField termf = (TermField) obj;
-				buffer.append("\nTerm Field " + termf.getFieldName());
-				buffer.append("\nTerm FieldData " + termf.getFieldData());
-
-			} else if (obj instanceof StoredField) {
-
-				StoredField storf = (StoredField) obj;
-				buffer.append("\nStored Field " + storf.getFieldName());
-				buffer.append("\nStored FieldData " + storf.getFieldData());
-
-			}
+		for (ContentField obj : fields) {
+			if (obj instanceof TokenizedField)
+				buffer.append(((TokenizedField)obj).toString());
+			else if (obj instanceof TermField)
+				buffer.append(((TermField)obj).toString());
+			else if (obj instanceof StoredField)
+				buffer.append(((StoredField)obj).toString());
 		}
 		return buffer.toString();
 	}
@@ -91,36 +73,14 @@ public class ContentProfile implements Serializable {
 	 * @return A full representation of the ContentProfile data
 	 */
 	public String toStringWithoutTF() {
-
 		StringBuffer buffer = new StringBuffer();
-		Iterator<ContentField> it = this.fields.iterator();
-
-		while (it.hasNext()) {
-
-			Object obj = it.next();
-
-			if (obj instanceof TokenizedField) {
-
-				TokenizedField tokf = (TokenizedField) obj;
-				buffer.append("\nTokenized Field " + tokf.getFieldName());
-				String[] terms = tokf.getTerms();
-				for (int i = 0; i < tokf.getTerms().length; i++) {
-					buffer.append("\nTerm : " + terms[i]);
-				}
-
-			} else if (obj instanceof TermField) {
-
-				TermField termf = (TermField) obj;
-				buffer.append("\nTerm Field " + termf.getFieldName());
-				buffer.append("\nTerm FieldData " + termf.getFieldData());
-
-			} else if (obj instanceof StoredField) {
-
-				StoredField storf = (StoredField) obj;
-				buffer.append("\nStored Field " + storf.getFieldName());
-				buffer.append("\nStored FieldData " + storf.getFieldData());
-
-			}
+		for (ContentField obj : fields) {
+			if (obj instanceof TokenizedField)
+				buffer.append(((TokenizedField)obj).toStringWithoutTF());
+			else if (obj instanceof TermField)
+				buffer.append(((TermField)obj).toString());
+			else if (obj instanceof StoredField)
+				buffer.append(((StoredField)obj).toString());
 		}
 		return buffer.toString();
 	}
@@ -130,28 +90,16 @@ public class ContentProfile implements Serializable {
 	 * @return A sum of the ContentProfile data in bytes
 	 */
 	public double computeTotalBytes() {
-
 		double counter = 0;
-		Iterator<ContentField> it = this.fields.iterator();
+		for (ContentField obj : fields) {
+			// Don't count bytes of private data
+			if (obj.isPrivate())
+				continue;
 
-		while (it.hasNext()) {
-
-			Object obj = it.next();
-
-			if (obj instanceof TokenizedField) {
-
-				TokenizedField tokf = (TokenizedField) obj;
-				String[] terms = tokf.getTerms();
-				for (int i = 0; i < terms.length; i++) {
-					counter += terms[i].getBytes().length;
-				}
-
-			} else if (obj instanceof TermField) {
-
-				TermField termf = (TermField) obj;
-				counter += termf.getFieldData().getBytes().length;
-
-			}
+			if (obj instanceof TokenizedField)
+				counter += ((TokenizedField)obj).size();
+			else if (obj instanceof TermField)
+				counter += ((TermField)obj).size();
 		}
 		return counter;
 	}

@@ -19,17 +19,33 @@ public abstract class ContentField implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3881344031651483680L;
+	public static final boolean defaultAccessMode = false;
+	// No setters for the fields below; remove and readd to update
 	String name;
+	Boolean isPublic;
 
-	// Object fieldData;
+	public ContentField(String name, boolean isPublic) {
+		this.name = name;
+		this.isPublic = isPublic;
+	}
 
 	public ContentField(String name) {
-		this.name = name;
-		// this.fieldData = null;
+		this(name, defaultAccessMode);
 	}
 
 	public String getFieldName() {
 		return name;
 	}
 
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	public boolean isPrivate() {
+		return !isPublic;
+	}
+
+	public int size() {
+		return name.getBytes().length + 1 /* Byte-sized Boolean representation */;
+	}
 }
