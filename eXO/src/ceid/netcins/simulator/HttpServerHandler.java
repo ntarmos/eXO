@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.simulator;
 
 import java.io.FileInputStream;

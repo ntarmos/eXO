@@ -1,12 +1,3 @@
-/*
- * CatalogMessage.java
- *
- * Created on April 20, 2008, 2:54 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package ceid.netcins.messages;
 
 /**
@@ -31,9 +22,6 @@ import rice.p2p.past.rawserialization.RawPastContent;
 
 public class CatalogMessage extends ContinuationMessage {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -465459501485739375L;
 
 	public static final short TYPE = 8;

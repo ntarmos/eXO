@@ -1,11 +1,9 @@
-
-
 package ceid.netcins;
 
 import rice.p2p.commonapi.Id;
 
 /**
- * A request by the tager to the tagee's node for taging some content object
+ * A request by the tager to the tagee's node for tagging some content object
  * 
  * @author Andreas Loupasakis
  */

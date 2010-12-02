@@ -1,5 +1,3 @@
-
-
 package ceid.netcins;
 
 import java.util.HashMap;

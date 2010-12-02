@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.content;
 
 import java.io.Serializable;
@@ -8,16 +6,13 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * This ContentField type contains a set of "terms" (String values) obtained
- * from the analysis of some file and the corresponding "term frequencies" (tf)
+ * This ContentField type contains a set of "terms" (String values) and the 
+ * corresponding "term frequencies" (tf), obtained from a source such as a file.
  * 
  * @author Andreas Loupasakis
  */
 public class TokenizedField extends ContentField implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3889036995034671146L;
 
 	// Terms are provided in sorted order;
@@ -62,7 +57,7 @@ public class TokenizedField extends ContentField implements Serializable {
 		terms = new String[size];
 		tf = null;
 
-		// Transfer the terms and tfs in the static arrays
+		// Transfer the terms in the static array
 		Iterator<String> it = tfm.iterator();
 
 		String tmp;
@@ -75,7 +70,9 @@ public class TokenizedField extends ContentField implements Serializable {
 	}
 
 	/**
-	 * Resets the terms array TODO : Check the tf array if it is affected!
+	 * Resets the terms array 
+	 * TODO : Check the tf array if it is affected!
+	 * FIXME: Not valid since we don't set the corresponding frequencies!
 	 * 
 	 * @param terms
 	 */

@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
@@ -16,9 +14,6 @@ import rice.p2p.commonapi.Id;
 @SuppressWarnings("unchecked")
 public class CatalogEntry implements Serializable, Comparable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6930057763768157893L;
 	// User identifier (or node Identifier)
 	private Id uid;

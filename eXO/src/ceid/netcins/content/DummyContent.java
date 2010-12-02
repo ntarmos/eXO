@@ -1,12 +1,3 @@
-/*
- * DummyContent.java
- *
- * Created on 22 �������� 2006, 1:36 ��
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package ceid.netcins.content;
 
 import java.util.Collections;
@@ -20,7 +11,7 @@ import rice.p2p.past.PastException;
 
 /**
  * 
- * @author and
+ * @author Andreas Loupasakis
  */
 public class DummyContent extends ContentHashPastContent {
 
@@ -113,7 +104,8 @@ public class DummyContent extends ContentHashPastContent {
 			return false;
 		}
 
-		return (((DummyContent) o).myId.equals(myId) && (((DummyContent) o).version == version));
+		return (((DummyContent) o).myId.equals(myId)
+				&& (((DummyContent) o).version == version));
 	}
 
 	/**

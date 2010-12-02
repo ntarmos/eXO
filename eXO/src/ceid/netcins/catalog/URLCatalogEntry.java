@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
@@ -17,9 +15,6 @@ import ceid.netcins.content.ContentProfile;
 public class URLCatalogEntry extends ContentCatalogEntry implements
 		Serializable, Comparable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1571553467344918199L;
 	// The url for this entry
 	private URL url;

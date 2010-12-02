@@ -1,5 +1,3 @@
-
-
 package ceid.netcins;
 
 import com.sun.net.httpserver.HttpExchange;

@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
@@ -16,9 +14,6 @@ import rice.p2p.commonapi.Id;
  */
 public class ScoreCatalog extends Catalog implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7733473333205719161L;
 	private Vector<Float> scoreValues;
 

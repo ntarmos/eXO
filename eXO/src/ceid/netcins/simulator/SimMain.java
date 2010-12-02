@@ -1,12 +1,3 @@
-/*
- * SimMain.java
- *
- * Created on April 19, 2008, 5:08 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package ceid.netcins.simulator;
 
 import java.io.BufferedReader;

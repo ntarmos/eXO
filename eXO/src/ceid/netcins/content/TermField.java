@@ -1,22 +1,16 @@
-
-
 package ceid.netcins.content;
 
 import java.io.Serializable;
 
 /**
- * This Content Field is also an "indexed term" The only addition is just like
- * the StoredField a String field value. The main difference of this Class in
- * contrast with StoredField is that this fieldData is going to be hashed and
- * indexed in a corresponding Catalog node.
+ * This Content Field is also "indexed" in the overlay. The main difference of 
+ * this Class with the StoredField is that the fieldData member is going to be 
+ * hashed and indexed to the corresponding Catalog node.
  * 
  * @author Andreas Loupasakis
  */
 public class TermField extends ContentField implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5325607261905749524L;
 	String fieldData;
 

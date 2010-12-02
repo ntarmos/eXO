@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
@@ -22,9 +20,6 @@ import ceid.netcins.content.StoredField;
 public class ContentCatalogEntry extends UserCatalogEntry implements
 		Serializable, Comparable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2355147651372821335L;
 	// The profile for a specific shared content object
 	private ContentProfile contentProfile;
@@ -36,7 +31,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 
 	/**
 	 * Used to compare two entries. Two entries are the same if: they have the
-	 * same UID andh the same SHA-1 checksum
+	 * same UID and the same SHA-1 checksum
 	 * 
 	 * @param o
 	 *            DESCRIBE THE PARAMETER

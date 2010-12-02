@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.catalog;
 
 import java.util.Vector;
@@ -14,13 +12,9 @@ import rice.p2p.past.PastException;
  * TID is a SHA-1 output of an indexing term. This class is very fundamental!
  * 
  * @author Andreas Loupasakis
- * @version 1.0
  */
 public class Catalog extends ContentHashPastContent {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6819758682396530715L;
 
 	// The Content CatalogEntries
@@ -29,7 +23,7 @@ public class Catalog extends ContentHashPastContent {
 	// the user catalog entries
 	private Vector<UserCatalogEntry> userCatalogEntries;
 
-	// the user catalog entries
+	// the url catalog entries
 	private Vector<URLCatalogEntry> urlCatalogEntries;
 
 	public Catalog(Id tid) {
@@ -101,7 +95,7 @@ public class Catalog extends ContentHashPastContent {
 
 	/**
 	 * Just removes the old entry and adds the updated one! This is usefull when
-	 * an update to the profile was occured!
+	 * an update to the profile was occurred!
 	 * 
 	 * @param oldCE
 	 * @param newCE

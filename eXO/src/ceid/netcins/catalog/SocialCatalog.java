@@ -21,7 +21,7 @@ public class SocialCatalog {
 	// the user catalog entries
 	private Vector<UserCatalogEntry> userCatalogEntries;
 
-	// the user catalog entries
+	// the url catalog entries
 	private Vector<URLCatalogEntry> urlCatalogEntries;
 
 	public SocialCatalog(String tag) {

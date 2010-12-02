@@ -1,14 +1,12 @@
-
-
 package ceid.netcins.content;
 
 import java.io.Serializable;
 
 /**
- * The main difference of this Class in contrast with TermField is that this
- * fieldData is not going to be hashed and indexed in a corresponding Catalog
- * node. This fieldData is just stored in a Catalog entry. Examples of such
- * ContentField are "filesize", "SHA-1", "modified" etc.
+ * The main difference of this Class in contrast with TermField is that the
+ * fieldData is not going to be hashed and indexed in the corresponding Catalog
+ * node. This StoredField's fieldData is just stored in a Catalog entry. 
+ * Examples of such ContentField are "filesize", "SHA-1", "modified" etc.
  * 
  * @author Andreas Loupasakis
  */

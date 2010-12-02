@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.messages;
 
 import java.io.IOException;
@@ -22,9 +20,6 @@ import ceid.netcins.utils.JavaSerializer;
  */
 public class FriendReqMessage extends ContinuationMessage {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2691881047725823901L;
 
 	public static final short TYPE = 8;

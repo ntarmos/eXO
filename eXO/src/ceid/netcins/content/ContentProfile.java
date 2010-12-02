@@ -15,9 +15,6 @@ import java.util.Random;
  */
 public class ContentProfile implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3971044346421201440L;
 
 	List<ContentField> fields = new ArrayList<ContentField>();

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PROJECT_ROOT=$PWD/../
-EXOROOT=$PROJECT_ROOT/eXO
+EXOROOT=$PROJECT_ROOT
 FPROOT=$PROJECT_ROOT/FreePastry.git/pastry
 
 EXOCP=$EXOROOT/classes:$EXOROOT/jars/freepastry

@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.content;
 
 import java.io.BufferedReader;
@@ -45,37 +43,37 @@ public class ContentProfileFactory {
 	// Our analyzer!
 	StandardAnalyzer sa;
 
-	// max num of terms permited to handle
+	// max num of terms permitted to handle
 	int maxFieldLength;
 
 	/**
-	 * Makes a document for a File. This document object is the Content Profile.
-	 * The fields of the profile depends on the number of attributes extracted
-	 * from the file. Some of the fields are indexed (and stored), this is
-	 * translated to network "insertions" with the correspoding field value
-	 * being the destination. Some other fields are only stored in the Catalogs
-	 * (their values). And some of them are also tokenized (except for indexed,
-	 * stored).
+	 * Creates a ContentProfile for a specific File given as input. 
+	 * The extracted attributes of the file are grouped as ContentFields in the 
+	 * ContentProfile instance.  
+	 * 
+	 * ContentFields are subclassed to three types. TermField, TokenizedField 
+	 * and StoredField. All these field types may be included in a Catalog data 
+	 * structure. TermField and TokenizedField contain data which is being
+	 * indexed. StoreField's data is not indexed! A TokenizedField contains 
+	 * separated terms which are being indexed one-by-one! TermField is indexed
+	 * as a whole. 
 	 * 
 	 * We use "mimetype" information (e.g. text/html) to discover file content
 	 * that is going to be tokenized. Specifically :
 	 * 
-	 * TODO : In the Future develop a classes to tokenize application/pdf,
+	 * TODO : In the Future develop classes to tokenize application/pdf,
 	 * text/csv, text/css, text/sgml!!!
 	 * 
-	 * text/* : Always we use a FileReader to read file content, analyze, filter
-	 * and tokenize! text/html, text/xml : Special handling to parse main
-	 * content!
+	 *  - text/* : Always we use a FileReader to read file content, analyze, 
+	 *             filter and tokenize! 
+	 *  - text/html, text/xml : Special handling to parse main content!
 	 * 
-	 * <ul>
-	 * <li><code>path</code>--containing the pathname of the file, as a stored,
-	 * untokenized field;
-	 * <li><code>modified</code>--containing the last modified date of the file
-	 * as a field as created by <a
-	 * href="lucene.document.DateTools.html">DateTools</a>; and
-	 * <li><code>contents</code>--containing the full contents of the file, as a
-	 * Reader field;
-	 * </ul>
+	 * Other fields:
+	 * filename -- the name of file, as a term field.
+	 * modified -- containing the last modified date of the file as a stored 
+	 * 			   field created with DateTools.
+	 * contents -- containing the body of the file (for non-binary), as a 
+	 *             tokenized field.
 	 */
 	public ContentProfile buildContentProfile(File f)
 			throws java.io.FileNotFoundException, java.io.IOException {
@@ -182,6 +180,7 @@ public class ContentProfileFactory {
 			}
 
 			// The rest of Field/Value pairs that libextractor provided us.
+			// Temporarily store them as StoredFields.
 			// TODO : Determine which of these are TermFields or
 			// TokenizedFields!
 			Iterator<String> it = candfields.keySet().iterator();

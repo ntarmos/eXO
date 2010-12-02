@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.messages;
 
 import java.io.IOException;
@@ -22,9 +20,6 @@ import rice.p2p.past.rawserialization.RawPastContent;
  */
 public class FriendApprMessage extends ContinuationMessage {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7419229279778572351L;
 
 	public static final short TYPE = 9;

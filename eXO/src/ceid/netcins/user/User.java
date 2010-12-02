@@ -27,8 +27,7 @@ public class User {
 	private Id uid;
 
 	// User nick(screen) name in the network. This name will be indexed as a
-	// field!
-	// in the userProfile!
+	// field in the userProfile!
 	private String username;
 
 	// This is the set of "terms" that describe the user.
@@ -69,9 +68,6 @@ public class User {
 	// TODO: Implement this, Describe design etc.
 	@SuppressWarnings("unused")
 	private Map<Id, SocialLink> sociallinks;
-
-	// This map holds the ''tagclouds'' for evey content object
-	// Map<File,Tagcloud> tags
 
 	/**
 	 * Constructor of user entity

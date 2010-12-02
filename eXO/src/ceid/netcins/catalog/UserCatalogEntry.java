@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
@@ -17,9 +15,6 @@ import ceid.netcins.content.ContentProfile;
 public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		Comparable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7850151060272447739L;
 	// The profile of the user we want to have indexed.
 	private ContentProfile userProfile;
