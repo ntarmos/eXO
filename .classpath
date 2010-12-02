@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="lib/charva.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.3.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/FreePastry.git"/>
 	<classpathentry kind="lib" path="FreePastry.git-lib/bouncycastle.jar"/>
 	<classpathentry kind="lib" path="FreePastry.git-lib/commons-jxpath-1.1.jar"/>
 	<classpathentry kind="lib" path="FreePastry.git-lib/commons-logging.jar"/>
