@@ -2,6 +2,8 @@ package ceid.netcins.content;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -16,7 +18,32 @@ public class ContentProfile implements Serializable {
 
 	private static final long serialVersionUID = -3971044346421201440L;
 
-	List<ContentField> fields = new ArrayList<ContentField>();
+	List<ContentField> fields;
+
+	/**
+	 * Default constructor
+	 */
+	public ContentProfile() {
+		this.fields = new ArrayList<ContentField>();
+	}
+
+	/**
+	 * Copy constructor
+	 *
+	 * @param cp the ContentProfile to copy from
+	 */
+	public ContentProfile(ContentProfile cp) {
+		this.fields = new ArrayList<ContentField>(cp.fields);
+	}
+
+	/**
+	 * Copy constructor, initializing its fields by copying all of the elements of c
+	 * @param c a {@link Collection} of {@link ContentField}s to make up the new {@link ContentProfile} 
+	 */
+	public ContentProfile(Collection<ContentField> c) {
+		this();
+		fields.addAll(c);
+	}
 
 	/**
 	 * Adds a ContentField object (any of three types) in the List fields
@@ -46,6 +73,13 @@ public class ContentProfile implements Serializable {
 	public List<ContentField> getAllFields() {
 		// TODO: which is better to return: a live reference or a copy?
 		return new ArrayList<ContentField>(fields);
+	}
+
+	/**
+	 * @return a new ContentProfile with just the public fields
+	 */
+	public ContentProfile getPublicPart() {
+		return new ContentProfile(getPublicFields());
 	}
 
 	/**
@@ -124,4 +158,13 @@ public class ContentProfile implements Serializable {
 		return "";
 	}
 
+	public boolean equals(ContentProfile cp) {
+		HashSet<ContentField> our = new HashSet<ContentField>(fields);
+		HashSet<ContentField> theirs = new HashSet<ContentField>(cp.fields);
+		return (our.equals(theirs));
+	}
+
+	public boolean equalsPublic(ContentProfile cp) {
+		return this.getPublicPart().equals(cp.getPublicPart());
+	}
 }
