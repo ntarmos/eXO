@@ -46,6 +46,7 @@ public abstract class ContentField implements Serializable {
 	}
 
 	public int size() {
-		return name.getBytes().length + 1 /* Byte-sized Boolean representation */;
+		// Don't count isPublic in the object's size as it is not sent out to the network
+		return name.getBytes().length;
 	}
 }
