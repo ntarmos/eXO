@@ -168,6 +168,47 @@ public class CatalogService extends DHTService implements SocService {
 		user.setUserProfile(cpf.buildProfile(m, delimiter));
 	}
 
+	public ContentProfile getUserProfile() {
+		return user.getCompleteUserProfile();
+	}
+
+	public void setUserProfile(ContentProfile profile) {
+		ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
+		user.setUserProfile(profile);
+
+		if (!oldProfile.equalsPublic(profile)) {
+			// The public part has changed. We should reindex the user profile in the network
+			indexUser(new Continuation() {
+
+				public void receiveResult(Object result) {
+
+					System.out.println("User : " + user.getUID()
+							+ ", indexed successfully");
+					// TODO : Check the replicas if are updated correctly!
+					// run replica maintenance
+					// runReplicaMaintence();
+					if (result instanceof Boolean[]) {
+						Boolean[] results = (Boolean[]) result;
+						int indexedNum = 0;
+						for (Boolean isIndexedTerm : results) {
+							if (isIndexedTerm)
+								indexedNum++;
+						}
+						System.out.println("Total " + indexedNum
+								+ " terms indexed out of " + results.length
+								+ "!");
+					}
+				}
+
+				public void receiveException(Exception result) {
+					System.out.println("User : " + user.getUID()
+							+ ", indexed with errors : "
+							+ result.getMessage());
+				}
+			});
+		}
+	}
+
 	/**
 	 * This is used to create a url profile.
 	 * 
@@ -606,7 +647,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		// Our data which will travel through the network!!!
 		URLCatalogEntry ue = new URLCatalogEntry(user.getUID(), oldtags, user
-				.getUserProfile(), url);
+				.getPublicUserProfile(), url);
 		PastContent pdu = new InsertPDU(tid, ue);
 		// Here is the message post
 		// Issue an insert request to the uderline DHT service
@@ -684,7 +725,7 @@ public class CatalogService extends DHTService implements SocService {
 
 			// Our data which will travel through the network!!!
 			ContentCatalogEntry cce = new ContentCatalogEntry(user.getUID(),
-					cp, user.getUserProfile());
+					cp, user.getPublicUserProfile());
 
 			// Create MultiContinuation
 			// TODO : In order to index once every term we should use a Set
@@ -801,7 +842,7 @@ public class CatalogService extends DHTService implements SocService {
 		}
 
 		// Fetch the user profile
-		ContentProfile cp = user.getUserProfile();
+		ContentProfile cp = user.getPublicUserProfile();
 		if (cp == null) {
 			System.out.println("User has an empty profile!");
 			return;
@@ -960,7 +1001,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		// Our data which will travel through the network!!!
 		ContentCatalogEntry cce = new ContentCatalogEntry(user.getUID(), cp,
-				user.getUserProfile());
+				user.getPublicUserProfile());
 
 		// Create MultiContinuation
 		// TODO : In order to index once every term we should use a Set instead
@@ -1177,7 +1218,7 @@ public class CatalogService extends DHTService implements SocService {
 					|| queryType == QueryPDU.USER_ENHANCEDQUERY
 					|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
 				qPDU = new QueryPDU(qterms, queryType, k, this.user
-						.getUserProfile());
+						.getCompleteUserProfile());
 			} else {
 				qPDU = new QueryPDU(qterms, queryType, k);
 			}
@@ -1287,7 +1328,7 @@ public class CatalogService extends DHTService implements SocService {
 					|| queryType == QueryPDU.USER_ENHANCEDQUERY
 					|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
 				sqPDU = new SocialQueryPDU(tags, queryType, this.user
-						.getUserProfile());
+						.getCompleteUserProfile());
 			} else {
 				sqPDU = new SocialQueryPDU(tags, queryType);
 			}
@@ -2100,7 +2141,7 @@ public class CatalogService extends DHTService implements SocService {
 						new ContentCatalogEntry(user.getUID(), user
 								.getSharedContentProfile().get(
 										tpdu.getContentId()), user
-								.getUserProfile()));
+								.getPublicUserProfile()));
 
 			} else if (msg instanceof RetrieveContMessage) {
 				final RetrieveContMessage rcmsg = (RetrieveContMessage) msg;

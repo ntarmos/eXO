@@ -131,8 +131,12 @@ public class User {
 		this.friends = friends;
 	}
 
-	public ContentProfile getUserProfile() {
+	public ContentProfile getCompleteUserProfile() {
 		return userProfile;
+	}
+
+	public ContentProfile getPublicUserProfile() {
+		return userProfile.getPublicPart();
 	}
 
 	public List<Friend> getFriends() {

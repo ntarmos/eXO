@@ -538,7 +538,7 @@ public class ClientDriver {
 						.println("\n*******************************************\n");
 			} else if (type == StatsRequest.PROFILES) {
 				System.out.println("\n\n*********** User Profile***********\n");
-				ContentProfile cp = past.getUser().getUserProfile();
+				ContentProfile cp = past.getUser().getCompleteUserProfile();
 				if (cp != null) {
 					System.out.println(cp.toStringWithoutTF());
 				}

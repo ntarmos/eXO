@@ -1876,7 +1876,7 @@ public class SimDriver extends CommonAPITest {
 			} else if (type == StatsRequest.PROFILES) {
 				System.out
 						.println("\n\n*********** User Profile ***********\n");
-				ContentProfile cp = pasts[nodeNum].getUser().getUserProfile();
+				ContentProfile cp = pasts[nodeNum].getUser().getCompleteUserProfile();
 				if (cp != null) {
 					System.out.println(cp.toStringWithoutTF());
 				}
@@ -2015,7 +2015,7 @@ public class SimDriver extends CommonAPITest {
 							num2 = this.environment.getRandomSource().nextInt(
 									this.pasts.length);
 							// TODO : With the Delimiter
-							term = pasts[num2].getUser().getUserProfile()
+							term = pasts[num2].getUser().getPublicUserProfile()
 									.randomTerm();
 							if (term != null && !term.equals("")) {
 								if (j != 0)
