@@ -29,6 +29,8 @@
 
 <!-- DOM AND SAX -->
 <!ELEMENT random_queries (num_type,num_keywords,num_queries,num_results)>
+<!ELEMENT random_pn_queries (num_type,num_keywords,num_queries,num_results)>
+<!ELEMENT random_both_queries (num_type,num_keywords,num_queries,num_results)>
 
 <!ELEMENT source (#PCDATA)>
 <!ELEMENT directory (#PCDATA)>
