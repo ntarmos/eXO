@@ -12,13 +12,13 @@ import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
 
 /**
- * This message type is sent to indicate that a friend request has been approved
- * by the end user and now the source user must be informed.
+ * This message type is sent to indicate that a friend request has been accepted
+ * by the user and now the friendship requester user must be informed.
  * 
  * 
  * @author Andreas Loupasakis
  */
-public class FriendApprMessage extends ContinuationMessage {
+public class FriendAcceptMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = 7419229279778572351L;
 
@@ -36,16 +36,12 @@ public class FriendApprMessage extends ContinuationMessage {
 	/**
 	 * Constructor
 	 * 
-	 * @param uid
-	 *            The unique id
-	 * @param id
-	 *            The location to be stored
-	 * @param source
-	 *            The source address
-	 * @param dest
-	 *            The destination address
+	 * @param uid The unique id
+	 * @param id The location to be stored
+	 * @param source The source address
+	 * @param dest The destination address
 	 */
-	public FriendApprMessage(int uid, Id id, NodeHandle source, Id dest) {
+	public FriendAcceptMessage(int uid, Id id, NodeHandle source, Id dest) {
 		super(uid, source, dest);
 
 		this.id = id;
@@ -104,7 +100,7 @@ public class FriendApprMessage extends ContinuationMessage {
 	 */
 	@Override
 	public String toString() {
-		return "[FriendApprMessage for " + id + " data " + response + "]";
+		return "[FriendAcceptMessage for " + id + " data " + response + "]";
 	}
 
 	/***************** Raw Serialization ***************************************/
@@ -134,18 +130,18 @@ public class FriendApprMessage extends ContinuationMessage {
 
 	}
 
-	public static FriendApprMessage build(InputBuffer buf, Endpoint endpoint,
+	public static FriendAcceptMessage build(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		byte version = buf.readByte();
 		switch (version) {
 		case 0:
-			return new FriendApprMessage(buf, endpoint, pcd);
+			return new FriendAcceptMessage(buf, endpoint, pcd);
 		default:
 			throw new IOException("Unknown Version: " + version);
 		}
 	}
 
-	private FriendApprMessage(InputBuffer buf, Endpoint endpoint,
+	private FriendAcceptMessage(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		super(buf, endpoint);
 		if (serType == S_SUB) {

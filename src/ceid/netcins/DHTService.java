@@ -66,7 +66,7 @@ import rice.persistence.Cache;
 import rice.persistence.LockManager;
 import rice.persistence.LockManagerImpl;
 import rice.persistence.StorageManager;
-import ceid.netcins.messages.FriendApprMessage;
+import ceid.netcins.messages.FriendAcceptMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.QueryMessage;
@@ -223,8 +223,8 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				case FriendReqMessage.TYPE:
 					return FriendReqMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FriendApprMessage.TYPE:
-					return FriendApprMessage.build(buf, endpoint,
+				case FriendAcceptMessage.TYPE:
+					return FriendAcceptMessage.build(buf, endpoint,
 							contentDeserializer);
 				case TagContentMessage.TYPE:
 					return TagContentMessage.build(buf, endpoint,
@@ -1384,12 +1384,12 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		if (logger.level <= Logger.FINER)
 			logger.log(" Performing lookup on " + id.toStringFull());
 
-		if (type == FriendApprMessage.TYPE) {
+		if (type == FriendAcceptMessage.TYPE) {
 			// send the request across the wire, and see if the result is null
 			// or not
-			sendRequest(id, new FriendApprMessage(getUID(), id,
+			sendRequest(id, new FriendAcceptMessage(getUID(), id,
 					getLocalNodeHandle(), id), new NamedContinuation(
-					"FriendApprMessage for " + id, command) {
+					"FriendAcceptMessage for " + id, command) {
 				public void receiveResult(final Object o) {
 					// if we have an object, we return it
 					// otherwise, we must check all replicas in order to make

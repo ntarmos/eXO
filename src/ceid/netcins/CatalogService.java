@@ -47,7 +47,7 @@ import ceid.netcins.content.ContentProfileFactory;
 import ceid.netcins.content.StoredField;
 import ceid.netcins.content.TermField;
 import ceid.netcins.content.TokenizedField;
-import ceid.netcins.messages.FriendApprMessage;
+import ceid.netcins.messages.FriendAcceptMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.InsertPDU;
@@ -289,7 +289,7 @@ public class CatalogService extends DHTService implements SocService {
 
 					// Now we can add the UID to the queue for pending
 					// approvals!
-					user.addPendingFAppr(destuid);
+					user.addPendingOutgoingFReq(destuid);
 
 					parent.receiveResult(result);
 				} else {
@@ -344,8 +344,8 @@ public class CatalogService extends DHTService implements SocService {
 									+ destuid + ", result code : " + result);
 
 					// Now we can add the UID to the queue for pending
-					// approvals!
-					user.addPendingFAppr(destuid);
+					// outgoing requests!
+					user.addPendingOutgoingFReq(destuid);
 
 					parent.receiveResult(result);
 				} else {
@@ -374,12 +374,11 @@ public class CatalogService extends DHTService implements SocService {
 	 * order to operate properly nodes must be assigned nodeIDs created by the
 	 * user unique names (e.g. email address).
 	 * 
-	 * @param freq
-	 *            The friend request for approval
-	 * @param command
-	 *            The callback that must be executed when we return
+	 * @param freq The friend request for approval
+	 * @param command The callback that must be executed when we return
 	 */
-	public void friendApproval(final FriendRequest freq,
+	@SimulatorOnly
+	public void acceptFriend(final FriendRequest freq,
 			final Continuation command) {
 
 		// TODO : maybe an Exception is needed here to be thrown
@@ -391,18 +390,18 @@ public class CatalogService extends DHTService implements SocService {
 		final Id destuid = freq.getUID();
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, FriendApprMessage.TYPE, new NamedContinuation(
-				"FriendApprMessage for " + destuid, command) {
+		lookup(destuid, false, FriendAcceptMessage.TYPE, new NamedContinuation(
+				"FriendAcceptMessage for " + destuid, command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
 					System.out
-							.println("\n\nFriend approval sent to user with UID : "
+							.println("\n\nAccept friend  sent to user with UID : "
 									+ destuid + ", result code : " + result);
 
 					// Now we know that message of approval has sent
 					// successfully and we can remove the freq!
-					user.removePendingFReq(freq);
+					user.removePendingIncomingFReq(freq);
 
 					// Users are now FRIENDS!
 					// TODO : Maybe include IP address.
@@ -412,7 +411,7 @@ public class CatalogService extends DHTService implements SocService {
 					parent.receiveResult(result);
 				} else {
 					System.out
-							.println("\n\nFriend approval sent to user with UID : "
+							.println("\n\nAccept friend sent to user with UID : "
 									+ destuid
 									+ ", but something went wrong to the dest node process");
 				}
@@ -420,14 +419,14 @@ public class CatalogService extends DHTService implements SocService {
 
 			public void receiveException(Exception result) {
 				System.out
-						.println("\n\nFriend approval sent to user with UID : "
+						.println("\n\nAccept friend sent to user with UID : "
 								+ destuid + ", result (exception) code : "
 								+ result.getMessage());
 				parent.receiveException(result);
 			}
 		});
 	}
-
+	
 	/**
 	 * This method is used to retrieve the original (or pseydodata for
 	 * simulation) and maybe some tagclouds from a user node. In order to know
@@ -2075,21 +2074,21 @@ public class CatalogService extends DHTService implements SocService {
 				// All was right! Now let's return the ContentCatalogEntry
 				getResponseContinuation(msg).receiveResult(vec);
 
-			} else if (msg instanceof FriendApprMessage) {
-				final FriendApprMessage famsg = (FriendApprMessage) msg;
+			} else if (msg instanceof FriendAcceptMessage) {
+				final FriendAcceptMessage famsg = (FriendAcceptMessage) msg;
 				lookups++;
 
 				// TODO : check "famsg.getSource().getId()" if NodeHandle calls
 				// some socket to retrieve ID
 				Id fid = famsg.getSource().getId();
-				user.removePendingFAppr(fid);
+				user.removePendingOutgoingFReq(fid);
 
 				// Now they are FRIENDS!
 				// TODO : Find a way to get the screen name!
 				user.addFriend(new Friend(fid, "n/a"));
 
 				if (logger.level <= Logger.FINER)
-					logger.log("Returning response for FriendApprMessage "
+					logger.log("Returning response for FriendAcceptMessage "
 							+ famsg.getId() + " from " + endpoint.getId());
 
 				// All was right!
@@ -2101,7 +2100,7 @@ public class CatalogService extends DHTService implements SocService {
 
 				// TODO : check "frmsg.getSource().getId()" if NodeHandle calls
 				// some socket to retrieve ID
-				user.addPendingFReq(new FriendRequest(frmsg.getFriendReqPDU(),
+				user.addPendingIncomingFReq(new FriendRequest(frmsg.getFriendReqPDU(),
 						frmsg.getSource().getId()));
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for friendrequest message "

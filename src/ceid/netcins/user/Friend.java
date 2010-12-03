@@ -1,14 +1,14 @@
 package ceid.netcins.user;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import rice.p2p.commonapi.Id;
 
 /**
  * This class contains the necessary data of an entry in the friends list.
- * Important parts of such an entry are the UID, the IP address and the screen
- * name of the user's friend. IP address may be null indicating that we are in
- * simulation mode.
+ * Important parts of such an entry are the UID, the socket address (IP, port)
+ * and the screen name of the user's friend. IP, port may be null indicating 
+ * that we are in simulation mode.
  * 
  * @author Andreas Loupasakis
  */
@@ -18,18 +18,18 @@ public class Friend {
 	private Id uid;
 
 	// IP address of the friend
-	private InetAddress ip = null;
+	private InetSocketAddress sockAddr = null;
 
-	// The screen name of the friend. This is
-	private String screenName = "n/a";
+	// The screen name of the friend.
+	private String screenName = "Anonymous";
 
 	public Friend(Id uid, String screenName) {
 		this(uid, screenName, null);
 	}
 
-	public Friend(Id uid, String screenName, InetAddress ip) {
+	public Friend(Id uid, String screenName, InetSocketAddress sockAddr) {
 		this.uid = uid;
-		this.ip = ip;
+		this.sockAddr = sockAddr;
 		this.screenName = screenName;
 	}
 
@@ -37,28 +37,27 @@ public class Friend {
 		screenName = name;
 	}
 
-	public void setIp(InetAddress ip) {
-		this.ip = ip;
+	public void setIp(InetSocketAddress ip) {
+		this.sockAddr = sockAddr;
 	}
 
 	public Id getUID() {
-		return uid;
+		return this.uid;
 	}
 
 	public String getName() {
-		return screenName;
+		return this.screenName;
 	}
 
-	public InetAddress getIp() {
-		return ip;
+	public InetSocketAddress getSockAddr() {
+		return this.sockAddr;
 	}
 
 	/**
 	 * Used to compare two friends. Two friends are the same if: they have the
 	 * same UID.
 	 * 
-	 * @param o
-	 *            The other friend to compare
+	 * @param o The other friend to compare
 	 * @return True if are the same friend.
 	 */
 	@Override
@@ -75,12 +74,12 @@ public class Friend {
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("\n - Friend UID : " + this.uid);
-		if (screenName != null)
+		if (this.screenName != null)
 			buffer.append("\n - Friend's Screen Name : " + this.screenName);
 		else
 			buffer.append("\n - Friend's Screen Name : n/a");
-		if (ip != null)
-			buffer.append("\n - Friend's IP Address :" + this.ip);
+		if (this.sockAddr != null)
+			buffer.append("\n - Friend's IP Address : " + this.sockAddr);
 		else
 			buffer.append("\n - Friend's IP Address : n/a\n");
 
