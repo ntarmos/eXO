@@ -47,6 +47,8 @@ public class FriendReqMessage extends ContinuationMessage {
 	 *            The source address
 	 * @param dest
 	 *            The destination address
+	 * @param frPDU
+	 * 			  Contains the data which will be read at the destination. 
 	 */
 	public FriendReqMessage(int uid, Id id, NodeHandle source, Id dest,
 			FriendReqPDU frPDU) {

@@ -48,6 +48,7 @@ import ceid.netcins.content.StoredField;
 import ceid.netcins.content.TermField;
 import ceid.netcins.content.TokenizedField;
 import ceid.netcins.messages.FriendAcceptMessage;
+import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.InsertPDU;
@@ -269,7 +270,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			System.out.println("User has not been registered yet!");
 			return;
 		}
 
@@ -278,8 +279,9 @@ public class CatalogService extends DHTService implements SocService {
 		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, frPDU, new NamedContinuation(
-				"FriendReqMessage (FriendReqPDU) for " + destuid, command) {
+		lookup(destuid, false, FriendReqMessage.TYPE, frPDU,
+			   new NamedContinuation(
+					   "FriendReqMessage (FriendReqPDU) for " + destuid, command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
@@ -325,7 +327,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			System.out.println("User has not been registered yet!");
 			return;
 		}
 
@@ -334,8 +336,9 @@ public class CatalogService extends DHTService implements SocService {
 		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, frPDU, new NamedContinuation(
-				"FriendReqMessage (FriendReqPDU) for " + destuid, command) {
+		lookup(destuid, false, FriendReqMessage.TYPE, frPDU,
+			   new NamedContinuation(
+					   "FriendReqMessage (FriendReqPDU) for " + destuid, command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
@@ -367,6 +370,14 @@ public class CatalogService extends DHTService implements SocService {
 
 	}
 
+	/*
+	 * Wrapper for the generic form of this function.
+	 */
+	public void acceptFriend(final FriendRequest freq,
+			final Continuation command) {
+		acceptFriend(freq, "", command);
+	}
+	
 	/**
 	 * This method sends an approval message for friendship to an other user of
 	 * the network specified by the uid. Message is an empty message formed by
@@ -375,28 +386,31 @@ public class CatalogService extends DHTService implements SocService {
 	 * user unique names (e.g. email address).
 	 * 
 	 * @param freq The friend request for approval
+	 * @param message An optional message to send to the dest user.
 	 * @param command The callback that must be executed when we return
 	 */
-	@SimulatorOnly
-	public void acceptFriend(final FriendRequest freq,
+	public void acceptFriend(final FriendRequest freq, String message,
 			final Continuation command) {
 
 		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			System.out.println("User has not been registered yet!");
 			return;
 		}
 
 		final Id destuid = freq.getUID();
+		
+		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, FriendAcceptMessage.TYPE, new NamedContinuation(
-				"FriendAcceptMessage for " + destuid, command) {
+		lookup(destuid, false, FriendAcceptMessage.TYPE, frPDU,
+			   new NamedContinuation(
+					   "FriendAcceptMessage for " + destuid, command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
 					System.out
-							.println("\n\nAccept friend  sent to user with UID : "
+							.println("\n\nAccept friend request sent to user with UID : "
 									+ destuid + ", result code : " + result);
 
 					// Now we know that message of approval has sent
@@ -411,7 +425,7 @@ public class CatalogService extends DHTService implements SocService {
 					parent.receiveResult(result);
 				} else {
 					System.out
-							.println("\n\nAccept friend sent to user with UID : "
+							.println("\n\nAccept friend request sent to user with UID : "
 									+ destuid
 									+ ", but something went wrong to the dest node process");
 				}
@@ -419,7 +433,73 @@ public class CatalogService extends DHTService implements SocService {
 
 			public void receiveException(Exception result) {
 				System.out
-						.println("\n\nAccept friend sent to user with UID : "
+						.println("\n\nAccept friend request sent to user with UID : "
+								+ destuid + ", result (exception) code : "
+								+ result.getMessage());
+				parent.receiveException(result);
+			}
+		});
+	}
+
+	/*
+	 * Wrapper for the generic form of this function.
+	 */
+	public void rejectFriend(final FriendRequest freq,
+			final Continuation command) {
+		rejectFriend(freq, "", command);
+	}
+	
+	/**
+	 * This method sends an reject friendship request message to another user of
+	 * the network specified by the uid. Message is an empty message formed by
+	 * the source user to say "I reject your friendship request". Warning! In
+	 * order to operate properly nodes must be assigned nodeIDs created by the
+	 * user unique names (e.g. email address).
+	 * 
+	 * @param freq The friend request for approval
+	 * @param message An optional message to send to the dest user.
+	 * @param command The callback that must be executed when we return
+	 */
+	public void rejectFriend(final FriendRequest freq, String message,
+			final Continuation command) {
+
+		// TODO : maybe an Exception is needed here to be thrown
+		if (this.user == null) {
+			System.out.println("User has not been registered yet!");
+			return;
+		}
+
+		final Id destuid = freq.getUID();
+		
+		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
+
+		// Issue a lookup request to the uderline DHT service
+		lookup(destuid, false, FriendRejectMessage.TYPE, frPDU,
+			   new NamedContinuation(
+					   "FriendRejectMessage for " + destuid, command) {
+
+			public void receiveResult(Object result) {
+				if (result instanceof Boolean) {
+					System.out
+							.println("\n\nReject friend request sent to user with UID : "
+									+ destuid + ", result code : " + result);
+
+					// Now we know that message has sent
+					// successfully and we can remove the freq!
+					user.removePendingIncomingFReq(freq);
+
+					parent.receiveResult(result);
+				} else {
+					System.out
+							.println("\n\nReject friend request sent to user with UID : "
+									+ destuid
+									+ ", but something went wrong to the dest node process");
+				}
+			}
+
+			public void receiveException(Exception result) {
+				System.out
+						.println("\n\nReject friend request sent to user with UID : "
 								+ destuid + ", result (exception) code : "
 								+ result.getMessage());
 				parent.receiveException(result);
@@ -2084,16 +2164,35 @@ public class CatalogService extends DHTService implements SocService {
 				user.removePendingOutgoingFReq(fid);
 
 				// Now they are FRIENDS!
-				// TODO : Find a way to get the screen name!
-				user.addFriend(new Friend(fid, "n/a"));
+				user.addFriend(new Friend(fid,
+						famsg.getFriendReqPDU().getScreenName()));
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for FriendAcceptMessage "
 							+ famsg.getId() + " from " + endpoint.getId());
 
-				// All was right!
+				// Return the response now.
 				getResponseContinuation(msg).receiveResult(new Boolean(true));
+				
+			} else if (msg instanceof FriendRejectMessage) {
+				final FriendRejectMessage frmsg = (FriendRejectMessage) msg;
+				lookups++;
 
+				// TODO : check "famsg.getSource().getId()" if NodeHandle calls
+				// some socket to retrieve ID
+				Id fid = frmsg.getSource().getId();
+				user.removePendingOutgoingFReq(fid);
+
+				// TODO: Put the notification message somewhere to be read
+				// from the user.
+
+				if (logger.level <= Logger.FINER)
+					logger.log("Returning response for FriendAcceptMessage "
+							+ frmsg.getId() + " from " + endpoint.getId());
+
+				// Return the response now.
+				getResponseContinuation(msg).receiveResult(new Boolean(true));
+				
 			} else if (msg instanceof FriendReqMessage) {
 				final FriendReqMessage frmsg = (FriendReqMessage) msg;
 				lookups++;
@@ -2108,7 +2207,7 @@ public class CatalogService extends DHTService implements SocService {
 
 				// All was right!
 				getResponseContinuation(msg).receiveResult(new Boolean(true));
-
+				
 			} else if (msg instanceof TagContentMessage) {
 				final TagContentMessage tcmsg = (TagContentMessage) msg;
 				lookups++;
