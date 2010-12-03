@@ -44,7 +44,7 @@ eXO TODOs
           original query tags and tags from the returned cloud and pose
           a new query.
 
-   4. Friend lists.
++A 4. Friend lists.
       - List of friends per node (UID/IP/PORT).
       - Friend request/response messages.
       - List of incoming pending friend requests (HashMap on the UID).
