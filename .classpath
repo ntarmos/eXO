@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="FreePastry.git-src"/>
 	<classpathentry kind="lib" path="lib/charva.jar"/>
+	<classpathentry kind="lib" path="lib/libextractor-0.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.3.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="FreePastry.git-lib/bouncycastle.jar"/>

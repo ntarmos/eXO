@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
+import org.gnu.libextractor.Extractor;
+import org.gnu.libextractor.MetaData;
 
 import ceid.netcins.htmlparsing.HTMLParser;
 
@@ -205,25 +208,16 @@ public class ContentProfileFactory {
 	 * @return This function returns a Map object with keys corresponding to
 	 *         field names and values to field values
 	 */
+	@SuppressWarnings("unchecked")
 	public Map<String, String> extractFile(File f) throws IOException {
 		if (!f.exists() || f.isDirectory() || !f.canRead()) {
 			return null;
 		}
-		String extrargs[] = { "/usr/bin/extract", "-f", "-Hsha1",
-				f.getAbsolutePath() };
-		Process p = Runtime.getRuntime().exec(extrargs);
-		BufferedReader instr = new BufferedReader(new InputStreamReader(p
-				.getInputStream()));
-		String line = null;
-		String[] keyvalue;
+		Extractor ex = Extractor.getDefault();
 		Map<String, String> tempcontainer = new HashMap<String, String>();
-		while ((line = instr.readLine()) != null) {
-			line = line.trim();
-			// Split at - delimiter for only once per line
-			keyvalue = line.split(" - ", 2);
-			if (keyvalue != null && keyvalue.length == 2 && keyvalue[0] != null
-					&& keyvalue[1] != null)
-				tempcontainer.put(keyvalue[0], keyvalue[1]);
+		ArrayList<MetaData> keywords = ex.extract(f);
+		for (MetaData md : keywords) {
+			tempcontainer.put(md.getTypeAsString(), md.getMetaDataAsString());
 		}
 		return tempcontainer;
 	}
