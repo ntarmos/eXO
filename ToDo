@@ -4,7 +4,7 @@ eXO TODOs
    *** Make sure the application (CatalogService/DHTService?) has ***
    ***            direct access to the methods below!             ***
 
-   1. Virtual split of User and Content profiles into a public and a private part.
+=N 1. Virtual split of User and Content profiles into a public and a private part.
       - Keep just one "Profile" data structure per user/content.
         o Private part: all tags in the profile.
         o Public part: tags the owner has flagged as public (i.e., add a
@@ -24,7 +24,7 @@ eXO TODOs
         updating/removing tags from the public profile if they're
         updated/removed from the private one, etc.)
           
-   2. Profile updates.
++N 2. Profile updates.
       - Update user profiles (add/remove tags).
       - Update content profiles (add/remove tags).
       - Update profile tags to select between private and public sharing
