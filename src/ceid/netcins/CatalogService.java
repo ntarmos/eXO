@@ -429,7 +429,7 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * This method is used to retrieve the original (or pseydodata for
+	 * This method is used to retrieve the original (or pseudodata for
 	 * simulation) and maybe some tagclouds from a user node. In order to know
 	 * where we should travel to fetch the data a nodeId and a data checksum
 	 * must have been obtained previously. This can be done for exmple by using
@@ -956,11 +956,11 @@ public class CatalogService extends DHTService implements SocService {
 
 	/**
 	 * This function indexes the content profile keywords around the network. It
-	 * is used when pseydo content is going to be indexed.
+	 * is used when pseudo content is going to be indexed.
 	 * 
 	 * @param command
 	 */
-	public void indexPseydoContent(final ContentProfile cp,
+	public void indexPseudoContent(final ContentProfile cp,
 			final Continuation command) {
 
 		// TODO : maybe an Exception is needed here to be thrown

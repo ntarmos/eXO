@@ -28,7 +28,7 @@ import rice.persistence.StorageManagerImpl;
 import ceid.netcins.CatalogService;
 import ceid.netcins.FriendsRequest;
 import ceid.netcins.IndexContentRequest;
-import ceid.netcins.IndexPseydoContentRequest;
+import ceid.netcins.IndexPseudoContentRequest;
 import ceid.netcins.IndexURLRequest;
 import ceid.netcins.IndexUserRequest;
 import ceid.netcins.RandomQueriesRequest;
@@ -443,9 +443,9 @@ public class SimDriver extends CommonAPITest {
 						});
 			}
 
-		} else if (req instanceof IndexPseydoContentRequest) {
+		} else if (req instanceof IndexPseudoContentRequest) {
 
-			final IndexPseydoContentRequest ireq = (IndexPseydoContentRequest) req;
+			final IndexPseudoContentRequest ireq = (IndexPseudoContentRequest) req;
 			if (ireq.getContentProfileMap() != null) {
 
 				final int nodeNum;
@@ -460,7 +460,7 @@ public class SimDriver extends CommonAPITest {
 
 				final SimDriver sd = this;
 
-				pasts[nodeNum].indexPseydoContent(pasts[nodeNum]
+				pasts[nodeNum].indexPseudoContent(pasts[nodeNum]
 						.createContentProfile(ireq.getContentProfileMap(), ireq
 								.getDelimiter()), new Continuation() {
 

@@ -27,7 +27,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import rice.environment.Environment;
 import ceid.netcins.FriendsRequest;
 import ceid.netcins.IndexContentRequest;
-import ceid.netcins.IndexPseydoContentRequest;
+import ceid.netcins.IndexPseudoContentRequest;
 import ceid.netcins.IndexURLRequest;
 import ceid.netcins.IndexUserRequest;
 import ceid.netcins.RandomQueriesRequest;
@@ -69,7 +69,7 @@ public class SimMain {
 	public static final int TAGCONTENT = 13;
 	public static final int SEARCHSOCIALTAGS = 14;
 	public static final int RETRIEVECONTENT = 15;
-	public static final int INDEXPSEYDOCONTENT = 16;
+	public static final int INDEXPSEUDOCONTENT = 16;
 	public static final int STATS = 17;
 	public static final int CLEARSTATS = 18;
 	public static final int RANDOMQUERIES = 19;
@@ -181,7 +181,7 @@ public class SimMain {
 
 					break;
 
-				case INDEXPSEYDOCONTENT:
+				case INDEXPSEUDOCONTENT:
 					if (requestDispatcher == null) {
 						System.out
 								.println("Nodes must have been created first.");
@@ -198,7 +198,7 @@ public class SimMain {
 						zero_tags.put("Identifier", sargs[2]);
 						// Add the Request for indexing the file
 						this.driver.execRequests
-								.add(new IndexPseydoContentRequest(sargs[2],
+								.add(new IndexPseudoContentRequest(sargs[2],
 										zero_tags, sourceNum));
 					} else {
 						int sourceNum = IndexURLRequest.RANDOMSOURCE;
@@ -208,7 +208,7 @@ public class SimMain {
 						zero_tags.put("Identifier", sargs[0]);
 						// Add the Request for indexing the file
 						this.driver.execRequests
-								.add(new IndexPseydoContentRequest(sargs[0],
+								.add(new IndexPseudoContentRequest(sargs[0],
 										zero_tags, sourceNum));
 					}
 
@@ -1016,7 +1016,7 @@ public class SimMain {
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("index2") && i + 1 < args.length) {
 				lastarg = args[i + 1];
-				return INDEXPSEYDOCONTENT;
+				return INDEXPSEUDOCONTENT;
 			}
 		}
 
@@ -1345,9 +1345,9 @@ public class SimMain {
 						} else
 							System.out.println("User profile is empty!");
 
-						// pseydo_file
+						// pseudo_file
 					} else if (((Element) currentNode).getTagName().equals(
-							"pseydo_file")) {
+							"pseudo_file")) {
 						children = currentNode.getChildNodes();
 
 						Map<String, String> profile = new HashMap<String, String>();
@@ -1391,8 +1391,8 @@ public class SimMain {
 						}
 						if (!profile.isEmpty()) {
 							System.out
-									.println("Some pseydo-content is being indexed now!");
-							index_req.add(new IndexPseydoContentRequest(
+									.println("Some pseudo-content is being indexed now!");
+							index_req.add(new IndexPseudoContentRequest(
 									identifier, profile, sourceNum));
 						} else
 							System.out.println("Content profile is empty!");
@@ -1470,10 +1470,10 @@ public class SimMain {
 					} else
 						System.out.println("User profile is empty!");
 
-					// pseydo_file
+					// pseudo_file
 
 				} else if (((Element) currentNode).getTagName().equals(
-						"pseydo_file")) {
+						"pseudo_file")) {
 					children = currentNode.getChildNodes();
 
 					Map<String, String> profile = new HashMap<String, String>();
@@ -1512,8 +1512,8 @@ public class SimMain {
 					}
 					if (!profile.isEmpty()) {
 						System.out
-								.println("Some pseydo-content is being indexed now!");
-						index_req.add(new IndexPseydoContentRequest(identifier,
+								.println("Some pseudo-content is being indexed now!");
+						index_req.add(new IndexPseudoContentRequest(identifier,
 								profile));
 					} else
 						System.out.println("Content profile is empty!");

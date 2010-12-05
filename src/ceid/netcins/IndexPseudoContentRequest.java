@@ -12,7 +12,7 @@ import ceid.netcins.content.ContentProfileFactory;
  * 
  * @author Andreas Loupasakis
  */
-public class IndexPseydoContentRequest extends Request {
+public class IndexPseudoContentRequest extends Request {
 
 	// The field terms pair (Terms are all in one String per pair)
 	// It includes identifier that is mapped to checksum through SHA-1
@@ -29,7 +29,7 @@ public class IndexPseydoContentRequest extends Request {
 	public static final int RANDOMSOURCE = -1;
 
 	// Only for SAX!
-	public IndexPseydoContentRequest() {
+	public IndexPseudoContentRequest() {
 		this.source = RANDOMSOURCE;
 		this.delimiter = ContentProfileFactory.DEFAULT_DELIMITER;
 		this.contentProfile = new HashMap<String, String>();
@@ -51,18 +51,18 @@ public class IndexPseydoContentRequest extends Request {
 		this.delimiter = delimiter;
 	}
 
-	public IndexPseydoContentRequest(String identifier,
+	public IndexPseudoContentRequest(String identifier,
 			Map<String, String> cprofile) {
 		this(identifier, cprofile, RANDOMSOURCE);
 	}
 
-	public IndexPseydoContentRequest(String identifier,
+	public IndexPseudoContentRequest(String identifier,
 			Map<String, String> cprofile, int source) {
 		this(identifier, cprofile, source,
 				ContentProfileFactory.DEFAULT_DELIMITER);
 	}
 
-	public IndexPseydoContentRequest(String identifier,
+	public IndexPseudoContentRequest(String identifier,
 			Map<String, String> cprofile, int source, String delimiter) {
 		super();
 		this.identifier = identifier;

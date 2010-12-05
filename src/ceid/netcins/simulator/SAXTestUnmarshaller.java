@@ -9,7 +9,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.DefaultHandler;
 
-import ceid.netcins.IndexPseydoContentRequest;
+import ceid.netcins.IndexPseudoContentRequest;
 import ceid.netcins.IndexUserRequest;
 import ceid.netcins.RandomQueriesRequest;
 import ceid.netcins.Request;
@@ -67,7 +67,7 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 			stack.push(new ScenarioRequest());
 
 		} else if (localName.equals("index_pcontent")) {
-			stack.push(new IndexPseydoContentRequest());
+			stack.push(new IndexPseudoContentRequest());
 
 		} else if (localName.equals("index_user")) {
 			IndexUserRequest i = new IndexUserRequest();
@@ -116,7 +116,7 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 
 		} else if (localName.equals("index_pcontent")) {
 			((ScenarioRequest) stack.peek()).index_submitted
-					.add((IndexPseydoContentRequest) tmp);
+					.add((IndexPseudoContentRequest) tmp);
 
 		} else if (localName.equals("index_user")) {
 			((ScenarioRequest) stack.peek()).index_submitted
@@ -129,8 +129,8 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 		// for simple elements, pop StringBuffer and convert to String
 		else if (localName.equals("source")) {
 			Object obj = stack.peek();
-			if (obj instanceof IndexPseydoContentRequest) {
-				((IndexPseydoContentRequest) obj).setSource(Integer
+			if (obj instanceof IndexPseudoContentRequest) {
+				((IndexPseudoContentRequest) obj).setSource(Integer
 						.parseInt(tmp.toString()));
 			} else if (obj instanceof IndexUserRequest) {
 				((IndexUserRequest) obj).setSource(Integer.parseInt(tmp
@@ -139,13 +139,13 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 
 		} else if (localName.equals("keywords")) {
 			Object obj = stack.peek();
-			if (obj instanceof IndexPseydoContentRequest) {
+			if (obj instanceof IndexPseudoContentRequest) {
 				if (this.lastFieldName != null) {
-					((IndexPseydoContentRequest) obj).addToContentProfile(
+					((IndexPseudoContentRequest) obj).addToContentProfile(
 							this.lastFieldName, tmp.toString());
 					lastFieldName = null;
 				} else {
-					((IndexPseydoContentRequest) obj).addToContentProfile(
+					((IndexPseudoContentRequest) obj).addToContentProfile(
 							"content description", tmp.toString());
 				}
 			} else if (obj instanceof IndexUserRequest) {
@@ -167,9 +167,9 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 			this.lastFieldName = tmp.toString();
 
 		} else if (localName.equals("identifier")) {
-			((IndexPseydoContentRequest) stack.peek()).addToContentProfile(
+			((IndexPseudoContentRequest) stack.peek()).addToContentProfile(
 					"Identifier", tmp.toString());
-			((IndexPseydoContentRequest) stack.peek()).setIdentifier(tmp
+			((IndexPseudoContentRequest) stack.peek()).setIdentifier(tmp
 					.toString());
 
 		} else if (localName.equals("num_type")) {
