@@ -70,6 +70,7 @@ import ceid.netcins.social.URLBookMark;
 import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
+import ceid.netcins.utils.CommonUtils;
 import ceid.netcins.utils.SimulatorOnly;
 
 /**
@@ -1196,62 +1197,82 @@ public class CatalogService extends DHTService implements SocService {
 		}
 	}
 
+
 	/**
-	 * This method uses a query to search in the overlay network for occurences
-	 * of the specific query terms. These terms may refer to a Content object
-	 * indexed in the network or some User or even both of these types.
-	 * Respectively, we have three query types : CONTENTQUERY, USERQUERY,
-	 * HYBRIDQUERY. New Feature: URLQUERY type is also offered now
+	 * Wrapper for searchQuery to help searching for candidate friends.
 	 * 
-	 * @param queryType
-	 * @param queryOld
-	 * @param k
-	 *            The number of results which are going to be returned as a
-	 *            list.
-	 * @param command
+	 * The enhanced user query uses the user profile to find similar profiles
+	 * all over the network. This way a user can discover other users with 
+	 * similar profiles which could be friend candidates.
+	 * Returns the top k catalog entries. 
 	 */
-	public void searchQuery(final int queryType, final String queryOld,
+	public void discoverFriend(final String rawQuery, final int k,
+			final Continuation command) {
+		searchQuery(QueryPDU.USER_ENHANCEDQUERY, rawQuery, k,
+				ContentProfileFactory.DEFAULT_DELIMITER, command);
+	}
+	
+	/**
+	 * Wrapper for searchQuery to help searching only for users. 
+	 */
+	public void searchUser(final String rawQuery, final int k,
+			final Continuation command) {
+		searchQuery(QueryPDU.USERQUERY, rawQuery, k,
+				ContentProfileFactory.DEFAULT_DELIMITER, command);
+	}
+	
+	/**
+	 * Wrapper for searchQuery
+	 */
+	public void searchQuery(final int queryType, final String rawQuery,
 			final int k, final Continuation command) {
-		searchQuery(queryType, queryOld, k,
+		searchQuery(queryType, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
 
 	/**
-	 * This method uses a query to search in the overlay network for occurences
-	 * of the specific query terms. These terms may refer to a Content object
-	 * indexed in the network or some User or even both of these types.
-	 * Respectively, we have three query types : CONTENTQUERY, USERQUERY,
-	 * HYBRIDQUERY. New Feature: URLQUERY type is also offered now
-	 * 
-	 * @param queryType
-	 * @param queryOld
-	 * @param k
-	 *            The number of results which are going to be returned as a
-	 *            list.
-	 * @param delimiter
-	 *            The delimiter for query terms
-	 * @param command
+	 * Wrapper for searchQuery
 	 */
-	public void searchQuery(final int queryType, final String queryOld,
+	public void searchQuery(final int queryType, final String rawQuery,
 			final int k, final String delimiter, final Continuation command) {
-
-		// TODO : maybe an Exception is needed here to be thrown
-		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
-			return;
-		}
 
 		// Query Parsing
 		// TODO : This should be done with more proffesional Classes using
 		// JavaCC
-		String query = queryOld;// .trim();
+		String query = rawQuery;// .trim();
 		if (query == null || query.equals("")) {
 			System.out.println("I got an empty Query!");
 			return;
 		}
 		String[] qterms = query.split(delimiter);
+		
+		searchQuery(queryType, qterms, k, command);
+	}
 
-		MultiContinuation multi = new MultiContinuation(command, qterms.length) {
+	/**
+	 * This method uses a query to search in the overlay network for occurrences
+	 * of the specific query terms. These terms may refer to a Content object
+	 * indexed in the network or some User or even both of these types.
+	 * Respectively, we have three query types : CONTENTQUERY, USERQUERY,
+	 * HYBRIDQUERY. New Feature: URLQUERY type is also offered now
+	 * 
+	 * @param queryType Specify the type of entities we search for.
+	 * @param queryTerns The terms given which will be searched.
+	 * @param k The number of results which are going to be returned as a
+	 *            list.
+	 * @param delimiter The delimiter for query terms
+	 * @param command A callback
+	 */
+	public void searchQuery(final int queryType, final String[] queryTerms,
+			final int k, final Continuation command) {
+
+		// TODO : maybe an Exception is needed here to be thrown
+		if (this.user == null) {
+			System.out.println("User has not been registered yet!");
+			return;
+		}
+		
+		MultiContinuation multi = new MultiContinuation(command, queryTerms.length) {
 
 			public boolean isDone() throws Exception {
 				int numSuccess = 0;
@@ -1286,9 +1307,9 @@ public class CatalogService extends DHTService implements SocService {
 
 		Id querytid = null;
 		// Iterate to lookup for every term in query!
-		for (int i = 0; i < qterms.length; i++) {
+		for (int i = 0; i < queryTerms.length; i++) {
 			// Compute each terms TID
-			querytid = factory.buildId(qterms[i]);
+			querytid = factory.buildId(queryTerms[i]);
 
 			final int num = i;
 			// final Id tid = querytid;
@@ -1296,10 +1317,10 @@ public class CatalogService extends DHTService implements SocService {
 			if (queryType == QueryPDU.CONTENT_ENHANCEDQUERY
 					|| queryType == QueryPDU.USER_ENHANCEDQUERY
 					|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
-				qPDU = new QueryPDU(qterms, queryType, k, this.user
+				qPDU = new QueryPDU(queryTerms, queryType, k, this.user
 						.getCompleteUserProfile());
 			} else {
-				qPDU = new QueryPDU(qterms, queryType, k);
+				qPDU = new QueryPDU(queryTerms, queryType, k);
 			}
 
 			// Issue a lookup request to the uderline DHT service
@@ -1318,7 +1339,8 @@ public class CatalogService extends DHTService implements SocService {
 				}
 
 				public void receiveException(Exception result) {
-					System.out.println("Query : " + queryOld + ", #" + num
+					System.out.println("Query : " + CommonUtils.join(queryTerms,
+							",") + ", #" + num
 							+ " result (error) " + result.getMessage());
 					parent.receiveException(result);
 				}
