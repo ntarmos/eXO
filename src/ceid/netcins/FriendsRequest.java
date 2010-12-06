@@ -1,10 +1,11 @@
-
-
 package ceid.netcins;
+
+import ceid.netcins.utils.SimulatorOnly;
 
 /**
  * This Request type represents a friendship request or approval. It depends on
- * the pendingFReq and pendingAppReq in order to determine the type.
+ * the pendingIncomingFReq and pendingOutgoingFReq in order to determine the 
+ * type.
  * 
  * @author Andreas Loupasakis
  */
@@ -14,10 +15,13 @@ public class FriendsRequest extends Request {
 	private String message;
 
 	// The source node number (Simulator only)
+	@SimulatorOnly
 	private int source;
+	@SimulatorOnly
 	public static final int RANDOMSOURCE = -1;
 
 	// The destination node number (Simulator only)
+	@SimulatorOnly
 	private int destination;
 
 	public FriendsRequest(String message) {

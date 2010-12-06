@@ -2,6 +2,8 @@ package ceid.netcins.messages;
 
 import java.io.IOException;
 
+import ceid.netcins.utils.JavaSerializer;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -12,19 +14,20 @@ import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
 
 /**
- * This message type is sent to indicate that a friend request has been approved
- * by the end user and now the source user must be informed.
+ * This message type is sent to indicate that a friend request has been accepted
+ * by the user and now the friendship requester user must be informed.
  * 
  * 
  * @author Andreas Loupasakis
  */
-public class FriendApprMessage extends ContinuationMessage {
+public class FriendAcceptMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = 7419229279778572351L;
 
 	public static final short TYPE = 9;
 
-	// the id to fetch
+	// TODO: Check if it is necessary and if not remove it as it is DUPE!
+	// the dest UID (duplication of dest)
 	private Id id;
 
 	// whether or not this message has been cached
@@ -33,26 +36,28 @@ public class FriendApprMessage extends ContinuationMessage {
 	// the list of nodes where this message has been
 	private NodeHandle handle;
 
+	// FriendReqPDU holds the message and the username
+	private FriendReqPDU frPDU;
+	
 	/**
 	 * Constructor
 	 * 
-	 * @param uid
-	 *            The unique id
-	 * @param id
-	 *            The location to be stored
-	 * @param source
-	 *            The source address
-	 * @param dest
-	 *            The destination address
+	 * @param uid The unique id
+	 * @param id The dest UID (duplication of dest)
+	 * @param source The source address
+	 * @param dest The destination address (UID)
+	 * @param frPDU A data container which will be read at destination.
 	 */
-	public FriendApprMessage(int uid, Id id, NodeHandle source, Id dest) {
+	public FriendAcceptMessage(int uid, Id id, NodeHandle source, Id dest,
+			FriendReqPDU frPDU) {
 		super(uid, source, dest);
 
 		this.id = id;
+		this.frPDU = frPDU;
 	}
 
 	/**
-	 * Method which returns the id
+	 * Method which returns the id (duplication of dest)
 	 * 
 	 * @return The contained id
 	 */
@@ -60,6 +65,15 @@ public class FriendApprMessage extends ContinuationMessage {
 		return id;
 	}
 
+	/**
+	 * Getter for PDU
+	 * 
+	 * @return The FriendReqPDU object
+	 */
+	public FriendReqPDU getFriendReqPDU() {
+		return frPDU;
+	}	
+	
 	/**
 	 * Returns whether or not this message has been cached
 	 * 
@@ -104,7 +118,7 @@ public class FriendApprMessage extends ContinuationMessage {
 	 */
 	@Override
 	public String toString() {
-		return "[FriendApprMessage for " + id + " data " + response + "]";
+		return "[FriendAcceptMessage for " + id + " data " + response + "]";
 	}
 
 	/***************** Raw Serialization ***************************************/
@@ -132,20 +146,23 @@ public class FriendApprMessage extends ContinuationMessage {
 		id.serialize(buf);
 		buf.writeBoolean(cached);
 
+		// Java serialization is used for the serialization of the FriendReqPDU
+		// TODO: optimization
+		JavaSerializer.serialize(buf, frPDU);
 	}
 
-	public static FriendApprMessage build(InputBuffer buf, Endpoint endpoint,
+	public static FriendAcceptMessage build(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		byte version = buf.readByte();
 		switch (version) {
 		case 0:
-			return new FriendApprMessage(buf, endpoint, pcd);
+			return new FriendAcceptMessage(buf, endpoint, pcd);
 		default:
 			throw new IOException("Unknown Version: " + version);
 		}
 	}
 
-	private FriendApprMessage(InputBuffer buf, Endpoint endpoint,
+	private FriendAcceptMessage(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		super(buf, endpoint);
 		if (serType == S_SUB) {
@@ -162,5 +179,9 @@ public class FriendApprMessage extends ContinuationMessage {
 			throw iae;
 		}
 		cached = buf.readBoolean();
+
+		// Java deserialization
+		// TODO: optimization
+		frPDU = (FriendReqPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 }

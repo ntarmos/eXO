@@ -16,8 +16,6 @@ import ceid.netcins.social.TagCloud;
 /**
  * This class represents a User entity. User includes all the necessary
  * information about a user.
- * TODO : Privacy levels could be implemented! 
- * TODO : Cache of friends IP addresses mapped with UIDs!
  * 
  * @author Andreas Loupasakis
  */
@@ -36,11 +34,11 @@ public class User {
 	// The list of friends' UIDs
 	private List<Friend> friends;
 
-	// Friendship requests that are yet pending to be confirmed by user
-	private Vector<FriendRequest> pendingFReq;
+	// Friendship requests pending to be confirmed by user
+	private Vector<FriendRequest> pendingIncomingFReq;
 
-	// Friendship requests that the user waits to be approved by his friends
-	private Vector<Id> pendingFAppr;
+	// Friendship requests that user waits to be approved by his candidate friends
+	private Vector<Id> pendingOutgoingFReq;
 
 	// Map of shared files with their corresponding SHA-1 checksums.
 	// TIP : SHA-1 checksum is returned by "libextractor", so we need to use
@@ -114,8 +112,8 @@ public class User {
 			this.friends = new Vector<Friend>();
 		else
 			this.friends = friends;
-		this.pendingFReq = new Vector<FriendRequest>();
-		this.pendingFAppr = new Vector<Id>();
+		this.pendingIncomingFReq = new Vector<FriendRequest>();
+		this.pendingOutgoingFReq = new Vector<Id>();
 		this.sharedContent = new HashMap<Id, File>();
 		this.sharedContentProfile = new HashMap<Id, ContentProfile>();
 		this.bookMarks = new HashMap<Id, SocialBookMark>();
@@ -151,12 +149,12 @@ public class User {
 		return username;
 	}
 
-	public Vector<FriendRequest> getPendingFReq() {
-		return pendingFReq;
+	public Vector<FriendRequest> getPendingIncomingFReq() {
+		return pendingIncomingFReq;
 	}
 
-	public Vector<Id> getPendingFAppr() {
-		return pendingFAppr;
+	public Vector<Id> getPendingOutgoingFReq() {
+		return pendingOutgoingFReq;
 	}
 
 	public Map<Id, File> getSharedContent() {
@@ -188,12 +186,12 @@ public class User {
 		friends.add(friend);
 	}
 
-	public void addPendingFReq(FriendRequest freq) {
-		pendingFReq.add(freq);
+	public void addPendingIncomingFReq(FriendRequest freq) {
+		pendingIncomingFReq.add(freq);
 	}
 
-	public void addPendingFAppr(Id uid) {
-		pendingFAppr.add(uid);
+	public void addPendingOutgoingFReq(Id uid) {
+		pendingOutgoingFReq.add(uid);
 	}
 
 	public void addSharedContent(Id checksum, File file) {
@@ -220,12 +218,12 @@ public class User {
 		friends.remove(friend);
 	}
 
-	public void removePendingFReq(FriendRequest freq) {
-		pendingFReq.remove(freq);
+	public void removePendingIncomingFReq(FriendRequest freq) {
+		pendingIncomingFReq.remove(freq);
 	}
 
-	public void removePendingFAppr(Id uid) {
-		pendingFAppr.remove(uid);
+	public void removePendingOutgoingFReq(Id uid) {
+		pendingOutgoingFReq.remove(uid);
 	}
 
 	public void removeSharedContent(Id checksum) {

@@ -66,7 +66,8 @@ import rice.persistence.Cache;
 import rice.persistence.LockManager;
 import rice.persistence.LockManagerImpl;
 import rice.persistence.StorageManager;
-import ceid.netcins.messages.FriendApprMessage;
+import ceid.netcins.messages.FriendAcceptMessage;
+import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.QueryMessage;
@@ -223,8 +224,11 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				case FriendReqMessage.TYPE:
 					return FriendReqMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FriendApprMessage.TYPE:
-					return FriendApprMessage.build(buf, endpoint,
+				case FriendAcceptMessage.TYPE:
+					return FriendAcceptMessage.build(buf, endpoint,
+							contentDeserializer);
+				case FriendRejectMessage.TYPE:
+					return FriendRejectMessage.build(buf, endpoint,
 							contentDeserializer);
 				case TagContentMessage.TYPE:
 					return TagContentMessage.build(buf, endpoint,
@@ -1216,33 +1220,43 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 			}
 		});
 	}
-
+	
 	/**
-	 * Method which performs the same as lookup() (routing), but it creates a
-	 * FriendReqMessage which contains the request for friendship.
+	 * Method which performs the same as lookup() (routing), but it handles
+	 * friend request related messages, according to the type argument which 
+	 * is get passed.
 	 * 
-	 * @param id
-	 *            the key to be queried
-	 * @param cache
-	 *            Whether or not the data should be cached
-	 * @param command
-	 *            Command to be performed when the result is received
+	 * @param id the key to be queried
+	 * @param cache Whether or not the data should be cached
+	 * @param type Integer indicating the type of message.
+	 * @param frPDU The PDU which will be delivered to destination.
+	 * @param command Command to be performed when the result is received
 	 */
-	public void lookup(final Id id, final boolean cache, FriendReqPDU frPDU,
-			final Continuation command) {
+	public void lookup(final Id id, final boolean cache, int type,
+			FriendReqPDU frPDU, final Continuation command) {
 		if (logger.level <= Logger.FINER)
 			logger.log(" Performing lookup on " + id.toStringFull());
 
+		ContinuationMessage message = null;
+		if (type == FriendReqMessage.TYPE) {
+			message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(),
+										   id, frPDU);
+		}else if(type == FriendRejectMessage.TYPE) {
+			message = new FriendRejectMessage(getUID(), id, getLocalNodeHandle(),
+					   id, frPDU);
+		}else if(type == FriendAcceptMessage.TYPE) {
+			message = new FriendAcceptMessage(getUID(), id, getLocalNodeHandle(),
+					   id, frPDU);
+		}
+		
 		// send the request across the wire, and see if the result is null or
 		// not
-		sendRequest(id, new FriendReqMessage(getUID(), id,
-				getLocalNodeHandle(), id, frPDU), new NamedContinuation(
-				"FriendReqMessage for " + id, command) {
+		sendRequest(id, message, new NamedContinuation(
+				message.getClass().getSimpleName() + " for " + id, command) {
 			public void receiveResult(final Object o) {
 				// if we have an object, we return it
 				// otherwise, we must check all replicas in order to make sure
-				// that
-				// the object doesn't exist anywhere
+				// that the object doesn't exist anywhere
 				if (o != null) {
 
 					command.receiveResult(o);
@@ -1362,60 +1376,6 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 			}
 		});
 
-	}
-
-	/**
-	 * Method which performs the same as lookup() (routing), but it creates a
-	 * Message depending on the type of messafe. Warning! This is used currently
-	 * only for specific messages. TODO : Make this wrapper function for all
-	 * kinds of lookup messages
-	 * 
-	 * @param id
-	 *            the key to be queried
-	 * @param cache
-	 *            Whether or not the data should be cached
-	 * @param type
-	 *            Integer indicating the type of message.
-	 * @param command
-	 *            Command to be performed when the result is received
-	 */
-	public void lookup(final Id id, final boolean cache, int type,
-			final Continuation command) {
-		if (logger.level <= Logger.FINER)
-			logger.log(" Performing lookup on " + id.toStringFull());
-
-		if (type == FriendApprMessage.TYPE) {
-			// send the request across the wire, and see if the result is null
-			// or not
-			sendRequest(id, new FriendApprMessage(getUID(), id,
-					getLocalNodeHandle(), id), new NamedContinuation(
-					"FriendApprMessage for " + id, command) {
-				public void receiveResult(final Object o) {
-					// if we have an object, we return it
-					// otherwise, we must check all replicas in order to make
-					// sure that
-					// the object doesn't exist anywhere
-					if (o != null) {
-
-						command.receiveResult(o);
-
-					} else {
-						// TODO : examine if the friendship arrays need to be
-						// replicated to the leafset
-						// If so then here we should put the lookupHandles code
-						// as above!!!
-						command.receiveResult(o); // o is NULL
-					}
-				}
-
-				public void receiveException(Exception e) {
-					// If the lookup message failed , we then try to fetch all
-					// of the handles, just
-					// in case. This may fail too, but at least we tried.
-					receiveResult(null);
-				}
-			});
-		}
 	}
 
 	/**

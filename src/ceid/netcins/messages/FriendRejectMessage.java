@@ -2,6 +2,8 @@ package ceid.netcins.messages;
 
 import java.io.IOException;
 
+import ceid.netcins.utils.JavaSerializer;
+
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
@@ -10,21 +12,21 @@ import rice.p2p.commonapi.rawserialization.OutputBuffer;
 import rice.p2p.past.messaging.ContinuationMessage;
 import rice.p2p.past.rawserialization.PastContentDeserializer;
 import rice.p2p.past.rawserialization.RawPastContent;
-import ceid.netcins.utils.JavaSerializer;
 
 /**
- * This class will carry the friend request message. Specifically, this class
- * will not have to carry any extra data than LookupMessage.
+ * This message type is sent to indicate that a friend request has been rejected
+ * by the user.
  * 
  * @author Andreas Loupasakis
  */
-public class FriendReqMessage extends ContinuationMessage {
+public class FriendRejectMessage extends ContinuationMessage {
 
-	private static final long serialVersionUID = -2691881047725823901L;
+	private static final long serialVersionUID = 7419229279778572351L;
 
-	public static final short TYPE = 8;
+	public static final short TYPE = 13;
 
-	// the id to fetch
+	// TODO: Check if it is necessary and if not remove it as it is DUPE!
+	// The dest UID (duplication of dest)
 	private Id id;
 
 	// whether or not this message has been cached
@@ -33,24 +35,18 @@ public class FriendReqMessage extends ContinuationMessage {
 	// the list of nodes where this message has been
 	private NodeHandle handle;
 
-	// FriendReqPDU holds the friendship message
+	// FriendReqPDU holds the message and the username
 	private FriendReqPDU frPDU;
-
+	
 	/**
 	 * Constructor
 	 * 
-	 * @param uid
-	 *            The unique id
-	 * @param id
-	 *            The location to be stored
-	 * @param source
-	 *            The source address
-	 * @param dest
-	 *            The destination address
-	 * @param frPDU
-	 * 			  Contains the data which will be read at the destination. 
+	 * @param uid The unique id
+	 * @param id The dest UID (duplication of dest)
+	 * @param source The source address
+	 * @param dest The destination address UID
 	 */
-	public FriendReqMessage(int uid, Id id, NodeHandle source, Id dest,
+	public FriendRejectMessage(int uid, Id id, NodeHandle source, Id dest,
 			FriendReqPDU frPDU) {
 		super(uid, source, dest);
 
@@ -59,7 +55,7 @@ public class FriendReqMessage extends ContinuationMessage {
 	}
 
 	/**
-	 * Method which returns the id
+	 * Method which returns the id (duplication of dest)
 	 * 
 	 * @return The contained id
 	 */
@@ -70,12 +66,12 @@ public class FriendReqMessage extends ContinuationMessage {
 	/**
 	 * Getter for PDU
 	 * 
-	 * @return
+	 * @return The FriendReqPDU object
 	 */
 	public FriendReqPDU getFriendReqPDU() {
 		return frPDU;
-	}
-
+	}	
+	
 	/**
 	 * Returns whether or not this message has been cached
 	 * 
@@ -120,7 +116,7 @@ public class FriendReqMessage extends ContinuationMessage {
 	 */
 	@Override
 	public String toString() {
-		return "[FriendReqMessage for " + id + " data " + response + "]";
+		return "[FriendRejectMessage for " + id + " data " + response + "]";
 	}
 
 	/***************** Raw Serialization ***************************************/
@@ -151,21 +147,20 @@ public class FriendReqMessage extends ContinuationMessage {
 		// Java serialization is used for the serialization of the FriendReqPDU
 		// TODO: optimization
 		JavaSerializer.serialize(buf, frPDU);
-
 	}
 
-	public static FriendReqMessage build(InputBuffer buf, Endpoint endpoint,
+	public static FriendRejectMessage build(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		byte version = buf.readByte();
 		switch (version) {
 		case 0:
-			return new FriendReqMessage(buf, endpoint, pcd);
+			return new FriendRejectMessage(buf, endpoint, pcd);
 		default:
 			throw new IOException("Unknown Version: " + version);
 		}
 	}
 
-	private FriendReqMessage(InputBuffer buf, Endpoint endpoint,
+	private FriendRejectMessage(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		super(buf, endpoint);
 		if (serType == S_SUB) {
@@ -187,5 +182,4 @@ public class FriendReqMessage extends ContinuationMessage {
 		// TODO: optimization
 		frPDU = (FriendReqPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
-
 }

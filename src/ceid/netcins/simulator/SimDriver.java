@@ -1521,7 +1521,7 @@ public class SimDriver extends CommonAPITest {
 			}
 
 			// Determine the type of request Friend Request or Approval.
-			Iterator<Id> it2 = pasts[nodeNum].getUser().getPendingFAppr()
+			Iterator<Id> it2 = pasts[nodeNum].getUser().getPendingOutgoingFReq()
 					.iterator();
 			while (it2.hasNext()) {
 				if (it2.next().equals(destUID)) {
@@ -1537,7 +1537,7 @@ public class SimDriver extends CommonAPITest {
 			int type = 0; // 0 = Request, 1 = Approval
 			FriendRequest f = null;
 			Iterator<FriendRequest> it = pasts[nodeNum].getUser()
-					.getPendingFReq().iterator();
+					.getPendingIncomingFReq().iterator();
 			while (it.hasNext()) {
 				f = it.next();
 				if (f.getUID().equals(destUID)) {
@@ -1551,7 +1551,7 @@ public class SimDriver extends CommonAPITest {
 			}
 
 			if (type == 1) {
-				pasts[nodeNum].friendApproval(f, new Continuation() {
+				pasts[nodeNum].acceptFriend(f, new Continuation() {
 
 					public void receiveResult(Object result) {
 						System.out.println("Friend Approval : "
@@ -1821,7 +1821,7 @@ public class SimDriver extends CommonAPITest {
 				System.out
 						.println("\n*********** Pending Friend Requests ***********\n");
 				Iterator<FriendRequest> it = pasts[nodeNum].getUser()
-						.getPendingFReq().iterator();
+						.getPendingIncomingFReq().iterator();
 				FriendReqPDU frpdu = null;
 				FriendRequest fr = null;
 				while (it.hasNext()) {
@@ -1844,7 +1844,7 @@ public class SimDriver extends CommonAPITest {
 				}
 				System.out
 						.println("\n\n*********** Pending Friend Approvals ***********\n");
-				Iterator<Id> it2 = pasts[nodeNum].getUser().getPendingFAppr()
+				Iterator<Id> it2 = pasts[nodeNum].getUser().getPendingOutgoingFReq()
 						.iterator();
 				while (it2.hasNext()) {
 					System.out.println("\n - UID : " + it2.next());

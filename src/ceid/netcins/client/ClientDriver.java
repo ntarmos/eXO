@@ -494,7 +494,7 @@ public class ClientDriver {
 			if (type == StatsRequest.PENDING) {
 				System.out
 						.println("\n*********** Pending Friend Requests ***********\n");
-				Iterator<FriendRequest> it = past.getUser().getPendingFReq()
+				Iterator<FriendRequest> it = past.getUser().getPendingIncomingFReq()
 						.iterator();
 				FriendReqPDU frpdu = null;
 				FriendRequest fr = null;
@@ -518,7 +518,7 @@ public class ClientDriver {
 				}
 				System.out
 						.println("\n\n*********** Pending Friend Approvals ***********\n");
-				Iterator<Id> it2 = past.getUser().getPendingFAppr().iterator();
+				Iterator<Id> it2 = past.getUser().getPendingOutgoingFReq().iterator();
 				while (it2.hasNext()) {
 					System.out.println("\n - UID : " + it2.next());
 				}
