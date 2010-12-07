@@ -1377,16 +1377,9 @@ public class CatalogService extends DHTService implements SocService {
 			public boolean isDone() throws Exception {
 				int numSuccess = 0;
 				for (int i = 0; i < haveResult.length; i++)
-					if ((haveResult[i]) && (result[i] instanceof Vector<?>)) // The
-																				// check
-																				// "instanceof"
-																				// is
-																				// important,
-																				// The
-																				// vector
-																				// of
-																				// social
-																				// catalogs
+					// The check "instanceof" is important!
+					// The result is a vector of social catalogs
+					if ((haveResult[i]) && (result[i] instanceof Vector<?>)) 
 						numSuccess++;
 
 				if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
@@ -1409,9 +1402,7 @@ public class CatalogService extends DHTService implements SocService {
 				Boolean[] b = new Boolean[result.length];
 				for (int i = 0; i < b.length; i++)
 					b[i] = new Boolean((result[i] == null)
-							|| result[i] instanceof Vector<?>); // The check
-																// "instanceof"
-																// is important
+							|| result[i] instanceof Vector<?>);
 				return b;
 			}
 		};
@@ -2095,9 +2086,9 @@ public class CatalogService extends DHTService implements SocService {
 				final QueryMessage qmsg = (QueryMessage) msg;
 				lookups++;
 
-				// if the data is here, we send the reply, as well as push a
-				// cached copy
-				// back to the previous node
+				// if the data is here, we send the reply. 
+				// TODO: we may want to  push a cached copy back to the 
+				// previous node
 				storage.getObject(qmsg.getId(), new StandardContinuation(
 						getResponseContinuation(qmsg)) {
 					public void receiveResult(Object o) {
@@ -2128,7 +2119,7 @@ public class CatalogService extends DHTService implements SocService {
 											.getHops()));
 						}
 
-						// // if possible, pushed copy into previous hop cache
+						// // if possible, push copy into previous hop cache
 						// if ((lmsg.getPreviousNodeHandle() != null) &&
 						// (o != null) &&
 						// (! ((PastContent) o).isMutable())) {

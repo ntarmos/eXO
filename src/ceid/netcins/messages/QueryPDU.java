@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.messages;
 
 import java.io.Serializable;
@@ -13,9 +11,6 @@ import ceid.netcins.content.ContentProfile;
  */
 public class QueryPDU implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4695549942897761938L;
 	// All the ENHANCED QUERIES use the similarity of source user's profile
 	private int type = CONTENTQUERY; // default

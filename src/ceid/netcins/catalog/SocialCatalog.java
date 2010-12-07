@@ -174,16 +174,16 @@ public class SocialCatalog {
 		StringBuffer buf = new StringBuffer();
 		buf.append("SocialCatalog [Tag = " + this.tag + "]");
 		buf.append("\n [Content Catalog Entries] \n");
-		for (int i = 0; i < contentCatalogEntries.size(); i++) {
-			buf.append(contentCatalogEntries.get(i).toString());
+		for (ContentCatalogEntry cce : contentCatalogEntries) {
+			buf.append(cce.toString());
 		}
 		buf.append("\n [User Catalog Entries] \n");
-		for (int i = 0; i < userCatalogEntries.size(); i++) {
-			buf.append(userCatalogEntries.get(i).toString());
+		for (UserCatalogEntry uce: userCatalogEntries) {
+			buf.append(uce.toString());
 		}
 		buf.append("\n [URL Catalog Entries] \n");
-		for (int i = 0; i < urlCatalogEntries.size(); i++) {
-			buf.append(urlCatalogEntries.get(i).toString());
+		for (URLCatalogEntry urlce : urlCatalogEntries) {
+			buf.append(urlce.toString());
 		}
 
 		return buf.toString();

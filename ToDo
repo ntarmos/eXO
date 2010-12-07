@@ -59,9 +59,12 @@ eXO TODOs
           friends" list, and returns the UIDs of the top-k matching
           users.
         o Method that selects UIDs from this list and stores them in
-          the list of friends for this node.
+          the list of friends for this node. (issue many friend requests - This
+          can be done by calling many times the friendRequest call.)
         o Make query processing friend-aware: incoming queries from UIDs
           in the friend list should be able to access non-public tags.
+          (Friend queries should be handled explicitly at the friend nodes,
+          because non-public data is not indexed at Catalogues.) 
         o FUTURE-WORK:
           * The search method creates a named list of relevant
             UID/IP/PORTs (e.g., each such search gets an internal ID,
@@ -77,7 +80,7 @@ eXO TODOs
             a set of tags for which these friends are good for.
           * ...
 
-   5. Unstructured social networks.
++A 5. Unstructured social networks.
       - Selecting whether queries will be run on unstructured social
         networks, over the DHT, or both.
         o What changes is the UID/IP/PORTs we query.

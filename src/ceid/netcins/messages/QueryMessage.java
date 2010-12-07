@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.messages;
 
 import java.io.IOException;
@@ -23,9 +21,6 @@ import ceid.netcins.utils.JavaSerializer;
  */
 public class QueryMessage extends ContinuationMessage {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3323551882785233815L;
 
 	public static final short TYPE = 7;
