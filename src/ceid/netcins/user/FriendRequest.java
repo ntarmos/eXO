@@ -1,6 +1,7 @@
 package ceid.netcins.user;
 
 import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.NodeHandle;
 import ceid.netcins.messages.FriendReqPDU;
 
 /**
@@ -14,10 +15,14 @@ public class FriendRequest {
 
 	// The friend's uid
 	private Id uid;
+	
+	// The source node handle
+	private NodeHandle sourceHandle;
 
-	public FriendRequest(FriendReqPDU freqpdu, Id uid) {
+	public FriendRequest(FriendReqPDU freqpdu, Id uid, NodeHandle source) {
 		this.freqpdu = freqpdu;
 		this.uid = uid;
+		this.sourceHandle = source;
 	}
 
 	public FriendReqPDU getFriendReqPDU() {
@@ -26,6 +31,10 @@ public class FriendRequest {
 
 	public Id getUID() {
 		return uid;
+	}
+	
+	public NodeHandle getSourceHandle(){
+		return this.sourceHandle;
 	}
 
 	/**

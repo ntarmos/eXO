@@ -24,7 +24,7 @@ public class FriendReqMessage extends ContinuationMessage {
 
 	public static final short TYPE = 8;
 
-	// the id to fetch
+	// the destination id (DUPE of dest)
 	private Id id;
 
 	// whether or not this message has been cached

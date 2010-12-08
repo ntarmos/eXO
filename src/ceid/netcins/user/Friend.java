@@ -1,13 +1,14 @@
 package ceid.netcins.user;
 
-import java.net.InetSocketAddress;
 
 import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.NodeHandle;
 
 /**
  * This class contains the necessary data of an entry in the friends list.
- * Important parts of such an entry are the UID, the socket address (IP, port)
- * and the screen name of the user's friend. IP, port may be null indicating 
+ * Important parts of such an entry are the UID, the NodeHandle 
+ * (which may contain the socket address - IP, port), and the screen name 
+ * of the user's friend. IP, port may be null indicating 
  * that we are in simulation mode.
  * 
  * @author Andreas Loupasakis
@@ -17,8 +18,8 @@ public class Friend {
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
 
-	// IP address of the friend
-	private InetSocketAddress sockAddr = null;
+	// The node handle of the friend
+	private NodeHandle nodeHandle = null;
 
 	// The screen name of the friend.
 	private String screenName = "Anonymous";
@@ -27,9 +28,9 @@ public class Friend {
 		this(uid, screenName, null);
 	}
 
-	public Friend(Id uid, String screenName, InetSocketAddress sockAddr) {
+	public Friend(Id uid, String screenName, NodeHandle nhandle) {
 		this.uid = uid;
-		this.sockAddr = sockAddr;
+		this.nodeHandle = nhandle;
 		this.screenName = screenName;
 	}
 
@@ -37,8 +38,8 @@ public class Friend {
 		screenName = name;
 	}
 
-	public void setIp(InetSocketAddress ip) {
-		this.sockAddr = sockAddr;
+	public void setNodeHandle(NodeHandle nodeHandle) {
+		this.nodeHandle = nodeHandle;
 	}
 
 	public Id getUID() {
@@ -49,8 +50,8 @@ public class Friend {
 		return this.screenName;
 	}
 
-	public InetSocketAddress getSockAddr() {
-		return this.sockAddr;
+	public NodeHandle getNodeHandle() {
+		return this.nodeHandle;
 	}
 
 	/**
@@ -78,10 +79,10 @@ public class Friend {
 			buffer.append("\n - Friend's Screen Name : " + this.screenName);
 		else
 			buffer.append("\n - Friend's Screen Name : n/a");
-		if (this.sockAddr != null)
-			buffer.append("\n - Friend's IP Address : " + this.sockAddr);
+		if (this.nodeHandle != null)
+			buffer.append("\n - Friend's NodeHandle : " + this.nodeHandle);
 		else
-			buffer.append("\n - Friend's IP Address : n/a\n");
+			buffer.append("\n - Friend's NodeHandle : n/a\n");
 
 		return buffer.toString();
 	}

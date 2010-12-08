@@ -1,5 +1,3 @@
-
-
 package ceid.netcins;
 
 import java.io.File;
@@ -421,7 +419,8 @@ public class CatalogService extends DHTService implements SocService {
 					// Users are now FRIENDS!
 					// TODO : Maybe include IP address.
 					user.addFriend(new Friend(freq.getUID(), freq
-							.getFriendReqPDU().getScreenName()));
+							.getFriendReqPDU().getScreenName(),
+							freq.getSourceHandle()));
 
 					parent.receiveResult(result);
 				} else {
@@ -2178,7 +2177,8 @@ public class CatalogService extends DHTService implements SocService {
 
 				// Now they are FRIENDS!
 				user.addFriend(new Friend(fid,
-						famsg.getFriendReqPDU().getScreenName()));
+						famsg.getFriendReqPDU().getScreenName(),
+						famsg.getSource()));
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for FriendAcceptMessage "
@@ -2213,7 +2213,8 @@ public class CatalogService extends DHTService implements SocService {
 				// TODO : check "frmsg.getSource().getId()" if NodeHandle calls
 				// some socket to retrieve ID
 				user.addPendingIncomingFReq(new FriendRequest(frmsg.getFriendReqPDU(),
-						frmsg.getSource().getId()));
+						frmsg.getSource().getId(),
+						frmsg.getSource()));
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for friendrequest message "
 							+ frmsg.getId() + " from " + endpoint.getId());
