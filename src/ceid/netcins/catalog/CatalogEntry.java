@@ -12,7 +12,7 @@ import rice.p2p.commonapi.Id;
  * 
  */
 @SuppressWarnings("unchecked")
-public class CatalogEntry implements Serializable, Comparable {
+public abstract class CatalogEntry implements Serializable, Comparable {
 
 	private static final long serialVersionUID = -6930057763768157893L;
 	// User identifier (or node Identifier)
@@ -75,4 +75,11 @@ public class CatalogEntry implements Serializable, Comparable {
 			return this.getUID().compareTo(ce.getUID());
 		}
 	}
+	
+	
+	/**
+	 * 
+	 * @return A sum of the UserCatalogEntry data in bytes
+	 */
+	public abstract double computeTotalBytes();
 }

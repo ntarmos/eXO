@@ -6,6 +6,7 @@ import rice.p2p.commonapi.Id;
 import rice.p2p.past.ContentHashPastContent;
 import rice.p2p.past.PastContent;
 import rice.p2p.past.PastException;
+import ceid.netcins.messages.QueryPDU; 
 
 /**
  * A Catalog is a table of CatalogEntries for a specific term identifier(TID).
@@ -53,7 +54,42 @@ public class Catalog extends ContentHashPastContent {
 			this.urlCatalogEntries = null;
 		}
 	}
-
+	
+	/**
+	 * Helper to get the proper entries corresponding to the query type issued
+	 * by the user.
+	 * 
+	 * @param type One of the types defined in QueryPDU
+	 * @return Return the corresponding vector of catalog entries.
+	 */
+	public Vector<?> getCatalogEntriesForQueryType(int type){
+		Vector<?> v = null;
+		switch(type){
+			case QueryPDU.CONTENTQUERY:
+				v = contentCatalogEntries;
+				break;
+			case QueryPDU.CONTENT_ENHANCEDQUERY:
+				v = contentCatalogEntries;
+				break;
+			case QueryPDU.USERQUERY:
+				v = userCatalogEntries;
+				break;
+			case QueryPDU.USER_ENHANCEDQUERY:
+				v = userCatalogEntries;
+				break;
+			case QueryPDU.HYBRIDQUERY:
+				v = contentCatalogEntries;
+				break;
+			case QueryPDU.HYBRID_ENHANCEDQUERY:
+				v = contentCatalogEntries;
+				break;
+			case QueryPDU.URLQUERY:
+				v = urlCatalogEntries;
+				break;
+		}
+		return v; 
+	}
+	
 	public void setContentCatalogEntries(Vector<ContentCatalogEntry> v) {
 		this.contentCatalogEntries = v;
 	}

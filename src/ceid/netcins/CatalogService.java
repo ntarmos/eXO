@@ -35,7 +35,7 @@ import rice.p2p.past.messaging.PastMessage;
 import rice.persistence.StorageManager;
 import ceid.netcins.catalog.Catalog;
 import ceid.netcins.catalog.ContentCatalogEntry;
-import ceid.netcins.catalog.ScoreCatalog;
+import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.catalog.URLCatalogEntry;
 import ceid.netcins.catalog.UserCatalogEntry;
@@ -1455,13 +1455,10 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * Utility function to print the results returned by the search query. Each
-	 * Catalog contains userCatalogEntries and contentCatalogEntries, so we must
-	 * check both parts. Caution! Only one of these vectors can be non null!
-	 * This focus to print the top K results.
+	 * Utility function to print the results returned by the search query.
 	 * 
 	 * @param result
-	 *            The array of results, result[i] could be null or Catalog
+	 *            The array of results, result[i] could be null or ScoreBoard
 	 *            instance.
 	 * @param type
 	 *            0=CONTENT, 1=USER, 2=HYBRID
@@ -1472,7 +1469,7 @@ public class CatalogService extends DHTService implements SocService {
 	public static String printTopKQueryResults(Object[] result, int type, int k) {
 
 		StringBuffer buffer = new StringBuffer();
-		ScoreCatalog sc = null;
+		ScoreBoard sc = null;
 		boolean done = false;
 		ContentProfile cprof;
 		List<ContentField> listFields;
@@ -1492,11 +1489,11 @@ public class CatalogService extends DHTService implements SocService {
 				point_vector = -1;
 				max = 0;
 				for (int i = 0; i < result.length; i++) {
-					if (result[i] != null && result[i] instanceof ScoreCatalog) {
-						sc = (ScoreCatalog) result[i];
+					if (result[i] != null && result[i] instanceof ScoreBoard) {
+						sc = (ScoreBoard) result[i];
 						if (sc.getScores() != null
 								&& !sc.getScores().isEmpty()
-								&& !sc.getContentCatalogEntries().isEmpty()
+								&& !sc.getCatalogEntries().isEmpty()
 								&& sc.getScores().firstElement().floatValue() >= max) {
 							max = sc.getScores().firstElement().floatValue();
 							point_vector = i;
@@ -1536,14 +1533,14 @@ public class CatalogService extends DHTService implements SocService {
 							done = true;
 							break;
 						}
-						sc = (ScoreCatalog) result[point_vector];
+						sc = (ScoreBoard) result[point_vector];
 						// Only if the ContentCatalogEntries are non null, non
 						// empty
-						if (sc.getContentCatalogEntries() != null
-								&& !sc.getContentCatalogEntries().isEmpty()) {
+						if (sc.getCatalogEntries() != null
+								&& !sc.getCatalogEntries().isEmpty()) {
 
-							ContentCatalogEntry cce = sc
-									.getContentCatalogEntries().firstElement();
+							ContentCatalogEntry cce = (ContentCatalogEntry) sc
+									.getCatalogEntries().firstElement();
 
 							// If we have a different score then we reset
 							// randomSet
@@ -1592,7 +1589,7 @@ public class CatalogService extends DHTService implements SocService {
 
 							// Remove the touched entry
 							sc.getScores().remove(0);
-							sc.getContentCatalogEntries().remove(0);
+							sc.getCatalogEntries().remove(0);
 						}
 					}
 				}
@@ -1657,11 +1654,11 @@ public class CatalogService extends DHTService implements SocService {
 				point_vector = -1;
 				max = 0;
 				for (int i = 0; i < result.length; i++) {
-					if (result[i] != null && result[i] instanceof ScoreCatalog) {
-						sc = (ScoreCatalog) result[i];
+					if (result[i] != null && result[i] instanceof ScoreBoard) {
+						sc = (ScoreBoard) result[i];
 						if (sc.getScores() != null
 								&& !sc.getScores().isEmpty()
-								&& !sc.getUserCatalogEntries().isEmpty()
+								&& !sc.getCatalogEntries().isEmpty()
 								&& sc.getScores().firstElement().floatValue() >= max) {
 							max = sc.getScores().firstElement().floatValue();
 							point_vector = i;
@@ -1701,14 +1698,14 @@ public class CatalogService extends DHTService implements SocService {
 							done = true;
 							break;
 						}
-						sc = (ScoreCatalog) result[point_vector];
+						sc = (ScoreBoard) result[point_vector];
 						// Only if the ContentCatalogEntries are non null, non
 						// empty
-						if (sc.getUserCatalogEntries() != null
-								&& !sc.getUserCatalogEntries().isEmpty()) {
+						if (sc.getCatalogEntries() != null
+								&& !sc.getCatalogEntries().isEmpty()) {
 
-							UserCatalogEntry uce = sc.getUserCatalogEntries()
-									.firstElement();
+							UserCatalogEntry uce = (UserCatalogEntry)sc
+								.getCatalogEntries().firstElement();
 
 							// If we have a different score then we reset
 							// randomSet
@@ -1757,7 +1754,7 @@ public class CatalogService extends DHTService implements SocService {
 
 							// Remove the touched entry
 							sc.getScores().remove(0);
-							sc.getUserCatalogEntries().remove(0);
+							sc.getCatalogEntries().remove(0);
 						}
 					}
 				}
@@ -1927,15 +1924,15 @@ public class CatalogService extends DHTService implements SocService {
 						// Do the similarity computation and scoring of terms
 						// and return a mini ScoredCatalog (PastContent)
 						if (o instanceof Catalog) {
+							int type = qmsg.getQueryPDU().getType();
+							Vector <?> entries = ((Catalog) o).getCatalogEntriesForQueryType(type);
 							// Leave the job to be done asynchronously by the
 							// Scorer thread
 							scorer.addRequest(new SimilarityRequest(
-									(Catalog) o, qmsg.getQueryPDU().getData(),
-									qmsg.getQueryPDU().getType(), qmsg
-											.getQueryPDU().getK(), qmsg
-											.getQueryPDU()
-											.getSourceUserProfile(), parent,
-									qmsg.getHops()));
+									entries, qmsg.getQueryPDU().getData(),
+									type, qmsg.getQueryPDU().getK(),
+									qmsg.getQueryPDU().getSourceUserProfile(),
+									parent,	qmsg.getHops()));
 							scorer.doNotify();
 						} else {
 							// debugging only

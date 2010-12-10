@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.WeakHashMap;
 
 import rice.Continuation;
@@ -1104,13 +1105,14 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// Do the similarity computation and scoring of terms and
 					// return a mini ScoredCatalog (PastContent)
 					if (o instanceof ceid.netcins.catalog.Catalog) {
-						// Leave the job to be done asynchronously by the Scorer
-						// thread
+						int type = queryPDU.getType();
+						Vector <?> entries = ((ceid.netcins.catalog.Catalog) o).getCatalogEntriesForQueryType(type);
+						// Leave the job to be done asynchronously by the
+						// Scorer thread
 						scorer.addRequest(new SimilarityRequest(
-								(ceid.netcins.catalog.Catalog) o, queryPDU
-										.getData(), queryPDU.getType(),
-								queryPDU.getK(), queryPDU
-										.getSourceUserProfile(), parent, 0));
+								entries, queryPDU.getData(), type,
+								queryPDU.getK(), 
+								queryPDU.getSourceUserProfile(), parent, 0));
 						scorer.doNotify();
 					} else {
 						// debugging only

@@ -4,7 +4,7 @@ package ceid.netcins.messages;
 
 import java.io.Serializable;
 
-import ceid.netcins.catalog.Catalog;
+import ceid.netcins.catalog.ScoreBoard;
 
 /**
  * This class is used to provide a container for the data that is returned by
@@ -23,31 +23,31 @@ public class ResponsePDU implements Serializable {
 	// request-response
 	private int messagesCounter;
 
-	// This holds the entries returned
-	private Catalog cat;
+	// This holds the returned entries
+	private ScoreBoard scoreBoard;
 
 	public ResponsePDU(int messagesCounter) {
 		this.messagesCounter = messagesCounter;
 	}
 
-	public ResponsePDU(int messagesCounter, Catalog cat) {
+	public ResponsePDU(int messagesCounter, ScoreBoard scoreBoard) {
 		this.messagesCounter = messagesCounter;
-		this.cat = cat;
+		this.scoreBoard = scoreBoard;
 	}
 
 	public void setMessagesCounter(int messagesCounter) {
 		this.messagesCounter = messagesCounter;
 	}
 
-	public void setCatalog(Catalog cat) {
-		this.cat = cat;
+	public void setScoreBoard(ScoreBoard scoreBoard) {
+		this.scoreBoard = scoreBoard;
 	}
 
 	public int getMessagesCounter() {
 		return messagesCounter;
 	}
 
-	public Catalog getCatalog() {
-		return cat;
+	public ScoreBoard getScoreBoard() {
+		return scoreBoard;
 	}
 }

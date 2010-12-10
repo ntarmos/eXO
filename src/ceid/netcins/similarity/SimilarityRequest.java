@@ -1,7 +1,8 @@
 package ceid.netcins.similarity;
 
+import java.util.Vector;
+
 import rice.Continuation;
-import ceid.netcins.catalog.Catalog;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.messages.QueryPDU;
 
@@ -20,8 +21,8 @@ public class SimilarityRequest {
 	// Source user's profile
 	private ContentProfile sourceUserProfile = null;
 
-	// The Catalog which contains the entries (user or content) we want to score
-	private Catalog catalog;
+	// The collection of (user or content) entries we want to score
+	private Vector<?> profileEntries;
 
 	// The result which will fill in the Scorer thread and the response will be
 	// routed
@@ -38,16 +39,16 @@ public class SimilarityRequest {
 	/**
 	 * Constructor with the default params
 	 * 
-	 * @param catalog
+	 * @param profileEntries
 	 * @param query
 	 * @param result
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("unchecked")
-	public SimilarityRequest(Catalog catalog, String[] query,
+	public SimilarityRequest(Vector<?> profileEntries, String[] query,
 			Continuation result) {
-		this.catalog = catalog;
+		this.profileEntries = profileEntries;
 		this.query = query;
 		this.result = result;
 		this.sourceUserProfile = null;
@@ -57,7 +58,7 @@ public class SimilarityRequest {
 	/**
 	 * Constructor which defines a specific query type
 	 * 
-	 * @param catalog
+	 * @param profileEntries
 	 * @param query
 	 * @param type
 	 *            It defines a specific type of issued query
@@ -66,9 +67,9 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("unchecked")
-	public SimilarityRequest(Catalog catalog, String[] query, int type, int k,
-			Continuation result) {
-		this.catalog = catalog;
+	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
+			int k,	Continuation result) {
+		this.profileEntries = profileEntries;
 		this.query = query;
 		this.result = result;
 		this.type = type;
@@ -80,7 +81,7 @@ public class SimilarityRequest {
 	 * Constructor for enhanced scoring, using the source user's profile to
 	 * enhance the results.
 	 * 
-	 * @param catalog
+	 * @param profileEntries
 	 * @param query
 	 * @param type
 	 *            It defines a specific type of issued query
@@ -91,9 +92,9 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("unchecked")
-	public SimilarityRequest(Catalog catalog, String[] query, int type, int k,
-			ContentProfile userProfile, Continuation result) {
-		this.catalog = catalog;
+	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
+			int k, ContentProfile userProfile, Continuation result) {
+		this.profileEntries = profileEntries;
 		this.query = query;
 		this.result = result;
 		this.type = type;
@@ -105,7 +106,7 @@ public class SimilarityRequest {
 	 * Constructor for enhanced scoring, using the source user's profile to
 	 * enhance the results.
 	 * 
-	 * @param catalog
+	 * @param profileEntries
 	 * @param query
 	 * @param type
 	 *            It defines a specific type of issued query
@@ -116,9 +117,10 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("unchecked")
-	public SimilarityRequest(Catalog catalog, String[] query, int type, int k,
-			ContentProfile userProfile, Continuation result, int msgcounter) {
-		this.catalog = catalog;
+	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
+			int k, ContentProfile userProfile, Continuation result, 
+			int msgcounter) {
+		this.profileEntries = profileEntries;
 		this.query = query;
 		this.result = result;
 		this.type = type;
@@ -143,8 +145,8 @@ public class SimilarityRequest {
 		return sourceUserProfile;
 	}
 
-	public Catalog getCatalog() {
-		return catalog;
+	public Vector<?> getProfileEntries() {
+		return profileEntries;
 	}
 
 	@SuppressWarnings("unchecked")

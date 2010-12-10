@@ -10,14 +10,11 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import ceid.netcins.catalog.Catalog;
+import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
-import ceid.netcins.catalog.ScoreCatalog;
+import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.catalog.UserCatalogEntry;
-import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.content.TermField;
-import ceid.netcins.content.TokenizedField;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
 
@@ -74,19 +71,16 @@ public class Scorer {
 	@SuppressWarnings("unchecked")
 	private void serveRequest(SimilarityRequest req) {
 
-		Catalog catalog = req.getCatalog();
+		Vector<?> profileEntries = req.getProfileEntries();
 		String[] query = req.getQuery();
 
 		// ************** CONTENT SEARCHING PART **************
 		if ((req.getType() == QueryPDU.CONTENTQUERY 
 				|| req.getType() == QueryPDU.CONTENT_ENHANCEDQUERY)
-				&& catalog.getContentCatalogEntries() != null
-				&& !catalog.getContentCatalogEntries().isEmpty()) {
+				&& profileEntries != null
+				&& !profileEntries.isEmpty()) {
 
 			// Compute Global Set of terms and feed in the CosineSimilarity
-			Iterator<ContentCatalogEntry> it = catalog
-					.getContentCatalogEntries().iterator();
-			ContentCatalogEntry entry;
 			ContentProfile cprof;// The check "instanceof" is important
 
 			// They must be reused
@@ -137,9 +131,7 @@ public class Scorer {
 
 			// For every entry of Catalog compute 1)global term set and 2) the
 			// CosineSimilarity
-			while (it.hasNext()) {
-
-				entry = it.next();
+			for(ContentCatalogEntry entry : (Vector<ContentCatalogEntry>)profileEntries) {
 
 				// Content Profile
 				cprof = entry.getContentProfile();
@@ -148,11 +140,10 @@ public class Scorer {
 
 				// Create the Weights!
 				// 3. CONTENT PROFILE WEIGHTS
-				Iterator<String> it3 = docTerms.iterator();
 				BinaryWeight[] docWeights = new BinaryWeight[docTerms.size()];
 				z = 0;
-				while (it3.hasNext()) {
-					docWeights[z] = new BinaryWeight(it3.next());
+				for(String term : docTerms) {
+					docWeights[z] = new BinaryWeight(term);
 					z++;
 				}
 				// Put weights in the reusable CosineSimilarity object!
@@ -196,69 +187,27 @@ public class Scorer {
 			LinkedHashMap<ContentCatalogEntry, Float> sortedScoreBoard = this
 					.sortHashMapByValuesD(scoreBoard);
 
-			// TODO: Fix this part!!!!
-			Vector<ContentCatalogEntry> v1 = new Vector<ContentCatalogEntry>();
+			Vector<CatalogEntry> v1 = new Vector<CatalogEntry>();
 			v1.addAll(sortedScoreBoard.keySet());
 			Vector<Float> v2 = new Vector<Float>();
 			v2.addAll(sortedScoreBoard.values());
 
-			// Select the k results that will be returned
-			int kst = req.getK(), startOfTies = 0;
-			if (kst != QueryPDU.RETURN_ALL && v1.size() > kst) {
-				Vector<ContentCatalogEntry> randomSet = new Vector<ContentCatalogEntry>();
-				// As we count from 0 and not from 1
-				kst--;
-				Float kstScore = v2.get(kst);
-				// The previous ties including kst CCE
-				while (kst >= 0 && v2.get(kst).equals(kstScore)) {
-					randomSet.add(v1.get(kst));
-					kst--;
-				}
-				// Here we will start applying our random choice (+1)
-				startOfTies = kst + 1;
-				kst = req.getK();
-				// The next ties
-				while (kst < v1.size() && v2.get(kst).equals(kstScore)) {
-					randomSet.add(v1.get(kst));
-					kst++;
-				}
-				// Clean the ties temporary
-				while (v1.size() != startOfTies || v2.size() != startOfTies) {
-					v1.remove(v1.lastElement());
-					v2.remove(v2.lastElement());
-				}
-				// How many to print from the randomSet?
-				int answer = req.getK() - startOfTies;
-				int choice;
-				// Pick randomly a CCE and put it in the printed
-				Random random = new Random();
-				for (int l = 0; l < answer; l++) {
-					choice = random.nextInt(randomSet.size());
-					v1.add(randomSet.get(choice));
-					randomSet.remove(choice);
-					// Put the corresponding score values
-					v2.add(kstScore);
-				}
-			}
+			// Resolve ties at the end of results list
+			resolveTies(v1, v2, req.getK());
 
-			ScoreCatalog topK = new ScoreCatalog(req.getCatalog().getTID(), v1,
-					v2);
+			ScoreBoard topK = new ScoreBoard(v1,	v2);
 			req.getContinuation().receiveResult(
 					new ResponsePDU(req.getMessagesCounter(), topK));
 
 			// ************** USER SEARCHING PART **************
 		} else if ((req.getType() == QueryPDU.USERQUERY 
 				|| req.getType() == QueryPDU.USER_ENHANCEDQUERY)
-				&& catalog.getUserCatalogEntries() != null
-				&& !catalog.getUserCatalogEntries().isEmpty()) {
+				&& profileEntries != null
+				&& !profileEntries.isEmpty()) {
 
 			// Compute Global Set of terms and feed in the CosineSimilarity
-			Iterator<UserCatalogEntry> it = catalog.getUserCatalogEntries()
-					.iterator();
-			UserCatalogEntry entry;
 			ContentProfile cprof;// The check "instanceof" is important
-			Iterator<ContentField> itcf;
-			ContentField cfield;
+
 			// They must be reused
 			TreeSet<String> docTerms = new TreeSet<String>();
 			CosineSimilarity cossim = null, cossimUserProfiles = null;
@@ -284,7 +233,6 @@ public class Scorer {
 					|| req.getType() == QueryPDU.HYBRID_ENHANCEDQUERY) {
 
 				// *** Source User ***
-
 				// get Source User Profile and compute global term set
 				cprof = req.getSourceUserProfile();
 				if (cprof != null) {
@@ -304,14 +252,11 @@ public class Scorer {
 					cossimUserProfiles = new CosineSimilarity(null,
 							profileWeights1);
 				}
-
 			}
 
 			// For every entry of Catalog compute 1)global term set and 2) the
 			// CosineSimilarity
-			while (it.hasNext()) {
-				
-				entry = it.next();
+			for(UserCatalogEntry entry : (Vector<UserCatalogEntry>)profileEntries) {
 
 				// User Profile
 				cprof = entry.getUserProfile();
@@ -347,7 +292,6 @@ public class Scorer {
 					// Reuse the CosineSimilarity object with every profile
 					cossimUserProfiles.setDocWeights(profileWeights2);
 
-					// TODO : Sorting and adding to the new Catalog-Response
 					scoreBoard.put(entry, new Float(0.5 * cossim.getScore()
 							+ 0.5 * cossimUserProfiles.getScore()));
 				} else {
@@ -360,61 +304,73 @@ public class Scorer {
 			LinkedHashMap<UserCatalogEntry, Float> sortedScoreBoard = this
 					.sortHashMapByValuesU(scoreBoard);
 
-			// TODO: Fix this part!!!!
-			Vector<UserCatalogEntry> v1 = new Vector<UserCatalogEntry>();
+			Vector<CatalogEntry> v1 = new Vector<CatalogEntry>();
 			v1.addAll(sortedScoreBoard.keySet());
 			Vector<Float> v2 = new Vector<Float>();
 			v2.addAll(sortedScoreBoard.values());
 
 			// Select the k results that will be returned
-			int kst = req.getK(), startOfTies = 0;
-			if (kst != QueryPDU.RETURN_ALL && v1.size() > kst) {
-				Vector<UserCatalogEntry> randomSet = new Vector<UserCatalogEntry>();
-				// As we count from 0 and not from 1
-				kst--;
-				Float kstScore = v2.get(kst);
-				// The previous ties including kst UCE
-				while (kst >= 0 && v2.get(kst).equals(kstScore)) {
-					randomSet.add(v1.get(kst));
-					kst--;
-				}
-				// Here we will start applying our random choice (+1)
-				startOfTies = kst + 1;
-				kst = req.getK();
-				// The next ties
-				while (kst < v1.size() && v2.get(kst).equals(kstScore)) {
-					randomSet.add(v1.get(kst));
-					kst++;
-				}
-				// Clean the ties temporary
-				while (v1.size() != startOfTies || v2.size() != startOfTies) {
-					v1.remove(v1.lastElement());
-					v2.remove(v2.lastElement());
-				}
-				// How many to print from the randomSet?
-				int answer = req.getK() - startOfTies;
-				int choice;
-				// Pick randomly a CCE and put it in the printed
-				Random random = new Random();
-				for (int l = 0; l < answer; l++) {
-					choice = random.nextInt(randomSet.size());
-					v1.add(randomSet.get(choice));
-					randomSet.remove(choice);
-					// Put the corresponding score values
-					v2.add(kstScore);
-				}
-			}
+			resolveTies(v1, v2, req.getK());
 
-			ScoreCatalog topK = new ScoreCatalog(req.getCatalog().getTID(), v1,
-					v2);
+			ScoreBoard topK = new ScoreBoard(v1, v2);
 			req.getContinuation().receiveResult(
 					new ResponsePDU(req.getMessagesCounter(), topK));
 		} else { // Raw Catalog Without Scores :-)
 			req.getContinuation().receiveResult(
-					new ResponsePDU(req.getMessagesCounter(), catalog));
+					new ResponsePDU(req.getMessagesCounter(),
+							new ScoreBoard(null, null)));
 		}
 	}
 
+	/**
+	 * Used to handle ties at the end of the result vectors. E.g. by choosing 
+	 * RANDOMLY the appropriate number of entries and concatenate them to the
+	 * end of the result lists.
+	 * 
+	 * @param v1 Set of entry objects (e.g. of type CatalogEntry)
+	 * @param v2 The corresponding score float numbers. 
+	 * @param k The size of results to be returned.
+	 */
+	private void resolveTies(Vector<CatalogEntry> v1, Vector<Float> v2, int k){
+		int startOfTies = 0, kst=k;
+		if (kst != QueryPDU.RETURN_ALL && v1.size() > kst) {
+			Vector<CatalogEntry> randomSet = new Vector<CatalogEntry>();
+			// As we count from 0 and not from 1
+			kst--;
+			Float kstScore = v2.get(kst);
+			// The previous ties including kst UCE
+			while (kst >= 0 && v2.get(kst).equals(kstScore)) {
+				randomSet.add(v1.get(kst));
+				kst--;
+			}
+			// Here we will start applying our random choice (+1)
+			startOfTies = kst + 1;
+			kst = k;
+			// The next ties
+			while (kst < v1.size() && v2.get(kst).equals(kstScore)) {
+				randomSet.add(v1.get(kst));
+				kst++;
+			}
+			// Clean the ties temporary
+			while (v1.size() != startOfTies || v2.size() != startOfTies) {
+				v1.remove(v1.lastElement());
+				v2.remove(v2.lastElement());
+			}
+			// How many to print from the randomSet?
+			int answer = k - startOfTies;
+			int choice;
+			// Pick randomly an entry and put it in the printed
+			Random random = new Random();
+			for (int l = 0; l < answer; l++) {
+				choice = random.nextInt(randomSet.size());
+				v1.add(randomSet.get(choice));
+				randomSet.remove(choice);
+				// Put the corresponding score values
+				v2.add(kstScore);
+			}
+		}
+	}
+	
 	public void startScorer() {
 		// Run each test
 		while (main_running) {

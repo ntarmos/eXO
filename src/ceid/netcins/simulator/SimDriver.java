@@ -41,7 +41,7 @@ import ceid.netcins.SearchURLRequest;
 import ceid.netcins.SearchUserRequest;
 import ceid.netcins.StatsRequest;
 import ceid.netcins.TagContentRequest;
-import ceid.netcins.catalog.ScoreCatalog;
+import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.messages.FriendReqPDU;
@@ -784,7 +784,7 @@ public class SimDriver extends CommonAPITest {
 											ResponsePDU tmp;
 											for (int i = 0; i < catalogs.length; i++) {
 												tmp = (ResponsePDU) ((Object[]) result)[i];
-												catalogs[i] = tmp.getCatalog();
+												catalogs[i] = tmp.getScoreBoard();
 
 												// For each lookup of the query
 												// add the hops to the total
@@ -799,13 +799,13 @@ public class SimDriver extends CommonAPITest {
 											results.totalQueryNumber++;
 
 											// Compute the total number of bytes
-											ScoreCatalog sc;
+											ScoreBoard sc;
 											int temp = 0;
 											boolean toCount = true;
 											for (int i = 0; i < catalogs.length; i++) {
 												if (catalogs[i] != null
-														&& catalogs[i] instanceof ScoreCatalog) {
-													sc = (ScoreCatalog) catalogs[i];
+														&& catalogs[i] instanceof ScoreBoard) {
+													sc = (ScoreBoard) catalogs[i];
 													// Only if we have exactly
 													// the number of results we
 													// have chosen
@@ -1218,7 +1218,7 @@ public class SimDriver extends CommonAPITest {
 											ResponsePDU tmp;
 											for (int i = 0; i < catalogs.length; i++) {
 												tmp = (ResponsePDU) ((Object[]) result)[i];
-												catalogs[i] = tmp.getCatalog();
+												catalogs[i] = tmp.getScoreBoard();
 
 												// For each lookup of the query
 												// add the hops to the total
@@ -1233,13 +1233,13 @@ public class SimDriver extends CommonAPITest {
 											results.totalQueryNumber++;
 
 											// Compute the total number of bytes
-											ScoreCatalog sc;
+											ScoreBoard sc;
 											int temp = 0;
 											boolean toCount = true;
 											for (int i = 0; i < catalogs.length; i++) {
 												if (catalogs[i] != null
-														&& catalogs[i] instanceof ScoreCatalog) {
-													sc = (ScoreCatalog) catalogs[i];
+														&& catalogs[i] instanceof ScoreBoard) {
+													sc = (ScoreBoard) catalogs[i];
 													// Only if we have exactly
 													// the number of results we
 													// have chosen
