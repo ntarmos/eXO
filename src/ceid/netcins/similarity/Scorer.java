@@ -88,8 +88,7 @@ public class Scorer {
 					.getContentCatalogEntries().iterator();
 			ContentCatalogEntry entry;
 			ContentProfile cprof;// The check "instanceof" is important
-			Iterator<ContentField> itcf;
-			ContentField cfield;
+
 			// They must be reused
 			TreeSet<String> docTerms = new TreeSet<String>();
 			CosineSimilarity cossim = null, cossimUserProfiles = null;
@@ -105,6 +104,8 @@ public class Scorer {
 			for (z = 0; z < query.length; z++) {
 				queryWeights[z] = new BinaryWeight(query[z]);
 			}
+			// Wrap the query weights in the reusable CosineSimilarity object
+			cossim = new CosineSimilarity(queryWeights);
 
 			// Computation of source and destination users' global term set!
 			// 2. SOURCE USER PROFILE WEIGHTS (ENHANCED QUERY)
@@ -113,66 +114,38 @@ public class Scorer {
 					|| req.getType() == QueryPDU.HYBRID_ENHANCEDQUERY) {
 
 				// *** Source User ***
-				// Important to clear in order to be reused!
-				docTerms.clear();
 
 				// get Source User Profile and compute global term set
 				cprof = req.getSourceUserProfile();
 				if (cprof != null) {
-					itcf = cprof.getAllFields().iterator();
-					// Iterate through every ContentField
-					while (itcf.hasNext()) {
-						cfield = itcf.next();
-						if (cfield instanceof TokenizedField) {
-							TokenizedField tkzf = (TokenizedField) cfield;
-							String[] fieldterms = tkzf.getTerms();
-							for (int q = 0; q < fieldterms.length; q++) {
-								docTerms.add(fieldterms[q]);
-							}
-						} else if (cfield instanceof TermField) {
-							docTerms.add(((TermField) cfield).getFieldData());
-						}
-					}
+					// Fill the docTerms Set with the terms of profile
+					cprof.getTermSet(docTerms);
 
 					// Create the Weights!
-					Iterator<String> it3 = docTerms.iterator();
 					BinaryWeight[] profileWeights1 = new BinaryWeight[docTerms
 							.size()];
 					z = 0;
-					while (it3.hasNext()) {
-						profileWeights1[z] = new BinaryWeight(it3.next());
+					for (String term : docTerms) {
+						profileWeights1[z] = new BinaryWeight(term);
 						z++;
 					}
 
 					// This should be reused with every entry's user profile
-					cossimUserProfiles = new CosineSimilarity(null,
-							profileWeights1);
+					cossimUserProfiles = new CosineSimilarity(profileWeights1);
 				}
 			}
 
 			// For every entry of Catalog compute 1)global term set and 2) the
 			// CosineSimilarity
 			while (it.hasNext()) {
-				// Important to clear in order to be reused!
-				docTerms.clear();
+
 				entry = it.next();
 
 				// Content Profile
 				cprof = entry.getContentProfile();
-				itcf = cprof.getAllFields().iterator();
-				// Iterate through every ContentField
-				while (itcf.hasNext()) {
-					cfield = itcf.next();
-					if (cfield instanceof TokenizedField) {
-						TokenizedField tkzf = (TokenizedField) cfield;
-						String[] fieldterms = tkzf.getTerms();
-						for (int q = 0; q < fieldterms.length; q++) {
-							docTerms.add(fieldterms[q]);
-						}
-					} else if (cfield instanceof TermField) {
-						docTerms.add(((TermField) cfield).getFieldData());
-					}
-				}
+				// Get the set of profile terms
+				cprof.getTermSet(docTerms);
+
 				// Create the Weights!
 				// 3. CONTENT PROFILE WEIGHTS
 				Iterator<String> it3 = docTerms.iterator();
@@ -182,45 +155,30 @@ public class Scorer {
 					docWeights[z] = new BinaryWeight(it3.next());
 					z++;
 				}
-				if (cossim != null)
-					cossim.setDocWeights(docWeights); // reuse!
-				else
-					cossim = new CosineSimilarity(docWeights, queryWeights);
+				// Put weights in the reusable CosineSimilarity object!
+				cossim.setDocWeights(docWeights);					
 
 				// *** User Profile of this entry - global term computation ***
-				// Important to clear in order to be reused!
-				docTerms.clear();
+
 				// 4. ENTRY's USER PROFILE WEIGHTS (ENHANCED QUERY)
 				if (cossimUserProfiles != null) {
 					// User Profile
 					cprof = entry.getUserProfile();
 					if (cprof != null) {
-						itcf = cprof.getAllFields().iterator();
-						// Iterate through every ContentField
-						while (itcf.hasNext()) {
-							cfield = itcf.next();
-							if (cfield instanceof TokenizedField) {
-								TokenizedField tkzf = (TokenizedField) cfield;
-								String[] fieldterms = tkzf.getTerms();
-								for (int q = 0; q < fieldterms.length; q++) {
-									docTerms.add(fieldterms[q]);
-								}
-							} else if (cfield instanceof TermField) {
-								docTerms.add(((TermField) cfield)
-										.getFieldData());
-							}
-						}
+						// Get the set of profile terms
+						cprof.getTermSet(docTerms);
+						
 						// Create the Weights!
-						Iterator<String> it4 = docTerms.iterator();
 						BinaryWeight[] profileWeights2 = new BinaryWeight[docTerms
 								.size()];
 						z = 0;
-						while (it4.hasNext()) {
-							profileWeights2[z] = new BinaryWeight(it4.next());
+						for(String term : docTerms) {
+							profileWeights2[z] = new BinaryWeight(term);
 							z++;
 						}
 
-						cossimUserProfiles.setDocWeights(profileWeights2); // reuse!
+						// Reuse the CosineSimilarity object for user profile.
+						cossimUserProfiles.setDocWeights(profileWeights2);
 
 						// TODO : Sorting and adding to the new Catalog-Response
 						scoreBoard.put(entry, new Float(0.5 * cossim.getScore()
@@ -316,6 +274,8 @@ public class Scorer {
 			for (z = 0; z < query.length; z++) {
 				queryWeights[z] = new BinaryWeight(query[z]);
 			}
+			// This object will be reused.
+			cossim = new CosineSimilarity(queryWeights);
 
 			// Computation of source and destination users' global term set!
 			// 2. SOURCE USER PROFILE WEIGHTS (ENHANCED QUERY)
@@ -324,34 +284,19 @@ public class Scorer {
 					|| req.getType() == QueryPDU.HYBRID_ENHANCEDQUERY) {
 
 				// *** Source User ***
-				// Important to clear in order to be reused!
-				docTerms.clear();
 
 				// get Source User Profile and compute global term set
 				cprof = req.getSourceUserProfile();
 				if (cprof != null) {
-					itcf = cprof.getAllFields().iterator();
-					// Iterate through every ContentField
-					while (itcf.hasNext()) {
-						cfield = itcf.next();
-						if (cfield instanceof TokenizedField) {
-							TokenizedField tkzf = (TokenizedField) cfield;
-							String[] fieldterms = tkzf.getTerms();
-							for (int q = 0; q < fieldterms.length; q++) {
-								docTerms.add(fieldterms[q]);
-							}
-						} else if (cfield instanceof TermField) {
-							docTerms.add(((TermField) cfield).getFieldData());
-						}
-					}
+					// Get the set of profile terms
+					cprof.getTermSet(docTerms);
 
 					// Create the Weights!
-					Iterator<String> it3 = docTerms.iterator();
 					BinaryWeight[] profileWeights1 = new BinaryWeight[docTerms
 							.size()];
 					z = 0;
-					while (it3.hasNext()) {
-						profileWeights1[z] = new BinaryWeight(it3.next());
+					for(String term : docTerms) {
+						profileWeights1[z] = new BinaryWeight(term);
 						z++;
 					}
 
@@ -365,39 +310,25 @@ public class Scorer {
 			// For every entry of Catalog compute 1)global term set and 2) the
 			// CosineSimilarity
 			while (it.hasNext()) {
-				// Important to clear in order to be reused!
-				docTerms.clear();
+				
 				entry = it.next();
 
 				// User Profile
 				cprof = entry.getUserProfile();
-				itcf = cprof.getAllFields().iterator();
-				// Iterate through every ContentField
-				while (itcf.hasNext()) {
-					cfield = itcf.next();
-					if (cfield instanceof TokenizedField) {
-						TokenizedField tkzf = (TokenizedField) cfield;
-						String[] fieldterms = tkzf.getTerms();
-						for (int q = 0; q < fieldterms.length; q++) {
-							docTerms.add(fieldterms[q]);
-						}
-					} else if (cfield instanceof TermField) {
-						docTerms.add(((TermField) cfield).getFieldData());
-					}
-				}
+				// Get the set of profile terms
+				cprof.getTermSet(docTerms);
+
 				// Create the Weights!
 				// 3. ENTRY's USER PROFILE WEIGHTS
-				Iterator<String> it3 = docTerms.iterator();
 				BinaryWeight[] docWeights = new BinaryWeight[docTerms.size()];
 				z = 0;
-				while (it3.hasNext()) {
-					docWeights[z] = new BinaryWeight(it3.next());
+				for(String term : docTerms) {
+					docWeights[z] = new BinaryWeight(term);
 					z++;
 				}
-				if (cossim != null)
-					cossim.setDocWeights(docWeights); // reuse!
-				else
-					cossim = new CosineSimilarity(docWeights, queryWeights);
+
+				// Reuse the CosineSimilarity object with every profile
+				cossim.setDocWeights(docWeights);
 
 				// *** User Profile of this entry - global term computation ***
 				// Important to clear in order to be reused!
@@ -406,16 +337,15 @@ public class Scorer {
 				if (cossimUserProfiles != null) {
 					// Create the Weights!
 					// 4. ENTRY's USER PROFILE WEIGHTS (ENHANCED QUERY)
-					Iterator<String> it4 = docTerms.iterator();
 					BinaryWeight[] profileWeights2 = new BinaryWeight[docTerms
 							.size()];
 					z = 0;
-					while (it4.hasNext()) {
-						profileWeights2[z] = new BinaryWeight(it4.next());
+					for(String term : docTerms) {
+						profileWeights2[z] = new BinaryWeight(term);
 						z++;
 					}
-
-					cossimUserProfiles.setDocWeights(profileWeights2); // reuse!
+					// Reuse the CosineSimilarity object with every profile
+					cossimUserProfiles.setDocWeights(profileWeights2);
 
 					// TODO : Sorting and adding to the new Catalog-Response
 					scoreBoard.put(entry, new Float(0.5 * cossim.getScore()

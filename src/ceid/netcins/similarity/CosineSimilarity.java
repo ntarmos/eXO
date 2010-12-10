@@ -1,7 +1,7 @@
 package ceid.netcins.similarity;
 
 /**
- * This class implements the Vector Space Model.
+ * This class implements the cosine similarity equation.
  * 
  * 
  * @author Andreas Loupasakis
@@ -12,6 +12,19 @@ public class CosineSimilarity implements Similarity {
 	// The vectors we want to compare.
 	private TermWeight docWeights[], queryWeights[];
 
+	/*
+	 * Constructor wrapper for cases we haven't yet docWeights computed .
+	 */
+	public CosineSimilarity(TermWeight queryWeights[]) {
+		this(null, queryWeights);
+	}
+	
+	/**
+	 * General Constructor 
+	 * 
+	 * @param docWeights Array of document weight values
+	 * @param queryWeights Array of query weight values
+	 */
 	public CosineSimilarity(TermWeight docWeights[], TermWeight queryWeights[]) {
 		this.docWeights = docWeights;
 		this.queryWeights = queryWeights;
@@ -26,20 +39,22 @@ public class CosineSimilarity implements Similarity {
 		int i, j;
 		float score = 0;
 
-		for (i = 0; i < queryWeights.length; i++) {
-			for (j = 0; j < docWeights.length; j++) {
-				// TODO : check that indeed the |Q| and |E| are SETS!
-				if (this.queryWeights[i].getWeightedObject().equals(
-						docWeights[j].getWeightedObject())) {
-					score += this.docWeights[j].getWeight()
-							* this.queryWeights[i].getWeight();
-					// DEBUGGING System.out.println("Score "+i+" : "+score);
-					break; // the innermost loop only
+		if(queryWeights!=null && docWeights!=null){
+			for (i = 0; i < queryWeights.length; i++) {
+				for (j = 0; j < docWeights.length; j++) {
+					// TODO : check that indeed the |Q| and |E| are SETS!
+					if (this.queryWeights[i].getWeightedObject().equals(
+							docWeights[j].getWeightedObject())) {
+						score += this.docWeights[j].getWeight()
+								* this.queryWeights[i].getWeight();
+						// DEBUGGING System.out.println("Score "+i+" : "+score);
+						break; // the innermost loop only
+					}
 				}
 			}
+			score /= norm();
+			// DEBUGGING System.out.println("Final : "+score);
 		}
-		score /= norm();
-		// DEBUGGING System.out.println("Final : "+score);
 		return score;
 	}
 

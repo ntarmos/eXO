@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This Class holds the Content Profile of a content object. Such an object is
@@ -14,7 +16,7 @@ import java.util.Random;
  * 
  * @author Andreas Loupasakis
  */
-public class ContentProfile implements Serializable {
+public class ContentProfile implements Serializable, ProfileSet {
 
 	private static final long serialVersionUID = -3971044346421201440L;
 
@@ -166,5 +168,45 @@ public class ContentProfile implements Serializable {
 
 	public boolean equalsPublic(ContentProfile cp) {
 		return this.getPublicPart().equals(cp.getPublicPart());
+	}
+
+	@Override
+	public Set<String> getTermSet() {
+		List<ContentField> contentFields = this.getAllFields();
+		// FIXME: Any objection on TreeSet? Maybe we can use HashSet!? 
+		Set<String> profileTerms = new TreeSet<String>(); 
+		// Put all the terms in the Set object to "discard" duplicates
+		for(ContentField cf : contentFields) {
+			if (cf instanceof TokenizedField) {
+				TokenizedField tkf = (TokenizedField) cf;
+				String[] fieldterms = tkf.getTerms();
+				for (String t : fieldterms) {
+					profileTerms.add(t);
+				}
+			} else if (cf instanceof TermField) {
+				profileTerms.add(((TermField) cf).getFieldData());
+			}
+		}
+		return profileTerms;
+	}
+
+	@Override
+	public Set<String> getTermSet(Set<String> reusableContainer) {
+		List<ContentField> contentFields = this.getAllFields();
+		// Ensure container is empty 
+		reusableContainer.clear();
+		// Put all the terms in the Set object to "discard" duplicates
+		for(ContentField cf : contentFields) {
+			if (cf instanceof TokenizedField) {
+				TokenizedField tkf = (TokenizedField) cf;
+				String[] fieldterms = tkf.getTerms();
+				for (String t : fieldterms) {
+					reusableContainer.add(t);
+				}
+			} else if (cf instanceof TermField) {
+				reusableContainer.add(((TermField) cf).getFieldData());
+			}
+		}
+		return reusableContainer;
 	}
 }
