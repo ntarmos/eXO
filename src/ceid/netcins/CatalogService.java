@@ -1348,6 +1348,102 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
+	 * This method uses a query to search in every friend node.
+	 * 
+	 * Three query types are supported: CONTENTQUERY, USERQUERY,
+	 * HYBRIDQUERY.
+	 * 
+	 * @param queryType The type of the query.
+	 * @param queryTerms The set of terms to search for
+	 * @param command The callback which will be called on response.
+	 */
+	public void searchFriendsNetwork(final int queryType, 
+			final String[] queryTerms, final Continuation command) {
+
+		if (this.user == null) {
+			System.out.println("User has not been registered yet!");
+			return;
+		}
+
+		List<Friend> friends = user.getFriends();
+		MultiContinuation multi = new MultiContinuation(command,
+				friends.size()) {
+
+			public boolean isDone() throws Exception {
+				int numSuccess = 0;
+				for (int i = 0; i < haveResult.length; i++)
+					// The check "instanceof" is important!
+					// The result is a ResponsePDU instance
+					if ((haveResult[i]) && (result[i] instanceof ResponsePDU)) 
+						numSuccess++;
+
+				if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
+					return true;
+
+				if (super.isDone()) {
+					for (int i = 0; i < result.length; i++)
+						if (result[i] instanceof Exception)
+							if (logger.level <= Logger.WARNING)
+								logger.logException("result[" + i + "]:",
+										(Exception) result[i]);
+					throw new PastException("Had only " + numSuccess
+							+ " successful lookups out of " + result.length
+							+ " - aborting.");
+				}
+				return false;
+			}
+
+			public Object getResult() {
+				Boolean[] b = new Boolean[result.length];
+				for (int i = 0; i < b.length; i++)
+					b[i] = new Boolean((result[i] == null)
+							|| result[i] instanceof ResponsePDU);
+				return b;
+			}
+		};
+
+		Id destId = null;
+		NodeHandle nodeHandle = null;
+		int i = 0;
+
+		// Iterate to lookup for every node we want to visit!
+		for (Friend friend : friends) {
+			
+			// Get the UID of the specific friend 
+			destId = friend.getUID();
+			// Get the NodeHandle of destination node
+			nodeHandle = friend.getNodeHandle();
+
+			final int num = i++;
+			final Id uid = destId;
+			final QueryPDU qPDU;
+
+			qPDU = new QueryPDU(queryTerms, queryType);
+
+			// Issue a lookup request to the uderline DHT service
+			// Use nodeHandle as first hop hint!
+			lookup(destId, nodeHandle, false, qPDU, new NamedContinuation(
+					"FriendQueryMessage (QueryPDU) for " + destId, multi
+							.getSubContinuation(i)) {
+
+				public void receiveResult(Object result) {
+					System.out.println("\n\nFriendQuery  : "
+							+ queryTerms.toString() + ", #" + num
+							+ " result (success) for destination ID = " + uid);
+					parent.receiveResult(result);
+				}
+
+				public void receiveException(Exception result) {
+					System.out.println("nFriendQuery : " + queryTerms.toString()
+							+ ", #" + num + " result (error) "
+							+ result.getMessage());
+					parent.receiveException(result);
+				}
+			});
+		}
+	}
+	
+	/**
 	 * This method uses a query of terms to search in every visited node. Social
 	 * Tags are the target. Specifically, in the set of nodes we visit (e.g.
 	 * friends, neighbors etc.), Social Catalogs of every tag term are checked

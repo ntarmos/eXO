@@ -68,6 +68,7 @@ import rice.persistence.LockManager;
 import rice.persistence.LockManagerImpl;
 import rice.persistence.StorageManager;
 import ceid.netcins.messages.FriendAcceptMessage;
+import ceid.netcins.messages.FriendQueryMessage;
 import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
@@ -239,6 +240,9 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 							contentDeserializer);
 				case RetrieveContMessage.TYPE:
 					return RetrieveContMessage.build(buf, endpoint,
+							contentDeserializer);
+				case FriendQueryMessage.TYPE:
+					return FriendQueryMessage.build(buf, endpoint,
 							contentDeserializer);
 				}
 			} catch (IOException e) {
@@ -1508,6 +1512,59 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		});
 	}
 
+	/**
+	 * Wrapper for lookup process, which specifically handles a search in the
+	 * unstructured friends network. A FriendQueryMessage is routed using the
+	 * friend's NodeHandle as a first hop hint!
+	 * 
+	 * @param id
+	 *            the key to be queried
+	 * @param destNodeHandle
+	 * 			  the destination node handle used as a hint for routing 
+	 * @param cache
+	 *            Whether or not the data should be cached
+	 * @param command
+	 *            Command to be performed when the result is received
+	 */
+	public void lookup(final Id id, final NodeHandle destNodeHandle,
+			final boolean cache, QueryPDU qPDU,	final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		// send the request across the wire, and see if the result is null or
+		// not
+		sendRequest(id, new FriendQueryMessage(getUID(), id,
+				getLocalNodeHandle(), id, qPDU), destNodeHandle,
+				new NamedContinuation(
+				"TagContentMessage for " + id, command) {
+			public void receiveResult(final Object o) {
+				// if we have an object, we return it
+				// otherwise, we must check all replicas in order to make sure
+				// that
+				// the object doesn't exist anywhere
+				if (o != null) {
+
+					command.receiveResult(o);
+
+				} else {
+					// TODO : examine if the tager's arrays need to be
+					// replicated to the leafset
+					// If so then here we should put the lookupHandles code as
+					// above!!!
+					command.receiveResult(o); // o is NULL
+				}
+			}
+
+			public void receiveException(Exception e) {
+				// If the lookup message failed , we then try to fetch all of
+				// the handles, just
+				// in case. This may fail too, but at least we tried.
+				receiveResult(null);
+			}
+		});
+
+	}
+	
 	/**
 	 * Retrieves the handles of up to max replicas of the object stored in this
 	 * instance of Past with the given ID. Asynchronously returns an array of
