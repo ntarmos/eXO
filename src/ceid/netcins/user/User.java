@@ -7,8 +7,11 @@ import java.util.Map;
 import java.util.Vector;
 
 import rice.p2p.commonapi.Id;
+import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.SocialCatalog;
+import ceid.netcins.catalog.UserCatalogEntry;
 import ceid.netcins.content.ContentProfile;
+import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.social.SocialBookMark;
 import ceid.netcins.social.SocialLink;
 import ceid.netcins.social.TagCloud;
@@ -121,6 +124,107 @@ public class User {
 		this.invertedTagContentList = new HashMap<String, SocialCatalog>();
 	}
 
+	/**
+	 * Helper to get the proper entries corresponding to the query type issued
+	 * by the user.
+	 * 
+	 * @param type One of the types defined in QueryPDU
+	 * @return Return the corresponding vector of catalog entries.
+	 */
+	public Vector<?> getCatalogEntriesForQueryType(int type, Id requester){
+		Vector v = null;
+		switch(type){
+			case QueryPDU.CONTENTQUERY:
+				v = this.wrapContentToCatalogEntries();
+				break;
+			case QueryPDU.CONTENT_ENHANCEDQUERY:
+				v = this.wrapContentToCatalogEntries(isFriend(requester)?true:
+					false);
+				break;
+			case QueryPDU.HYBRIDQUERY:
+				// TODO: Implement this
+				break;
+			case QueryPDU.HYBRID_ENHANCEDQUERY:
+				// TODO: Implement this 
+				break;
+			case QueryPDU.USERQUERY:
+				v = new Vector<UserCatalogEntry>();
+				v.add(this.wrapUserProfileToCatalogEntry(
+						isFriend(requester)?true:false));
+				break;
+			case QueryPDU.USER_ENHANCEDQUERY:
+				v = new Vector<UserCatalogEntry>();
+				v.add(this.wrapUserProfileToCatalogEntry(
+						isFriend(requester)?true:false));
+				break;
+		}
+		return v; 
+	}
+
+	/**
+	 * Helper to wrap the user profile to UserCatalogEntry.
+	 * This is useful for similarity processing. E.g. to be included in a 
+	 * SimilarityRequest.
+	 * 
+	 * @param completeUserProfile Choose if we will include the public or the 
+	 * complete version of the user profile (if the queried user is friend ...)
+	 * @return The wrapped user profile.
+	 */
+	public UserCatalogEntry wrapUserProfileToCatalogEntry(
+			boolean completeUserProfile){
+		return new UserCatalogEntry(this.uid, completeUserProfile?
+				this.getCompleteUserProfile():
+					this.getPublicUserProfile());
+	}
+	
+	public Vector<ContentCatalogEntry> wrapContentToCatalogEntries(){
+		return this.wrapContentToCatalogEntries(false, false);
+	}
+	
+	public Vector<ContentCatalogEntry> wrapContentToCatalogEntries(
+			boolean completeUserProfile){
+		return this.wrapContentToCatalogEntries(true, completeUserProfile);
+	}
+	
+	/**
+	 * Helper to wrap the shared content profiles to ContentCatalogEntries.
+	 * This is useful to form a list for similarity processing. E.g. to include
+	 * in a SimilarityRequest. 
+	 * 
+	 * @param includeUserProfile Flag to denote if user profile is needed to 
+	 * be wrapped too.
+	 * @param completeUserProfile In case we want to include the user profile
+	 * choose if we will include the public or the complete version.
+	 * @return A vector with all the content profiles wrapped to catalog entries.
+	 */
+	public Vector<ContentCatalogEntry> wrapContentToCatalogEntries(
+			boolean includeUserProfile,	boolean completeUserProfile){
+		Vector<ContentCatalogEntry> v = new Vector<ContentCatalogEntry>();
+		for(Id id : this.sharedContentProfile.keySet()){
+			v.add(new ContentCatalogEntry(this.uid,
+					sharedContentProfile.get(id), 
+					includeUserProfile?
+							(completeUserProfile?
+									this.getCompleteUserProfile():
+										this.getPublicUserProfile()): null));
+		}
+		return v;
+	}
+	
+	/**
+	 * Given an Id, determine if the its owner belongs to user friends. 
+	 * 
+	 * @param user The id of the checking user
+	 * @return True if he is a friend, false if he is not.
+	 */
+	public boolean isFriend(Id user){
+		for(Friend f : this.friends){
+			if(f.getUID().equals(user))
+				return true;
+		}
+		return false;
+	}
+	
 	public void setUserProfile(ContentProfile userProfile) {
 		this.userProfile = userProfile;
 	}

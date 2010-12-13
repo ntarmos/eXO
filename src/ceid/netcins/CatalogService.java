@@ -46,6 +46,7 @@ import ceid.netcins.content.StoredField;
 import ceid.netcins.content.TermField;
 import ceid.netcins.content.TokenizedField;
 import ceid.netcins.messages.FriendAcceptMessage;
+import ceid.netcins.messages.FriendQueryMessage;
 import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
@@ -522,7 +523,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param clouds
 	 *            This handles whether tag clouds will be returned or not.
 	 * @param command
-	 *            An asychronous command which will be executed on return.
+	 *            An asynchronous command which will be executed on return.
 	 */
 	public void retrieveContent(Id uid, Id contentId, final boolean clouds,
 			final Continuation command) {
@@ -535,7 +536,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		final Id destuid = uid;
 
-		// Issue a lookup request to the uderline DHT service
+		// Issue a lookup request to the underline DHT service
 		lookup(destuid, false, new RetrieveContPDU(contentId),
 				new NamedContinuation(
 						"RetrieveContMessage (RetrieveContPDU) for " + destuid,
@@ -1394,11 +1395,7 @@ public class CatalogService extends DHTService implements SocService {
 			}
 
 			public Object getResult() {
-				Boolean[] b = new Boolean[result.length];
-				for (int i = 0; i < b.length; i++)
-					b[i] = new Boolean((result[i] == null)
-							|| result[i] instanceof ResponsePDU);
-				return b;
+				return this.result;
 			}
 		};
 
@@ -2057,6 +2054,24 @@ public class CatalogService extends DHTService implements SocService {
 					}
 				});
 
+			} else if (msg instanceof FriendQueryMessage) {
+				final FriendQueryMessage qmsg = (FriendQueryMessage) msg;
+				lookups++;
+
+				int type = qmsg.getQueryPDU().getType();
+				// TODO: Check if the wrapping should be put to Scorer Thread
+				// processing part to make Selector lighter.
+				Vector <?> entries = this.user.
+					getCatalogEntriesForQueryType(type,qmsg.getSource().getId());
+				// Leave the job to be done asynchronously by the
+				// Scorer thread
+				scorer.addRequest(new SimilarityRequest(
+						entries, qmsg.getQueryPDU().getData(),
+						type, qmsg.getQueryPDU().getK(),
+						qmsg.getQueryPDU().getSourceUserProfile(),
+						getResponseContinuation(qmsg),	qmsg.getHops()));
+				scorer.doNotify();
+				
 			} else if (msg instanceof SocialQueryMessage) {
 				final SocialQueryMessage sqmsg = (SocialQueryMessage) msg;
 				lookups++;

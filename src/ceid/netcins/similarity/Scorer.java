@@ -91,7 +91,6 @@ public class Scorer {
 			// score
 			HashMap<ContentCatalogEntry, Float> scoreBoard = new HashMap<ContentCatalogEntry, Float>();
 
-			// TODO : Fix the query part!
 			// 1. QUERY WEIGHTS
 			BinaryWeight[] queryWeights = new BinaryWeight[query.length];
 			int z = 0;
@@ -129,7 +128,7 @@ public class Scorer {
 				}
 			}
 
-			// For every entry of Catalog compute 1)global term set and 2) the
+			// For every CatalogEntry of compute 1)global term set and 2) the
 			// CosineSimilarity
 			for(ContentCatalogEntry entry : (Vector<ContentCatalogEntry>)profileEntries) {
 
@@ -171,7 +170,6 @@ public class Scorer {
 						// Reuse the CosineSimilarity object for user profile.
 						cossimUserProfiles.setDocWeights(profileWeights2);
 
-						// TODO : Sorting and adding to the new Catalog-Response
 						scoreBoard.put(entry, new Float(0.5 * cossim.getScore()
 								+ 0.5 * cossimUserProfiles.getScore()));
 					} else
@@ -216,7 +214,6 @@ public class Scorer {
 			// score
 			HashMap<UserCatalogEntry, Float> scoreBoard = new HashMap<UserCatalogEntry, Float>();
 
-			// TODO : Fix the query part!
 			// 1. QUERY WEIGHTS
 			BinaryWeight[] queryWeights = new BinaryWeight[query.length];
 			int z = 0;
@@ -254,7 +251,7 @@ public class Scorer {
 				}
 			}
 
-			// For every entry of Catalog compute 1)global term set and 2) the
+			// For every CatalogEntry compute 1)global term set and 2) the
 			// CosineSimilarity
 			for(UserCatalogEntry entry : (Vector<UserCatalogEntry>)profileEntries) {
 
@@ -315,7 +312,7 @@ public class Scorer {
 			ScoreBoard topK = new ScoreBoard(v1, v2);
 			req.getContinuation().receiveResult(
 					new ResponsePDU(req.getMessagesCounter(), topK));
-		} else { // Raw Catalog Without Scores :-)
+		} else { // Raw ScoreBoard Without Scores :-)
 			req.getContinuation().receiveResult(
 					new ResponsePDU(req.getMessagesCounter(),
 							new ScoreBoard(null, null)));
