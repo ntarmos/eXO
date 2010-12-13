@@ -30,7 +30,7 @@ eXO TODOs
       - Update profile tags to select between private and public sharing
         modes.
 
-   3. Build tag clouds and use them to augment queries.
++A 3. Build tag clouds and use them to augment queries.
       - Add/remove tags from local tag clouds.
       - Augment queries:
         o Retrieve tag clouds along with query results.
@@ -44,7 +44,7 @@ eXO TODOs
           original query tags and tags from the returned cloud and pose
           a new query.
 
-+A 4. Friend lists.
+=A 4. Friend lists.
       - List of friends per node (UID/IP/PORT).
       - Friend request/response messages.
       - List of incoming pending friend requests (HashMap on the UID).
@@ -80,7 +80,7 @@ eXO TODOs
             a set of tags for which these friends are good for.
           * ...
 
-+A 5. Unstructured social networks.
+=A 5. Unstructured social networks.
       - Selecting whether queries will be run on unstructured social
         networks, over the DHT, or both.
         o What changes is the UID/IP/PORTs we query.
