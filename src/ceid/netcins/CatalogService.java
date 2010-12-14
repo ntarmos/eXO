@@ -235,8 +235,8 @@ public class CatalogService extends DHTService implements SocService {
 			final NodeHandle nodeHandle, final Continuation command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User must be registered to be able to issue" +
-					"requests to the overlay network!");
+			throw new Exception("User has to be registered to be able to " +
+					"issue requests to the overlay network!");
 		}
 
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
@@ -246,14 +246,11 @@ public class CatalogService extends DHTService implements SocService {
 		
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, GetUserProfileMessage.TYPE, extra_args,
-				new NamedContinuation("GetUserProfileMessage for " + uid,
-						command) {
+				new StandardContinuation(command) {
 
 			public void receiveResult(Object result) {
 				// We expect a ContentProfile object with the user profile data.
 				if (result instanceof ContentProfile) {
-					// Wrap the result in a HashMap object together with a
-					// notification message
 					parent.receiveResult(wrapToResponse(
 							"Got user profile of "+uid,	SUCCESS,
 							(ContentProfile)result));
@@ -325,117 +322,62 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * This method sends a request for friendship to an other user of the
-	 * network specified by the user name string. Message is a custom string
-	 * formed by the source user to say hello. Warning! In order to operate
-	 * properly nodes must be assigned nodeIDs created by the user unique names
-	 * (e.g. email address). Warning! This method should not be used in real
-	 * deployment. Instead use the next version with uid.
-	 * 
+	 * Wrapper of friendRequest method.
+	 * @throws Exception 
 	 * @deprecated
-	 * @param userUniqueName
-	 * @param message
 	 */
-	public void friendRequest(String userUniqueName, String message,
-			final Continuation command) {
-
-		// TODO : maybe an Exception is needed here to be thrown
-		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
-			return;
-		}
+	public void friendRequest(final String userUniqueName, final String message,
+			final Continuation command) throws Exception {
 
 		final Id destuid = factory.buildId(userUniqueName);
-
-		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
-
-		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, FriendReqMessage.TYPE, frPDU,
-			   new NamedContinuation(
-					   "FriendReqMessage (FriendReqPDU) for " + destuid, command) {
-
-			public void receiveResult(Object result) {
-				if (result instanceof Boolean) {
-					System.out
-							.println("\n\nFriend request sent to user with UID : "
-									+ destuid + ", result code : " + result);
-
-					// Now we can add the UID to the queue for pending
-					// approvals!
-					user.addPendingOutgoingFReq(destuid);
-
-					parent.receiveResult(result);
-				} else {
-					System.out
-							.println("\n\nFriend request sent to user with UID : "
-									+ destuid
-									+ ", but something went wrong to the storing process");
-				}
-			}
-
-			public void receiveException(Exception result) {
-				System.out
-						.println("\n\nFriend request sent to user with UID : "
-								+ destuid + ", result (exception) code : "
-								+ result.getMessage());
-				parent.receiveException(result);
-			}
-		});
-
+		friendRequest(destuid, message,  command);
 	}
 
 	/**
-	 * This method sends a request for friendship to an other user of the
-	 * network specified by the uid. Message is a custom string formed by the
-	 * source user to say hello. Warning! In order to operate properly nodes
-	 * must be assigned nodeIDs created by the user unique names (e.g. email
-	 * address).
+	 * Sends a request for friendship to an other user of the network specified 
+	 * by the uid.
 	 * 
-	 * @param userUniqueName
-	 * @param message
+	 * @param uid Destination user UID
+	 * @param message A custom string formed by the source user.
+	 * @param command The response callback.
+	 * @throws Exception 
 	 */
-	public void friendRequest(Id uid, String message, final Continuation command) {
+	public void friendRequest(final Id uid, final String message,
+			final Continuation command) throws Exception {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
-			return;
+			throw new Exception("User has to be registered to be able to " +
+					"issue requests to the overlay network!");
 		}
 
-		final Id destuid = uid;
-
-		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
+		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// the lookup DHT wrapper.
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("PDU", new FriendReqPDU(message, this.user.getUsername()));
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, FriendReqMessage.TYPE, frPDU,
-			   new NamedContinuation(
-					   "FriendReqMessage (FriendReqPDU) for " + destuid, command) {
+		lookup(uid, FriendReqMessage.TYPE, extra_args,
+				new StandardContinuation(command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
-					System.out
-							.println("\n\nFriend request sent to user with UID : "
-									+ destuid + ", result code : " + result);
-
 					// Now we can add the UID to the queue for pending
 					// outgoing requests!
-					user.addPendingOutgoingFReq(destuid);
+					user.addPendingOutgoingFReq(uid);
 
-					parent.receiveResult(result);
+					parent.receiveResult(wrapToResponse(
+							"Sent friend request to user " + uid,	SUCCESS,
+							(Boolean)result));
 				} else {
-					System.out
-							.println("\n\nFriend request sent to user with UID : "
-									+ destuid
-									+ ", but something went wrong to the storing process");
+					parent.receiveResult(wrapToResponse(
+							"Failed to send friend request to user " + uid,
+							FAILURE, result));
 				}
 			}
-
 			public void receiveException(Exception result) {
-				System.out
-						.println("\n\nFriend request sent to user with UID : "
-								+ destuid + ", result (exception) code : "
-								+ result.getMessage());
-				parent.receiveException(result);
+				parent.receiveResult(wrapToResponse(
+						"Failed to send friend request to user " + uid,
+						EXCEPTION, result));
 			}
 		});
 
@@ -445,7 +387,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for the generic form of this function.
 	 */
 	public void acceptFriend(final FriendRequest freq,
-			final Continuation command) {
+			final Continuation command) throws Exception {
 		acceptFriend(freq, "", command);
 	}
 	
@@ -459,56 +401,49 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param freq The friend request for approval
 	 * @param message An optional message to send to the dest user.
 	 * @param command The callback that must be executed when we return
+	 * @throws Exception 
 	 */
 	public void acceptFriend(final FriendRequest freq, String message,
-			final Continuation command) {
+			final Continuation command) throws Exception {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
-			return;
+			throw new Exception("User has to be registered to be able to " +
+					"issue requests to the overlay network!");
 		}
 
-		final Id destuid = freq.getUID();
-		
-		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
+		final Id uid = freq.getUID();
+		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// the lookup DHT wrapper.
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("PDU", new FriendReqPDU(message, this.user.getUsername()));
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, FriendAcceptMessage.TYPE, frPDU,
-			   new NamedContinuation(
-					   "FriendAcceptMessage for " + destuid, command) {
+		lookup(uid, FriendAcceptMessage.TYPE, extra_args,
+			   new StandardContinuation(command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
-					System.out
-							.println("\n\nAccept friend request sent to user with UID : "
-									+ destuid + ", result code : " + result);
-
-					// Now we know that message of approval has sent
-					// successfully and we can remove the freq!
+					// Now we know that message of approval has been sent
+					// successfully and we can remove the freq and add the 
+					// Friend object to the friend list.
 					user.removePendingIncomingFReq(freq);
-
-					// Users are now FRIENDS!
-					// TODO : Maybe include IP address.
 					user.addFriend(new Friend(freq.getUID(), freq
 							.getFriendReqPDU().getScreenName(),
 							freq.getSourceHandle()));
 
-					parent.receiveResult(result);
+					parent.receiveResult(wrapToResponse(
+							"Accepted friend request of user " + uid,	SUCCESS,
+							(Boolean)result));
 				} else {
-					System.out
-							.println("\n\nAccept friend request sent to user with UID : "
-									+ destuid
-									+ ", but something went wrong to the dest node process");
+					parent.receiveResult(wrapToResponse(
+							"Failed to accept friend request of user " + uid,
+							FAILURE, result));
 				}
 			}
-
 			public void receiveException(Exception result) {
-				System.out
-						.println("\n\nAccept friend request sent to user with UID : "
-								+ destuid + ", result (exception) code : "
-								+ result.getMessage());
-				parent.receiveException(result);
+				parent.receiveResult(wrapToResponse(
+						"Failed to accept friend request of user " + uid,
+						EXCEPTION, result));
 			}
 		});
 	}
@@ -517,7 +452,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for the generic form of this function.
 	 */
 	public void rejectFriend(final FriendRequest freq,
-			final Continuation command) {
+			final Continuation command) throws Exception {
 		rejectFriend(freq, "", command);
 	}
 	
@@ -531,50 +466,45 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param freq The friend request for approval
 	 * @param message An optional message to send to the dest user.
 	 * @param command The callback that must be executed when we return
+	 * @throws Exception 
 	 */
 	public void rejectFriend(final FriendRequest freq, String message,
-			final Continuation command) {
+			final Continuation command) throws Exception {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
-			return;
+			throw new Exception("User has to be registered to be able to " +
+					"issue requests to the overlay network!");
 		}
 
-		final Id destuid = freq.getUID();
-		
-		FriendReqPDU frPDU = new FriendReqPDU(message, this.user.getUsername());
+		final Id uid = freq.getUID();
+		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// the lookup DHT wrapper.
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("PDU", new FriendReqPDU(message, this.user.getUsername()));
 
 		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, FriendRejectMessage.TYPE, frPDU,
-			   new NamedContinuation(
-					   "FriendRejectMessage for " + destuid, command) {
+		lookup(uid, FriendRejectMessage.TYPE, extra_args,
+			   new StandardContinuation(command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
-					System.out
-							.println("\n\nReject friend request sent to user with UID : "
-									+ destuid + ", result code : " + result);
-
 					// Now we know that message has sent
 					// successfully and we can remove the freq!
 					user.removePendingIncomingFReq(freq);
 
-					parent.receiveResult(result);
+					parent.receiveResult(wrapToResponse(
+							"Rejected friend request of user " + uid,	SUCCESS,
+							(Boolean)result));
 				} else {
-					System.out
-							.println("\n\nReject friend request sent to user with UID : "
-									+ destuid
-									+ ", but something went wrong to the dest node process");
+					parent.receiveResult(wrapToResponse(
+							"Failed to reject friend request of user " + uid,
+							FAILURE, result));
 				}
 			}
-
 			public void receiveException(Exception result) {
-				System.out
-						.println("\n\nReject friend request sent to user with UID : "
-								+ destuid + ", result (exception) code : "
-								+ result.getMessage());
-				parent.receiveException(result);
+				parent.receiveResult(wrapToResponse(
+						"Failed to reject friend request of user " + uid,
+						EXCEPTION, result));
 			}
 		});
 	}
@@ -651,45 +581,40 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * This method sends a set of tags for a specific content object (contentId)
-	 * to its owner's node specified by the uid. Warning! In order to operate
-	 * properly nodes must be assigned nodeIDs created by the user unique names
-	 * (e.g. email address).
+	 * Sends a set of tags for a specific content object (contentId)
+	 * to its owner's node specified by the uid.
 	 * 
-	 * @param uid
-	 *            User unique id (destination node).
-	 * @param contentId
-	 *            The Id of the taging content (checksum, SHA-1 of synonyms
-	 *            etc.).
-	 * @param tags
-	 *            An array of the tags which will be applied to the content
-	 *            object.
-	 * @param command
-	 *            An asychronous command which will be executed on return.
+	 * @param uid User unique id (destination node).
+	 * @param contentId The Id of the content which is tagged (checksum,
+	 * SHA-1 etc.).
+	 * @param tags An array of the tags which will be applied to the content
+	 * object.
+	 * @param command An asynchronous command which will be executed on return.
+	 * @throws Exception 
 	 */
-	public void tagContent(Id uid, Id contentId, final String[] tags,
-			final Continuation command) {
+	public void tagContent(final Id uid, final Id contentId, final String[] tags,
+			final Continuation command) throws Exception {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
-			return;
+			throw new Exception("User has to be registered to be able to " +
+					"issue requests to the overlay network!");
 		}
 
-		final Id destuid = uid;
+		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// the lookup DHT wrapper.
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("contentId", contentId);
+		extra_args.put("PDU", new TagContentPDU(contentId, tags));
 
-		TagContentPDU tcPDU = new TagContentPDU(contentId, tags);
-
-		// Issue a lookup request to the uderline DHT service
-		lookup(destuid, false, tcPDU, new NamedContinuation(
-				"TagContentMessage (TagContentPDU) for " + destuid, command) {
-
+		// Issue a lookup request to the underline DHT service
+		lookup(uid, TagContentMessage.TYPE, extra_args,
+				new StandardContinuation(command) {
+			
 			public void receiveResult(Object result) {
+				
+				// We expect a ContentCatalogEntry to be returned
 				if (result instanceof ContentCatalogEntry) {
 					ContentCatalogEntry cce = (ContentCatalogEntry) result;
-
-					// debugging only
-					// System.out.println("\n\nTagContent request sent to user with UID : "+destuid+", result code : "+result);
 
 					// Now we can add the ContentCatalogEntry to each
 					// SocialCatalog (for each tag)
@@ -703,25 +628,23 @@ public class CatalogService extends DHTService implements SocService {
 							scat.addContentCatalogEntry(cce);
 						user.addTagContentList(tag, scat);
 					}
-					parent.receiveResult(result);
+					// Wrap the result in a HashMap object together with a
+					// notification message
+					parent.receiveResult(wrapToResponse(
+							"Tagged content with checksum " + contentId + 
+							" of " + uid, SUCCESS, cce));
 				} else {
-					System.out
-							.println("\n\nTagContent request sent to user with UID : "
-									+ destuid
-									+ ", but something went wrong to the storing process");
+					parent.receiveResult(wrapToResponse(
+							"Failed to tag content with checksum " + contentId + 
+							" of " + uid, FAILURE, result));
 				}
 			}
-
 			public void receiveException(Exception result) {
-				System.out
-						.println("\n\nTagContent request sent to user with UID : "
-								+ destuid
-								+ ", result (exception) code : "
-								+ result.getMessage());
-				parent.receiveException(result);
+				parent.receiveResult(wrapToResponse(
+						"Failed to tag content with checksum " + contentId + 
+						" of " + uid, EXCEPTION, result));
 			}
-		});
-
+		});		
 	}
 
 	/**

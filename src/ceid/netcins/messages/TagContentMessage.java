@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.messages;
 
 import java.io.IOException;
@@ -20,9 +18,6 @@ import ceid.netcins.utils.JavaSerializer;
  */
 public class TagContentMessage extends ContinuationMessage {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5910419122228534069L;
 
 	public static final short TYPE = 10;

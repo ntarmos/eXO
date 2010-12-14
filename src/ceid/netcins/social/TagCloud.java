@@ -1,17 +1,17 @@
-
-
 package ceid.netcins.social;
 
 import java.util.Iterator;
 import java.util.TreeMap;
 
 /**
- * This is a set of social terms/tags with a corresponding weight = TF
+ * This is a set of social terms/tags with a corresponding weight = TF.
+ * The tag cloud consists of terms contributed by users other than the owner.
  * 
  * @author Andreas Loupasakis
  */
 public class TagCloud {
 
+	// Term frequency map
 	private TreeMap<String, Integer> tfm;
 
 	/**
@@ -56,6 +56,17 @@ public class TagCloud {
 		}
 	}
 
+	/**
+	 * Remove the named tag from the Map
+	 * 
+	 * @param tag The tag to be removed.
+	 */
+	public void removeTag(String tag){
+		if (tfm.containsKey(tag)) {
+			tfm.remove(tag);
+		}
+	}
+	
 	/**
 	 * String representation of TagCloud
 	 * 
