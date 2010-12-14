@@ -8,6 +8,7 @@ package ceid.netcins;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.WeakHashMap;
@@ -1536,7 +1537,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		sendRequest(id, new FriendQueryMessage(getUID(), id,
 				getLocalNodeHandle(), id, qPDU), destNodeHandle,
 				new NamedContinuation(
-				"TagContentMessage for " + id, command) {
+				"FriendQueryMessage for " + id, command) {
 			public void receiveResult(final Object o) {
 				// if we have an object, we return it
 				// otherwise, we must check all replicas in order to make sure
@@ -1559,6 +1560,45 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				// If the lookup message failed , we then try to fetch all of
 				// the handles, just
 				// in case. This may fail too, but at least we tried.
+				receiveResult(null);
+			}
+		});
+	}
+
+
+	public void lookup(final Id id, final int type,
+			final HashMap<String, Object> extra_args,
+			final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		NodeHandle destNodeHandle = extra_args.containsKey("nodeHandle")?
+				((NodeHandle) extra_args.get("nodeHandle")):null;		
+		ContinuationMessage message = null;
+		if (type == FriendReqMessage.TYPE) {
+			message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(), 
+					id, (FriendReqPDU)extra_args.get("PDU"));
+		}else if(type == FriendRejectMessage.TYPE) {
+			message = new FriendRejectMessage(getUID(), id, getLocalNodeHandle(),
+					   id, (FriendReqPDU)extra_args.get("PDU"));
+		}else if(type == FriendAcceptMessage.TYPE) {
+			message = new FriendAcceptMessage(getUID(), id, getLocalNodeHandle(),
+					   id, (FriendReqPDU)extra_args.get("PDU"));
+		}
+		// TODO: Fill in the remaining message types to handle.
+		
+		// send the request across the wire, and see if the result is null or not
+		sendRequest(id, message, destNodeHandle,
+				new NamedContinuation(
+						message.getClass()
+						.getSimpleName() + " for " + id, command) {
+			public void receiveResult(final Object o) {
+				// if we have an object, we return it
+				// otherwise, we may want to check all replicas in order to make
+				// sure the object doesn't exist anywhere
+				command.receiveResult(o);
+			}
+			public void receiveException(Exception e) {
 				receiveResult(null);
 			}
 		});

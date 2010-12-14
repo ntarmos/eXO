@@ -190,6 +190,9 @@ public class Scorer {
 			Vector<Float> v2 = new Vector<Float>();
 			v2.addAll(sortedScoreBoard.values());
 
+			// TODO: Drop the zero scored entries, here. 
+			// (discuss if it is necessary)
+			
 			// Resolve ties at the end of results list
 			resolveTies(v1, v2, req.getK());
 
@@ -306,6 +309,9 @@ public class Scorer {
 			Vector<Float> v2 = new Vector<Float>();
 			v2.addAll(sortedScoreBoard.values());
 
+			// TODO: Drop the zero scored entries, here. 
+			// (discuss if it is necessary)
+			
 			// Select the k results that will be returned
 			resolveTies(v1, v2, req.getK());
 

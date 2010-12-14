@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import ceid.netcins.messages.FriendQueryMessage;
 import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
+import ceid.netcins.messages.GetUserProfileMessage;
 import ceid.netcins.messages.InsertPDU;
 import ceid.netcins.messages.QueryMessage;
 import ceid.netcins.messages.QueryPDU;
@@ -90,6 +92,11 @@ public class CatalogService extends DHTService implements SocService {
 	public static final int USER = 1;
 	public static final int HYBRID = 2;
 
+	// Result statuses
+	public static final int SUCCESS = 0;
+	public static final int FAILURE = 1;
+	public static final int EXCEPTION = 2;
+	
 	/**
 	 * Constructor pushes the appropriate arguments to DHTService and
 	 * initializes the Service.
@@ -169,10 +176,6 @@ public class CatalogService extends DHTService implements SocService {
 		user.setUserProfile(cpf.buildProfile(m, delimiter));
 	}
 
-	public ContentProfile getUserProfile() {
-		return user.getCompleteUserProfile();
-	}
-
 	public void setUserProfile(ContentProfile profile) {
 		ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
 		user.setUserProfile(profile);
@@ -210,6 +213,74 @@ public class CatalogService extends DHTService implements SocService {
 		}
 	}
 
+
+	public void getUserProfile(Friend friend, Continuation command) throws Exception {
+		this.getUserProfile(friend.getUID(), friend.getNodeHandle(),
+				command);
+	}
+	
+	public void getUserProfile(Id uid, Continuation command) throws Exception {
+		this.getUserProfile(uid, null, command);
+	}
+	
+	/**
+	 * Getter for a user profile which belongs to the user with the given uid.
+	 * 
+	 * @param uid The destination node id.
+	 * @param nodeHandle Hint to use for the first hop routing.  
+	 * @return The requested user profile
+	 * @throws Exception 
+	 */
+	public void getUserProfile(final Id uid,
+			final NodeHandle nodeHandle, final Continuation command) throws Exception {
+
+		if (this.user == null) {
+			throw new Exception("User must be registered to be able to issue" +
+					"requests to the overlay network!");
+		}
+
+		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// the lookup DHT wrapper.
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("nodeHandle", nodeHandle);
+		
+		// Issue a lookup request to the underline DHT service
+		lookup(uid, GetUserProfileMessage.TYPE, extra_args,
+				new NamedContinuation("GetUserProfileMessage for " + uid,
+						command) {
+
+			public void receiveResult(Object result) {
+				// We expect a ContentProfile object with the user profile data.
+				if (result instanceof ContentProfile) {
+					// Wrap the result in a HashMap object together with a
+					// notification message
+					parent.receiveResult(wrapToResponse(
+							"Got user profile of "+uid,	SUCCESS,
+							(ContentProfile)result));
+				} else {
+					parent.receiveResult(wrapToResponse(
+							"Failed to get user profile of "+uid, FAILURE,
+							result));
+				}
+			}
+			public void receiveException(Exception result) {
+				parent.receiveResult(wrapToResponse(
+						"Failed to get user profile of "+uid,
+						EXCEPTION,
+						result));
+			}
+		});
+	}
+	
+	/**
+	 * This is a local user profile getter.
+	 * 
+	 * @return The profile object.
+	 */
+	public ContentProfile getUserProfile() {
+		return user.getCompleteUserProfile();
+	}
+	
 	/**
 	 * This is used to create a url profile.
 	 * 
@@ -1932,6 +2003,23 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
+	 * Utility method to form a common response HashMap for the next processing
+	 * level. 
+	 * 
+	 * @param message
+	 * @param status
+	 * @param data
+	 */
+	HashMap<String,Object> wrapToResponse(String message, int status,
+			Object data){
+		HashMap<String,Object> response = new HashMap<String,Object>();
+		response.put("message", message);
+		response.put("status", status);
+		response.put("data", data);
+		return response;
+	}
+	
+	/**
 	 * This method is called on the application at the destination node for the
 	 * given id.
 	 * 
@@ -2071,7 +2159,21 @@ public class CatalogService extends DHTService implements SocService {
 						qmsg.getQueryPDU().getSourceUserProfile(),
 						getResponseContinuation(qmsg),	qmsg.getHops()));
 				scorer.doNotify();
+
+			} else if (msg instanceof GetUserProfileMessage) {
+				final GetUserProfileMessage gupmsg = (GetUserProfileMessage) msg;
+				lookups++;
+
+				if (logger.level <= Logger.FINER)
+					logger.log("Returning response for get user profile message "	
+							+ gupmsg.getId() + " from " + endpoint.getId());
 				
+				// Get and return a version of the user profile.
+				getResponseContinuation(msg).receiveResult(
+						user.isFriend(msg.getSource().getId())?
+								user.getCompleteUserProfile():
+									user.getPublicUserProfile());
+
 			} else if (msg instanceof SocialQueryMessage) {
 				final SocialQueryMessage sqmsg = (SocialQueryMessage) msg;
 				lookups++;
