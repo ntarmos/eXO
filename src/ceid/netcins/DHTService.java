@@ -73,6 +73,7 @@ import ceid.netcins.messages.FriendQueryMessage;
 import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
+import ceid.netcins.messages.GetUserProfileMessage;
 import ceid.netcins.messages.QueryMessage;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
@@ -244,6 +245,9 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 							contentDeserializer);
 				case FriendQueryMessage.TYPE:
 					return FriendQueryMessage.build(buf, endpoint,
+							contentDeserializer);
+				case GetUserProfileMessage.TYPE:
+					return GetUserProfileMessage.build(buf, endpoint,
 							contentDeserializer);
 				}
 			} catch (IOException e) {
@@ -1575,7 +1579,10 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		NodeHandle destNodeHandle = extra_args.containsKey("nodeHandle")?
 				((NodeHandle) extra_args.get("nodeHandle")):null;		
 		ContinuationMessage message = null;
-		if (type == FriendReqMessage.TYPE) {
+		if (type == GetUserProfileMessage.TYPE) {
+			message = new GetUserProfileMessage(getUID(), id,
+					getLocalNodeHandle(), id);
+		}else if (type == FriendReqMessage.TYPE) {
 			message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(), 
 					id, (FriendReqPDU)extra_args.get("PDU"));
 		}else if(type == FriendRejectMessage.TYPE) {
