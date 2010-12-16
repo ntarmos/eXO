@@ -214,9 +214,10 @@ public class ContentProfileFactory {
 		Extractor ex = Extractor.getDefault();
 		Map<String, String> tempcontainer = new HashMap<String, String>();
 		ArrayList<MetaData> keywords = ex.extract(f);
-		for (MetaData md : keywords) {
-			tempcontainer.put(md.getTypeAsString(), md.getMetaDataAsString());
-		}
+		if (keywords != null)
+			for (MetaData md : keywords) {
+				tempcontainer.put(md.getTypeAsString(), md.getMetaDataAsString());
+			}
 		return tempcontainer;
 	}
 
@@ -436,9 +437,9 @@ public class ContentProfileFactory {
 						terms = new TreeSet<String>();
 						String[] splitTerms = candfields.get(field).split(
 								delimiter);
-						for (String st : splitTerms)
-							terms.add(st.trim()); // Trimming to remove control
-													// and whitespaces!
+						if (splitTerms != null)
+							for (String st : splitTerms)
+								terms.add(st.trim()); // Trimming to remove control and whitespaces!
 						cprof.add(new TokenizedField(field, terms));
 
 					} else {

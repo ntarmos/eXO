@@ -35,7 +35,10 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 * @param cp the ContentProfile to copy from
 	 */
 	public ContentProfile(ContentProfile cp) {
-		this.fields = new ArrayList<ContentField>(cp.fields);
+		if (cp != null)
+			this.fields = new ArrayList<ContentField>(cp.fields);
+		else
+			this.fields = null;
 	}
 
 	/**
@@ -62,9 +65,10 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 */
 	public List<ContentField> getPublicFields() {
 		List<ContentField> ret = new ArrayList<ContentField>();
-		for (ContentField f : fields)
-			if (f.isPublic())
-				ret.add(f);
+		if (fields != null)
+			for (ContentField f : fields)
+				if (f.isPublic())
+					ret.add(f);
 		return ret;
 	}
 
@@ -91,14 +95,15 @@ public class ContentProfile implements Serializable, ProfileSet {
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		for (ContentField obj : fields) {
-			if (obj instanceof TokenizedField)
-				buffer.append(((TokenizedField)obj).toString());
-			else if (obj instanceof TermField)
-				buffer.append(((TermField)obj).toString());
-			else if (obj instanceof StoredField)
-				buffer.append(((StoredField)obj).toString());
-		}
+		if (fields != null)
+			for (ContentField obj : fields) {
+				if (obj instanceof TokenizedField)
+					buffer.append(((TokenizedField)obj).toString());
+				else if (obj instanceof TermField)
+					buffer.append(((TermField)obj).toString());
+				else if (obj instanceof StoredField)
+					buffer.append(((StoredField)obj).toString());
+			}
 		return buffer.toString();
 	}
 
@@ -110,14 +115,15 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 */
 	public String toStringWithoutTF() {
 		StringBuffer buffer = new StringBuffer();
-		for (ContentField obj : fields) {
-			if (obj instanceof TokenizedField)
-				buffer.append(((TokenizedField)obj).toStringWithoutTF());
-			else if (obj instanceof TermField)
-				buffer.append(((TermField)obj).toString());
-			else if (obj instanceof StoredField)
-				buffer.append(((StoredField)obj).toString());
-		}
+		if (fields != null)
+			for (ContentField obj : fields) {
+				if (obj instanceof TokenizedField)
+					buffer.append(((TokenizedField)obj).toStringWithoutTF());
+				else if (obj instanceof TermField)
+					buffer.append(((TermField)obj).toString());
+				else if (obj instanceof StoredField)
+					buffer.append(((StoredField)obj).toString());
+			}
 		return buffer.toString();
 	}
 
@@ -127,16 +133,17 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 */
 	public double computeTotalBytes() {
 		double counter = 0;
-		for (ContentField obj : fields) {
-			// Don't count bytes of private data
-			if (obj.isPrivate())
-				continue;
+		if (fields != null)
+			for (ContentField obj : fields) {
+				// Don't count bytes of private data
+				if (obj.isPrivate())
+					continue;
 
-			if (obj instanceof TokenizedField)
-				counter += ((TokenizedField)obj).size();
-			else if (obj instanceof TermField)
-				counter += ((TermField)obj).size();
-		}
+				if (obj instanceof TokenizedField)
+					counter += ((TokenizedField)obj).size();
+				else if (obj instanceof TermField)
+					counter += ((TermField)obj).size();
+			}
 		return counter;
 	}
 
@@ -180,9 +187,10 @@ public class ContentProfile implements Serializable, ProfileSet {
 			if (cf instanceof TokenizedField) {
 				TokenizedField tkf = (TokenizedField) cf;
 				String[] fieldterms = tkf.getTerms();
-				for (String t : fieldterms) {
-					profileTerms.add(t);
-				}
+				if (fieldterms != null)
+					for (String t : fieldterms) {
+						profileTerms.add(t);
+					}
 			} else if (cf instanceof TermField) {
 				profileTerms.add(((TermField) cf).getFieldData());
 			}
@@ -200,9 +208,10 @@ public class ContentProfile implements Serializable, ProfileSet {
 			if (cf instanceof TokenizedField) {
 				TokenizedField tkf = (TokenizedField) cf;
 				String[] fieldterms = tkf.getTerms();
-				for (String t : fieldterms) {
-					reusableContainer.add(t);
-				}
+				if (fieldterms != null)
+					for (String t : fieldterms) {
+						reusableContainer.add(t);
+					}
 			} else if (cf instanceof TermField) {
 				reusableContainer.add(((TermField) cf).getFieldData());
 			}

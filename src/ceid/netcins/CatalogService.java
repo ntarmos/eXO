@@ -194,10 +194,11 @@ public class CatalogService extends DHTService implements SocService {
 					if (result instanceof Boolean[]) {
 						Boolean[] results = (Boolean[]) result;
 						int indexedNum = 0;
-						for (Boolean isIndexedTerm : results) {
-							if (isIndexedTerm)
-								indexedNum++;
-						}
+						if (results != null)
+							for (Boolean isIndexedTerm : results) {
+								if (isIndexedTerm)
+									indexedNum++;
+							}
 						System.out.println("Total " + indexedNum
 								+ " terms indexed out of " + results.length
 								+ "!");
@@ -619,15 +620,16 @@ public class CatalogService extends DHTService implements SocService {
 					// Now we can add the ContentCatalogEntry to each
 					// SocialCatalog (for each tag)
 					// Tagers inverted list.
-					for (String tag : tags) {
-						SocialCatalog scat = user.getTagContentList().get(tag);
-						if (scat == null)
-							scat = new SocialCatalog(tag);
-						Vector<?> ccatEntries = scat.getContentCatalogEntries();
-						if (!ccatEntries.contains(cce))
-							scat.addContentCatalogEntry(cce);
-						user.addTagContentList(tag, scat);
-					}
+					if (tags != null)
+						for (String tag : tags) {
+							SocialCatalog scat = user.getTagContentList().get(tag);
+							if (scat == null)
+								scat = new SocialCatalog(tag);
+							Vector<?> ccatEntries = scat.getContentCatalogEntries();
+							if (!ccatEntries.contains(cce))
+								scat.addContentCatalogEntry(cce);
+							user.addTagContentList(tag, scat);
+						}
 					// Wrap the result in a HashMap object together with a
 					// notification message
 					parent.receiveResult(wrapToResponse(
@@ -2112,11 +2114,12 @@ public class CatalogService extends DHTService implements SocService {
 				Map<String, SocialCatalog> invertedMap = user
 						.getTagContentList();
 				// SocialCatalog scat=null;
-				for (String term : qtags) {
-					if (invertedMap.containsKey(term)) {
-						vec.add(invertedMap.get(term));
+				if (qtags != null)
+					for (String term : qtags) {
+						if (invertedMap.containsKey(term)) {
+							vec.add(invertedMap.get(term));
+						}
 					}
-				}
 
 				if (logger.level <= Logger.FINER)
 					logger
@@ -2202,9 +2205,10 @@ public class CatalogService extends DHTService implements SocService {
 				// +1
 				// TODO : Implement association with User-tagers in the TagCloud
 				String[] tags = tpdu.getTags();
-				for (String tag : tags) {
-					cloud.addTagTFMap(tag);
-				}
+				if (tags != null)
+					for (String tag : tags) {
+						cloud.addTagTFMap(tag);
+					}
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for tagcontent message "

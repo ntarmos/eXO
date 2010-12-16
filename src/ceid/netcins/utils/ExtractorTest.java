@@ -23,9 +23,10 @@ public class ExtractorTest {
 			Extractor ex = Extractor.getDefault();
 			Map<String, String> tempcontainer = new HashMap<String, String>();
 			ArrayList<MetaData> keywords = ex.extract(f.getAbsolutePath());
-			for (MetaData md : keywords) {
-				tempcontainer.put(md.getTypeAsString(), md.getMetaDataAsString());
-			}
+			if (keywords != null)
+				for (MetaData md : keywords) {
+					tempcontainer.put(md.getTypeAsString(), md.getMetaDataAsString());
+				}
 
 			System.out.println("Keys:");
 			for (String k : tempcontainer.keySet())

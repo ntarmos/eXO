@@ -408,10 +408,11 @@ public class SimDriver extends CommonAPITest {
 								if (result instanceof Boolean[]) {
 									Boolean[] results = (Boolean[]) result;
 									int indexedNum = 0;
-									for (Boolean isIndexedTerm : results) {
-										if (isIndexedTerm)
-											indexedNum++;
-									}
+									if (results != null)
+										for (Boolean isIndexedTerm : results) {
+											if (isIndexedTerm)
+												indexedNum++;
+										}
 									System.out.println("Total " + indexedNum
 											+ " terms indexed out of "
 											+ results.length + "!");
@@ -475,10 +476,11 @@ public class SimDriver extends CommonAPITest {
 						if (result instanceof Boolean[]) {
 							Boolean[] results = (Boolean[]) result;
 							int indexedNum = 0;
-							for (Boolean isIndexedTerm : results) {
-								if (isIndexedTerm)
-									indexedNum++;
-							}
+							if (results != null)
+								for (Boolean isIndexedTerm : results) {
+									if (isIndexedTerm)
+										indexedNum++;
+								}
 							System.out.println("Total " + indexedNum
 									+ " terms indexed out of " + results.length
 									+ "!");
@@ -597,10 +599,11 @@ public class SimDriver extends CommonAPITest {
 								if (result instanceof Boolean[]) {
 									Boolean[] results = (Boolean[]) result;
 									int indexedNum = 0;
-									for (Boolean isIndexedTerm : results) {
-										if (isIndexedTerm)
-											indexedNum++;
-									}
+									if (results != null)
+										for (Boolean isIndexedTerm : results) {
+											if (isIndexedTerm)
+												indexedNum++;
+										}
 									System.out.println("Total " + indexedNum
 											+ " index messages out of "
 											+ results.length + "!");
@@ -648,10 +651,11 @@ public class SimDriver extends CommonAPITest {
 						if (result instanceof Boolean[]) {
 							Boolean[] results = (Boolean[]) result;
 							int indexedNum = 0;
-							for (Boolean isIndexedTerm : results) {
-								if (isIndexedTerm)
-									indexedNum++;
-							}
+							if (results != null)
+								for (Boolean isIndexedTerm : results) {
+									if (isIndexedTerm)
+										indexedNum++;
+								}
 							System.out.println("Total " + indexedNum
 									+ " terms indexed out of " + results.length
 									+ "!");
