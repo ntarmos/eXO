@@ -10,30 +10,31 @@ import rice.pastry.NodeIdFactory;
  * Ideally each user should be allowed to select an ID and
  * be able to run instances of our software on multiple nodes
  * at the same time. Moreover, we need the actual node ID to
- * be equal to the current user's ID. In order to accomplish both
- * of these, we need the user's ID to depend on both the selected
- * username and some node-specific information. Thus, the actual
- * user/node ID is computed using the concatenation of the username
- * and some node-specific information (e.g. a node ID as computed
- * by {@link IPNodeIdFactory} or {@link RandomNodeIdFactory}).
+ * be equal to the current user's ID. This would make mapping users to
+ * nodes somewhat strange (having users handle 128-bit hashes). Instead
+ * we choose a Jabber/XMPP-style naming (i.e.
+ * &lt;username&gt;/&lt;resource&gt;) where users may run multiple
+ * nodes, each with a different resource identifier. Thus, the actual
+ * user/node ID is computed using the concatenation of the username and
+ * resource strings information, fed through FreePastry's ID generator,
+ * resulting in a a node ID (e.g., as computed by {@link
+ * IPNodeIdFactory} or {@link RandomNodeIdFactory}).
  *
  * @author Nikos Ntarmos &lt;<a href="mailto:ntarmos@cs.uoi.gr">ntarmos@cs.uoi.gr</a>&gt;
  */
 public class UserNodeIdFactory implements NodeIdFactory {
-
-	private NodeIdFactory nif;
-
 	private String username;
+	private String resource;
 
 	/**
 	 * Construct a new UserNodeIdFactory
 	 * 
 	 * @param username the selected username
-	 * @param nif the NodeIDFactory implementation of choice (e.g., {@link IPNodeIdFactory}, {@link RandomNodeIdFactory} etc.)
+	 * @param resource a Jabber-style resource descriptor (e.g., "Home", "Work", etc.)
 	 */
-	public UserNodeIdFactory(String username, NodeIdFactory nif) {
+	public UserNodeIdFactory(String username, String resource) {
 		this.username = username;
-		this.nif = nif;
+		this.resource = resource;
 	}
 
 	/* (non-Javadoc)
@@ -41,13 +42,17 @@ public class UserNodeIdFactory implements NodeIdFactory {
 	 */
 	@Override
 	/**
-	 * Computes a user/node id, given a username and node ID factory.
+	 * Computes a user/node id, given a username and resource.
 	 * 
 	 * @return a new ID
 	 */
 	public Id generateNodeId() {
+		return generateUserNodeId(username, resource);
+	}
+
+	public static Id generateUserNodeId(String username, String resource) {
 		byte ubytes[] = username.getBytes();
-		byte nbytes[] = nif.generateNodeId().toByteArray();
+		byte nbytes[] = resource.getBytes();
 		byte idbytes[] = new byte[ubytes.length + nbytes.length];
 		for (int i = 0; i < ubytes.length; i++)
 			idbytes[i] = ubytes[i];

@@ -182,7 +182,7 @@ public class ClientDriver {
 		// Generate the NodeIds Randomly RandomNodeIdFactory, IPNodeIdFactory
 		// (alternative)
 		NodeIdFactory nidFactory = new UserNodeIdFactory("dummy username",
-				new IPNodeIdFactory(localAddress, BINDPORT, environment));
+				"dummy resource");
 
 		// used for generating PastContent object Ids.
 		// this implements the "hash function" for our DHT
