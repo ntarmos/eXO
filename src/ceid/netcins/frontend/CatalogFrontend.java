@@ -273,7 +273,7 @@ public class CatalogFrontend {
 			return;
 		}
 
-		Environment env = new Environment(dummy, "/home/Work/Research/Code/eXO/jars/freepastry/freepastry");
+		Environment env = new Environment();
 		CatalogFrontend cf = null;
 		try {
 			cf = (args.length == 3) ?
