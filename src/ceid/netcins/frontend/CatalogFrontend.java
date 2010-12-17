@@ -262,14 +262,16 @@ public class CatalogFrontend {
 			return;
 		}
 		String userName = args[0], resourceName = args[1];
-		int jettyPort = 8080;
-		try {
-			jettyPort = Integer.parseInt(args[2]);
-			if (jettyPort < 1 || jettyPort > 65535)
-				throw new NumberFormatException();
-		} catch (NumberFormatException e) {
-			System.err.println("Port should be an integer in [1, 65535]");
-			return;
+		int jettyPort = 0;
+		if (args.length == 3) {
+			try {
+				jettyPort = Integer.parseInt(args[2]);
+				if (jettyPort < 1 || jettyPort > 65535)
+					throw new NumberFormatException();
+			} catch (NumberFormatException e) {
+				System.err.println("Port should be an integer in [1, 65535]");
+				return;
+			}
 		}
 
 		Environment env = new Environment();
