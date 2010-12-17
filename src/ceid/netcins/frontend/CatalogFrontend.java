@@ -261,7 +261,6 @@ public class CatalogFrontend {
 			System.err.println("Usage: java ... ceid.netcins.CatalogFrontend <username> <resource> [port]");
 			return;
 		}
-		String dummy[] = new String[0];
 		String userName = args[0], resourceName = args[1];
 		int jettyPort = 8080;
 		try {
