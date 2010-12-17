@@ -1,6 +1,7 @@
 package ceid.netcins.frontend;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
@@ -65,7 +66,9 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				Vector<String> na = new Vector<String>();
 				na.add(PROCESSING);
 				queue.put(reqID, na);
-				response.getWriter().println("{ \"reqID\": \"" + reqID + "\" }");
+				Map<String, String> ret = new HashMap<String, String>();
+				ret.put(CatalogFrontend.ReqIDTag, reqID);
+				response.getWriter().write(JSON.toString(ret));
 				// The public part has changed. We should reindex the user profile in the network
 				catalogService.indexUser(new Continuation<Object, Exception>() {
 					public void receiveResult(Object result) {
