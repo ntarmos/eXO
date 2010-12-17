@@ -47,10 +47,10 @@ public class UserNodeIdFactory implements NodeIdFactory {
 	 * @return a new ID
 	 */
 	public Id generateNodeId() {
-		return generateUserNodeId(username, resource);
+		return generateNodeId(username, resource);
 	}
 
-	public static Id generateUserNodeId(String username, String resource) {
+	public static Id generateNodeId(String username, String resource) {
 		byte ubytes[] = username.getBytes();
 		byte nbytes[] = resource.getBytes();
 		byte idbytes[] = new byte[ubytes.length + nbytes.length];

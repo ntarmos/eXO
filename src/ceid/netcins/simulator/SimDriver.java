@@ -54,7 +54,7 @@ import ceid.netcins.social.URLBookMark;
 import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
-import ceid.netcins.utils.UserNodeIdFactory;
+import ceid.netcins.user.UserNodeIdFactory;
 
 public class SimDriver extends CommonAPITest {
 
@@ -155,7 +155,7 @@ public class SimDriver extends CommonAPITest {
 		PastryNode ret = null;
 		if (num == 0) {
 			try {
-				ret = factory.newNode(UserNodeIdFactory.generateNodeId("user" + num));
+				ret = factory.newNode(UserNodeIdFactory.generateNodeId("user" + num, "dummy"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -164,7 +164,7 @@ public class SimDriver extends CommonAPITest {
 		} else {
 			try {
 				ret = factory.newNode(UserNodeIdFactory
-						.generateNodeId("user" + num));
+						.generateNodeId("user" + num, "dummy"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -235,13 +235,10 @@ public class SimDriver extends CommonAPITest {
 					new PersistentStorage(FACTORY, "root-" + num, ".", -1,
 							environment), new LRUCache(new MemoryStorage(
 							FACTORY), 100000, environment));
-			pasts[num] = new CatalogService(node, storages[num],
-					REPLICATION_FACTOR, INSTANCE, scorer);
-			// File f=new File("FreePastry-Storage-Root/root-" + num);
-
 			// User entities created with the RandomGenerated NodeIds
-			pasts[num].registerUser(new User(pasts[num].getLocalNodeHandle()
-					.getId()));
+			pasts[num] = new CatalogService(node, storages[num],
+					REPLICATION_FACTOR, INSTANCE, new User(node.getId()), scorer);
+			// File f=new File("FreePastry-Storage-Root/root-" + num);
 
 			// TODO : Check the persistent scenario of simulation
 			// File[] files=f.listFiles();
