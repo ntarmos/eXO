@@ -8,9 +8,13 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import ceid.netcins.CatalogService;
 
 public abstract class CatalogFrontendAbstractHandler extends AbstractHandler {
-	public static final String SUCCESS = "eXO::SUCCESS";
-	public static final String FAILURE = "eXO::FAILURE";
-	public static final String PROCESSING = "eXO::PROCESSING";
+	public static final String ReqIDTag = "eXO::reqID";
+	public static final String UIDTag = "eXO::UID";
+	public static final String PostParamTag = "eXO_data";
+	public static final String RequestStatusTag = "eXO::Status";
+	public static final String RequestStatusSuccessTag = "eXO::Success";
+	public static final String RequestStatusFailureTag = "eXO::Failure";
+	public static final String RequestStatusProcessingTag = "eXO::Processing";
 
 	protected CatalogService catalogService = null;
 	protected Hashtable<String, Vector<String>> queue = null;

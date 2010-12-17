@@ -62,7 +62,6 @@ public class CatalogFrontend {
 	public static final String SIMULATOR_SPHERE = "sphere";
 	public static final String SIMULATOR_EUCLIDEAN = "euclidean";
 	public static final String SIMULATOR_GT_ITM = "gt-itm";
-	public static final String ReqIDTag = "eXO::reqID";
 
 	private InetSocketAddress bootstrapNodeAddress;
 	private NodeHandle bootstrapNodeHandle = null;
