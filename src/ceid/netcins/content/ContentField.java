@@ -2,6 +2,8 @@ package ceid.netcins.content;
 
 import java.io.Serializable;
 
+import org.eclipse.jetty.util.ajax.JSON.Convertible;
+
 /**
  * Provide categorization of data just like in Apache Lucene's Field Class.
  * ContentFields consists of :
@@ -13,13 +15,16 @@ import java.io.Serializable;
  * 
  * @author Andreas Loupasakis
  */
-public abstract class ContentField implements Serializable {
+public abstract class ContentField implements Serializable, Convertible {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3881344031651483680L;
 	public static final boolean defaultAccessMode = false;
+	protected static final String FieldNameTag = "eXO::FieldName";
+	protected static final String FieldIsPublicTag = "eXO::FieldIsPublic";
+
 	// No setters for the fields below; remove and readd to update
 	String name;
 	Boolean isPublic;
