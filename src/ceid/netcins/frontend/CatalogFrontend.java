@@ -144,7 +144,7 @@ public class CatalogFrontend {
 		}
 
 		Id id = nodeIdFactory.generateNodeId();
-		this.user = new User(id);
+		this.user = new User(id, userName, resourceName);
 		try {
 			node = nodeFactory.newNode((rice.pastry.Id)id);
 		} catch (IOException e) {
