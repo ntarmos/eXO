@@ -121,7 +121,7 @@ tag: ContentField objects
 ✘ bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
   // Currently not supported by ceid.netcins.CatalogService
 
-✘ vector<CID> getContentIDs() (for local content items -- list of content IDs)
+✔ vector<CID> getContentIDs() (for local content items -- list of content IDs)
 
 ✘ vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
   // Currently not supported by ceid.netcins.CatalogService

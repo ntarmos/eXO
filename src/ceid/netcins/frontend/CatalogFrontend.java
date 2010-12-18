@@ -226,6 +226,12 @@ public class CatalogFrontend {
 		setUserProfileContext.setClassLoader(Thread.currentThread().getContextClassLoader());
 		setUserProfileContext.setHandler(new SetUserProfileHandler(catalogService, queue));
 
+		ContextHandler getContentIDsContext = new ContextHandler();
+		getContentIDsContext.setContextPath("/servlet/GetContentIDs");
+		getContentIDsContext.setResourceBase("/");
+		getContentIDsContext.setClassLoader(Thread.currentThread().getContextClassLoader());
+		getContentIDsContext.setHandler(new GetContentIDsHandler(catalogService, queue));
+
 		ContextHandler plainFileContext = new ContextHandler();
 		plainFileContext.setContextPath("/");
 		ResourceHandler plainFileHandler = new ResourceHandler();
@@ -235,7 +241,7 @@ public class CatalogFrontend {
 		plainFileContext.setHandler(plainFileHandler);
 		
 		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler [] { getUserProfileContext, setUserProfileContext, plainFileContext, new DefaultHandler() });
+		handlers.setHandlers(new Handler [] { getUserProfileContext, setUserProfileContext, getContentIDsContext, plainFileContext, new DefaultHandler() });
 
 		server.setHandler(handlers);
 		
