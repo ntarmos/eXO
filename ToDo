@@ -112,38 +112,38 @@ CID: Content UID
 vector<*>: any container that we deem fit (could be plain Vectors, HashMaps, etc.)
 tag: ContentField objects
 
-vector<tag> getUserProfile() (for the local user -- returns all of the tags, along with the public/private bits)
+✔ vector<tag> getUserProfile() (for the local user -- returns all of the tags, along with the public/private bits)
 
-vector<tag> getUserProfile(UID) (for both local and remote users)
+✔ vector<tag> getUserProfile(UID) (for both local and remote users)
 
-bool        setUserProfile(vector<tag>) (for the local user -- must reindex the user if the set of public tags changes)
+✔ bool        setUserProfile(vector<tag>) (for the local user -- must reindex the user if the set of public tags changes)
 
-// bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
-// Currently not supported by ceid.netcins.CatalogService
+✘ bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
+  // Currently not supported by ceid.netcins.CatalogService
 
-vector<CID> getContentIDs() (for local content items -- list of content IDs)
+✘ vector<CID> getContentIDs() (for local content items -- list of content IDs)
 
-//vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
-// Currently not supported by ceid.netcins.CatalogService
+✘ vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
+  // Currently not supported by ceid.netcins.CatalogService
 
-vector<tag> getContentTags(CID) (for both local and remote content items)
+✘ vector<tag> getContentTags(CID) (for both local and remote content items)
 
-bool        setContentTags(CID, vector<tag>) (for local content items)
+✘ bool        setContentTags(CID, vector<tag>) (for local content items)
 
-bool        setContentTags(UID, CID, vector<tag>) (for remote content items -- changes the set of tags contributed by the calling node/user)
+✘ bool        setContentTags(UID, CID, vector<tag>) (for remote content items -- changes the set of tags contributed by the calling node/user)
 
-vector<UID> searchUsers_DHT(vector<tag>)
+✘ vector<UID> searchUsers_DHT(vector<tag>)
 
-vector<UID> searchUsers_PSN(vector<tag>)
+✘ vector<UID> searchUsers_PSN(vector<tag>)
 
-vector<UID> searchContent_DHT(vector<tag>)
+✘ vector<UID> searchContent_DHT(vector<tag>)
 
-vector<UID> searchContent_PSN(vector<tag>)  (the GUI can search on both DHT and PSN by calling both of the _DHT and _PSN search variants and merging the result lists)
+✘ vector<UID> searchContent_PSN(vector<tag>)  (the GUI can search on both DHT and PSN by calling both of the _DHT and _PSN search variants and merging the result lists)
 
-bool        sendFriendRequest(UID)
+✘ bool        sendFriendRequest(UID)
 
-vector<UID> getFriendRequests()
+✘ vector<UID> getFriendRequests()
 
-bool        acceptFriendRequest(UID)
+✘ bool        acceptFriendRequest(UID)
 
-bool        rejectFriendRequest(UID)
+✘ bool        rejectFriendRequest(UID)
