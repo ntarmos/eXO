@@ -25,6 +25,9 @@ import ceid.netcins.social.TagCloud;
  * @author Andreas Loupasakis
  */
 public class User {
+	public static final String UsernameTag = "Username";
+	public static final String ResourceTag = "Resource";
+	public static final String NotAvailableTag = "<N/A>";
 
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
@@ -244,30 +247,36 @@ public class User {
 	}
 
 	public void setUserProfile(ContentProfile userProfile) {
-		this.userProfile = userProfile;
+		if (userProfile != null)
+			this.userProfile = new ContentProfile(userProfile);
+		else
+			this.userProfile = new ContentProfile();
 
 		boolean foundUName = false, foundRName = false;
-		for (ContentField cf : userProfile.getAllFields()) {
-			if (cf instanceof TermField) {
-				if(((TermField)cf).getFieldName().equals("UserName"))
-					foundUName = true;
-				else if (((TermField)cf).getFieldName().equals("ResourceName"))
-					foundRName = true;
+		List<ContentField> fields = this.userProfile.getAllFields();
+		if (fields != null) {
+			for (ContentField cf : fields) {
+				if (cf instanceof TermField) {
+					if(((TermField)cf).getFieldName().equals(UsernameTag))
+						foundUName = true;
+					else if (((TermField)cf).getFieldName().equals(ResourceTag))
+						foundRName = true;
+				}
+				if (foundUName && foundRName)
+					break;
 			}
-			if (foundUName && foundRName)
-				break;
 		}
 		if (!foundUName) {
 			if (username != null)
-				this.userProfile.add(new TermField("UserName", username, true));
+				this.userProfile.add(new TermField(UsernameTag, username, true));
 			else
-				this.userProfile.add(new TermField("UserName", "<N/A>", true));
+				this.userProfile.add(new TermField(UsernameTag, NotAvailableTag, true));
 		}
 		if (!foundRName) { 
 			if (resourceName != null)
-				this.userProfile.add(new TermField("ResourceName", resourceName, true));
+				this.userProfile.add(new TermField(ResourceTag, resourceName, true));
 			else
-				this.userProfile.add(new TermField("ResourceName", "<N/A>", true));
+				this.userProfile.add(new TermField(ResourceTag, NotAvailableTag, true));
 		}
 	}
 
