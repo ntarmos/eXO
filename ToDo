@@ -118,17 +118,17 @@ vector<tag> getUserProfile(UID) (for both local and remote users)
 
 bool        setUserProfile(vector<tag>) (for the local user -- must reindex the user if the set of public tags changes)
 
-bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
+// bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
+// Currently not supported by ceid.netcins.CatalogService
 
 vector<CID> getContentIDs() (for local content items -- list of content IDs)
 
-vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
+//vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
+// Currently not supported by ceid.netcins.CatalogService
 
 vector<tag> getContentTags(CID) (for both local and remote content items)
 
 bool        setContentTags(CID, vector<tag>) (for local content items)
-
-bool        setPublicContentTags(CID, vector<tag>) (for local content items only)
 
 bool        setContentTags(UID, CID, vector<tag>) (for remote content items -- changes the set of tags contributed by the calling node/user)
 
@@ -147,4 +147,3 @@ vector<UID> getFriendRequests()
 bool        acceptFriendRequest(UID)
 
 bool        rejectFriendRequest(UID)
-
