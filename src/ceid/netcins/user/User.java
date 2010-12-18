@@ -10,7 +10,9 @@ import rice.p2p.commonapi.Id;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.catalog.UserCatalogEntry;
+import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
+import ceid.netcins.content.TermField;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.social.SocialBookMark;
 import ceid.netcins.social.SocialLink;
@@ -30,6 +32,8 @@ public class User {
 	// User nick(screen) name in the network. This name will be indexed as a
 	// field in the userProfile!
 	private String username;
+
+	private String resourceName;
 
 	// This is the set of "terms" that describe the user.
 	private ContentProfile userProfile;
@@ -76,7 +80,7 @@ public class User {
 	 * @param uid
 	 */
 	public User(Id uid) {
-		this(uid, null, null);
+		this(uid, null, (ContentProfile)null);
 	}
 
 	/**
@@ -86,7 +90,18 @@ public class User {
 	 * @param username
 	 */
 	public User(Id uid, String username) {
-		this(uid, username, null);
+		this(uid, username, (ContentProfile)null);
+	}
+
+	/**
+	 * Constructor of user entity
+	 * 
+	 * @param uid
+	 * @param username
+	 * @param resourceName
+	 */
+	public User(Id uid, String username, String resourceName) {
+		this(uid, username, resourceName, null, null);
 	}
 
 	/**
@@ -96,7 +111,7 @@ public class User {
 	 * @param userProfile
 	 */
 	public User(Id uid, String username, ContentProfile userProfile) {
-		this(uid, username, userProfile, null);
+		this(uid, username, null, userProfile, null);
 	}
 
 	/**
@@ -106,11 +121,13 @@ public class User {
 	 * @param userProfile
 	 * @param friends
 	 */
-	public User(Id uid, String username, ContentProfile userProfile,
+	public User(Id uid, String username, String resourceName, ContentProfile userProfile,
 			List<Friend> friends) {
 		this.uid = uid;
 		this.username = username;
-		this.userProfile = userProfile;
+		this.resourceName = resourceName;
+		setUserProfile(userProfile);
+
 		if (friends == null)
 			this.friends = new Vector<Friend>();
 		else
@@ -131,6 +148,7 @@ public class User {
 	 * @param type One of the types defined in QueryPDU
 	 * @return Return the corresponding vector of catalog entries.
 	 */
+	@SuppressWarnings("unchecked")
 	public Vector<?> getCatalogEntriesForQueryType(int type, Id requester){
 		Vector v = null;
 		switch(type){
@@ -176,16 +194,16 @@ public class User {
 				this.getCompleteUserProfile():
 					this.getPublicUserProfile());
 	}
-	
+
 	public Vector<ContentCatalogEntry> wrapContentToCatalogEntries(){
 		return this.wrapContentToCatalogEntries(false, false);
 	}
-	
+
 	public Vector<ContentCatalogEntry> wrapContentToCatalogEntries(
 			boolean completeUserProfile){
 		return this.wrapContentToCatalogEntries(true, completeUserProfile);
 	}
-	
+
 	/**
 	 * Helper to wrap the shared content profiles to ContentCatalogEntries.
 	 * This is useful to form a list for similarity processing. E.g. to include
@@ -210,7 +228,7 @@ public class User {
 		}
 		return v;
 	}
-	
+
 	/**
 	 * Given an Id, determine if the its owner belongs to user friends. 
 	 * 
@@ -224,9 +242,33 @@ public class User {
 		}
 		return false;
 	}
-	
+
 	public void setUserProfile(ContentProfile userProfile) {
 		this.userProfile = userProfile;
+
+		boolean foundUName = false, foundRName = false;
+		for (ContentField cf : userProfile.getAllFields()) {
+			if (cf instanceof TermField) {
+				if(((TermField)cf).getFieldName().equals("UserName"))
+					foundUName = true;
+				else if (((TermField)cf).getFieldName().equals("ResourceName"))
+					foundRName = true;
+			}
+			if (foundUName && foundRName)
+				break;
+		}
+		if (!foundUName) {
+			if (username != null)
+				this.userProfile.add(new TermField("UserName", username, true));
+			else
+				this.userProfile.add(new TermField("UserName", "<N/A>", true));
+		}
+		if (!foundRName) { 
+			if (resourceName != null)
+				this.userProfile.add(new TermField("ResourceName", resourceName, true));
+			else
+				this.userProfile.add(new TermField("ResourceName", "<N/A>", true));
+		}
 	}
 
 	public void setFriends(List<Friend> friends) {
@@ -251,6 +293,10 @@ public class User {
 
 	public String getUsername() {
 		return username;
+	}
+
+	public String getResourceName() {
+		return resourceName;
 	}
 
 	public Vector<FriendRequest> getPendingIncomingFReq() {

@@ -354,7 +354,7 @@ public class CatalogService extends DHTService implements SocService {
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
-		extra_args.put("PDU", new FriendReqPDU(message, this.user.getUsername()));
+		extra_args.put("PDU", new FriendReqPDU(message, user.getUsername() + "/" + user.getResourceName()));
 
 		// Issue a lookup request to the uderline DHT service
 		lookup(uid, FriendReqMessage.TYPE, extra_args,
@@ -416,7 +416,7 @@ public class CatalogService extends DHTService implements SocService {
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
-		extra_args.put("PDU", new FriendReqPDU(message, this.user.getUsername()));
+		extra_args.put("PDU", new FriendReqPDU(message, user.getUsername() + "/" + user.getResourceName()));
 
 		// Issue a lookup request to the uderline DHT service
 		lookup(uid, FriendAcceptMessage.TYPE, extra_args,
@@ -481,7 +481,7 @@ public class CatalogService extends DHTService implements SocService {
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
-		extra_args.put("PDU", new FriendReqPDU(message, this.user.getUsername()));
+		extra_args.put("PDU", new FriendReqPDU(message, user.getUsername() + "/" + user.getResourceName()));
 
 		// Issue a lookup request to the uderline DHT service
 		lookup(uid, FriendRejectMessage.TYPE, extra_args,
