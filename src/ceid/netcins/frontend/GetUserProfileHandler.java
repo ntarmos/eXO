@@ -30,7 +30,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		response.setContentType("text/html;charset=utf-8");
+		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
