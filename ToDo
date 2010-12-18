@@ -116,9 +116,7 @@ vector<tag> getUserProfile() (for the local user -- returns all of the tags, alo
 
 vector<tag> getUserProfile(UID) (for both local and remote users)
 
-bool        setUserProfile(vector<tag>) (for the local user)
-
-bool        setUserPublicProfile(vector<tag>) (for the local user -- must reindex the user if the set of public tags changes)
+bool        setUserProfile(vector<tag>) (for the local user -- must reindex the user if the set of public tags changes)
 
 bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
 
