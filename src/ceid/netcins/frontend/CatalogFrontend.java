@@ -1,6 +1,7 @@
 package ceid.netcins.frontend;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class CatalogFrontend {
 	private NodeHandle bootstrapNodeHandle = null;
 	private int webServerPort = 8080;
 	private Logger logger;
-	
+
 	private Hashtable<String, Vector<String>> queue = null;
 
 	private String userName = null;
@@ -94,7 +95,7 @@ public class CatalogFrontend {
 	public CatalogFrontend(Environment env, String userName, String resourceName) throws IOException {
 		this(env, userName, resourceName, env.getParameters().getInt("exo_jetty_port"), false);
 	}
-		
+
 	public CatalogFrontend(Environment env, String userName, String resourceName, int jettyPort, boolean isBootstrap) throws IOException {
 		this.logger = env.getLogManager().getLogger(getClass(),null);
 		this.environment = env;
@@ -109,7 +110,7 @@ public class CatalogFrontend {
 		int pastryNodePort = params.getInt("exo_pastry_port");
 		String pastryNodeProtocol = params.getString("exo_pastry_protocol");
 		String simulatorType = params.getString("direct_simulator_topology");
-		
+
 		UserNodeIdFactory nodeIdFactory = new UserNodeIdFactory(userName, resourceName);
 		PastryNodeFactory nodeFactory = null;
 		if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT)) {
@@ -151,7 +152,7 @@ public class CatalogFrontend {
 			throw e;
 		}
 	}
-	
+
 	public static int nextReqID() {
 		return reqIdGenerator.nextInt();
 	}
@@ -177,7 +178,7 @@ public class CatalogFrontend {
 		}
 		return 0;
 	}
-	
+
 	private int startCatalogService() {
 		StorageManagerImpl storage = null;
 		try {
@@ -187,17 +188,41 @@ public class CatalogFrontend {
 			logger.logException("Error initializing storage manager", e);
 			return -1;
 		}
-		
+
 		catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
 
 		ArrayList<ContentField> tags = new ArrayList<ContentField>();
 		tags.add(new TermField("Username", userName, true));
-		tags.add(new TermField("Resource", resourceName, true));		
+		tags.add(new TermField("Resource", resourceName, true));
 		catalogService.setUserProfile(new ContentProfile(tags));
 
 		return 0;
 	}
 
+	@SuppressWarnings("unchecked")
+	private ContextHandler makeContextHandler(Class handlerClass) {
+		Constructor constructor = null;
+		Class[] params = new Class[] { CatalogService.class, Hashtable.class };
+		try {
+			constructor = handlerClass.getConstructor(params);
+		} catch (Exception e) {
+			logger.logException("Unable to find constructor", e);
+			return null;
+		}
+		ContextHandler newContextHandler = new ContextHandler();
+		newContextHandler.setContextPath("/servlet/" + handlerClass.getSimpleName().replace("Handler", ""));
+		newContextHandler.setResourceBase("/");
+		newContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
+		try {
+			newContextHandler.setHandler((Handler)constructor.newInstance(catalogService, queue));
+		} catch (Exception e) {
+			logger.logException("Unable to instantiate new handler", e);
+			return null;
+		}
+		return newContextHandler;
+	}
+
+	@SuppressWarnings("unchecked")
 	private int startWebServer() {
 		String rootDir = environment.getParameters().getString("exo_jetty_root");
 		if (rootDir != null)
@@ -214,23 +239,19 @@ public class CatalogFrontend {
 		root.addFilter(filterHolder, "/*", 1);
 		root.addServlet(DefaultServlet.class, "/*");
 
-		ContextHandler getUserProfileContext = new ContextHandler();
-		getUserProfileContext.setContextPath("/servlet/GetUserProfile");
-		getUserProfileContext.setResourceBase("/");
-		getUserProfileContext.setClassLoader(Thread.currentThread().getContextClassLoader());
-		getUserProfileContext.setHandler(new GetUserProfileHandler(catalogService, queue));
+		Class[] handlerClasses = new Class[] {
+			GetUserProfileHandler.class,
+			SetUserProfileHandler.class,
+			GetContentIDsHandler.class,
+			GetFriendRequestsHandler.class
+		};
 
-		ContextHandler setUserProfileContext = new ContextHandler();
-		setUserProfileContext.setContextPath("/servlet/SetUserProfile");
-		setUserProfileContext.setResourceBase("/");
-		setUserProfileContext.setClassLoader(Thread.currentThread().getContextClassLoader());
-		setUserProfileContext.setHandler(new SetUserProfileHandler(catalogService, queue));
-
-		ContextHandler getContentIDsContext = new ContextHandler();
-		getContentIDsContext.setContextPath("/servlet/GetContentIDs");
-		getContentIDsContext.setResourceBase("/");
-		getContentIDsContext.setClassLoader(Thread.currentThread().getContextClassLoader());
-		getContentIDsContext.setHandler(new GetContentIDsHandler(catalogService, queue));
+		HandlerList handlersList = new HandlerList();
+		for (Class<ContextHandler> handlerClass : handlerClasses) {
+			ContextHandler newHandler;
+			if ((newHandler = makeContextHandler(handlerClass)) != null)
+				handlersList.addHandler(newHandler);
+		}
 
 		ContextHandler plainFileContext = new ContextHandler();
 		plainFileContext.setContextPath("/");
@@ -239,12 +260,12 @@ public class CatalogFrontend {
 		plainFileHandler.setWelcomeFiles(new String[] { "index.html"});
 		plainFileHandler.setResourceBase("/");
 		plainFileContext.setHandler(plainFileHandler);
-		
-		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler [] { getUserProfileContext, setUserProfileContext, getContentIDsContext, plainFileContext, new DefaultHandler() });
+		handlersList.addHandler(plainFileContext);
 
-		server.setHandler(handlers);
-		
+		handlersList.addHandler(new DefaultHandler());
+
+		server.setHandler(handlersList);
+
 		try {
 			server.start();
 			server.join();
