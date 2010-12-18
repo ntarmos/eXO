@@ -243,7 +243,8 @@ public class CatalogFrontend {
 			GetUserProfileHandler.class,
 			SetUserProfileHandler.class,
 			GetContentIDsHandler.class,
-			GetFriendRequestsHandler.class
+			GetFriendRequestsHandler.class,
+			GetFriendUIDsHandler.class
 		};
 
 		HandlerList handlersList = new HandlerList();

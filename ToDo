@@ -142,6 +142,8 @@ tag: ContentField objects
 
 ✘ bool        sendFriendRequest(UID)
 
+✔ vector<UID> getFriendUIDs()
+
 ✔ vector<UID> getFriendRequests()
 
 ✘ bool        acceptFriendRequest(UID)
