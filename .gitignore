@@ -11,6 +11,7 @@
 load.list
 
 # project specific folders
+eXO_Storage_Root
 FreePastry-Storage-Root
 classes
 FreePastry.git
