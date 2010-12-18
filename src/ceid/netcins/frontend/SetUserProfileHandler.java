@@ -34,14 +34,16 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		baseRequest.setHandled(true);
 
 		ContentProfile profile = new ContentProfile();
-		Map<String, String[]> reqParams = request.getParameterMap();
-		if (reqParams != null && reqParams.containsKey("eXO_data")) {
-			Object jsonParams = JSON.parse(reqParams.get("eXO_data")[0]);
-			if (jsonParams instanceof Map && ((Map)jsonParams).containsKey("reqID")) {
-				String reqID = (String)((Map)jsonParams).get("reqID");
+		String param = request.getParameter(PostParamTag);
+		if (param != null) {
+			Object jsonParams = JSON.parse(param);
+			if (jsonParams instanceof Map && ((Map)jsonParams).containsKey(ReqIDTag)) {
+				String reqID = (String)((Map)jsonParams).get(ReqIDTag);
 				Vector<String> res = queue.get(reqID);
-				if (res == null || res.get(0).equals(PROCESSING)) {
-					response.getWriter().println("{ \"status\": \"" + PROCESSING + "\" }");
+				if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
+					Map<String, String> ret = new HashMap<String, String>();
+					ret.put(RequestStatusTag, RequestStatusProcessingTag);
+					response.getWriter().write(JSON.toString(ret));
 					response.flushBuffer();
 					return;
 				}
@@ -64,10 +66,10 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 			if (!oldProfile.equalsPublic(profile)) {
 				final String reqID = Integer.toString(CatalogFrontend.nextReqID());
 				Vector<String> na = new Vector<String>();
-				na.add(PROCESSING);
+				na.add(RequestStatusProcessingTag);
 				queue.put(reqID, na);
 				Map<String, String> ret = new HashMap<String, String>();
-				ret.put(CatalogFrontend.ReqIDTag, reqID);
+				ret.put(ReqIDTag, reqID);
 				response.getWriter().write(JSON.toString(ret));
 				// The public part has changed. We should reindex the user profile in the network
 				catalogService.indexUser(new Continuation<Object, Exception>() {
@@ -79,7 +81,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 						// runReplicaMaintence();
 						int indexedNum = 0;
 						Vector<String> res = new Vector();
-						res.add(SUCCESS);
+						res.add(RequestStatusSuccessTag);
 						if (result instanceof Boolean[]) {
 							Boolean[] results = (Boolean[]) result;
 							if (results != null)
@@ -100,7 +102,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 								+ ", indexed with errors : "
 								+ result.getMessage());
 						Vector<String> res = new Vector();
-						res.add(FAILURE);
+						res.add(RequestStatusFailureTag);
 						queue.put(reqID, res);
 					}
 				});
