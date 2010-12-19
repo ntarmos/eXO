@@ -1,9 +1,6 @@
 package ceid.netcins.content;
 
 import java.io.Serializable;
-import java.util.Map;
-
-import org.eclipse.jetty.util.ajax.JSON.Output;
 
 /**
  * The main difference of this Class in contrast with TermField is that the
@@ -19,7 +16,6 @@ public class StoredField extends ContentField implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1163562213103678794L;
-	private static final String FieldDataTag = "eXO::FieldData";
 	String fieldData;
 
 	public StoredField(String name, String fieldData) {
@@ -36,20 +32,5 @@ public class StoredField extends ContentField implements Serializable {
 	 */
 	public String toString() {
 		return new String("Stored Field " + name + "\nStored FieldData " + fieldData + "\n");
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void fromJSON(Map arg0) {
-		name = (String)arg0.get(FieldNameTag);
-		fieldData = (String)arg0.get(FieldDataTag);
-		isPublic = (Boolean)arg0.get(FieldIsPublicTag);
-	}
-
-	@Override
-	public void toJSON(Output arg0) {
-		arg0.add(FieldNameTag, name);
-		arg0.add(FieldDataTag, fieldData);
-		arg0.add(FieldIsPublicTag, (Boolean)isPublic);
 	}
 }

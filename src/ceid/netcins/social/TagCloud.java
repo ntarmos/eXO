@@ -13,7 +13,7 @@ import org.eclipse.jetty.util.ajax.JSON.Output;
  * 
  * @author Andreas Loupasakis
  */
-public class TagCloud implements Convertible {
+public class TagCloud {
 
 	// Term frequency map
 	private TreeMap<String, Integer> tfm;
@@ -89,20 +89,5 @@ public class TagCloud implements Convertible {
 		}
 		buf.append("]");
 		return buf.toString();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void fromJSON(Map arg0) {
-		tfm.clear();
-		for (Object key : arg0.keySet())
-			tfm.put((String)key, (Integer)arg0.get(key));
-	}
-
-	@Override
-	public void toJSON(Output arg0) {
-		if (tfm != null)
-			for (String key : tfm.keySet())
-				arg0.add(key, tfm.get(key));
 	}
 }

@@ -2,11 +2,8 @@ package ceid.netcins.content;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.eclipse.jetty.util.ajax.JSON.Output;
 
 /**
  * This ContentField type contains a set of "terms" (String values) and the 
@@ -17,8 +14,6 @@ import org.eclipse.jetty.util.ajax.JSON.Output;
 public class TokenizedField extends ContentField implements Serializable {
 
 	private static final long serialVersionUID = 3889036995034671146L;
-	private static final String TermsTag = "eXO::Terms";
-	private static final String TFScoresTag = "eXO::TFScores";
 
 	// Terms are provided in sorted order;
 	String[] terms;
@@ -134,22 +129,5 @@ public class TokenizedField extends ContentField implements Serializable {
 		}
 		buffer.append("\n");
 		return buffer.toString();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void fromJSON(Map arg0) {
-		name = (String)arg0.get(FieldNameTag);
-		terms = (String[])arg0.get(TermsTag);
-		tf = (int[])arg0.get(TFScoresTag);
-		isPublic = (Boolean)arg0.get(FieldIsPublicTag);
-	}
-
-	@Override
-	public void toJSON(Output arg0) {
-		arg0.add(FieldNameTag, name);
-		arg0.add(TermsTag, terms);
-		arg0.add(TFScoresTag, tf);
-		arg0.add(FieldIsPublicTag, (Boolean)isPublic);
 	}
 }
