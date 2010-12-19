@@ -195,6 +195,8 @@ public class CatalogFrontend {
 		tags.add(new TermField("Username", userName, true));
 		tags.add(new TermField("Resource", resourceName, true));
 		catalogService.setUserProfile(new ContentProfile(tags));
+		catalogService.getUser().addSharedContentProfile(catalogService.getUser().getUID(), new ContentProfile(tags));
+		catalogService.getUser().addSharedContentProfile(rice.pastry.Id.makeRandomId(reqIdGenerator), new ContentProfile(tags));
 
 		return 0;
 	}
@@ -244,7 +246,9 @@ public class CatalogFrontend {
 			SetUserProfileHandler.class,
 			GetContentIDsHandler.class,
 			GetFriendRequestsHandler.class,
-			GetFriendUIDsHandler.class
+			GetFriendUIDsHandler.class,
+			GetContentTagsHandler.class,
+			GetContentHandler.class
 		};
 
 		HandlerList handlersList = new HandlerList();

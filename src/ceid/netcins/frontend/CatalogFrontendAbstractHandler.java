@@ -10,6 +10,7 @@ import ceid.netcins.CatalogService;
 public abstract class CatalogFrontendAbstractHandler extends AbstractHandler {
 	public static final String ReqIDTag = "eXO::reqID";
 	public static final String UIDTag = "eXO::UID";
+	public static final String CIDTag = "eXO::CID";
 	public static final String PostParamTag = "eXO_data";
 	public static final String RequestStatusTag = "eXO::Status";
 	public static final String RequestStatusSuccessTag = "eXO::Success";

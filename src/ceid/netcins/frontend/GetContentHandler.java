@@ -1,0 +1,36 @@
+package ceid.netcins.frontend;
+
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.server.Request;
+
+import rice.p2p.commonapi.Id;
+
+import ceid.netcins.CatalogService;
+import ceid.netcins.content.ContentProfile;
+import ceid.netcins.json.JSON;
+
+public class GetContentHandler extends CatalogFrontendAbstractHandler {
+
+	public GetContentHandler(CatalogService catalogService,
+			Hashtable<String, Vector<String>> queue) {
+		super(catalogService, queue);
+	}
+
+	@Override
+	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		Map<Id, ContentProfile> content = catalogService.getUser().getSharedContentProfile();
+		response.setContentType("application/json");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
+		response.getWriter().write(JSON.toString(content));
+	}
+}
