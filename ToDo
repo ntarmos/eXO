@@ -112,21 +112,32 @@ CID: Content UID
 vector<*>: any container that we deem fit (could be plain Vectors, HashMaps, etc.)
 tag: ContentField objects
 
-✔ vector<tag> getUserProfile() (for the local user -- returns all of the tags, along with the public/private bits)
+✔ vector<tag> getUserProfile()
+  // Local operation. Returns all of the caller's user tags, along with
+  // the public/private bits.
 
-✔ vector<tag> getUserProfile(UID) (for both local and remote users)
+✔ vector<tag> getUserProfile(UID)
+  // Both local and remote operation. Returns only public user tags
+  // of UID accessible by the caller.
 
-✔ bool        setUserProfile(vector<tag>) (for the local user -- must reindex the user if the set of public tags changes)
+✔ bool        setUserProfile(vector<tag>)
+  // Local operation. Triggers a reindexing of the user if the set of
+  // public tags changes.
 
-✘ bool        setUserProfile(UID, vector<tag>) (for remote users -- changes the tags set by the calling node/user)
-  // Currently not supported by ceid.netcins.CatalogService
+✘ bool        setUserProfile(UID, vector<tag>)
+  // Both local and remote operation. Changes the user tags set on UID
+  // by the caller. Currently not supported by the CatalogService
+  // implementation.
 
 ✔ vector<CID> getContentIDs() (for local content items -- list of content IDs)
 
 ✘ vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
   // Currently not supported by ceid.netcins.CatalogService
 
-✘ vector<tag> getContentTags(CID) (for both local and remote content items)
+✔ vector<tag> getContentTags(CID) (for local content item CID)
+
+✘ vector<tag> getContentTags(UID, CID) (for local/remote content item CID shared by UID, returns only tags accessible by the caller)
+  // Currently not supported as we seem unable to search directly for a CID/UID
 
 ✘ bool        setContentTags(CID, vector<tag>) (for local content items)
 
