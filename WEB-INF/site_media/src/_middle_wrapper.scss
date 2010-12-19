@@ -90,8 +90,7 @@
     text-align: center;
     vertical-align: middle;
   }
-  #myprofile-body {
-    display: none;
+  .content-body {
     margin: 1em 0;
     border: 1px solid #D6D1CA;
     background-color: #FFF;
@@ -99,6 +98,9 @@
       padding:1em 1em 0;
       border-bottom: 1px dashed #CCC;
     }
+  }
+  #myprofile-body {
+    display: none;
     .tag-fields-wrapper {
       font-size: 1.25em;
       text-align: center;
@@ -145,6 +147,31 @@
             }
           }
         }
+      }
+    }
+  }
+  #search-body {
+    #search-wrapper {
+      font-size: 1.25em;
+      text-align: center;
+      padding: 0.5em 1em 2em;
+      span {
+        font-size: 1.2em;
+      }
+      #search {
+        width: 500px;
+      }
+    }
+    #results-wrapper {
+      border-top: 1px solid #666;
+      background-color: #DDD;
+      padding: 1em;
+      h3 {
+        margin-top: 1em;
+        text-align: center;
+      }
+      p {
+        text-align: center;
       }
     }
   }

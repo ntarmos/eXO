@@ -213,7 +213,7 @@ public class CatalogFrontend {
 		}
 		ContextHandler newContextHandler = new ContextHandler();
 		newContextHandler.setContextPath("/servlet/" + handlerClass.getSimpleName().replace("Handler", ""));
-		newContextHandler.setResourceBase("/");
+		newContextHandler.setResourceBase(System.getProperty("jetty.home", "/"));
 		newContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
 		try {
 			newContextHandler.setHandler((Handler)constructor.newInstance(catalogService, queue));
@@ -224,6 +224,18 @@ public class CatalogFrontend {
 		return newContextHandler;
 	}
 
+	@SuppressWarnings("unchecked")
+	private ContextHandler mountFileRoute(String url, String templateName) {
+		ContextHandler plainFileContext = new ContextHandler();
+		plainFileContext.setContextPath(url);
+		ResourceHandler plainFileHandler = new ResourceHandler();
+		plainFileHandler.setDirectoriesListed(true);
+		plainFileHandler.setWelcomeFiles(new String[] { templateName});
+		plainFileHandler.setResourceBase(System.getProperty("jetty.home", "/"));
+		plainFileContext.setHandler(plainFileHandler);
+		return plainFileContext;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private int startWebServer() {
 		String rootDir = environment.getParameters().getString("exo_jetty_root");
@@ -259,14 +271,11 @@ public class CatalogFrontend {
 				handlersList.addHandler(newHandler);
 		}
 
-		ContextHandler plainFileContext = new ContextHandler();
-		plainFileContext.setContextPath("/");
-		ResourceHandler plainFileHandler = new ResourceHandler();
-		plainFileHandler.setDirectoriesListed(true);
-		plainFileHandler.setWelcomeFiles(new String[] { "index.html"});
-		plainFileHandler.setResourceBase(System.getProperty("jetty.home", "/"));
-		plainFileContext.setHandler(plainFileHandler);
-		handlersList.addHandler(plainFileContext);
+		/*
+		 * File URL routes deployment  
+		 */		
+		handlersList.addHandler(mountFileRoute("/", "index.html"));
+		handlersList.addHandler(mountFileRoute("/search", "search.html"));
 
 		handlersList.addHandler(new DefaultHandler());
 

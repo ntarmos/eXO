@@ -243,38 +243,41 @@ a:hover {
   vertical-align: middle;
 }
 /* line 93, ../src/_middle_wrapper.scss */
-#content-main #myprofile-body {
-  display: none;
+#content-main .content-body {
   margin: 1em 0;
   border: 1px solid #D6D1CA;
   background-color: #FFF;
 }
-/* line 98, ../src/_middle_wrapper.scss */
-#content-main #myprofile-body h2 {
+/* line 97, ../src/_middle_wrapper.scss */
+#content-main .content-body h2 {
   padding: 1em 1em 0;
   border-bottom: 1px dashed #CCC;
 }
 /* line 102, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body {
+  display: none;
+}
+/* line 104, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-fields-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 107, ../src/_middle_wrapper.scss */
+/* line 109, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row {
   padding: 0.5em 1em;
   text-align: left;
 }
-/* line 110, ../src/_middle_wrapper.scss */
+/* line 112, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-name {
   color: #333;
   font-size: 1.2em;
 }
-/* line 114, ../src/_middle_wrapper.scss */
+/* line 116, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data {
   font-size: 1.1em;
 }
-/* line 116, ../src/_middle_wrapper.scss */
+/* line 118, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag {
   position: relative;
   padding: 3px 15px 3px 8px;
@@ -288,11 +291,11 @@ a:hover {
   font-size: 0.75em;
   font-weight: bold;
 }
-/* line 130, ../src/_middle_wrapper.scss */
+/* line 132, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag:hover {
   background-color: #d6e1f6;
 }
-/* line 133, ../src/_middle_wrapper.scss */
+/* line 135, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag a.close {
   background: url("../images/close.gif") repeat scroll 0 0 transparent;
   display: block;
@@ -304,9 +307,38 @@ a:hover {
   top: 7px;
   width: 7px;
 }
-/* line 143, ../src/_middle_wrapper.scss */
+/* line 145, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag a.close:hover {
   background-position: center;
+}
+/* line 154, ../src/_middle_wrapper.scss */
+#content-main #search-body #search-wrapper {
+  font-size: 1.25em;
+  text-align: center;
+  padding: 0.5em 1em 2em;
+}
+/* line 158, ../src/_middle_wrapper.scss */
+#content-main #search-body #search-wrapper span {
+  font-size: 1.2em;
+}
+/* line 161, ../src/_middle_wrapper.scss */
+#content-main #search-body #search-wrapper #search {
+  width: 500px;
+}
+/* line 165, ../src/_middle_wrapper.scss */
+#content-main #search-body #results-wrapper {
+  border-top: 1px solid #666;
+  background-color: #DDD;
+  padding: 1em;
+}
+/* line 169, ../src/_middle_wrapper.scss */
+#content-main #search-body #results-wrapper h3 {
+  margin-top: 1em;
+  text-align: center;
+}
+/* line 173, ../src/_middle_wrapper.scss */
+#content-main #search-body #results-wrapper p {
+  text-align: center;
 }
 
 /*
@@ -339,6 +371,46 @@ a:hover {
 #footer-container blockquote {
   font-size: 1.5em;
   color: #98a754;
+}
+
+/* line 2, ../src/_common_forms.scss */
+input {
+  font-size: 1.1em;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-box-shadow: 1px 1px 3px #EEEEEE;
+  -moz-box-shadow: 1px 1px 3px #EEEEEE;
+  height: 26px;
+  min-width: 280px;
+}
+
+/* line 12, ../src/_common_forms.scss */
+select {
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-box-shadow: 1px 1px 3px #EEEEEE;
+  -moz-box-shadow: 1px 1px 3px #EEEEEE;
+  min-width: 180px;
+}
+
+/* line 20, ../src/_common_forms.scss */
+table.search-select {
+  border-bottom: 1px solid #E7E7E7;
+  margin: 0.5em 0;
+  text-align: center;
+  padding: 0;
+  /* The following 2 params are important in order to preserve center alignment */
+  display: inline-block;
+  width: auto;
+}
+/* line 28, ../src/_common_forms.scss */
+table.search-select td {
+  height: 26px;
+  padding: 0;
+}
+/* line 32, ../src/_common_forms.scss */
+table.search-select input#search {
+  margin: 0;
 }
 
 /*** COMMON CSS ***/

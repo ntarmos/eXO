@@ -1,0 +1,35 @@
+
+input {
+  font-size: 1.1em;
+  border-radius:2px;
+  -moz-border-radius:2px;
+  -webkit-box-shadow: 1px 1px 3px #EEEEEE;
+  -moz-box-shadow: 1px 1px 3px #EEEEEE;
+  height:26px;
+  min-width:280px;
+}
+
+select {
+  border-radius:2px;
+  -moz-border-radius:2px;
+  -webkit-box-shadow: 1px 1px 3px #EEEEEE;
+  -moz-box-shadow: 1px 1px 3px #EEEEEE;
+  min-width:180px;
+}
+
+table.search-select {
+  border-bottom: 1px solid #E7E7E7;
+  margin: 0.5em 0;
+  text-align: center;
+  padding: 0;
+   /* The following 2 params are important in order to preserve center alignment */
+  display: inline-block;
+  width: auto;
+  td {
+    height:26px;
+    padding: 0;
+  }
+  input#search {
+    margin: 0;
+  }
+}
