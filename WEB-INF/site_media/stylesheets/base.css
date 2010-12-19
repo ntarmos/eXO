@@ -36,6 +36,34 @@ a:hover {
   text-decoration: underline;
 }
 
+/*** Loading Indicator ***/
+/* line 2, ../src/_loading_indicator.scss */
+#loading-indicator {
+  width: 100%;
+  text-align: center;
+  top: 0px;
+  position: fixed;
+  z-index: 10000;
+  display: none;
+}
+
+/* line 11, ../src/_loading_indicator.scss */
+#loading-indicator div {
+  display: inline-block;
+  padding: 2px 1em 3px 2em;
+  border-radius-bottomright: 4px;
+  -moz-border-radius-bottomright: 4px;
+  border-radius-bottomleft: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  color: #666;
+  font-size: 1.1em;
+  font-weight: bold;
+  background-color: #fff8f8;
+  box-shadow: 1px 1px 1px #EEE;
+  -moz-box-shadow: 1px 1px 1px #EEE;
+  -webkit-box-shadow: 1px 1px 1px #EEE;
+}
+
 /*
   Summarizes styles for the header part of the page.
 */
@@ -132,8 +160,7 @@ a:hover {
   height: 80px;
   margin: 0 0 2em;
   padding: 0px;
-  border-radius-bottomleft: 8px;
-  border-radius-bottomright: 8px;
+  border-radius: 0 0 8px 8px;
   -moz-border-radius-bottomleft: 8px;
   -moz-border-radius-bottomright: 8px;
   -webkit-box-shadow: 0px 1px 1px #cfcfcf;
@@ -145,25 +172,25 @@ a:hover {
   overflow: hidden;
 }
 
-/* line 32, ../src/_middle_wrapper.scss */
+/* line 31, ../src/_middle_wrapper.scss */
 #content-header {
   height: 80px;
   position: relative;
   overflow: hidden;
 }
-/* line 37, ../src/_middle_wrapper.scss */
+/* line 36, ../src/_middle_wrapper.scss */
 #content-header h2 {
   padding: 0.5em 1em;
 }
-/* line 39, ../src/_middle_wrapper.scss */
+/* line 38, ../src/_middle_wrapper.scss */
 #content-header h2 img {
   vertical-align: middle;
 }
-/* line 42, ../src/_middle_wrapper.scss */
+/* line 41, ../src/_middle_wrapper.scss */
 #content-header h2 span {
   color: #9D6B00;
 }
-/* line 47, ../src/_middle_wrapper.scss */
+/* line 46, ../src/_middle_wrapper.scss */
 #content-header ul {
   position: absolute;
   bottom: 0px;
@@ -172,14 +199,15 @@ a:hover {
   color: #FFF;
   text-shadow: none;
 }
-/* line 55, ../src/_middle_wrapper.scss */
+/* line 54, ../src/_middle_wrapper.scss */
 #content-header ul li {
   padding: 0 0 0.25em;
 }
-/* line 57, ../src/_middle_wrapper.scss */
+/* line 56, ../src/_middle_wrapper.scss */
 #content-header ul li a {
   padding: 0.5em;
   background-color: #414e5b;
+  border-radius: 2px 2px 0 0;
   -moz-border-radius-topleft: 2px;
   -moz-border-radius-topright: 2px;
 }
@@ -193,13 +221,92 @@ a:hover {
 #content-header ul li.current a {
   font-weight: bold;
   padding-top: 0.75em;
-  background-color: #FFF;
-  color: #414e5b;
+  background-color: #6c8196;
 }
 
-/* line 82, ../src/_middle_wrapper.scss */
+/* line 80, ../src/_middle_wrapper.scss */
+#at {
+  font-size: 1.2em;
+}
+
+/* line 84, ../src/_middle_wrapper.scss */
+#content-main {
+  min-height: 200px;
+}
+/* line 86, ../src/_middle_wrapper.scss */
 #content-main a {
   color: #2B547D;
+}
+/* line 89, ../src/_middle_wrapper.scss */
+#content-main #content-main-loading {
+  text-align: center;
+  vertical-align: middle;
+}
+/* line 93, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body {
+  display: none;
+  margin: 1em 0;
+  border: 1px solid #D6D1CA;
+  background-color: #FFF;
+}
+/* line 98, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body h2 {
+  padding: 1em 1em 0;
+  border-bottom: 1px dashed #CCC;
+}
+/* line 102, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-fields-wrapper {
+  font-size: 1.25em;
+  text-align: center;
+  padding: 0.5em 1em 2em;
+}
+/* line 107, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row {
+  padding: 0.5em 1em;
+  text-align: left;
+}
+/* line 110, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row .tag-field-name {
+  color: #333;
+  font-size: 1.2em;
+}
+/* line 114, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row .tag-field-data {
+  font-size: 1.1em;
+}
+/* line 116, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row .tag-field-data .single-tag {
+  position: relative;
+  padding: 3px 15px 3px 8px;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  -webkit-box-shadow: 0px 0px 2px #A8B6D1;
+  -moz-box-shadow: 0px 0px 2px #A8B6D1;
+  background-color: #CAD8F3;
+  border: 1px solid #A8B6D1;
+  color: #333333;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+/* line 130, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row .tag-field-data .single-tag:hover {
+  background-color: #d6e1f6;
+}
+/* line 133, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row .tag-field-data .single-tag a.close {
+  background: url("../images/close.gif") repeat scroll 0 0 transparent;
+  display: block;
+  font-size: 1px;
+  height: 7px;
+  position: absolute;
+  right: 4px;
+  text-indent: -1000px;
+  top: 7px;
+  width: 7px;
+}
+/* line 143, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-row .tag-field-data .single-tag a.close:hover {
+  background-position: center;
 }
 
 /*
@@ -236,14 +343,14 @@ a:hover {
 
 /*** COMMON CSS ***/
 /* One-line list */
-/* line 22, ../src/base.scss */
+/* line 24, ../src/base.scss */
 ul.horizontal {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-/* line 28, ../src/base.scss */
+/* line 30, ../src/base.scss */
 ul.horizontal li {
   display: inline;
   float: left;

@@ -18,9 +18,97 @@
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+  <script type="text/javascript">
+  $(function (){
+    // Show/hide the Loading indicator
+    $("#loading-indicator").ajaxStart(function(){
+       $(this).show();
+    }).ajaxStop(function(){
+      var indicator = $(this);
+      setTimeout(function(){ indicator.fadeOut() }, 500);
+    });
+    
+    // Get username and resource
+    $.ajax({
+      url: "/servlet/GetUserProfile/",
+      dataType: 'json',
+      data: "",
+      success: function(data){
+        // Fill in the data to the corresponding places
+        var username="Incognito", resource="Home", public_profile_body = [],
+          private_profile_body = [];
+        for(dict in data){
+          if(data[dict]["eXO::FieldName"]=="Username"){
+            username = data[dict]["eXO::FieldData"];
+          }else if(data[dict]["eXO::FieldName"]=="Resource"){
+            resource = data[dict]["eXO::FieldData"];
+          }else{
+            if(data[dict]["eXO::FieldIsPublic"]==true)
+              public_profile_body[data[dict]["eXO::FieldName"]] = data[dict]["eXO::FieldData"];
+            else
+              private_profile_body[data[dict]["eXO::FieldName"]] = data[dict]["eXO::FieldData"];
+          }
+        }
+        if(username!=null)
+          $("#username").html(username);
+        if(resource!=null)
+          $("#resource").html(resource);
+
+        var tag_rows = '';
+        // Fill the body with the retrieved data
+        if(public_profile_body.length!=0){
+          var i = 0;
+          for(field in public_profile_body){
+            tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
+              + '  <div class="tag-field-name span-3">'+ field + ':</div>'
+              + '  <div class="tag-field-data">'
+              + '    <span class="single-tag">' + public_profile_body[field]
+              + '      <a class="close" href="#">1</a>'
+              + '    </span>&nbsp;'
+              + '  </div>'
+              + '</div>';
+            i++;
+          }
+          $("#public-fields-wrapper").html(tag_rows);
+        }
+        if(private_profile_body.length!=0){
+          var i = 0;
+          for(field in private_profile_body){
+            tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
+              + '  <div class="tag-field-name span-3">'+ field + ':</div>'
+              + '  <div class="tag-field-data">'
+              + '    <span class="single-tag">' + private_profile_body[field]
+              + '      <a class="close" href="#">1</a>'
+              + '    </span>&nbsp;'
+              + '  </div>'
+              + '</div>';
+            i++;
+          }
+          $("#private-fields-wrapper").html(tag_rows);
+        }
+
+        // Hide/show content divs
+        setTimeout(function(){ 
+          $("#content-main-loading").hide();
+          $("#myprofile-body").show();
+        }, 500);
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert("An error occurred : "+textStatus);
+      }
+    });
+  });
+  </script>
 </head>
 
 <body>
+
+  <div id="loading-indicator">
+    <div class="i16 waiting" onClick="$('#loading-indicator').slideUp()">
+    loading ...
+    </div>
+  </div>
+
   <div id="header-wrapper" >
     <div id="header-container" class="container">
 
@@ -55,13 +143,15 @@
 
       <div id="content-header-wrapper" class="container">
       <div id="content-header">
-        <div id="content_title" class="span-10">
+        <div id="content_title" class="span-12">
           <h2>
             <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
-            <span>Incognito</span>
+            <span id="username">Incognito</span>
+            <span id="at">@</span>
+            <span id="resource">Home</span>
           </h2>
         </div>
-        <div id="content_nav" class="span-16 last">
+        <div id="content_nav" class="span-14 last">
           <ul class="horizontal">
             <li class="current">
               <a href="#">My Profile</a>
@@ -81,10 +171,28 @@
       </div>
 
       <div id="content-main" class="span-26">
-        <p style="padding:1em">
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
-        </p>
+        <div id="myprofile-body">
+          <div id="public-profile-wrapper">
+            <h2>Public Profile</h2>
+            <div id="public-fields-wrapper" class="tag-fields-wrapper">
+              <span class="quiet">There is no data yet. Why don't you add some now?</span>
+            </div>
+          </div>
+          <div id="private-profile-wrapper" class="clear">
+            <h2>Private Profile (Friend Accessible Only)</h2>
+            <div id="private-fields-wrapper" class="tag-fields-wrapper">
+              <span class="quiet">There is no data yet. Why don't you add some now?</span>
+            </div>
+          </div>
+        </div>
+        <div id="content-main-loading">
+          <p>
+            <img src="/site_media/images/loading2.gif" />
+          </p>
+          <p>Loading Content</p>
+        </div>
       </div>
+
       <div id="content_footer" class="span-26"></div>
 
     </div><!-- END MIDDLE-CONTAINER -->

@@ -14,8 +14,7 @@
   height:80px;
   margin:0 0 2em;
   padding:0px;
-  border-radius-bottomleft: 8px;
-  border-radius-bottomright: 8px;
+  border-radius: 0 0 8px 8px;
   -moz-border-radius-bottomleft: 8px;
   -moz-border-radius-bottomright: 8px;
   -webkit-box-shadow:0px 1px 1px #cfcfcf;
@@ -57,6 +56,7 @@
       a {
         padding:0.5em;
         background-color: $middle-menucolor;
+        border-radius: 2px 2px 0 0;
         -moz-border-radius-topleft:2px;
         -moz-border-radius-topright:2px;
         &:hover{
@@ -71,15 +71,81 @@
       a{
         font-weight: bold;
         padding-top:0.75em;
-        background-color: #FFF;
-        color: $middle-menucolor;
+        background-color: lighten($middle-menucolor, 20%);
       }
     }
   }
 }
 
+#at {
+  font-size: 1.2em;
+}
+
 #content-main {
+  min-height: 200px;
   a {
     color:#2B547D;
+  }
+  #content-main-loading {
+    text-align: center;
+    vertical-align: middle;
+  }
+  #myprofile-body {
+    display: none;
+    margin: 1em 0;
+    border: 1px solid #D6D1CA;
+    background-color: #FFF;
+    h2 {
+      padding:1em 1em 0;
+      border-bottom: 1px dashed #CCC;
+    }
+    .tag-fields-wrapper {
+      font-size: 1.25em;
+      text-align: center;
+      padding: 0.5em 1em 2em;
+    }
+    .tag-row {
+      padding: 0.5em 1em;
+      text-align: left;
+      .tag-field-name {
+        color: #333;
+        font-size: 1.2em;
+      }
+      .tag-field-data {
+        font-size: 1.1em;
+        .single-tag {
+          position: relative;
+          padding: 3px 15px 3px 8px;
+          border-radius: 6px;
+          -moz-border-radius: 6px;
+          -webkit-box-shadow: 0px 0px 2px #A8B6D1;
+          -moz-box-shadow: 0px 0px 2px #A8B6D1;
+          background-color: #CAD8F3;
+          border: 1px solid #A8B6D1;
+          color: #333333;
+          font: {
+            size: 0.75em;
+            weight: bold;
+          }
+          &:hover {
+            background-color: lighten(#CAD8F3, 3%);
+          }
+          a.close {
+            background: url("../images/close.gif") repeat scroll 0 0 transparent;
+            display: block;
+            font-size: 1px;
+            height: 7px;
+            position: absolute;
+            right: 4px;
+            text-indent: -1000px;
+            top: 7px;
+            width: 7px;
+            &:hover {
+              background-position: center;
+            }
+          }
+        }
+      }
+    }
   }
 }

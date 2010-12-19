@@ -1,0 +1,27 @@
+/*** Loading Indicator ***/
+#loading-indicator {
+  width:100%;
+  text-align:center;
+  top:0px;
+  position: fixed;
+  z-index: 10000;
+  display:none;
+}
+
+#loading-indicator div{
+  display:inline-block;
+  padding:2px 1em 3px 2em;
+  border-radius-bottomright: 4px;
+  -moz-border-radius-bottomright: 4px;
+  border-radius-bottomleft: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  color: #666;
+  font: {
+    size: 1.1em;
+    weight: bold;
+  }
+  background-color: #fff8f8;
+  box-shadow:1px 1px 1px #EEE;
+  -moz-box-shadow:1px 1px 1px #EEE;
+  -webkit-box-shadow:1px 1px 1px #EEE;
+}

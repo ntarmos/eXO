@@ -12,9 +12,11 @@ $footer-color: #787878;
 $footer-title-color: #98A754;
 
 @import "base_elements";
+@import "loading_indicator";
 @import "header_wrapper";
 @import "middle_wrapper";
 @import "footer_wrapper";
+
 
 /*** COMMON CSS ***/
 
