@@ -1,0 +1,32 @@
+@font-face {
+  font-family: 'RoughTypeWriter';
+  src: url('../images/rough_typewriter.otf');
+}
+
+$body-bgcolor: #222222;
+$header-bgcolor: #382f24;
+$header-color: #ffffff;
+$middle-bgcolor: #E8F1F9;
+$middle-menucolor: #414E5B;
+$footer-color: #787878;
+$footer-title-color: #98A754;
+
+@import "base_elements";
+@import "header_wrapper";
+@import "middle_wrapper";
+@import "footer_wrapper";
+
+/*** COMMON CSS ***/
+
+/* One-line list */
+ul.horizontal {
+  list-style-type: none;
+  margin:0;
+  padding:0;
+}
+
+ul.horizontal li{
+  display:inline;
+  float:left;
+  margin:0 5px;
+}

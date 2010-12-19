@@ -1,0 +1,27 @@
+/*
+  Aggregates all the footer specific style.
+*/
+
+#footer-wrapper {
+  background-color: $body-bgcolor;
+  border-top: 2px solid #666;
+  clear:both;
+  color: $footer-color;
+  padding-top:20px;
+}
+
+#footer-container {
+  text-shadow: 1px 0 #000;
+  ul {
+    list-style-type: none;
+  }
+  li.title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: $footer-title-color;
+  }
+  blockquote {
+    font-size: 1.5em;
+    color: $footer-title-color;
+  }
+}

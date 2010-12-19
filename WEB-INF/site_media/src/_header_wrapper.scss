@@ -1,0 +1,76 @@
+/*
+  Summarizes styles for the header part of the page.
+*/
+@import "compass/css3/box-shadow";
+
+#header-wrapper {
+  height: 91px;
+  background: {
+   color: $header-bgcolor;
+   image: url("../images/header-bg.png");
+  }
+  color: $header-color;
+  border-bottom: 2px solid #DDDDDD;
+  text-shadow: 1px 0px #333;
+}
+
+#userbox {
+  float:right;
+  font-size:12px;
+  padding:5px;
+  border-radius:0px 0px 5px 5px;
+  -moz-border-radius:0px 0px 5px 5px;
+  -webkit-box-shadow:0 0px 3px #223C51;
+  -moz-box-shadow:0 0px 3px #223C51;
+  background: -webkit-gradient(linear, 0% 0, 0% 100%, from(lighten($header-bgcolor, 30%)), to(lighten($header-bgcolor, 10%)));
+  background: -moz-linear-gradient(270deg, lighten($header-bgcolor, 30%), lighten($header-bgcolor, 10%)) repeat scroll 0 0 transparent;
+  background-color:lighten($header-bgcolor, 10%);
+  border-color:lighten($header-bgcolor, 30%);
+  border-style:double;
+  border-width:1px;
+  
+  #avatar-wrapper {
+    display:inline;
+    float:left;
+    img{
+      border:1px solid #FFFFFF;
+      margin-right:3px;
+      margin-top:-3px;
+      vertical-align:middle;
+    }
+  }
+
+  ul {
+    display:inline;
+  }
+}
+
+#global-menu {
+  padding-top: 28px;
+  font-size: 16px;
+  font-weight:bold;
+
+  ul li{
+    margin: 0 1em;
+    a{
+      padding:0.25em;
+      &:hover{
+        text-decoration:none;
+        color: #98A754;
+        text-shadow: 1px 1px 1px #333;
+      }
+    }
+  }
+}
+
+#logo {
+  a {
+    font-size: 5em;
+    font-family: 'RoughTypeWriter';
+    &:hover { text-decoration:none; }
+  }
+  span {
+    font-size: 1.2em;
+    color: #8f8f8f;
+  }
+}

@@ -1,0 +1,251 @@
+@font-face {
+  font-family: 'RoughTypeWriter';
+  src: url("../images/rough_typewriter.otf");
+}
+
+/* 
+  This is a base partial, which holds the basic element styles.
+  We may split it in more files in the near future.
+*/
+/* line 6, ../src/_base_elements.scss */
+html {
+  height: 100%;
+}
+
+/* line 10, ../src/_base_elements.scss */
+body {
+  height: 100%;
+  background-color: #222222;
+  text-shadow: 1px 0px #FFF;
+}
+
+/* Override for Blueprint css */
+/* line 17, ../src/_base_elements.scss */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+/* line 20, ../src/_base_elements.scss */
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+/* line 24, ../src/_base_elements.scss */
+a:hover {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/*
+  Summarizes styles for the header part of the page.
+*/
+/* line 6, ../src/_header_wrapper.scss */
+#header-wrapper {
+  height: 91px;
+  background-color: #382f24;
+  background-image: url("../images/header-bg.png");
+  color: white;
+  border-bottom: 2px solid #DDDDDD;
+  text-shadow: 1px 0px #333;
+}
+
+/* line 17, ../src/_header_wrapper.scss */
+#userbox {
+  float: right;
+  font-size: 12px;
+  padding: 5px;
+  border-radius: 0px 0px 5px 5px;
+  -moz-border-radius: 0px 0px 5px 5px;
+  -webkit-box-shadow: 0 0px 3px #223C51;
+  -moz-box-shadow: 0 0px 3px #223C51;
+  background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#957d60), to(#574938));
+  background: -moz-linear-gradient(270deg, #957d60, #574938) repeat scroll 0 0 transparent;
+  background-color: #574938;
+  border-color: #957d60;
+  border-style: double;
+  border-width: 1px;
+}
+/* line 32, ../src/_header_wrapper.scss */
+#userbox #avatar-wrapper {
+  display: inline;
+  float: left;
+}
+/* line 35, ../src/_header_wrapper.scss */
+#userbox #avatar-wrapper img {
+  border: 1px solid #FFFFFF;
+  margin-right: 3px;
+  margin-top: -3px;
+  vertical-align: middle;
+}
+/* line 43, ../src/_header_wrapper.scss */
+#userbox ul {
+  display: inline;
+}
+
+/* line 48, ../src/_header_wrapper.scss */
+#global-menu {
+  padding-top: 28px;
+  font-size: 16px;
+  font-weight: bold;
+}
+/* line 53, ../src/_header_wrapper.scss */
+#global-menu ul li {
+  margin: 0 1em;
+}
+/* line 55, ../src/_header_wrapper.scss */
+#global-menu ul li a {
+  padding: 0.25em;
+}
+/* line 57, ../src/_header_wrapper.scss */
+#global-menu ul li a:hover {
+  text-decoration: none;
+  color: #98A754;
+  text-shadow: 1px 1px 1px #333;
+}
+
+/* line 67, ../src/_header_wrapper.scss */
+#logo a {
+  font-size: 5em;
+  font-family: 'RoughTypeWriter';
+}
+/* line 70, ../src/_header_wrapper.scss */
+#logo a:hover {
+  text-decoration: none;
+}
+/* line 72, ../src/_header_wrapper.scss */
+#logo span {
+  font-size: 1.2em;
+  color: #8f8f8f;
+}
+
+/*
+  Aggregates all the middle container styles.
+*/
+/* line 5, ../src/_middle_wrapper.scss */
+#middle-wrapper {
+  background: none repeat scroll 0 0 #e8f1f9;
+  padding: 0;
+}
+
+/* line 13, ../src/_middle_wrapper.scss */
+#content-header-wrapper {
+  height: 80px;
+  margin: 0 0 2em;
+  padding: 0px;
+  border-radius-bottomleft: 8px;
+  border-radius-bottomright: 8px;
+  -moz-border-radius-bottomleft: 8px;
+  -moz-border-radius-bottomright: 8px;
+  -webkit-box-shadow: 0px 1px 1px #cfcfcf;
+  -moz-box-shadow: 0px 1px 1px #cfcfcf;
+  background-color: #FFF;
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: #D6D1CA;
+  overflow: hidden;
+}
+
+/* line 32, ../src/_middle_wrapper.scss */
+#content-header {
+  height: 80px;
+  position: relative;
+  overflow: hidden;
+}
+/* line 37, ../src/_middle_wrapper.scss */
+#content-header h2 {
+  padding: 0.5em 1em;
+}
+/* line 39, ../src/_middle_wrapper.scss */
+#content-header h2 img {
+  vertical-align: middle;
+}
+/* line 42, ../src/_middle_wrapper.scss */
+#content-header h2 span {
+  color: #9D6B00;
+}
+/* line 47, ../src/_middle_wrapper.scss */
+#content-header ul {
+  position: absolute;
+  bottom: 0px;
+  right: 50px;
+  font-size: 1.2em;
+  color: #FFF;
+  text-shadow: none;
+}
+/* line 55, ../src/_middle_wrapper.scss */
+#content-header ul li {
+  padding: 0 0 0.25em;
+}
+/* line 57, ../src/_middle_wrapper.scss */
+#content-header ul li a {
+  padding: 0.5em;
+  background-color: #414e5b;
+  -moz-border-radius-topleft: 2px;
+  -moz-border-radius-topright: 2px;
+}
+/* line 62, ../src/_middle_wrapper.scss */
+#content-header ul li a:hover {
+  text-decoration: none;
+  /*          color:#98A754;*/
+  background-color: #475664;
+}
+/* line 71, ../src/_middle_wrapper.scss */
+#content-header ul li.current a {
+  font-weight: bold;
+  padding-top: 0.75em;
+  background-color: #FFF;
+  color: #414e5b;
+}
+
+/* line 82, ../src/_middle_wrapper.scss */
+#content-main a {
+  color: #2B547D;
+}
+
+/*
+  Aggregates all the footer specific style.
+*/
+/* line 5, ../src/_footer_wrapper.scss */
+#footer-wrapper {
+  background-color: #222222;
+  border-top: 2px solid #666;
+  clear: both;
+  color: #787878;
+  padding-top: 20px;
+}
+
+/* line 13, ../src/_footer_wrapper.scss */
+#footer-container {
+  text-shadow: 1px 0 #000;
+}
+/* line 15, ../src/_footer_wrapper.scss */
+#footer-container ul {
+  list-style-type: none;
+}
+/* line 18, ../src/_footer_wrapper.scss */
+#footer-container li.title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #98a754;
+}
+/* line 23, ../src/_footer_wrapper.scss */
+#footer-container blockquote {
+  font-size: 1.5em;
+  color: #98a754;
+}
+
+/*** COMMON CSS ***/
+/* One-line list */
+/* line 22, ../src/base.scss */
+ul.horizontal {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* line 28, ../src/base.scss */
+ul.horizontal li {
+  display: inline;
+  float: left;
+  margin: 0 5px;
+}
