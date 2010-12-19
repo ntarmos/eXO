@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.ajax.JSON;
 
 import rice.Continuation;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.content.TermField;
+import ceid.netcins.json.ContentProfileJSONConvertor;
+import ceid.netcins.json.JSON;
 import ceid.netcins.user.User;
 
 public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
@@ -33,7 +33,6 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
-		ContentProfile profile = new ContentProfile();
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
 			Object jsonParams = JSON.parse(param);
@@ -53,13 +52,13 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				baseRequest.setHandled(true);
 				return;
 			}
+
+			ContentProfile profile = new ContentProfile();
 			Object[] data = (Object[])jsonParams;
-			if (data != null)
-				for (Object cf : data) {
-					TermField tf = new TermField(null, null);
-					tf.fromJSON((Map)cf);
-					profile.add(tf);
-				}
+			if (data != null) {
+				ContentProfileJSONConvertor cc = new ContentProfileJSONConvertor();
+				profile = (ContentProfile)cc.fromJSON(data);
+			}
 			final User user = catalogService.getUser();
 			ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
 			user.setUserProfile(profile);

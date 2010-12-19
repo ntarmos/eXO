@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.ajax.JSON;
 
 import rice.Continuation;
 import rice.pastry.Id;
@@ -20,6 +19,7 @@ import rice.pastry.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
+import ceid.netcins.json.JSON;
 
 public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 	public GetUserProfileHandler(CatalogService catalogService, Hashtable<String, Vector<String>> queue) {

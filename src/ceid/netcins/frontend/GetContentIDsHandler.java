@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.ajax.JSON;
 
 import rice.p2p.commonapi.Id;
 
 import ceid.netcins.CatalogService;
+import ceid.netcins.json.JSON;
 
 public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 
