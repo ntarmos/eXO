@@ -26,7 +26,7 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		Set<Id> contentIDs = catalogService.getUser().getSharedContent().keySet();
+		Set<Id> contentIDs = catalogService.getUser().getSharedContentProfile().keySet();
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
