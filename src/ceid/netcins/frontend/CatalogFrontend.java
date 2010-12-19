@@ -229,6 +229,7 @@ public class CatalogFrontend {
 		String rootDir = environment.getParameters().getString("exo_jetty_root");
 		if (rootDir != null)
 			System.setProperty("jetty.home", rootDir);
+			
 		server = new Server();
 
 		SelectChannelConnector connector = new SelectChannelConnector();
@@ -263,7 +264,7 @@ public class CatalogFrontend {
 		ResourceHandler plainFileHandler = new ResourceHandler();
 		plainFileHandler.setDirectoriesListed(true);
 		plainFileHandler.setWelcomeFiles(new String[] { "index.html"});
-		plainFileHandler.setResourceBase("/");
+		plainFileHandler.setResourceBase(System.getProperty("jetty.home", "/"));
 		plainFileContext.setHandler(plainFileHandler);
 		handlersList.addHandler(plainFileContext);
 
