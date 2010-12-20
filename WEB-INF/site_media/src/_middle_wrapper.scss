@@ -5,12 +5,13 @@
 #middle-wrapper {
   background:none repeat scroll 0 0 $middle-bgcolor;
   padding:0;
-  height: 100%; /* To preserve the light background */
+/*  height: 100%;  To preserve the light background */
+  overflow: hidden; /* To preserve the light background */
 }
 
 #middle-container{
   overflow: visible; /* To make actions visible */
-  height: 100%; /* To preserve the light background */
+/*  height: 100%;  To preserve the light background */
 }
 
 #content-header-wrapper {

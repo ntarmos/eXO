@@ -153,19 +153,19 @@ a:hover {
 #middle-wrapper {
   background: none repeat scroll 0 0 #e8f1f9;
   padding: 0;
-  height: 100%;
+  /*  height: 100%;  To preserve the light background */
+  overflow: hidden;
   /* To preserve the light background */
 }
 
-/* line 11, ../src/_middle_wrapper.scss */
+/* line 12, ../src/_middle_wrapper.scss */
 #middle-container {
   overflow: visible;
   /* To make actions visible */
-  height: 100%;
-  /* To preserve the light background */
+  /*  height: 100%;  To preserve the light background */
 }
 
-/* line 16, ../src/_middle_wrapper.scss */
+/* line 17, ../src/_middle_wrapper.scss */
 #content-header-wrapper {
   height: 80px;
   margin: 0 0 2em;
@@ -182,25 +182,25 @@ a:hover {
   overflow: hidden;
 }
 
-/* line 34, ../src/_middle_wrapper.scss */
+/* line 35, ../src/_middle_wrapper.scss */
 #content-header {
   height: 80px;
   position: relative;
   overflow: hidden;
 }
-/* line 39, ../src/_middle_wrapper.scss */
+/* line 40, ../src/_middle_wrapper.scss */
 #content-header h2 {
   padding: 0.5em 1em;
 }
-/* line 41, ../src/_middle_wrapper.scss */
+/* line 42, ../src/_middle_wrapper.scss */
 #content-header h2 img {
   vertical-align: middle;
 }
-/* line 44, ../src/_middle_wrapper.scss */
+/* line 45, ../src/_middle_wrapper.scss */
 #content-header h2 span {
   color: #9D6B00;
 }
-/* line 49, ../src/_middle_wrapper.scss */
+/* line 50, ../src/_middle_wrapper.scss */
 #content-header ul {
   position: absolute;
   bottom: 0px;
@@ -209,11 +209,11 @@ a:hover {
   color: #FFF;
   text-shadow: none;
 }
-/* line 57, ../src/_middle_wrapper.scss */
+/* line 58, ../src/_middle_wrapper.scss */
 #content-header ul li {
   padding: 0 0 0.25em;
 }
-/* line 59, ../src/_middle_wrapper.scss */
+/* line 60, ../src/_middle_wrapper.scss */
 #content-header ul li a {
   padding: 0.5em;
   background-color: #414e5b;
@@ -221,77 +221,77 @@ a:hover {
   -moz-border-radius-topleft: 2px;
   -moz-border-radius-topright: 2px;
 }
-/* line 65, ../src/_middle_wrapper.scss */
+/* line 66, ../src/_middle_wrapper.scss */
 #content-header ul li a:hover {
   text-decoration: none;
   /*          color:#98A754;*/
   background-color: #475664;
 }
-/* line 74, ../src/_middle_wrapper.scss */
+/* line 75, ../src/_middle_wrapper.scss */
 #content-header ul li.current a {
   font-weight: bold;
   padding-top: 0.75em;
   background-color: #6c8196;
 }
 
-/* line 83, ../src/_middle_wrapper.scss */
+/* line 84, ../src/_middle_wrapper.scss */
 #at {
   font-size: 1.2em;
 }
 
-/* line 87, ../src/_middle_wrapper.scss */
+/* line 88, ../src/_middle_wrapper.scss */
 #content-main {
   min-height: 200px;
 }
-/* line 89, ../src/_middle_wrapper.scss */
+/* line 90, ../src/_middle_wrapper.scss */
 #content-main a {
   color: #2B547D;
 }
-/* line 92, ../src/_middle_wrapper.scss */
+/* line 93, ../src/_middle_wrapper.scss */
 #content-main #content-main-loading {
   text-align: center;
   vertical-align: middle;
 }
-/* line 96, ../src/_middle_wrapper.scss */
+/* line 97, ../src/_middle_wrapper.scss */
 #content-main .content-body {
   margin: 1em 0;
   border: 1px solid #D6D1CA;
   background-color: #FFF;
 }
-/* line 100, ../src/_middle_wrapper.scss */
+/* line 101, ../src/_middle_wrapper.scss */
 #content-main .content-body h2 {
   padding: 1em 1em 0;
   border-bottom: 1px dashed #CCC;
   position: relative;
 }
-/* line 104, ../src/_middle_wrapper.scss */
+/* line 105, ../src/_middle_wrapper.scss */
 #content-main .content-body h2 span {
   position: absolute;
   right: 2em;
   bottom: 2px;
   font-size: 0.5em;
 }
-/* line 109, ../src/_middle_wrapper.scss */
+/* line 110, ../src/_middle_wrapper.scss */
 #content-main .content-body h2 span img {
   vertical-align: text-bottom;
 }
-/* line 115, ../src/_middle_wrapper.scss */
+/* line 116, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body {
   display: none;
 }
-/* line 117, ../src/_middle_wrapper.scss */
+/* line 118, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-fields-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 122, ../src/_middle_wrapper.scss */
+/* line 123, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row {
   padding: 0.5em 1em;
   text-align: left;
   border-bottom: 1px solid #DFDFDF;
 }
-/* line 126, ../src/_middle_wrapper.scss */
+/* line 127, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper {
   display: none;
   height: 0;
@@ -300,7 +300,7 @@ a:hover {
   top: 0;
   width: 0;
 }
-/* line 133, ../src/_middle_wrapper.scss */
+/* line 134, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions {
   border-radius: 12px;
   -moz-border-radius: 12px;
@@ -314,38 +314,38 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 145, ../src/_middle_wrapper.scss */
+/* line 146, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 149, ../src/_middle_wrapper.scss */
+/* line 150, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 151, ../src/_middle_wrapper.scss */
+/* line 152, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 153, ../src/_middle_wrapper.scss */
+/* line 154, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 158, ../src/_middle_wrapper.scss */
+/* line 159, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 164, ../src/_middle_wrapper.scss */
+/* line 165, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-name {
   color: #333;
   font-size: 1.2em;
 }
-/* line 168, ../src/_middle_wrapper.scss */
+/* line 169, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data {
   font-size: 1.1em;
 }
-/* line 170, ../src/_middle_wrapper.scss */
+/* line 171, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag {
   position: relative;
   padding: 3px 15px 3px 8px;
@@ -359,18 +359,18 @@ a:hover {
   font-size: 0.75em;
   font-weight: bold;
 }
-/* line 184, ../src/_middle_wrapper.scss */
+/* line 185, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag:hover {
   background-color: #d6e1f6;
 }
-/* line 187, ../src/_middle_wrapper.scss */
+/* line 188, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-data .single-tag a.close {
   display: block;
   position: absolute;
   right: 4px;
   top: 7px;
 }
-/* line 196, ../src/_middle_wrapper.scss */
+/* line 197, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body a.close {
   background: url("../images/close.gif") repeat scroll 0 0 transparent;
   font-size: 1px;
@@ -378,36 +378,36 @@ a:hover {
   text-indent: -1000px;
   width: 7px;
 }
-/* line 202, ../src/_middle_wrapper.scss */
+/* line 203, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body a.close:hover {
   background-position: center;
 }
-/* line 208, ../src/_middle_wrapper.scss */
+/* line 209, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 212, ../src/_middle_wrapper.scss */
+/* line 213, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper span {
   font-size: 1.2em;
 }
-/* line 215, ../src/_middle_wrapper.scss */
+/* line 216, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper #search {
   width: 500px;
 }
-/* line 219, ../src/_middle_wrapper.scss */
+/* line 220, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper {
   border-top: 1px solid #666;
   background-color: #DDD;
   padding: 1em;
 }
-/* line 223, ../src/_middle_wrapper.scss */
+/* line 224, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 227, ../src/_middle_wrapper.scss */
+/* line 228, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper p {
   text-align: center;
 }
