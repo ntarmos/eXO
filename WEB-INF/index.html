@@ -35,28 +35,39 @@
       data: "",
       success: function(data){
         // Fill in the data to the corresponding places
-        var username="Incognito", resource="Home", public_profile_body = [],
-          private_profile_body = [];
+        var username="Incognito", resource="Home", public_profile_body = null,
+          private_profile_body = null, fieldname;
         for(dict in data){
           if(data[dict]["eXO::FieldName"]=="Username"){
             username = data[dict]["eXO::FieldData"];
           }else if(data[dict]["eXO::FieldName"]=="Resource"){
             resource = data[dict]["eXO::FieldData"];
           }else{
-            if(data[dict]["eXO::FieldIsPublic"]==true)
-              public_profile_body[data[dict]["eXO::FieldName"]] = data[dict]["eXO::FieldData"];
-            else
-              private_profile_body[data[dict]["eXO::FieldName"]] = data[dict]["eXO::FieldData"];
+            if(data[dict]["eXO::FieldIsPublic"]==true){
+              fieldname = data[dict]["eXO::FieldName"];
+              if(public_profile_body==null)
+                public_profile_body = { fieldname : data[dict]["eXO::FieldData"] };
+              else
+                public_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+            }else{
+              fieldname = data[dict]["eXO::FieldName"];
+              if(private_profile_body==null)
+                private_profile_body = { fieldname : data[dict]["eXO::FieldData"] };
+              else
+                private_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+
+            }
           }
         }
+
         if(username!=null)
           $("#username").html(username);
         if(resource!=null)
           $("#resource").html(resource);
 
-        var tag_rows = '';
         // Fill the body with the retrieved data
-        if(public_profile_body.length!=0){
+        if(public_profile_body!=null){
+          var tag_rows = '';
           var i = 0;
           for(field in public_profile_body){
             tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
@@ -71,7 +82,8 @@
           }
           $("#public-fields-wrapper").html(tag_rows);
         }
-        if(private_profile_body.length!=0){
+        if(private_profile_body!=null){
+          var tag_rows = '';
           var i = 0;
           for(field in private_profile_body){
             tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
