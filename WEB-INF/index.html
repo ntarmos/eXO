@@ -42,21 +42,17 @@
             username = data[dict]["eXO::FieldData"];
           }else if(data[dict]["eXO::FieldName"]=="Resource"){
             resource = data[dict]["eXO::FieldData"];
+          }
+          fieldname = data[dict]["eXO::FieldName"];
+          if(data[dict]["eXO::FieldIsPublic"]==true){
+            if(public_profile_body==null)
+              public_profile_body = {};
+            public_profile_body[fieldname] = data[dict]["eXO::FieldData"];
           }else{
-            if(data[dict]["eXO::FieldIsPublic"]==true){
-              fieldname = data[dict]["eXO::FieldName"];
-              if(public_profile_body==null)
-                public_profile_body = { fieldname : data[dict]["eXO::FieldData"] };
-              else
-                public_profile_body[fieldname] = data[dict]["eXO::FieldData"];
-            }else{
-              fieldname = data[dict]["eXO::FieldName"];
-              if(private_profile_body==null)
-                private_profile_body = { fieldname : data[dict]["eXO::FieldData"] };
-              else
-                private_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+            if(private_profile_body==null)
+              private_profile_body = {};
+            private_profile_body[fieldname] = data[dict]["eXO::FieldData"];
 
-            }
           }
         }
 
