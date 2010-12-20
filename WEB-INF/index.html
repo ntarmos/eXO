@@ -71,6 +71,16 @@
           var i = 0;
           for(field in public_profile_body){
             tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
+              + '  <div class="actions-wrapper">'
+              + '    <div class="row-actions">'
+              + '      <div class="buttons">'
+              + '        <span class="button-action">'
+              + '          <a class="close" href="#">1</a>'
+              + '        </span>'
+              + '        <span class="button-action"><a href="#">Edit</a></span>'
+              + '      </div>'
+              + '    </div>'
+              + '  </div>'
               + '  <div class="tag-field-name span-3">'+ field + ':</div>'
               + '  <div class="tag-field-data">'
               + '    <span class="single-tag">' + public_profile_body[field]
@@ -87,6 +97,16 @@
           var i = 0;
           for(field in private_profile_body){
             tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
+              + '  <div class="actions-wrapper">'
+              + '    <div class="row-actions">'
+              + '      <div class="buttons">'
+              + '        <span class="button-action">'
+              + '          <a class="close" href="#">1</a>'
+              + '        </span>'
+              + '        <span class="button-action"><a href="#">Edit</a></span>'
+              + '      </div>'
+              + '    </div>'
+              + '  </div>'
               + '  <div class="tag-field-name span-3">'+ field + ':</div>'
               + '  <div class="tag-field-data">'
               + '    <span class="single-tag">' + private_profile_body[field]
@@ -98,6 +118,15 @@
           }
           $("#private-fields-wrapper").html(tag_rows);
         }
+
+        // Bind hover row events
+        $(".tag-row").hover(function(){
+            var row = $(this);
+            $(".actions-wrapper", row).show();
+        },function(){
+            var row = $(this);
+            $(".actions-wrapper", row).hide();
+        });
 
         // Hide/show content divs
         setTimeout(function(){ 
@@ -136,7 +165,7 @@
         </ul>
       </div>
       <div id="logo" class="span-10">
-        <a href="/index/">eXO</a>
+        <a href="/">eXO</a>
         <span> The Decentralized Social Network</span>
       </div>
       <div id="global-menu" class="span-16 last">
@@ -185,13 +214,25 @@
       <div id="content-main" class="span-26">
         <div id="myprofile-body" class="content-body">
           <div id="public-profile-wrapper">
-            <h2>Public Profile</h2>
+            <h2>
+              Public Profile 
+              <span>
+                <img src="/site_media/images/add.png" />
+                <a href="#">Add New Field</a>
+              </span>
+            </h2>
             <div id="public-fields-wrapper" class="tag-fields-wrapper">
               <span class="quiet">There is no data yet. Why don't you add some now?</span>
             </div>
           </div>
           <div id="private-profile-wrapper" class="clear">
-            <h2>Private Profile (viewable only by friends)</h2>
+            <h2>
+              Private Profile (viewable only by friends)
+              <span>
+                <img src="/site_media/images/add.png" />
+                <a href="#">Add New Field</a>
+              </span>
+            </h2>
             <div id="private-fields-wrapper" class="tag-fields-wrapper">
               <span class="quiet">There is no data yet. Why don't you add some now?</span>
             </div>
