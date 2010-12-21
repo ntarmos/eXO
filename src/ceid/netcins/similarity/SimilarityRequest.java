@@ -26,7 +26,7 @@ public class SimilarityRequest {
 
 	// The result which will fill in the Scorer thread and the response will be
 	// routed
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private Continuation result;
 
 	// The number of results to return
@@ -45,7 +45,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public SimilarityRequest(Vector<?> profileEntries, String[] query,
 			Continuation result) {
 		this.profileEntries = profileEntries;
@@ -66,7 +66,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
 			int k,	Continuation result) {
 		this.profileEntries = profileEntries;
@@ -91,7 +91,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
 			int k, ContentProfile userProfile, Continuation result) {
 		this.profileEntries = profileEntries;
@@ -116,7 +116,7 @@ public class SimilarityRequest {
 	 *            Feeds the result back to Selector through a call to
 	 *            endpoint.route
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
 			int k, ContentProfile userProfile, Continuation result, 
 			int msgcounter) {
@@ -149,7 +149,7 @@ public class SimilarityRequest {
 		return profileEntries;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Continuation getContinuation() {
 		return result;
 	}

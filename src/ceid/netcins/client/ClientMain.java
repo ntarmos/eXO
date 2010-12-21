@@ -83,9 +83,9 @@ public class ClientMain {
 	 */
 	public void preRunning() {
 
-		// Deletes all the files in the FreePastry-Storage-Root dir
+		// Deletes all the files in the eXO-Storage-Root dir
 		// LinkedList delme = new LinkedList();
-		// delme.add(new File("FreePastry-Storage-Root"));
+		// delme.add(new File("eXO-Storage-Root"));
 		// while (!delme.isEmpty()) {
 		// File f = (File) delme.removeFirst();
 		// if (f.isDirectory()) {
@@ -107,6 +107,8 @@ public class ClientMain {
 	 */
 	public void triggerRunning(String[] args) throws Exception {
 		env = parseArgs(args);
+		if (env == null)
+			return;
 
 		// Allocate Memory for the ClientDriver in order both Threads to be
 		// able to set important variables
@@ -114,8 +116,6 @@ public class ClientMain {
 			driver = new ClientDriver(env, bindPort);
 		else
 			driver = new ClientDriver(env);
-
-		cpf = new ContentProfileFactory();
 
 		if (webEnv) {
 			cws = new ClientWebServer(driver, null);
@@ -296,8 +296,7 @@ public class ClientMain {
 				case EXIT:
 					if (requestDispatcher != null)
 						driver.cleanUp();
-					System.exit(0);
-					break;
+					return;
 
 				case FRIENDS:
 					if (requestDispatcher == null) {
@@ -398,7 +397,7 @@ public class ClientMain {
 			if (args[i].equals("-help")) {
 				System.out
 						.println("Usage: java ClientMain [-help] [-port <portnumber>] [-web] [-test <xml_test_file>]");
-				System.exit(0);
+				return null;
 			}
 		}
 
@@ -1037,8 +1036,6 @@ public class ClientMain {
 	 */
 	private BufferedReader in;
 	private Environment env;
-	@SuppressWarnings("unused")
-	private ContentProfileFactory cpf;
 	private String lastarg;
 	private ClientDriver driver;
 	private Thread requestDispatcher;

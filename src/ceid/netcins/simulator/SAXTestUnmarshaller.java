@@ -41,7 +41,7 @@ public class SAXTestUnmarshaller extends DefaultHandler {
 		lastFieldName = null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Vector getScenarios() {
 		return scenarios;
 	}

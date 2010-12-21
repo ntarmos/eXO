@@ -107,6 +107,11 @@ public class DummyContent extends ContentHashPastContent {
 		return (((DummyContent) o).myId.equals(myId)
 				&& (((DummyContent) o).version == version));
 	}
+	
+	@Override
+	public int hashCode() {
+		return myId.hashCode() + version;
+	}
 
 	/**
 	 * A descriptive toString()

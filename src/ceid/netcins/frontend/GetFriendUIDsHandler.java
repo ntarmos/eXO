@@ -15,7 +15,7 @@ import org.eclipse.jetty.server.Request;
 import rice.p2p.commonapi.Id;
 
 import ceid.netcins.CatalogService;
-import ceid.netcins.json.JSON;
+import ceid.netcins.json.Json;
 import ceid.netcins.user.Friend;
 
 public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
@@ -37,6 +37,6 @@ public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
-		response.getWriter().write(JSON.toString(friendIDs));
+		response.getWriter().write(Json.toString(friendIDs));
 	}
 }

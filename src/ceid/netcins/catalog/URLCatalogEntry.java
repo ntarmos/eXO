@@ -11,7 +11,7 @@ import ceid.netcins.content.ContentProfile;
  * 
  * @author Andreas Loupasakis
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class URLCatalogEntry extends ContentCatalogEntry implements
 		Serializable, Comparable {
 
@@ -44,6 +44,11 @@ public class URLCatalogEntry extends ContentCatalogEntry implements
 	 */
 	public URL getURL() {
 		return url;
+	}
+	
+	@Override
+	public int hashCode() {
+		return getUID().hashCode();
 	}
 
 	/**

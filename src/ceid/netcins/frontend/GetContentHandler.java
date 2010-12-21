@@ -15,7 +15,7 @@ import rice.p2p.commonapi.Id;
 
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.json.JSON;
+import ceid.netcins.json.Json;
 
 public class GetContentHandler extends CatalogFrontendAbstractHandler {
 
@@ -31,6 +31,6 @@ public class GetContentHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
-		response.getWriter().write(JSON.toString(content));
+		response.getWriter().write(Json.toString(content));
 	}
 }

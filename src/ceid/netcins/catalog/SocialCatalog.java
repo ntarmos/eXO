@@ -31,7 +31,7 @@ public class SocialCatalog {
 		urlCatalogEntries = new Vector<URLCatalogEntry>();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SocialCatalog(String tag, Vector catalogEntries) {
 		this.tag = tag;
 		if (catalogEntries.firstElement() == null) {

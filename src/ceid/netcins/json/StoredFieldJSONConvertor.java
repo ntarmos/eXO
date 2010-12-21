@@ -13,7 +13,7 @@ public class StoredFieldJSONConvertor extends ContentFieldJSONConvertor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
 		return new TermField(
 				(String)arg0.get(FieldNameTag),
@@ -25,7 +25,7 @@ public class StoredFieldJSONConvertor extends ContentFieldJSONConvertor {
 	@Override
 	public void toJSON(Object arg0, Output arg1) {
 		if (arg0 == null) {
-			arg1.add(arg0);
+			arg1.add(null);
 			return;
 		}
 		TermField tf = (TermField)arg0;

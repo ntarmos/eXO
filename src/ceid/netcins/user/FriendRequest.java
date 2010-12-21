@@ -54,4 +54,9 @@ public class FriendRequest {
 
 		return fr.getUID().equals(uid);
 	}
+	
+	@Override
+	public int hashCode() {
+		return uid.hashCode();
+	}
 }

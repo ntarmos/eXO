@@ -61,7 +61,7 @@ public class CatalogMessage extends ContinuationMessage {
 	public int max_copies = 0;
 
 	// multicontinuation for the continuous retrieves
-	public MultiContinuation multi;
+	public transient MultiContinuation multi;
 
 	/**
 	 * Constructor

@@ -39,6 +39,6 @@ public class TermField extends ContentField implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return new String("Term Field " + name + "\nTerm FieldData " + fieldData + "\n");
+		return "Term Field " + name + "\nTerm FieldData " + fieldData + "\n";
 	}
 }

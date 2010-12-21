@@ -11,7 +11,7 @@ import rice.p2p.commonapi.Id;
  * @version 1.0
  * 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public abstract class CatalogEntry implements Serializable, Comparable {
 
 	private static final long serialVersionUID = -6930057763768157893L;
@@ -22,6 +22,11 @@ public abstract class CatalogEntry implements Serializable, Comparable {
 		this.uid = uid;
 	}
 
+	@Override
+	public int hashCode() {
+		return uid.hashCode();
+	}
+	
 	/**
 	 * Used to compare two entries. Two entries are the same if: they have the
 	 * same UID (and the same SHA-1 checksum if it is content entry)

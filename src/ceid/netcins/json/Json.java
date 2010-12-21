@@ -11,10 +11,10 @@ import ceid.netcins.content.TermField;
 import ceid.netcins.content.TokenizedField;
 import ceid.netcins.social.TagCloud;
 
-public class JSON extends org.eclipse.jetty.util.ajax.JSON {
-	private static JSON __default = new JSON();
+public class Json extends org.eclipse.jetty.util.ajax.JSON {
+	private static Json __default = new Json();
 
-	public JSON() {
+	public Json() {
 		registerConvertor(TermField.class, new TermFieldJSONConvertor());
 		registerConvertor(StoredField.class, new StoredFieldJSONConvertor());
 		registerConvertor(TokenizedField.class, new TokenizedFieldJSONConvertor());
@@ -27,7 +27,7 @@ public class JSON extends org.eclipse.jetty.util.ajax.JSON {
 	 * @see org.eclipse.jetty.util.ajax.JSON#appendMap(java.lang.StringBuffer, java.util.Map)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void appendMap(StringBuffer buffer, Map object) {
 		// Overriding Jetty {@link org.eclipse.jetty.util.ajax.JSON}'s appendMap(...) 
 		// method to let it use Convertors registered for key values.
@@ -54,7 +54,7 @@ public class JSON extends org.eclipse.jetty.util.ajax.JSON {
 		buffer.append('}');
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static String toString(Map object)
 	{
 		StringBuffer buffer=new StringBuffer(__default.getStringBufferSize());

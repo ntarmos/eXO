@@ -15,7 +15,7 @@ import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.TermField;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.social.SocialBookMark;
-import ceid.netcins.social.SocialLink;
+//import ceid.netcins.social.SocialLink;
 import ceid.netcins.social.TagCloud;
 
 /**
@@ -74,8 +74,7 @@ public class User {
 	private Map<Id, SocialBookMark> bookMarks;
 
 	// TODO: Implement this, Describe design etc.
-	@SuppressWarnings("unused")
-	private Map<Id, SocialLink> sociallinks;
+	//private Map<Id, SocialLink> sociallinks;
 
 	/**
 	 * Constructor of user entity
@@ -151,8 +150,8 @@ public class User {
 	 * @param type One of the types defined in QueryPDU
 	 * @return Return the corresponding vector of catalog entries.
 	 */
-	@SuppressWarnings("unchecked")
-	public Vector<?> getCatalogEntriesForQueryType(int type, Id requester){
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Vector getCatalogEntriesForQueryType(int type, Id requester){
 		Vector v = null;
 		switch(type){
 			case QueryPDU.CONTENTQUERY:

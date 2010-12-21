@@ -134,6 +134,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	private int id;
 
 	// the hashtable of outstanding messages
+	@SuppressWarnings("rawtypes")
 	private Hashtable<Integer, Continuation> outstanding;
 
 	// the hashtable of outstanding timer tasks
@@ -299,6 +300,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param instance
 	 *            The unique instance name of this Past
 	 */
+	@SuppressWarnings("rawtypes")
 	public DHTService(Node node, StorageManager manager, Cache backup,
 			int replicas, String instance, PastPolicy policy,
 			StorageManager trash, SocketStrategy strategy) {
@@ -477,6 +479,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * 
 	 * @return The list of all the outstanding messages
 	 */
+	@SuppressWarnings("rawtypes")
 	public Continuation[] getOutstandingMessages() {
 		return (Continuation[]) outstanding.values().toArray(
 				new Continuation[0]);
@@ -506,6 +509,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * 
 	 * @return A new id
 	 */
+	@SuppressWarnings("rawtypes")
 	protected Continuation getResponseContinuation(final PastMessage msg) {
 		if (logger.level <= Logger.FINER)
 			logger.log("Getting the Continuation to respond to the message "
@@ -531,6 +535,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param msg
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	protected Continuation getFetchResponseContinuation(final PastMessage msg) {
 		final ContinuationMessage cmsg = (ContinuationMessage) msg;
 
@@ -560,6 +565,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 */
 	WeakHashMap<AppSocket, ByteBuffer[]> pendingSocketTransactions = new WeakHashMap<AppSocket, ByteBuffer[]>();
 
+	@SuppressWarnings("rawtypes")
 	private void sendViaSocket(final NodeHandle handle, final PastMessage m,
 			final Continuation c) {
 		if (c != null) {
@@ -649,6 +655,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            The command to run once a result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void sendRequest(Id id, PastMessage message, Continuation command) {
 		sendRequest(id, message, null, command);
 	}
@@ -664,6 +671,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            The command to run once a result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void sendRequest(NodeHandle handle, PastMessage message,
 			Continuation command) {
 		sendRequest(null, message, handle, command);
@@ -682,6 +690,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            The command to run once a result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void sendRequest(Id id, PastMessage message, NodeHandle hint,
 			Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -702,12 +711,13 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            The continuation to run
 	 */
+	@SuppressWarnings("rawtypes")
 	private void insertPending(int uid, CancellableTask timer,
 			Continuation command) {
 		if (logger.level <= Logger.FINER)
 			logger.log("Loading continuation " + uid + " into pending table");
-		timers.put(new Integer(uid), timer);
-		outstanding.put(new Integer(uid), command);
+		timers.put(Integer.valueOf(uid), timer);
+		outstanding.put(Integer.valueOf(uid), command);
 	}
 
 	/**
@@ -717,17 +727,18 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 *            The id of the message
 	 * @return The continuation to run
 	 */
+	@SuppressWarnings("rawtypes")
 	private Continuation removePending(int uid) {
 		if (logger.level <= Logger.FINER)
 			logger.log("Removing and returning continuation " + uid
 					+ " from pending table");
 		CancellableTask timer = (CancellableTask) timers
-				.remove(new Integer(uid));
+				.remove(Integer.valueOf(uid));
 
 		if (timer != null)
 			timer.cancel();
 
-		return (Continuation) outstanding.remove(new Integer(uid));
+		return (Continuation) outstanding.remove(Integer.valueOf(uid));
 	}
 
 	/**
@@ -736,6 +747,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param message
 	 *            The message that arrived
 	 */
+	@SuppressWarnings("rawtypes")
 	void handleResponse(PastMessage message) {
 		if (logger.level <= Logger.FINE)
 			logger.log("handling reponse message " + message
@@ -759,6 +771,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            The command to call with the result (NodeHandle[])
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void getHandles(Id id, final int max, Continuation command) {
 		NodeHandleSet set = endpoint.replicaSet(id, max);
 
@@ -804,6 +817,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param content
 	 *            The content to cache
 	 */
+	@SuppressWarnings("rawtypes")
 	void cache(final PastContent content) {
 		cache(content, new ListenerContinuation("Caching of " + content,
 				environment));
@@ -817,6 +831,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            The command to run once done
 	 */
+	@SuppressWarnings("rawtypes")
 	public void cache(final PastContent content, final Continuation command) {
 		if (logger.level <= Logger.FINER)
 			logger.log("Inserting PastContent object " + content
@@ -825,7 +840,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		if ((content != null) && (!content.isMutable()))
 			storage.cache(content.getId(), null, content, command);
 		else
-			command.receiveResult(new Boolean(true));
+			command.receiveResult(Boolean.valueOf(true));
 	}
 
 	/**
@@ -841,6 +856,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 *            The command to call once done
 	 * 
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void doInsert(final Id id, final MessageBuilder builder,
 			Continuation command, final boolean useSocket) {
 		// first, we get all of the replicas for this id
@@ -886,7 +902,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 							public Object getResult() {
 								Boolean[] b = new Boolean[result.length];
 								for (int i = 0; i < b.length; i++)
-									b[i] = new Boolean((result[i] == null)
+									b[i] = Boolean.valueOf((result[i] == null)
 											|| Boolean.TRUE.equals(result[i]));
 
 								return b;
@@ -924,6 +940,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void insert(final PastContent obj, final Continuation command) {
 		if (logger.level <= Logger.FINER)
 			logger.log("Inserting the object " + obj + " with the id "
@@ -969,6 +986,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final Continuation command) {
 		lookup(id, true, command);
 	}
@@ -985,6 +1003,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final boolean cache,
 			final Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -1103,6 +1122,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final boolean cache,
 			final QueryPDU queryPDU, final Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -1243,6 +1263,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final boolean cache,
 			RetrieveContPDU retPDU, final Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -1256,8 +1277,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 			public void receiveResult(final Object o) {
 				// if we have an object, we return it
 				// otherwise, we must check all replicas in order to make sure
-				// that
-				// the object doesn't exist anywhere
+				// that the object doesn't exist anywhere
 				if (o != null) {
 
 					command.receiveResult(o);
@@ -1267,7 +1287,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// replicated to the leafset
 					// If so then here we should put the lookupHandles code as
 					// above!!!
-					command.receiveResult(o); // o is NULL
+					command.receiveResult(null); // o is NULL
 				}
 			}
 
@@ -1296,6 +1316,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final boolean cache,
 			final SocialQueryPDU queryPDU, final Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -1423,6 +1444,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final NodeHandle destNodeHandle,
 			final boolean cache, QueryPDU qPDU,	final Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -1448,7 +1470,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// replicated to the leafset
 					// If so then here we should put the lookupHandles code as
 					// above!!!
-					command.receiveResult(o); // o is NULL
+					command.receiveResult(null); // o is NULL
 				}
 			}
 
@@ -1471,6 +1493,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param extra_args A dictionary of extra arguments to be passed. 
 	 * @param command Command to be performed when the result is received.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final int type,
 			final HashMap<String, Object> extra_args,
 			final Continuation command) {
@@ -1480,21 +1503,30 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		NodeHandle destNodeHandle = extra_args.containsKey("nodeHandle")?
 				((NodeHandle) extra_args.get("nodeHandle")):null;		
 		ContinuationMessage message = null;
-		if (type == GetUserProfileMessage.TYPE) {
-			message = new GetUserProfileMessage(getUID(), id,
-					getLocalNodeHandle(), id);
-		}else if (type == FriendReqMessage.TYPE) {
-			message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(), 
-					id, (FriendReqPDU)extra_args.get("PDU"));
-		}else if(type == FriendRejectMessage.TYPE) {
-			message = new FriendRejectMessage(getUID(), id, getLocalNodeHandle(),
-					   id, (FriendReqPDU)extra_args.get("PDU"));
-		}else if(type == FriendAcceptMessage.TYPE) {
-			message = new FriendAcceptMessage(getUID(), id, getLocalNodeHandle(),
-					   id, (FriendReqPDU)extra_args.get("PDU"));
-		}else if (type == TagContentMessage.TYPE){
-			message = new TagContentMessage(getUID(), id, getLocalNodeHandle(),
-					id,	(TagContentPDU)extra_args.get("PDU"));
+		switch (type) {
+			case GetUserProfileMessage.TYPE:
+				message = new GetUserProfileMessage(getUID(), id,
+						getLocalNodeHandle(), id);
+				break;
+			case FriendReqMessage.TYPE:
+				message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(), 
+						id, (FriendReqPDU)extra_args.get("PDU"));
+				break;
+			case FriendRejectMessage.TYPE:
+				message = new FriendRejectMessage(getUID(), id, getLocalNodeHandle(),
+						id, (FriendReqPDU)extra_args.get("PDU"));
+				break;
+			case FriendAcceptMessage.TYPE:
+				message = new FriendAcceptMessage(getUID(), id, getLocalNodeHandle(),
+						id, (FriendReqPDU)extra_args.get("PDU"));
+				break;
+			case TagContentMessage.TYPE:
+				message = new TagContentMessage(getUID(), id, getLocalNodeHandle(),
+						id,	(TagContentPDU)extra_args.get("PDU"));
+				break;
+			default:
+				logger.log("Unknown message type. Bailing out...");
+				return;
 		}
 		// TODO: Fill in the remaining message types to handle.
 		
@@ -1535,6 +1567,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookupHandles(final Id id, int max, final Continuation command) {
 		if (logger.level <= Logger.FINE)
 			logger.log("Retrieving handles of up to " + max
@@ -1583,6 +1616,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void lookupHandle(Id id, NodeHandle handle, Continuation command) {
 		if (logger.level <= Logger.FINE)
 			logger.log("Retrieving handle for id " + id + " from node "
@@ -1607,6 +1641,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command
 	 *            Command to be performed when the result is received
 	 */
+	@SuppressWarnings("rawtypes")
 	public void fetch(PastContentHandle handle, Continuation command) {
 		if (logger.level <= Logger.FINE)
 			logger.log("Retrieving object associated with content handle "
@@ -1723,6 +1758,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param message
 	 *            The message being sent
 	 */
+	@SuppressWarnings("rawtypes")
 	public void deliver(Id id, Message message) {
 		final PastMessage msg = (PastMessage) message;
 
@@ -1780,7 +1816,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					});
 				} else {
 					getResponseContinuation(msg).receiveResult(
-							new Boolean(false));
+							Boolean.valueOf(false));
 				}
 			} else if (msg instanceof LookupMessage) {
 				final LookupMessage lmsg = (LookupMessage) msg;
@@ -1892,6 +1928,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param id
 	 *            The id to fetch
 	 */
+	@SuppressWarnings("rawtypes")
 	public void fetch(final Id id, NodeHandle hint, Continuation command) {
 		if (logger.level <= Logger.FINER)
 			logger
@@ -1905,7 +1942,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 						logger.log("Could not fetch id " + id
 								+ " - policy returned null in namespace "
 								+ instance);
-					parent.receiveResult(new Boolean(false));
+					parent.receiveResult(Boolean.valueOf(false));
 				} else {
 					if (logger.level <= Logger.FINEST)
 						logger.log("inserting replica of id " + id);
@@ -1929,6 +1966,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param id
 	 *            The id to remove
 	 */
+	@SuppressWarnings("rawtypes")
 	public void remove(final Id id, Continuation command) {
 		if (backup != null) {
 			storage.getObject(id, new StandardContinuation(command) {
@@ -1982,6 +2020,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		return storage.getStorage().exists(id);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void existsInOverlay(Id id, Continuation command) {
 		lookupHandles(id, replicationFactor + 1, new StandardContinuation(
 				command) {
@@ -1998,6 +2037,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		});
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void reInsert(Id id, Continuation command) {
 		storage.getObject(id, new StandardContinuation(command) {
 			public void receiveResult(final Object o) {

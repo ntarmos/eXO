@@ -20,7 +20,6 @@ import rice.pastry.PastryNode;
 import rice.pastry.PastryNodeFactory;
 import rice.pastry.commonapi.PastryIdFactory;
 import rice.pastry.socket.SocketPastryNodeFactory;
-import rice.pastry.standard.IPNodeIdFactory;
 import rice.persistence.LRUCache;
 import rice.persistence.MemoryStorage;
 import rice.persistence.PersistentStorage;
@@ -175,7 +174,6 @@ public class ClientDriver {
 			if (temp.getLocalAddress().equals(localAddress))
 				throw new IllegalStateException(
 						"No connection to the Internet: " + localAddress);
-			localAddress = temp.getLocalAddress();
 			temp.close();
 		}
 
@@ -227,6 +225,7 @@ public class ClientDriver {
 		past = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE,
 				new User(node.getNodeId()));
 
+		past.start();
 		// Thread.sleep(5000);
 	}
 
@@ -243,8 +242,8 @@ public class ClientDriver {
 					serveRequest(execRequests.remove(0));
 				}
 				// Wait until the FrontendThread notify!
-				while (!wasSignalled) {
-					synchronized (this) {
+				synchronized (this) {
+					while (!wasSignalled) {
 						try {
 							wait();
 						} catch (InterruptedException ex) {
@@ -298,7 +297,7 @@ public class ClientDriver {
 	 * @param req
 	 * @throws java.lang.Exception
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void serveRequest(Request req) throws Exception {
 
 		if (req instanceof IndexContentRequest) {

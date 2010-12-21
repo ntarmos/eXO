@@ -1,11 +1,7 @@
 package ceid.netcins.social;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeMap;
-
-import org.eclipse.jetty.util.ajax.JSON.Convertible;
-import org.eclipse.jetty.util.ajax.JSON.Output;
 
 /**
  * This is a set of social terms/tags with a corresponding weight = TF.
@@ -56,7 +52,7 @@ public class TagCloud {
 			int num = tfm.get(tag);
 			tfm.put(tag, (num + 1));
 		} else {
-			tfm.put(tag, new Integer(1));
+			tfm.put(tag, Integer.valueOf(1));
 		}
 	}
 

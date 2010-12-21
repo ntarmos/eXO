@@ -72,6 +72,11 @@ public class Friend {
 	}
 
 	@Override
+	public int hashCode() {
+		return uid.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("\n - Friend UID : " + this.uid);

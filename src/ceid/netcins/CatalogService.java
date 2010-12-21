@@ -119,9 +119,10 @@ public class CatalogService extends DHTService implements SocService {
 			}
 
 		}, "Scorer");
+	}
 
+	public void start() {
 		scorerThread.start();
-
 	}
 
 	/**
@@ -176,6 +177,7 @@ public class CatalogService extends DHTService implements SocService {
 		user.setUserProfile(cpf.buildProfile(m, delimiter));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setUserProfile(ContentProfile profile) {
 		ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
 		user.setUserProfile(profile);
@@ -215,12 +217,12 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 
-	public void getUserProfile(Friend friend, Continuation command) throws Exception {
+	public void getUserProfile(Friend friend, @SuppressWarnings("rawtypes") Continuation command) throws Exception {
 		this.getUserProfile(friend.getUID(), friend.getNodeHandle(),
 				command);
 	}
 	
-	public void getUserProfile(Id uid, Continuation command) throws Exception {
+	public void getUserProfile(Id uid, @SuppressWarnings("rawtypes") Continuation command) throws Exception {
 		this.getUserProfile(uid, null, command);
 	}
 	
@@ -232,6 +234,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @return The requested user profile
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("rawtypes")
 	public void getUserProfile(final Id uid,
 			final NodeHandle nodeHandle, final Continuation command) throws Exception {
 
@@ -328,7 +331,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @deprecated
 	 */
 	public void friendRequest(final String userUniqueName, final String message,
-			final Continuation command) throws Exception {
+			@SuppressWarnings("rawtypes") final Continuation command) throws Exception {
 
 		final Id destuid = factory.buildId(userUniqueName);
 		friendRequest(destuid, message,  command);
@@ -343,6 +346,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command The response callback.
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("rawtypes")
 	public void friendRequest(final Id uid, final String message,
 			final Continuation command) throws Exception {
 
@@ -388,7 +392,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for the generic form of this function.
 	 */
 	public void acceptFriend(final FriendRequest freq,
-			final Continuation command) throws Exception {
+			@SuppressWarnings("rawtypes") final Continuation command) throws Exception {
 		acceptFriend(freq, "", command);
 	}
 	
@@ -404,6 +408,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command The callback that must be executed when we return
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("rawtypes")
 	public void acceptFriend(final FriendRequest freq, String message,
 			final Continuation command) throws Exception {
 
@@ -453,7 +458,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for the generic form of this function.
 	 */
 	public void rejectFriend(final FriendRequest freq,
-			final Continuation command) throws Exception {
+			@SuppressWarnings("rawtypes") final Continuation command) throws Exception {
 		rejectFriend(freq, "", command);
 	}
 	
@@ -469,6 +474,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command The callback that must be executed when we return
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("rawtypes")
 	public void rejectFriend(final FriendRequest freq, String message,
 			final Continuation command) throws Exception {
 
@@ -527,6 +533,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command
 	 *            An asynchronous command which will be executed on return.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void retrieveContent(Id uid, Id contentId, final boolean clouds,
 			final Continuation command) {
 
@@ -593,6 +600,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command An asynchronous command which will be executed on return.
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("rawtypes")
 	public void tagContent(final Id uid, final Id contentId, final String[] tags,
 			final Continuation command) throws Exception {
 
@@ -661,6 +669,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command
 	 *            Asynchronous commands to be executed after return
 	 */
+	@SuppressWarnings("rawtypes") 
 	public void indexURL(URL url, ContentProfile tags,
 			final Continuation command) {
 
@@ -761,6 +770,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * 
 	 * @param file
 	 */
+	@SuppressWarnings("rawtypes") 
 	public void indexContent(final File file, final Continuation command) {
 
 		// TODO : maybe an Exception is needed here to be thrown
@@ -868,7 +878,7 @@ public class CatalogService extends DHTService implements SocService {
 					public Object getResult() {
 						Boolean[] b = new Boolean[result.length];
 						for (int i = 0; i < b.length; i++)
-							b[i] = new Boolean((result[i] == null)
+							b[i] = Boolean.valueOf((result[i] == null)
 									|| result[i] instanceof Boolean[]);
 
 						// As we have sent all the necessary data, add the file
@@ -909,6 +919,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * 
 	 * @param command
 	 */
+	@SuppressWarnings("rawtypes")
 	public void indexUser(final Continuation command) {
 
 		// TODO : maybe an Exception is needed here to be thrown
@@ -992,7 +1003,7 @@ public class CatalogService extends DHTService implements SocService {
 							// Check the replicas' return values for true to
 							// return true or false
 							Boolean temp[] = (Boolean[]) result[i];
-							b[i] = new Boolean(false);
+							b[i] = Boolean.valueOf(false);
 							// We want all the replicas to have been indexed (so
 							// all true)
 							int j;
@@ -1002,9 +1013,9 @@ public class CatalogService extends DHTService implements SocService {
 							}
 							// HERE WE WANT 100% SUCCESS IN REPLICATION INDEXING
 							if (j == temp.length)
-								b[i] = new Boolean(true);
+								b[i] = Boolean.valueOf(true);
 						} else { // If it is null or it is not of type Boolean[]
-							b[i] = new Boolean(false);
+							b[i] = Boolean.valueOf(false);
 						}
 					}
 					return b;
@@ -1036,6 +1047,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * 
 	 * @param command
 	 */
+	@SuppressWarnings("rawtypes")
 	public void indexPseudoContent(final ContentProfile cp,
 			final Continuation command) {
 
@@ -1147,7 +1159,7 @@ public class CatalogService extends DHTService implements SocService {
 							// Check the replicas' return values for true to
 							// return true or false
 							Boolean temp[] = (Boolean[]) result[i];
-							b[i] = new Boolean(false);
+							b[i] = Boolean.valueOf(false);
 							// We want all the replicas to have been indexed (so
 							// all true)
 							int j;
@@ -1157,9 +1169,9 @@ public class CatalogService extends DHTService implements SocService {
 							}
 							// HERE WE WANT 100% SUCCESS IN REPLICATION INDEXING
 							if (j == temp.length)
-								b[i] = new Boolean(true);
+								b[i] = Boolean.valueOf(true);
 						} else { // If it is null or it is not of type Boolean[]
-							b[i] = new Boolean(false);
+							b[i] = Boolean.valueOf(false);
 						}
 					}
 
@@ -1203,7 +1215,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Returns the top k catalog entries. 
 	 */
 	public void discoverFriend(final String rawQuery, final int k,
-			final Continuation command) {
+			@SuppressWarnings("rawtypes") final Continuation command) {
 		searchQuery(QueryPDU.USER_ENHANCEDQUERY, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
@@ -1212,7 +1224,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery to help searching only for users. 
 	 */
 	public void searchUser(final String rawQuery, final int k,
-			final Continuation command) {
+			@SuppressWarnings("rawtypes") final Continuation command) {
 		searchQuery(QueryPDU.USERQUERY, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
@@ -1221,7 +1233,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery
 	 */
 	public void searchQuery(final int queryType, final String rawQuery,
-			final int k, final Continuation command) {
+			final int k, @SuppressWarnings("rawtypes") final Continuation command) {
 		searchQuery(queryType, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
@@ -1230,7 +1242,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery
 	 */
 	public void searchQuery(final int queryType, final String rawQuery,
-			final int k, final String delimiter, final Continuation command) {
+			final int k, final String delimiter, @SuppressWarnings("rawtypes") final Continuation command) {
 
 		// Query Parsing
 		// TODO : This should be done with more proffesional Classes using
@@ -1259,6 +1271,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param delimiter The delimiter for query terms
 	 * @param command A callback
 	 */
+	@SuppressWarnings("rawtypes")
 	public void searchQuery(final int queryType, final String[] queryTerms,
 			final int k, final Continuation command) {
 
@@ -1354,6 +1367,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param queryTerms The set of terms to search for
 	 * @param command The callback which will be called on response.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void searchFriendsNetwork(final int queryType, 
 			final String[] queryTerms, final Continuation command) {
 
@@ -1421,13 +1435,13 @@ public class CatalogService extends DHTService implements SocService {
 
 				public void receiveResult(Object result) {
 					System.out.println("\n\nFriendQuery  : "
-							+ queryTerms.toString() + ", #" + num
+							+ Arrays.toString(queryTerms) + ", #" + num
 							+ " result (success) for destination ID = " + uid);
 					parent.receiveResult(result);
 				}
 
 				public void receiveException(Exception result) {
-					System.out.println("nFriendQuery : " + queryTerms.toString()
+					System.out.println("nFriendQuery : " + Arrays.toString(queryTerms)
 							+ ", #" + num + " result (error) "
 							+ result.getMessage());
 					parent.receiveException(result);
@@ -1451,6 +1465,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param queryOld
 	 * @param command
 	 */
+	@SuppressWarnings("rawtypes")
 	public void searchSocialTagsQuery(final int queryType, final String[] tags,
 			final String[] userIds, final Continuation command) {
 
@@ -1489,7 +1504,7 @@ public class CatalogService extends DHTService implements SocService {
 			public Object getResult() {
 				Boolean[] b = new Boolean[result.length];
 				for (int i = 0; i < b.length; i++)
-					b[i] = new Boolean((result[i] == null)
+					b[i] = Boolean.valueOf((result[i] == null)
 							|| result[i] instanceof Vector<?>);
 				return b;
 			}
@@ -1520,7 +1535,7 @@ public class CatalogService extends DHTService implements SocService {
 
 				public void receiveResult(Object result) {
 					System.out.println("\n\nSocialTagsQuery  : "
-							+ tags.toString() + ", #" + num
+							+ Arrays.toString(tags) + ", #" + num
 							+ " result (success) for destination ID = " + uid);
 					if (result instanceof Vector<?>) {
 						Vector<SocialCatalog> v = (Vector<SocialCatalog>) result;
@@ -1534,7 +1549,7 @@ public class CatalogService extends DHTService implements SocService {
 				}
 
 				public void receiveException(Exception result) {
-					System.out.println("SocialTagsQuery : " + tags.toString()
+					System.out.println("SocialTagsQuery : " + Arrays.toString(tags)
 							+ ", #" + num + " result (error) "
 							+ result.getMessage());
 					parent.receiveException(result);
@@ -1953,6 +1968,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param message
 	 *            The message being sent
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void deliver(Id id, Message message) {
 		final PastMessage msg = (PastMessage) message;
@@ -2011,7 +2027,7 @@ public class CatalogService extends DHTService implements SocService {
 					});
 				} else {
 					getResponseContinuation(msg).receiveResult(
-							new Boolean(false));
+							Boolean.valueOf(false));
 				}
 			} else if (msg instanceof QueryMessage) {
 				final QueryMessage qmsg = (QueryMessage) msg;
@@ -2150,7 +2166,7 @@ public class CatalogService extends DHTService implements SocService {
 							+ famsg.getId() + " from " + endpoint.getId());
 
 				// Return the response now.
-				getResponseContinuation(msg).receiveResult(new Boolean(true));
+				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
 				
 			} else if (msg instanceof FriendRejectMessage) {
 				final FriendRejectMessage frmsg = (FriendRejectMessage) msg;
@@ -2169,7 +2185,7 @@ public class CatalogService extends DHTService implements SocService {
 							+ frmsg.getId() + " from " + endpoint.getId());
 
 				// Return the response now.
-				getResponseContinuation(msg).receiveResult(new Boolean(true));
+				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
 				
 			} else if (msg instanceof FriendReqMessage) {
 				final FriendReqMessage frmsg = (FriendReqMessage) msg;
@@ -2185,7 +2201,7 @@ public class CatalogService extends DHTService implements SocService {
 							+ frmsg.getId() + " from " + endpoint.getId());
 
 				// All was right!
-				getResponseContinuation(msg).receiveResult(new Boolean(true));
+				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
 				
 			} else if (msg instanceof TagContentMessage) {
 				final TagContentMessage tcmsg = (TagContentMessage) msg;
@@ -2237,7 +2253,7 @@ public class CatalogService extends DHTService implements SocService {
 					result = cloud;
 				} else {
 
-					result = new Boolean("true");
+					result = Boolean.valueOf(true);
 				}
 
 				// TODO : Here we must handle the downloading of the content

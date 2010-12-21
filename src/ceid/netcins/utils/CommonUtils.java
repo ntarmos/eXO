@@ -19,6 +19,7 @@ public class CommonUtils {
 	 * @param delimiter The delimiter which is used to join the Collection items.
 	 * @return The joined String representation of the Collection.
 	 */
+	@SuppressWarnings("rawtypes")
     public static String join(Collection s, String delimiter) {
         StringBuffer buffer = new StringBuffer();
         Iterator iter = s.iterator();

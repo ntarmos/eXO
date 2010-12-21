@@ -1,5 +1,6 @@
 package ceid.netcins.json;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,11 +14,18 @@ public class TagCloudJSONConvertor extends ContentFieldJSONConvertor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object fromJSON(Map arg0) {
+		if (arg0 == null)
+			return null;
 		TreeMap<String, Integer> tm = new TreeMap<String, Integer>();
-		for (Object key : arg0.keySet())
-			tm.put((String)key, (Integer)arg0.get(key));
+		Iterator<Object> key = arg0.keySet().iterator();
+		Iterator<Object> value = arg0.values().iterator();
+		while (key.hasNext()) {
+			String k = (String)key.next();
+			Integer v = (Integer)value.next();
+			tm.put(k, v);
+		}
 		return new TagCloud(tm);
 	}
 

@@ -20,7 +20,7 @@ import ceid.netcins.CatalogService;
 import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.json.JSON;
+import ceid.netcins.json.Json;
 import ceid.netcins.messages.ResponsePDU;
 
 public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
@@ -28,7 +28,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
@@ -39,7 +39,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
-			Object jsonParams = JSON.parse(param);
+			Object jsonParams = Json.parse(param);
 			if (jsonParams instanceof Map) {
 				Map jsonMap = (Map)jsonParams;
 				if (jsonMap.containsKey(ReqIDTag)) {
@@ -48,11 +48,11 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
 						Map<String, String> ret = new HashMap<String, String>();
 						ret.put(RequestStatusTag, RequestStatusProcessingTag);
-						response.getWriter().write(JSON.toString(ret));
+						response.getWriter().write(Json.toString(ret));
 						response.flushBuffer();
 						return;
 					}
-					response.getWriter().write(JSON.toString(res.toArray()));
+					response.getWriter().write(Json.toString(res.toArray()));
 					response.flushBuffer();
 					queue.remove(reqID);
 					baseRequest.setHandled(true);
@@ -67,7 +67,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		}
 
 		if (CID == null) {
-			response.getWriter().write(JSON.toString(new HashMap<String, String>()));
+			response.getWriter().write(Json.toString(new HashMap<String, String>()));
 			return;
 		}
 
@@ -75,13 +75,13 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		if (UID == null) { // Local resource. Return immediately.
 			if (cp != null) {
 				List<ContentField> cflist = cp.getAllFields();
-				JSON json = new JSON();
+				Json json = new Json();
 				StringBuffer sb = new StringBuffer();
 				json.appendArray(sb, cflist.toArray());
 				response.getWriter().write(sb.toString());
 				return;
 			}
-			response.getWriter().write(JSON.toString(new HashMap<String, String>()));
+			response.getWriter().write(Json.toString(new HashMap<String, String>()));
 			return;
 		}
 
@@ -92,7 +92,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		queue.put(reqID, na);
 		Map<String, String> ret = new HashMap<String, String>();
 		ret.put(ReqIDTag, reqID);
-		response.getWriter().write(JSON.toString(ret));
+		response.getWriter().write(Json.toString(ret));
 		try {
 			catalogService.searchQuery(CatalogService.CONTENT, CID, 1,
 					new Continuation<Object, Exception>() {
@@ -113,7 +113,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 					Vector<String> res = new Vector<String>();
 					res.add(RequestStatusSuccessTag);
 					if (sb != null)
-						res.add(JSON.toString(sb));
+						res.add(Json.toString(sb));
 					queue.put(reqID, res);
 				}
 

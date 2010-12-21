@@ -190,6 +190,7 @@ public class CatalogFrontend {
 		}
 
 		catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
+		catalogService.start();
 
 		ArrayList<ContentField> tags = new ArrayList<ContentField>();
 		tags.add(new TermField("Username", userName, true));
@@ -201,7 +202,7 @@ public class CatalogFrontend {
 		return 0;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private ContextHandler makeContextHandler(Class handlerClass) {
 		Constructor constructor = null;
 		Class[] params = new Class[] { CatalogService.class, Hashtable.class };
@@ -224,7 +225,6 @@ public class CatalogFrontend {
 		return newContextHandler;
 	}
 
-	@SuppressWarnings("unchecked")
 	private ContextHandler mountFileRoute(String url, String templateName) {
 		ContextHandler plainFileContext = new ContextHandler();
 		plainFileContext.setContextPath(url);
@@ -236,7 +236,7 @@ public class CatalogFrontend {
 		return plainFileContext;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private int startWebServer() {
 		String rootDir = environment.getParameters().getString("exo_jetty_root");
 		if (rootDir != null)

@@ -16,7 +16,7 @@ import ceid.netcins.content.StoredField;
  * 
  * @author Andreas Loupasakis
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class ContentCatalogEntry extends UserCatalogEntry implements
 		Serializable, Comparable {
 
@@ -29,6 +29,11 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 		this.contentProfile = cp;
 	}
 
+	@Override
+	public int hashCode() {
+		return getUID().hashCode() + getCheckSum().hashCode();
+	}
+	
 	/**
 	 * Used to compare two entries. Two entries are the same if: they have the
 	 * same UID and the same SHA-1 checksum

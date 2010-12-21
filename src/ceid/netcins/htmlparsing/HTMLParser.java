@@ -137,7 +137,7 @@ public class HTMLParser implements HTMLParserConstants {
 			title.append(text);
 		else {
 			addToSummary(text);
-			if (!titleComplete && !title.equals("")) { // finished title
+			if (!titleComplete && !title.toString().equals("")) { // finished title
 				synchronized (this) {
 					titleComplete = true; // tell waiting threads
 					notifyAll();

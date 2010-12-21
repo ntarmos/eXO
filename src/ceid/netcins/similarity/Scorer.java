@@ -382,8 +382,8 @@ public class Scorer {
 					serveRequest(similarityRequests.remove(0));
 				}
 				// Wait until the Selector Thread notify!
-				while (!wasSignalled) {
-					synchronized (this) {
+				synchronized (this) {
+					while (!wasSignalled) {
 						try {
 							wait();
 						} catch (InterruptedException ex) {
@@ -392,7 +392,9 @@ public class Scorer {
 					}
 				}
 				// clear signal and continue running.
-				wasSignalled = false;
+				synchronized (this) {
+					wasSignalled = false;
+				}
 
 			} catch (Exception e) {
 				System.out.println("Error : " + e.getMessage());

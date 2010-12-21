@@ -14,7 +14,7 @@ public class IdJSONConvertor implements Convertor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
 		return Id.build((String)arg0.get(IDTag));
 	}

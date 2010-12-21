@@ -1,11 +1,18 @@
 package ceid.netcins.messages;
 
+import java.io.Serializable;
+
 /**
  * This class contains the message for friendship request.
  * 
  * @author Andreas Loupasakis
  */
-public class FriendReqPDU {
+public class FriendReqPDU implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8560411161085968272L;
 
 	// A message written from the request source user
 	private String message;

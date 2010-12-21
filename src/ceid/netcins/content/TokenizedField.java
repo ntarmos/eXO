@@ -31,14 +31,13 @@ public class TokenizedField extends ContentField implements Serializable {
 		tf = new int[size];
 
 		// Transfer the terms and tfs in the static arrays
-		Iterator<String> it = tfm.keySet().iterator();
+		Iterator<String> key = tfm.keySet().iterator();
+		Iterator<Integer> value = tfm.values().iterator();
 
-		String tmp;
 		int i = 0;
-		while (it.hasNext()) {
-			tmp = it.next();
-			terms[i] = tmp;
-			tf[i] = tfm.get(tmp).intValue();
+		while (key.hasNext()) {
+			terms[i] = key.next();
+			tf[i] = value.next();
 			i++;
 		}
 	}

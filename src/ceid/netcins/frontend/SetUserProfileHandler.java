@@ -16,7 +16,7 @@ import rice.Continuation;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.json.ContentProfileJSONConvertor;
-import ceid.netcins.json.JSON;
+import ceid.netcins.json.Json;
 import ceid.netcins.user.User;
 
 public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
@@ -25,7 +25,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
@@ -35,18 +35,18 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
-			Object jsonParams = JSON.parse(param);
+			Object jsonParams = Json.parse(param);
 			if (jsonParams instanceof Map && ((Map)jsonParams).containsKey(ReqIDTag)) {
 				String reqID = (String)((Map)jsonParams).get(ReqIDTag);
 				Vector<String> res = queue.get(reqID);
 				if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
 					Map<String, String> ret = new HashMap<String, String>();
 					ret.put(RequestStatusTag, RequestStatusProcessingTag);
-					response.getWriter().write(JSON.toString(ret));
+					response.getWriter().write(Json.toString(ret));
 					response.flushBuffer();
 					return;
 				}
-				response.getWriter().write(JSON.toString(res.toArray()));
+				response.getWriter().write(Json.toString(res.toArray()));
 				response.flushBuffer();
 				queue.remove(reqID);
 				baseRequest.setHandled(true);
@@ -69,7 +69,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				queue.put(reqID, na);
 				Map<String, String> ret = new HashMap<String, String>();
 				ret.put(ReqIDTag, reqID);
-				response.getWriter().write(JSON.toString(ret));
+				response.getWriter().write(Json.toString(ret));
 				// The public part has changed. We should reindex the user profile in the network
 				catalogService.indexUser(new Continuation<Object, Exception>() {
 					public void receiveResult(Object result) {
@@ -79,7 +79,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 						// run replica maintenance
 						// runReplicaMaintence();
 						int indexedNum = 0;
-						Vector<String> res = new Vector();
+						Vector<String> res = new Vector<String>();
 						res.add(RequestStatusSuccessTag);
 						if (result instanceof Boolean[]) {
 							Boolean[] results = (Boolean[]) result;
@@ -100,7 +100,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 						System.out.println("User : " + user.getUID()
 								+ ", indexed with errors : "
 								+ result.getMessage());
-						Vector<String> res = new Vector();
+						Vector<String> res = new Vector<String>();
 						res.add(RequestStatusFailureTag);
 						queue.put(reqID, res);
 					}

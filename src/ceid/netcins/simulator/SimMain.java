@@ -104,9 +104,9 @@ public class SimMain {
 	 */
 	public void preTest() {
 
-		// Deletes all the files in the FreePastry-Storage-Root dir
+		// Deletes all the files in the eXO-Storage-Root dir
 		LinkedList<File> delme = new LinkedList<File>();
-		delme.add(new File("FreePastry-Storage-Root"));
+		delme.add(new File("eXO-Storage-Root"));
 		while (!delme.isEmpty()) {
 			File f = (File) delme.removeFirst();
 			if (f.isDirectory()) {
@@ -1828,7 +1828,4 @@ public class SimMain {
 	private SimDriver driver;
 	private Thread requestDispatcher;
 	private boolean cliEnv = true;
-	@SuppressWarnings("unused")
-	private HttpServerHandler hsh;
-
 }

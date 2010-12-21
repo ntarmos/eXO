@@ -11,7 +11,7 @@ import ceid.netcins.content.ContentProfile;
  * 
  * @author Andreas Loupasakis
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		Comparable {
 

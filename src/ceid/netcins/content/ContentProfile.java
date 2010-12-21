@@ -167,6 +167,17 @@ public class ContentProfile implements Serializable, ProfileSet {
 		return "";
 	}
 
+	@Override
+	public int hashCode() {
+		return fields.hashCode();
+	}
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof ContentProfile))
+			return false;
+		return equals((ContentProfile)o);
+	}
+	
 	public boolean equals(ContentProfile cp) {
 		HashSet<ContentField> our = new HashSet<ContentField>(fields);
 		HashSet<ContentField> theirs = new HashSet<ContentField>(cp.fields);

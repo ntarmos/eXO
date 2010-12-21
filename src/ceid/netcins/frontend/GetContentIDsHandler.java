@@ -14,7 +14,7 @@ import org.eclipse.jetty.server.Request;
 import rice.p2p.commonapi.Id;
 
 import ceid.netcins.CatalogService;
-import ceid.netcins.json.JSON;
+import ceid.netcins.json.Json;
 
 public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 
@@ -30,6 +30,6 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
-		response.getWriter().write(JSON.toString(contentIDs));
+		response.getWriter().write(Json.toString(contentIDs));
 	}
 }

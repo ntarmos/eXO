@@ -15,7 +15,7 @@ public class ContentProfileJSONConvertor implements Convertor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
 		Collection content = arg0.values();
 		ContentProfile ret = new ContentProfile();
@@ -33,7 +33,7 @@ public class ContentProfileJSONConvertor implements Convertor {
 		return ret;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Object[] arg0) {
 		ContentProfile ret = new ContentProfile();
 		if (arg0 != null)

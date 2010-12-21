@@ -157,8 +157,8 @@ public class SimDriver extends CommonAPITest {
 			try {
 				ret = factory.newNode(UserNodeIdFactory.generateNodeId("user" + num, "dummy"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.logException("Error creating new node", e);
+				return null;
 			}
 			ret.boot((rice.pastry.NodeHandle) null);
 		} else {
@@ -166,8 +166,8 @@ public class SimDriver extends CommonAPITest {
 				ret = factory.newNode(UserNodeIdFactory
 						.generateNodeId("user" + num, "dummy"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.logException("Error creating new node", e);
+				return null;
 			}
 			ret.boot(getBootstrap());
 		}
@@ -238,7 +238,7 @@ public class SimDriver extends CommonAPITest {
 			// User entities created with the RandomGenerated NodeIds
 			pasts[num] = new CatalogService(node, storages[num],
 					REPLICATION_FACTOR, INSTANCE, new User(node.getId()), scorer);
-			// File f=new File("FreePastry-Storage-Root/root-" + num);
+			// File f=new File("eXO-Storage-Root/root-" + num);
 
 			// TODO : Check the persistent scenario of simulation
 			// File[] files=f.listFiles();
@@ -273,8 +273,8 @@ public class SimDriver extends CommonAPITest {
 				}
 				// simulate();
 				// Wait until the FrontendThread notify!
-				while (!wasSignalled) {
-					synchronized (this) {
+				synchronized (this) {
+					while (!wasSignalled) {
 						try {
 							wait();
 						} catch (InterruptedException ex) {
@@ -330,8 +330,9 @@ public class SimDriver extends CommonAPITest {
 	 * average number of hits in network
 	 * 
 	 * @return
+	 * @throws IOException 
 	 */
-	public double computeLoad() {
+	public double computeLoad() throws IOException {
 
 		PrintWriter out = null;
 		try {
@@ -339,6 +340,7 @@ public class SimDriver extends CommonAPITest {
 		} catch (IOException ex) {
 			System.out.println("Error occured during writing load.list file");
 			ex.printStackTrace();
+			throw ex;
 		}
 
 		double sum = 0;
@@ -374,7 +376,7 @@ public class SimDriver extends CommonAPITest {
 	 * @param req
 	 * @throws java.lang.Exception
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void serveRequest(Request req) throws Exception {
 
 		if (req instanceof IndexContentRequest) {
@@ -1942,10 +1944,10 @@ public class SimDriver extends CommonAPITest {
 			while (qRequests.size() < size) {
 				num = this.environment.getRandomSource().nextInt(
 						this.pasts.length);
-				// if(qRequests.contains(new Integer(num)))
+				// if(qRequests.contains(Integer.valueOf(num)))
 				// continue;
 				// else{
-				qRequests.add(new Integer(num));
+				qRequests.add(Integer.valueOf(num));
 
 				if (type == QueryPDU.CONTENTQUERY
 						|| type == QueryPDU.CONTENT_ENHANCEDQUERY) {
@@ -1954,11 +1956,11 @@ public class SimDriver extends CommonAPITest {
 					for (int z = 0; z < pasts.length; z++) {
 						if (!pasts[z].getUser().getSharedContentProfile()
 								.isEmpty())
-							nodeNums.add(new Integer(z));
+							nodeNums.add(Integer.valueOf(z));
 					}
 
 					// Find req.keywords random keywords to query the network
-					String query = "";
+					StringBuffer query = new StringBuffer();
 					boolean done;
 					String term = "";
 					int keyNum;
@@ -1992,15 +1994,15 @@ public class SimDriver extends CommonAPITest {
 								term = tmpMap.get(cId).randomTerm();
 								if (term != null && !term.equals("")) {
 									if (j != 0)
-										query += "::";
+										query.append("::");
 									done = true;
-									query += term;
+									query.append(term);
 								}
 							}
 						} while (done == false);
 					}
 
-					execRequests.add(new SearchContentRequest(query, type, num,
+					execRequests.add(new SearchContentRequest(query.toString(), type, num,
 							rqreq.getK()));
 				} else if (type == QueryPDU.USERQUERY
 						|| type == QueryPDU.USER_ENHANCEDQUERY) {

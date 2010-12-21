@@ -19,14 +19,14 @@ import rice.pastry.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.json.JSON;
+import ceid.netcins.json.Json;
 
 public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 	public GetUserProfileHandler(CatalogService catalogService, Hashtable<String, Vector<String>> queue) {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
@@ -36,7 +36,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
-			Object jsonParams = JSON.parse(param);
+			Object jsonParams = Json.parse(param);
 			if (jsonParams instanceof Map) {
 				Map jsonMap = (Map)jsonParams;
 				if (jsonMap.containsKey(ReqIDTag)) {
@@ -45,11 +45,11 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
 						Map<String, String> ret = new HashMap<String, String>();
 						ret.put(RequestStatusTag, RequestStatusProcessingTag);
-						response.getWriter().write(JSON.toString(ret));
+						response.getWriter().write(Json.toString(ret));
 						response.flushBuffer();
 						return;
 					}
-					response.getWriter().write(JSON.toString(res.toArray()));
+					response.getWriter().write(Json.toString(res.toArray()));
 					response.flushBuffer();
 					queue.remove(reqID);
 					baseRequest.setHandled(true);
@@ -61,11 +61,12 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					queue.put(reqID, na);
 					Map<String, String> ret = new HashMap<String, String>();
 					ret.put(ReqIDTag, reqID);
-					response.getWriter().write(JSON.toString(ret));
+					response.getWriter().write(Json.toString(ret));
 					String UID = (String)jsonMap.get(UIDTag);
 					try {
 						catalogService.getUserProfile(Id.build(UID), new Continuation<Object, Exception>() {
 
+							@SuppressWarnings("unchecked")
 							@Override
 							public void receiveResult(Object result) {
 								HashMap<String, Object> resMap = (HashMap<String, Object>)result;
@@ -75,7 +76,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 								Vector<String> res = new Vector<String>();
 								res.add(RequestStatusSuccessTag);
 								ContentProfile cp = (ContentProfile)resMap.get("data");
-								res.add(JSON.toString(cp));
+								res.add(Json.toString(cp));
 								queue.put(reqID, res);
 							}
 
@@ -99,12 +100,12 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
 		if (userProfile != null) {
 			List<ContentField> cflist = userProfile.getAllFields();
-			JSON json = new JSON();
+			Json json = new Json();
 			StringBuffer sb = new StringBuffer();
 			json.appendArray(sb, cflist.toArray());
 			response.getWriter().write(sb.toString());
 		} else {
-			response.getWriter().write(JSON.toString(new HashMap<String, String>()));
+			response.getWriter().write(Json.toString(new HashMap<String, String>()));
 		}
 		response.flushBuffer();
 	}

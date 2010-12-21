@@ -184,15 +184,10 @@ public class ContentProfileFactory {
 			// Temporarily store them as StoredFields.
 			// TODO : Determine which of these are TermFields or
 			// TokenizedFields!
-			Iterator<String> it = candfields.keySet().iterator();
-			String field;
-			while (it.hasNext()) {
-				field = it.next();
-				if (field != null) {
-					cprof.add(new StoredField(field, candfields.get(field)));
-				}
-			}
-
+			Iterator<String> key = candfields.keySet().iterator();
+			Iterator<String> value = candfields.values().iterator();
+			while (key.hasNext())
+				cprof.add(new StoredField(key.next(), value.next()));
 		}
 
 		// return the content profile
@@ -262,17 +257,17 @@ public class ContentProfileFactory {
 					// System.out.println("Token : "+token.toString());
 					if (token == null)
 						break;
-					String str = token.termText();
+					String str = (token.termLength() > 0) ? new String(token.termBuffer(), 0, token.termLength()) : null;
 
 					if (str != null) {
 
 						// Already met this term, +1 to term frequency
 						if (tfv.containsKey(str) && (i = tfv.get(str)) != null) {
-							tfv.put(str, new Integer(i.intValue() + 1));
+							tfv.put(str, Integer.valueOf(i.intValue() + 1));
 							i = null;
 
 						} else { // First term occurence
-							tfv.put(str, new Integer(1));
+							tfv.put(str, Integer.valueOf(1));
 						}
 					} else {
 						System.out.println("Null token.termText!");
@@ -330,7 +325,7 @@ public class ContentProfileFactory {
 					// System.out.println("Token : "+token.toString());
 					if (token == null)
 						break;
-					String str = token.termText();
+					String str = (token.termLength() > 0) ? new String(token.termBuffer(), 0, token.termLength()) : null;
 
 					if (str != null) {
 						tv.add(str);
@@ -414,19 +409,21 @@ public class ContentProfileFactory {
 		ContentProfile cprof = new ContentProfile();
 
 		// TODO : Determine which of these are TermFields or TokenizedFields!
-		Iterator<String> it = candfields.keySet().iterator();
+		Iterator<String> key = candfields.keySet().iterator();
+		Iterator<String> value = candfields.values().iterator();
 		String field;
 		Reader reader;
 		TreeSet<String> terms;
-		while (it.hasNext()) {
-			field = it.next();
+		while (key.hasNext()) {
+			field = key.next();
+			String fieldValue = value.next();
 			if (field != null) {
 
 				if (field.equals("SHA-1")) {
-					cprof.add(new StoredField(field, candfields.get(field)));
+					cprof.add(new StoredField(field, fieldValue));
 
 				} else if (field.equals("Identifier")) {
-					cprof.add(new TermField(field, candfields.get(field)));
+					cprof.add(new TermField(field, fieldValue));
 
 				} else {
 
@@ -435,15 +432,14 @@ public class ContentProfileFactory {
 					// This is used to treat whole phrases like a single term!!!
 					if (!delimiter.equals(DEFAULT_DELIMITER)) {
 						terms = new TreeSet<String>();
-						String[] splitTerms = candfields.get(field).split(
-								delimiter);
+						String[] splitTerms = fieldValue.split(delimiter);
 						if (splitTerms != null)
 							for (String st : splitTerms)
 								terms.add(st.trim()); // Trimming to remove control and whitespaces!
 						cprof.add(new TokenizedField(field, terms));
 
 					} else {
-						reader = new StringReader(candfields.get(field));
+						reader = new StringReader(fieldValue);
 
 						if (reader != null) {
 							terms = termSet(reader);
