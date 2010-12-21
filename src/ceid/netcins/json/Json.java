@@ -5,6 +5,9 @@ import java.util.Map;
 
 import rice.p2p.commonapi.Id;
 
+import ceid.netcins.catalog.CatalogEntry;
+import ceid.netcins.catalog.ContentCatalogEntry;
+import ceid.netcins.catalog.UserCatalogEntry;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.StoredField;
 import ceid.netcins.content.TermField;
@@ -12,17 +15,24 @@ import ceid.netcins.content.TokenizedField;
 import ceid.netcins.social.TagCloud;
 
 public class Json extends org.eclipse.jetty.util.ajax.JSON {
-	private static Json __default = new Json();
+	private static final Json instance = new Json();
 
-	public Json() {
+	private Json() {
 		registerConvertor(TermField.class, new TermFieldJSONConvertor());
 		registerConvertor(StoredField.class, new StoredFieldJSONConvertor());
 		registerConvertor(TokenizedField.class, new TokenizedFieldJSONConvertor());
 		registerConvertor(ContentProfile.class, new ContentProfileJSONConvertor());
+		registerConvertor(CatalogEntry.class, new CatalogEntryJSONConvertor());
+		registerConvertor(UserCatalogEntry.class, new UserCatalogEntryJSONConvertor());
+		registerConvertor(ContentCatalogEntry.class, new ContentCatalogEntryJSONConvertor());
 		registerConvertor(TagCloud.class, new TagCloudJSONConvertor());
 		registerConvertor(Id.class, new IdJSONConvertor());
 	}
 
+	public static Json getInstance() {
+		return instance;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jetty.util.ajax.JSON#appendMap(java.lang.StringBuffer, java.util.Map)
 	 */
@@ -57,10 +67,10 @@ public class Json extends org.eclipse.jetty.util.ajax.JSON {
 	@SuppressWarnings("rawtypes")
 	public static String toString(Map object)
 	{
-		StringBuffer buffer=new StringBuffer(__default.getStringBufferSize());
+		StringBuffer buffer=new StringBuffer(instance.getStringBufferSize());
 		synchronized (buffer)
 		{
-			__default.appendMap(buffer,object);
+			instance.appendMap(buffer,object);
 			return buffer.toString();
 		}
 	}

@@ -1,6 +1,5 @@
 package ceid.netcins.json;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.jetty.util.ajax.JSON.Convertor;
@@ -10,6 +9,7 @@ import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 
 public class ContentProfileJSONConvertor implements Convertor {
+	public static final String ProfileTag = "eXO::Profile";
 
 	public ContentProfileJSONConvertor() {
 	}
@@ -17,7 +17,7 @@ public class ContentProfileJSONConvertor implements Convertor {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
-		Collection content = arg0.values();
+		Object[] content = (Object[])arg0.get(ProfileTag);
 		ContentProfile ret = new ContentProfile();
 		if (content != null)
 			for (Object cf : content) {
@@ -56,6 +56,6 @@ public class ContentProfileJSONConvertor implements Convertor {
 		if (arg0 == null)
 			arg1.add(null);
 		else
-			arg1.add(((ContentProfile)arg0).getAllFields());
+			arg1.add(ProfileTag, ((ContentProfile)arg0).getAllFields());
 	}
 }
