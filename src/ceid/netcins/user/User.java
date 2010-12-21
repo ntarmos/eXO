@@ -142,6 +142,7 @@ public class User {
 		this.sharedContentProfile = new HashMap<Id, ContentProfile>();
 		this.bookMarks = new HashMap<Id, SocialBookMark>();
 		this.contentTagClouds = new HashMap<Id, TagCloud>();
+		this.userTagClouds = new HashMap<Id, TagCloud>();
 		this.invertedTagContentList = new HashMap<String, SocialCatalog>();
 	}
 
