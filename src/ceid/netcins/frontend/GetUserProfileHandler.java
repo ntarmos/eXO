@@ -22,7 +22,7 @@ import ceid.netcins.content.ContentProfile;
 import ceid.netcins.json.Json;
 
 public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
-	public GetUserProfileHandler(CatalogService catalogService, Hashtable<String, Vector<String>> queue) {
+	public GetUserProfileHandler(CatalogService catalogService, Hashtable<String, Object> queue) {
 		super(catalogService, queue);
 	}
 
@@ -41,7 +41,8 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				Map jsonMap = (Map)jsonParams;
 				if (jsonMap.containsKey(ReqIDTag)) {
 					String reqID = (String)jsonMap.get(ReqIDTag);
-					Vector<String> res = queue.get(reqID);
+					@SuppressWarnings("unchecked")
+					Vector<Object> res = (Vector<Object>) queue.get(reqID);
 					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
 						Map<String, String> ret = new HashMap<String, String>();
 						ret.put(RequestStatusTag, RequestStatusProcessingTag);
@@ -73,10 +74,10 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 								if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
 									receiveException(new RuntimeException());
 
-								Vector<String> res = new Vector<String>();
+								Vector<Object> res = new Vector<Object>();
 								res.add(RequestStatusSuccessTag);
 								ContentProfile cp = (ContentProfile)resMap.get("data");
-								res.add(Json.toString(cp));
+								res.add(cp);
 								queue.put(reqID, res);
 							}
 
@@ -100,7 +101,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
 		if (userProfile != null) {
 			List<ContentField> cflist = userProfile.getAllFields();
-			Json json = new Json();
+			Json json = Json.getInstance();
 			StringBuffer sb = new StringBuffer();
 			json.appendArray(sb, cflist.toArray());
 			response.getWriter().write(sb.toString());

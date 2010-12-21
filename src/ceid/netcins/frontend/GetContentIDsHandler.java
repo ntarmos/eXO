@@ -3,7 +3,6 @@ package ceid.netcins.frontend;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,14 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import rice.p2p.commonapi.Id;
-
 import ceid.netcins.CatalogService;
 import ceid.netcins.json.Json;
 
 public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 
 	public GetContentIDsHandler(CatalogService catalogService,
-			Hashtable<String, Vector<String>> queue) {
+			Hashtable<String, Object> queue) {
 		super(catalogService, queue);
 	}
 

@@ -187,7 +187,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @throws Exception 
 	 */
 	@SuppressWarnings("rawtypes")
-	public void tagUser(final Id uid, ContentProfile profile,
+	public void tagUser(final Id uid, final String[] tags,
 			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) throws Exception {
 
 		if (this.user == null) {
@@ -198,18 +198,38 @@ public class CatalogService extends DHTService implements SocService {
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
-		extra_args.put("nodeHandle", nodeHandle);
+		extra_args.put("taggedId", uid);
+		extra_args.put("PDU", new TagPDU(uid, tags));
 		
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagUserMessage.TYPE, extra_args,
 				new StandardContinuation(command) {
 
 			public void receiveResult(Object result) {
-				// We expect a ContentProfile object with the user profile data.
-				if (result instanceof Boolean[]) {
-					parent.receiveResult(result);
+				// We expect a ContentCatalogEntry to be returned
+				if (result instanceof ContentCatalogEntry) {
+					ContentCatalogEntry cce = (ContentCatalogEntry) result;
+
+					// Now we can add the ContentCatalogEntry to each
+					// SocialCatalog (for each tag)
+					// Tagers inverted list.
+					if (tags != null)
+						for (String tag : tags) {
+							SocialCatalog scat = user.getTagContentList().get(tag);
+							if (scat == null)
+								scat = new SocialCatalog(tag);
+							Vector<?> ccatEntries = scat.getContentCatalogEntries();
+							if (!ccatEntries.contains(cce))
+								scat.addContentCatalogEntry(cce);
+							user.addTagContentList(tag, scat);
+						}
+					// Wrap the result in a HashMap object together with a
+					// notification message
+					parent.receiveResult(wrapToResponse(
+							"Tagged user " + uid, SUCCESS, cce));
 				} else {
-					parent.receiveResult(null);
+					parent.receiveResult(wrapToResponse(
+							"Failed to tag user " + uid, FAILURE, result));
 				}
 			}
 			public void receiveException(Exception result) {

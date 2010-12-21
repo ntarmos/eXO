@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import rice.p2p.commonapi.Id;
-
 import ceid.netcins.CatalogService;
 import ceid.netcins.json.Json;
 import ceid.netcins.user.Friend;
@@ -21,7 +19,7 @@ import ceid.netcins.user.Friend;
 public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 
 	public GetFriendUIDsHandler(CatalogService catalogService,
-			Hashtable<String, Vector<String>> queue) {
+			Hashtable<String, Object> queue) {
 		super(catalogService, queue);
 	}
 

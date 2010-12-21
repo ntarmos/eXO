@@ -15,7 +15,6 @@ import org.eclipse.jetty.server.Request;
 
 import rice.Continuation;
 import rice.pastry.Id;
-
 import ceid.netcins.CatalogService;
 import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.content.ContentField;
@@ -24,11 +23,11 @@ import ceid.netcins.json.Json;
 import ceid.netcins.messages.ResponsePDU;
 
 public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
-	public GetContentTagsHandler(CatalogService catalogService, Hashtable<String, Vector<String>> queue) {
+	public GetContentTagsHandler(CatalogService catalogService, Hashtable<String, Object> queue) {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
@@ -44,7 +43,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 				Map jsonMap = (Map)jsonParams;
 				if (jsonMap.containsKey(ReqIDTag)) {
 					String reqID = (String)jsonMap.get(ReqIDTag);
-					Vector<String> res = queue.get(reqID);
+					Vector<String> res = (Vector<String>)queue.get(reqID);
 					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
 						Map<String, String> ret = new HashMap<String, String>();
 						ret.put(RequestStatusTag, RequestStatusProcessingTag);
@@ -75,7 +74,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		if (UID == null) { // Local resource. Return immediately.
 			if (cp != null) {
 				List<ContentField> cflist = cp.getAllFields();
-				Json json = new Json();
+				Json json = Json.getInstance();
 				StringBuffer sb = new StringBuffer();
 				json.appendArray(sb, cflist.toArray());
 				response.getWriter().write(sb.toString());

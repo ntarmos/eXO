@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import rice.p2p.commonapi.Id;
-
 import ceid.netcins.CatalogService;
 import ceid.netcins.json.Json;
 import ceid.netcins.user.FriendRequest;
@@ -20,7 +19,7 @@ import ceid.netcins.user.FriendRequest;
 public class GetFriendRequestsHandler extends CatalogFrontendAbstractHandler {
 
 	public GetFriendRequestsHandler(CatalogService catalogService,
-			Hashtable<String, Vector<String>> queue) {
+			Hashtable<String, Object> queue) {
 		super(catalogService, queue);
 	}
 
