@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT_ROOT=$PWD/../
+PROJECT_ROOT=`dirname $0`/..
 EXOROOT=$PROJECT_ROOT
 FPROOT=$PROJECT_ROOT/FreePastry.git/pastry
 MAINCLASS=ceid.netcins.frontend.CatalogFrontend
