@@ -407,4 +407,4 @@ exo_pastry_protocol = direct
 exo_pastry_port = 5009
 exo_pastry_bootstrap = localhost:5009
 exo_jetty_port = 8080
-exo_jetty_root = /WEB-INF
+exo_jetty_root = WEB-INF
