@@ -22,7 +22,7 @@ public class FriendReqMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = -2691881047725823901L;
 
-	public static final short TYPE = 8;
+	public static final short TYPE = MessageType.FriendRequest;
 
 	// the destination id (DUPE of dest)
 	private Id id;

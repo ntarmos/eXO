@@ -21,7 +21,7 @@ public class GetUserProfileMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = -7491091045725823901L;
 
-	public static final short TYPE = 15;
+	public static final short TYPE = MessageType.GetUserProfile;
 
 	// the destination id (DUPE of dest)
 	private Id id;

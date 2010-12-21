@@ -24,7 +24,7 @@ public class FriendAcceptMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = 7419229279778572351L;
 
-	public static final short TYPE = 9;
+	public static final short TYPE = MessageType.FriendAccept;
 
 	// TODO: Check if it is necessary and if not remove it as it is DUPE!
 	// the dest UID (duplication of dest)

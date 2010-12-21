@@ -23,7 +23,7 @@ public class QueryMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = -3323551882785233815L;
 
-	public static final short TYPE = 7;
+	public static final short TYPE = MessageType.Query;
 
 	// the id to fetch
 	private Id id;

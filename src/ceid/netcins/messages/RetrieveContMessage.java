@@ -27,7 +27,7 @@ public class RetrieveContMessage extends ContinuationMessage {
 	 */
 	private static final long serialVersionUID = 2929433230379969486L;
 
-	public static final short TYPE = 12;
+	public static final short TYPE = MessageType.RetrieveContent;
 
 	// the id to fetch
 	private Id id;

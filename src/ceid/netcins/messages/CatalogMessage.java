@@ -24,7 +24,7 @@ public class CatalogMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = -465459501485739375L;
 
-	public static final short TYPE = 8;
+	public static final short TYPE = MessageType.Catalog;
 
 	// the id of the FileID
 	private Id id;

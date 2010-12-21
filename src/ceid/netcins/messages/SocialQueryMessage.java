@@ -26,7 +26,7 @@ public class SocialQueryMessage extends ContinuationMessage {
 	 */
 	private static final long serialVersionUID = -6936712542065074966L;
 
-	public static final short TYPE = 11;
+	public static final short TYPE = MessageType.SocialQuery;
 
 	// the id to fetch (The destination node)
 	private Id id;

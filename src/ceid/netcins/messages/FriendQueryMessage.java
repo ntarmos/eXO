@@ -23,7 +23,7 @@ public class FriendQueryMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = -3425651882785233815L;
 
-	public static final short TYPE = 14;
+	public static final short TYPE = MessageType.FriendQuery;
 
 	// the destination id (user UID, DUPE of dest) 
 	private Id id;

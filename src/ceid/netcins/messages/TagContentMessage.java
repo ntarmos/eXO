@@ -20,7 +20,7 @@ public class TagContentMessage extends ContinuationMessage {
 
 	private static final long serialVersionUID = -5910419122228534069L;
 
-	public static final short TYPE = 10;
+	public static final short TYPE = MessageType.TagContent;
 
 	// the id to fetch
 	private Id id;
