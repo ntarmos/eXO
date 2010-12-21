@@ -16,14 +16,14 @@ import ceid.netcins.utils.JavaSerializer;
  * 
  * @author Andreas Loupasakis
  */
-public class TagContentMessage extends ContinuationMessage {
+public class TagUserMessage extends ContinuationMessage {
 
-	private static final long serialVersionUID = -5910419122228534069L;
+	private static final long serialVersionUID = -4033244706260792985L;
 
-	public static final short TYPE = MessageType.TagContent;
+	public static final short TYPE = MessageType.TagUser;
 
-	// the id to fetch
-	private Id id;
+	// the id of the tagged user
+	private Id taggedId;
 
 	// whether or not this message has been cached
 	private boolean cached = false;
@@ -32,7 +32,7 @@ public class TagContentMessage extends ContinuationMessage {
 	private NodeHandle handle;
 
 	// TagContentPDU holds the tag message
-	private TagPDU tcPDU;
+	private TagPDU tuPDU;
 
 	/**
 	 * Constructor
@@ -46,21 +46,21 @@ public class TagContentMessage extends ContinuationMessage {
 	 * @param dest
 	 *            The destination address
 	 */
-	public TagContentMessage(int uid, Id id, NodeHandle source, Id dest,
-			TagPDU tcPDU) {
+	public TagUserMessage(int uid, Id taggedId, NodeHandle source, Id dest,
+			TagPDU tagUserPDU) {
 		super(uid, source, dest);
 
-		this.id = id;
-		this.tcPDU = tcPDU;
+		this.taggedId = taggedId;
+		this.tuPDU = tagUserPDU;
 	}
 
 	/**
-	 * Method which returns the id
+	 * Method which returns the taggee's id
 	 * 
 	 * @return The contained id
 	 */
-	public Id getId() {
-		return id;
+	public Id getTaggedId() {
+		return taggedId;
 	}
 
 	/**
@@ -68,8 +68,8 @@ public class TagContentMessage extends ContinuationMessage {
 	 * 
 	 * @return
 	 */
-	public TagPDU getTagContentPDU() {
-		return tcPDU;
+	public TagPDU getTagUserPDU() {
+		return tuPDU;
 	}
 
 	/**
@@ -140,28 +140,27 @@ public class TagContentMessage extends ContinuationMessage {
 		if (handle != null)
 			handle.serialize(buf);
 
-		buf.writeShort(id.getType());
-		id.serialize(buf);
+		buf.writeShort(taggedId.getType());
+		taggedId.serialize(buf);
 		buf.writeBoolean(cached);
 
 		// Java serialization is used for the serialization of the TagContentPDU
 		// TODO: optimization
-		JavaSerializer.serialize(buf, tcPDU);
-
+		JavaSerializer.serialize(buf, tuPDU);
 	}
 
-	public static TagContentMessage build(InputBuffer buf, Endpoint endpoint,
+	public static TagUserMessage build(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		byte version = buf.readByte();
 		switch (version) {
 		case 0:
-			return new TagContentMessage(buf, endpoint, pcd);
+			return new TagUserMessage(buf, endpoint, pcd);
 		default:
 			throw new IOException("Unknown Version: " + version);
 		}
 	}
 
-	private TagContentMessage(InputBuffer buf, Endpoint endpoint,
+	private TagUserMessage(InputBuffer buf, Endpoint endpoint,
 			PastContentDeserializer pcd) throws IOException {
 		super(buf, endpoint);
 		if (serType == S_SUB) {
@@ -171,7 +170,7 @@ public class TagContentMessage extends ContinuationMessage {
 		if (buf.readBoolean())
 			handle = endpoint.readNodeHandle(buf);
 		try {
-			id = endpoint.readId(buf, buf.readShort());
+			taggedId = endpoint.readId(buf, buf.readShort());
 		} catch (IllegalArgumentException iae) {
 			System.out.println(iae + " " + this + " serType:" + serType
 					+ " UID:" + getUID() + " d:" + dest + " s:" + source);
@@ -181,6 +180,6 @@ public class TagContentMessage extends ContinuationMessage {
 
 		// Java deserialization
 		// TODO: optimization
-		tcPDU = (TagPDU) JavaSerializer.deserialize(buf, endpoint);
+		tuPDU = (TagPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 }

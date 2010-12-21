@@ -11,21 +11,21 @@ import rice.p2p.commonapi.Id;
  * 
  * @author Andreas Loupasakis
  */
-public class TagContentPDU implements Serializable {
+public class TagPDU implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2339647551267755148L;
 
-	// The checksum of the taging object
-	private Id contentId;
+	// The Id of the tagged entity
+	private Id taggedId;
 
 	private String[] tags;
 
-	public TagContentPDU(Id contentId, String[] tags) {
+	public TagPDU(Id taggedId, String[] tags) {
 
-		this.contentId = contentId;
+		this.taggedId = taggedId;
 		this.tags = tags;
 	}
 
@@ -43,7 +43,7 @@ public class TagContentPDU implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Id getContentId() {
-		return contentId;
+	public Id getTaggedId() {
+		return taggedId;
 	}
 }

@@ -74,6 +74,7 @@ import ceid.netcins.messages.FriendRejectMessage;
 import ceid.netcins.messages.FriendReqMessage;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.GetUserProfileMessage;
+import ceid.netcins.messages.MessageType;
 import ceid.netcins.messages.QueryMessage;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
@@ -82,7 +83,8 @@ import ceid.netcins.messages.RetrieveContPDU;
 import ceid.netcins.messages.SocialQueryMessage;
 import ceid.netcins.messages.SocialQueryPDU;
 import ceid.netcins.messages.TagContentMessage;
-import ceid.netcins.messages.TagContentPDU;
+import ceid.netcins.messages.TagPDU;
+import ceid.netcins.messages.TagUserMessage;
 import ceid.netcins.similarity.Scorer;
 import ceid.netcins.similarity.SimilarityRequest;
 
@@ -206,48 +208,51 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				NodeHandle sender) throws IOException {
 			try {
 				switch (type) {
-				case CacheMessage.TYPE:
+				case MessageType.Cache:
 					return CacheMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FetchHandleMessage.TYPE:
+				case MessageType.FetchHandle:
 					return FetchHandleMessage.build(buf, endpoint,
 							contentHandleDeserializer);
-				case FetchMessage.TYPE:
+				case MessageType.Fetch:
 					return FetchMessage.build(buf, endpoint,
 							contentDeserializer, contentHandleDeserializer);
-				case InsertMessage.TYPE:
+				case MessageType.Insert:
 					return InsertMessage.build(buf, endpoint,
 							contentDeserializer);
-				case LookupHandlesMessage.TYPE:
+				case MessageType.LookupHandles:
 					return LookupHandlesMessage.build(buf, endpoint);
-				case LookupMessage.TYPE:
+				case MessageType.Lookup:
 					return LookupMessage.build(buf, endpoint,
 							contentDeserializer);
-				case QueryMessage.TYPE:
+				case MessageType.Query:
 					return QueryMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FriendReqMessage.TYPE:
+				case MessageType.FriendRequest:
 					return FriendReqMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FriendAcceptMessage.TYPE:
+				case MessageType.FriendAccept:
 					return FriendAcceptMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FriendRejectMessage.TYPE:
+				case MessageType.FriendReject:
 					return FriendRejectMessage.build(buf, endpoint,
 							contentDeserializer);
-				case TagContentMessage.TYPE:
+				case MessageType.TagContent:
 					return TagContentMessage.build(buf, endpoint,
 							contentDeserializer);
-				case SocialQueryMessage.TYPE:
+				case MessageType.TagUser:
+					return TagUserMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.SocialQuery:
 					return SocialQueryMessage.build(buf, endpoint,
 							contentDeserializer);
-				case RetrieveContMessage.TYPE:
+				case MessageType.RetrieveContent:
 					return RetrieveContMessage.build(buf, endpoint,
 							contentDeserializer);
-				case FriendQueryMessage.TYPE:
+				case MessageType.FriendQuery:
 					return FriendQueryMessage.build(buf, endpoint,
 							contentDeserializer);
-				case GetUserProfileMessage.TYPE:
+				case MessageType.GetUserProfile:
 					return GetUserProfileMessage.build(buf, endpoint,
 							contentDeserializer);
 				}
@@ -1494,7 +1499,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * @param command Command to be performed when the result is received.
 	 */
 	@SuppressWarnings("rawtypes")
-	public void lookup(final Id id, final int type,
+	public void lookup(final Id id, final short type,
 			final HashMap<String, Object> extra_args,
 			final Continuation command) {
 		if (logger.level <= Logger.FINER)
@@ -1504,25 +1509,29 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				((NodeHandle) extra_args.get("nodeHandle")):null;		
 		ContinuationMessage message = null;
 		switch (type) {
-			case GetUserProfileMessage.TYPE:
+			case MessageType.GetUserProfile:
 				message = new GetUserProfileMessage(getUID(), id,
 						getLocalNodeHandle(), id);
 				break;
-			case FriendReqMessage.TYPE:
+			case MessageType.FriendRequest:
 				message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(), 
 						id, (FriendReqPDU)extra_args.get("PDU"));
 				break;
-			case FriendRejectMessage.TYPE:
+			case MessageType.FriendReject:
 				message = new FriendRejectMessage(getUID(), id, getLocalNodeHandle(),
 						id, (FriendReqPDU)extra_args.get("PDU"));
 				break;
-			case FriendAcceptMessage.TYPE:
+			case MessageType.FriendAccept:
 				message = new FriendAcceptMessage(getUID(), id, getLocalNodeHandle(),
 						id, (FriendReqPDU)extra_args.get("PDU"));
 				break;
-			case TagContentMessage.TYPE:
+			case MessageType.TagContent:
 				message = new TagContentMessage(getUID(), id, getLocalNodeHandle(),
-						id,	(TagContentPDU)extra_args.get("PDU"));
+						id,	(TagPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.TagUser:
+				message = new TagUserMessage(getUID(), id, getLocalNodeHandle(),
+						id,	(TagPDU)extra_args.get("PDU"));
 				break;
 			default:
 				logger.log("Unknown message type. Bailing out...");

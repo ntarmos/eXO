@@ -63,6 +63,8 @@ public class User {
 	// TAGEE's PERSPECTIVE (owner of content)
 	private Map<Id, TagCloud> contentTagClouds;
 
+	private Map<Id, TagCloud> userTagClouds;
+	
 	// The tag Ids mapped with their corresponding Content Profiles of contents,
 	// which have been tagged by this user.
 	// TAGER's PERSPECTIVE (non-owner of content)
@@ -329,6 +331,10 @@ public class User {
 
 	public Map<Id, TagCloud> getContentTagClouds() {
 		return contentTagClouds;
+	}
+
+	public Map<Id, TagCloud> getUserTagClouds() {
+		return userTagClouds;
 	}
 
 	public Map<String, SocialCatalog> getTagContentList() {

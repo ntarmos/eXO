@@ -61,7 +61,8 @@ import ceid.netcins.messages.RetrieveContPDU;
 import ceid.netcins.messages.SocialQueryMessage;
 import ceid.netcins.messages.SocialQueryPDU;
 import ceid.netcins.messages.TagContentMessage;
-import ceid.netcins.messages.TagContentPDU;
+import ceid.netcins.messages.TagPDU;
+import ceid.netcins.messages.TagUserMessage;
 import ceid.netcins.similarity.Scorer;
 import ceid.netcins.similarity.SimilarityRequest;
 import ceid.netcins.social.SocService;
@@ -177,6 +178,46 @@ public class CatalogService extends DHTService implements SocService {
 		user.setUserProfile(cpf.buildProfile(m, delimiter));
 	}
 
+	/**
+	 * Tag a user profile with the given uid.
+	 * 
+	 * @param uid The destination node id.
+	 * @param nodeHandle Hint to use for the first hop routing.  
+	 * @return The requested user profile
+	 * @throws Exception 
+	 */
+	@SuppressWarnings("rawtypes")
+	public void tagUser(final Id uid, ContentProfile profile,
+			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) throws Exception {
+
+		if (this.user == null) {
+			throw new Exception("User has to be registered to be able to " +
+					"issue requests to the overlay network!");
+		}
+
+		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// the lookup DHT wrapper.
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("nodeHandle", nodeHandle);
+		
+		// Issue a lookup request to the underline DHT service
+		lookup(uid, TagUserMessage.TYPE, extra_args,
+				new StandardContinuation(command) {
+
+			public void receiveResult(Object result) {
+				// We expect a ContentProfile object with the user profile data.
+				if (result instanceof Boolean[]) {
+					parent.receiveResult(result);
+				} else {
+					parent.receiveResult(null);
+				}
+			}
+			public void receiveException(Exception result) {
+				parent.receiveException(result);
+			}
+		});
+	}
+
 	@SuppressWarnings("rawtypes")
 	public void setUserProfile(ContentProfile profile) {
 		ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
@@ -217,12 +258,12 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 
-	public void getUserProfile(Friend friend, @SuppressWarnings("rawtypes") Continuation command) throws Exception {
+	public void getUserProfile(Friend friend, Continuation<Object, Exception> command) throws Exception {
 		this.getUserProfile(friend.getUID(), friend.getNodeHandle(),
 				command);
 	}
 	
-	public void getUserProfile(Id uid, @SuppressWarnings("rawtypes") Continuation command) throws Exception {
+	public void getUserProfile(Id uid, Continuation<Object, Exception> command) throws Exception {
 		this.getUserProfile(uid, null, command);
 	}
 	
@@ -613,7 +654,7 @@ public class CatalogService extends DHTService implements SocService {
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("contentId", contentId);
-		extra_args.put("PDU", new TagContentPDU(contentId, tags));
+		extra_args.put("PDU", new TagPDU(contentId, tags));
 
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagContentMessage.TYPE, extra_args,
@@ -1233,7 +1274,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery
 	 */
 	public void searchQuery(final int queryType, final String rawQuery,
-			final int k, @SuppressWarnings("rawtypes") final Continuation command) {
+			final int k, final Continuation<Object, Exception> command) {
 		searchQuery(queryType, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
@@ -1242,7 +1283,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery
 	 */
 	public void searchQuery(final int queryType, final String rawQuery,
-			final int k, final String delimiter, @SuppressWarnings("rawtypes") final Continuation command) {
+			final int k, final String delimiter, final Continuation<Object, Exception> command) {
 
 		// Query Parsing
 		// TODO : This should be done with more proffesional Classes using
@@ -1271,9 +1312,8 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param delimiter The delimiter for query terms
 	 * @param command A callback
 	 */
-	@SuppressWarnings("rawtypes")
 	public void searchQuery(final int queryType, final String[] queryTerms,
-			final int k, final Continuation command) {
+			final int k, final Continuation<Object, Exception> command) {
 
 		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
@@ -2208,8 +2248,8 @@ public class CatalogService extends DHTService implements SocService {
 				lookups++;
 
 				// Now update the TagCloud +1 term freqs.
-				TagContentPDU tpdu = tcmsg.getTagContentPDU();
-				Id contentId = tpdu.getContentId();
+				TagPDU tpdu = tcmsg.getTagContentPDU();
+				Id contentId = tpdu.getTaggedId();
 				Map<Id, TagCloud> mapCloud = user.getContentTagClouds();
 				TagCloud cloud;
 				if (mapCloud.containsKey(contentId)) {
@@ -2234,8 +2274,44 @@ public class CatalogService extends DHTService implements SocService {
 				getResponseContinuation(msg).receiveResult(
 						new ContentCatalogEntry(user.getUID(), user
 								.getSharedContentProfile().get(
-										tpdu.getContentId()), user
+										tpdu.getTaggedId()), user
 								.getPublicUserProfile()));
+
+			} else if (msg instanceof TagUserMessage) {
+				final TagUserMessage tcmsg = (TagUserMessage) msg;
+				lookups++;
+
+				TagPDU tpdu = tcmsg.getTagUserPDU();
+				Id taggerId = endpoint.getId();
+				Id taggedId = tpdu.getTaggedId();
+				Map<Id, TagCloud> mapCloud = user.getUserTagClouds();
+				TagCloud cloud;
+				if (mapCloud.containsKey(taggedId)) {
+					cloud = mapCloud.get(taggerId);
+				} else { // If the TagCloud does not exist, we create it
+					cloud = new TagCloud();
+					mapCloud.put(taggerId, cloud);
+				}
+				// +1
+				// TODO : Implement association with User-tagers in the TagCloud
+				String[] tags = tpdu.getTags();
+				if (tags != null)
+					for (String tag : tags) {
+						cloud.addTagTFMap(tag);
+					}
+
+				ContentProfile cp = new ContentProfile();
+				for (String tag : cloud.getTagTFMap().keySet()) {
+					cp.add(new TermField(user.getUID().toString(), tag, true));
+				}
+
+				if (logger.level <= Logger.FINER)
+					logger.log("Returning response for tagcontent message "
+							+ tcmsg.getUID() + " from " + taggerId);
+
+				// All was right! Now let's return the ContentCatalogEntry
+				getResponseContinuation(msg).receiveResult(
+						new ContentCatalogEntry(user.getUID(), null, cp));
 
 			} else if (msg instanceof RetrieveContMessage) {
 				final RetrieveContMessage rcmsg = (RetrieveContMessage) msg;
