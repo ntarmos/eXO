@@ -124,10 +124,9 @@ tag: ContentField objects
   // Local operation. Triggers a reindexing of the user if the set of
   // public tags changes.
 
-✘ bool        setUserProfile(UID, vector<tag>)
+✔ bool        setUserProfile(UID, vector<tag>)
   // Both local and remote operation. Changes the user tags set on UID
-  // by the caller. Currently not supported by the CatalogService
-  // implementation.
+  // by the caller.
 
 ✔ vector<CID> getContentIDs()
   // Local operation. Returns list of all content IDs.
