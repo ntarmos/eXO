@@ -129,19 +129,28 @@ tag: ContentField objects
   // by the caller. Currently not supported by the CatalogService
   // implementation.
 
-✔ vector<CID> getContentIDs() (for local content items -- list of content IDs)
+✔ vector<CID> getContentIDs()
+  // Local operation. Returns list of all content IDs.
 
-✘ vector<CID> getContentIDs(UID) (for both local and remote users, returns list of content IDs shared by the user with ID=UID and accessible by the calling user/node)
-  // Currently not supported by ceid.netcins.CatalogService
+✘ vector<CID> getContentIDs(UID) 
+  // Both local and remote operation. Returns list of content IDs shared
+  // by the user with ID=UID and accessible by the calling user/node.
+  // Currently not supported by ceid.netcins.CatalogService.
 
-✔ vector<tag> getContentTags(CID) (for local content item CID)
+✔ vector<tag> getContentTags(CID)
+  // Local operation. Returns list of tags for local content item CID.
 
-✘ vector<tag> getContentTags(UID, CID) (for local/remote content item CID shared by UID, returns only tags accessible by the caller)
+✘ vector<tag> getContentTags(UID, CID)
+  // Both local and remote operation. Returns tags accessible by the
+  // caller for content item CID shared by UID.
   // Currently not supported as we seem unable to search directly for a CID/UID
 
-✘ bool        setContentTags(CID, vector<tag>) (for local content items)
+✘ bool        setContentTags(CID, vector<tag>)
+  // Local operation.
 
-✘ bool        setContentTags(UID, CID, vector<tag>) (for remote content items -- changes the set of tags contributed by the calling node/user)
+✘ bool        setContentTags(UID, CID, vector<tag>)
+  // Remote operation. Changes the set of tags contributed by the
+  // calling node/user.
 
 ✘ vector<UID> searchUsers_DHT(vector<tag>)
 
@@ -149,7 +158,9 @@ tag: ContentField objects
 
 ✘ vector<UID> searchContent_DHT(vector<tag>)
 
-✘ vector<UID> searchContent_PSN(vector<tag>)  (the GUI can search on both DHT and PSN by calling both of the _DHT and _PSN search variants and merging the result lists)
+✘ vector<UID> searchContent_PSN(vector<tag>)
+  // The GUI can search on both DHT and PSN by calling both of the _DHT
+  // and _PSN search variants and merging the result lists.
 
 ✘ bool        sendFriendRequest(UID)
 
