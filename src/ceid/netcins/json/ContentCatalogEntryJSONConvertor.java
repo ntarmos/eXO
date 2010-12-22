@@ -22,9 +22,9 @@ public class ContentCatalogEntryJSONConvertor implements Convertor {
 			out.add(null);
 			return;
 		}
-		UserCatalogEntry uce = (UserCatalogEntry)obj;
+		ContentCatalogEntry uce = (ContentCatalogEntry)obj;
 		ucjc.toJSON(uce, out);
-		cpjc.toJSON(uce.getUserProfile(), out);
+		cpjc.toJSON(uce.getContentProfile(), out);
 	}
 
 	@Override
