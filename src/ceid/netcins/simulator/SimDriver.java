@@ -44,6 +44,7 @@ import ceid.netcins.TagContentRequest;
 import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.content.ContentProfile;
+import ceid.netcins.content.TermField;
 import ceid.netcins.messages.FriendReqPDU;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
@@ -1628,9 +1629,11 @@ public class SimDriver extends CommonAPITest {
 					treq.getCID());
 
 			final SimDriver sd = this;
+			ContentProfile cp = new ContentProfile();
+			for (String s : pasts[nodeNum].tokenizeTags(tags))
+				cp.add(new TermField(s, s, true));
 
-			pasts[nodeNum].tagContent(destUID, contentId, pasts[nodeNum]
-					.tokenizeTags(tags), new Continuation() {
+			pasts[nodeNum].tagContent(destUID, contentId, cp, new Continuation() {
 
 				public void receiveResult(Object result) {
 					System.out.println("Content  with Id : " + contentId

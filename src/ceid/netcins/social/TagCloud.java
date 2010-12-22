@@ -1,7 +1,9 @@
 package ceid.netcins.social;
 
+import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.TreeMap;
+
+import ceid.netcins.content.ContentField;
 
 /**
  * This is a set of social terms/tags with a corresponding weight = TF.
@@ -12,14 +14,14 @@ import java.util.TreeMap;
 public class TagCloud {
 
 	// Term frequency map
-	private TreeMap<String, Integer> tfm;
+	private Hashtable<ContentField, Integer> tfm;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param tfm
 	 */
-	public TagCloud(TreeMap<String, Integer> tfm) {
+	public TagCloud(Hashtable<ContentField, Integer> tfm) {
 		this.tfm = tfm;
 	}
 
@@ -28,7 +30,7 @@ public class TagCloud {
 	 * 
 	 */
 	public TagCloud() {
-		this.tfm = new TreeMap<String, Integer>();
+		this.tfm = new Hashtable<ContentField, Integer>();
 	}
 
 	/**
@@ -36,7 +38,7 @@ public class TagCloud {
 	 * 
 	 * @return
 	 */
-	public TreeMap<String, Integer> getTagTFMap() {
+	public Hashtable<ContentField, Integer> getTagTFMap() {
 		return tfm;
 	}
 
@@ -45,14 +47,14 @@ public class TagCloud {
 	 * 
 	 * @param tag
 	 */
-	public void addTagTFMap(String tag) {
+	public void addTagTFMap(ContentField tag) {
 
 		// Increase the TF
 		if (tfm.containsKey(tag)) {
 			int num = tfm.get(tag);
 			tfm.put(tag, (num + 1));
 		} else {
-			tfm.put(tag, Integer.valueOf(1));
+			tfm.put(tag, 1);
 		}
 	}
 
@@ -76,8 +78,8 @@ public class TagCloud {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("TagCloud : [");
-		Iterator<String> it = tfm.keySet().iterator();
-		String tag;
+		Iterator<ContentField> it = tfm.keySet().iterator();
+		ContentField tag;
 		while (it.hasNext()) {
 			tag = it.next();
 			buf.append("{ tag : " + tag + ", freq : " + tfm.get(tag) + " }"

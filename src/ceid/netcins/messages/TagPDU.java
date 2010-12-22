@@ -3,8 +3,11 @@
 package ceid.netcins.messages;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import rice.p2p.commonapi.Id;
+import ceid.netcins.content.ContentField;
+import ceid.netcins.content.ContentProfile;
 
 /**
  * This class contains the data (tags,contentId,UserId) for the social tagging
@@ -21,12 +24,17 @@ public class TagPDU implements Serializable {
 	// The Id of the tagged entity
 	private Id taggedId;
 
-	private String[] tags;
+	private ContentProfile tags;
 
-	public TagPDU(Id taggedId, String[] tags) {
-
+	public TagPDU(Id taggedId, ContentProfile tags) {
 		this.taggedId = taggedId;
 		this.tags = tags;
+	}
+
+	public TagPDU(Id taggedId, ContentField[] tags) {
+
+		this.taggedId = taggedId;
+		this.tags = new ContentProfile(Arrays.asList(tags));
 	}
 
 	/**
@@ -34,7 +42,7 @@ public class TagPDU implements Serializable {
 	 * 
 	 * @return
 	 */
-	public String[] getTags() {
+	public ContentProfile getTags() {
 		return tags;
 	}
 

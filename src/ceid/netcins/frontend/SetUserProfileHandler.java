@@ -3,9 +3,7 @@ package ceid.netcins.frontend;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -57,8 +55,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 						response.flushBuffer();
 						return;
 					}
-					Json json = Json.getInstance();
-					response.getWriter().write(json.toJSON(res.toArray()));
+					response.getWriter().write(Json.toString(res.toArray()));
 					response.flushBuffer();
 					queue.remove(reqID);
 					baseRequest.setHandled(true);
@@ -75,14 +72,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					ContentProfileJSONConvertor cpj = new ContentProfileJSONConvertor();
 					ContentProfile profile = (ContentProfile)cpj.fromJSON(jsonMap);
 					try {
-						Set<String> terms = profile.getTermSet();
-						if (terms == null)
-							throw new RuntimeException();
-						String[] termsArray = new String[terms.size()];
-						Iterator<String> termsIter = terms.iterator();
-						for (int i = 0; i < termsArray.length; i++)
-							termsArray[i] = termsIter.next();
-						catalogService.tagUser(Id.build(UID), termsArray, null, new Continuation<Object, Exception>() {
+						catalogService.tagUser(Id.build(UID), profile, null, new Continuation<Object, Exception>() {
 
 							@Override
 							public void receiveResult(Object result) {

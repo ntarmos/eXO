@@ -187,7 +187,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @throws Exception 
 	 */
 	@SuppressWarnings("rawtypes")
-	public void tagUser(final Id uid, final String[] tags,
+	public void tagUser(final Id uid, final ContentProfile tags,
 			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) throws Exception {
 
 		if (this.user == null) {
@@ -206,23 +206,43 @@ public class CatalogService extends DHTService implements SocService {
 				new StandardContinuation(command) {
 
 			public void receiveResult(Object result) {
-				// We expect a ContentCatalogEntry to be returned
-				if (result instanceof ContentCatalogEntry) {
-					ContentCatalogEntry cce = (ContentCatalogEntry) result;
+				// We expect a UserCatalogEntry to be returned
+				if (result instanceof UserCatalogEntry) {
+					UserCatalogEntry cce = (UserCatalogEntry) result;
+
+					Vector<String> tagArray = new Vector<String>();
+					if (tags != null)
+						for (ContentField cftag : tags.getAllFields())
+								tagArray.add(((TermField)cftag).getFieldName());
+
+					// First, remove tags not there any more
+					Map<String, SocialCatalog> invMap = user.getTagContentList();
+					for (SocialCatalog sc : invMap.values()) {
+						Vector<UserCatalogEntry> uce = null;
+						if ((uce = sc.getUserCatalogEntries()) != null) {
+							Iterator<UserCatalogEntry> uceIter = uce.iterator();
+							while (uceIter.hasNext()) {
+								UserCatalogEntry uc = uceIter.next();
+								if (uc.getUID().equals(uid) && tagArray.contains(sc.getTag()))
+									uceIter.remove();
+							}
+						}
+					}
 
 					// Now we can add the ContentCatalogEntry to each
 					// SocialCatalog (for each tag)
 					// Tagers inverted list.
-					if (tags != null)
-						for (String tag : tags) {
+					if (tags != null) {
+						for (String tag: tagArray) {
 							SocialCatalog scat = user.getTagContentList().get(tag);
 							if (scat == null)
 								scat = new SocialCatalog(tag);
-							Vector<?> ccatEntries = scat.getContentCatalogEntries();
+							Vector<?> ccatEntries = scat.getUserCatalogEntries();
 							if (!ccatEntries.contains(cce))
-								scat.addContentCatalogEntry(cce);
+								scat.addUserCatalogEntry(cce);
 							user.addTagContentList(tag, scat);
 						}
+					}
 					// Wrap the result in a HashMap object together with a
 					// notification message
 					parent.receiveResult(wrapToResponse(
@@ -662,7 +682,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @throws Exception 
 	 */
 	@SuppressWarnings("rawtypes")
-	public void tagContent(final Id uid, final Id contentId, final String[] tags,
+	public void tagContent(final Id uid, final Id contentId, final ContentProfile tags,
 			final Continuation command) throws Exception {
 
 		if (this.user == null) {
@@ -690,7 +710,8 @@ public class CatalogService extends DHTService implements SocService {
 					// SocialCatalog (for each tag)
 					// Tagers inverted list.
 					if (tags != null)
-						for (String tag : tags) {
+						for (ContentField cftag : tags.getAllFields()) {
+							String tag = ((TermField)cftag).getFieldName();
 							SocialCatalog scat = user.getTagContentList().get(tag);
 							if (scat == null)
 								scat = new SocialCatalog(tag);
@@ -2280,9 +2301,9 @@ public class CatalogService extends DHTService implements SocService {
 				}
 				// +1
 				// TODO : Implement association with User-tagers in the TagCloud
-				String[] tags = tpdu.getTags();
+				ContentProfile tags = tpdu.getTags();
 				if (tags != null)
-					for (String tag : tags) {
+					for (ContentField tag : tags.getAllFields()) {
 						cloud.addTagTFMap(tag);
 					}
 
@@ -2303,26 +2324,26 @@ public class CatalogService extends DHTService implements SocService {
 
 				TagPDU tpdu = tcmsg.getTagUserPDU();
 				Id taggerId = endpoint.getId();
-				Id taggedId = tpdu.getTaggedId();
 				Map<Id, TagCloud> mapCloud = user.getUserTagClouds();
 				TagCloud cloud;
-				if (mapCloud.containsKey(taggedId)) {
+				if (mapCloud.containsKey(taggerId)) {
 					cloud = mapCloud.get(taggerId);
+					cloud.getTagTFMap().clear();
 				} else { // If the TagCloud does not exist, we create it
 					cloud = new TagCloud();
 					mapCloud.put(taggerId, cloud);
 				}
 				// +1
 				// TODO : Implement association with User-tagers in the TagCloud
-				String[] tags = tpdu.getTags();
+				ContentProfile tags = tpdu.getTags();
 				if (tags != null)
-					for (String tag : tags) {
+					for (ContentField tag : tags.getAllFields()) {
 						cloud.addTagTFMap(tag);
 					}
 
 				ContentProfile cp = new ContentProfile();
-				for (String tag : cloud.getTagTFMap().keySet()) {
-					cp.add(new TermField(user.getUID().toString(), tag, true));
+				for (ContentField tag : cloud.getTagTFMap().keySet()) {
+					cp.add(tag);
 				}
 
 				if (logger.level <= Logger.FINER)
@@ -2331,7 +2352,7 @@ public class CatalogService extends DHTService implements SocService {
 
 				// All was right! Now let's return the ContentCatalogEntry
 				getResponseContinuation(msg).receiveResult(
-						new ContentCatalogEntry(user.getUID(), null, cp));
+						new UserCatalogEntry(user.getUID(), cp));
 
 			} else if (msg instanceof RetrieveContMessage) {
 				final RetrieveContMessage rcmsg = (RetrieveContMessage) msg;
