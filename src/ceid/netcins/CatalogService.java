@@ -2,6 +2,7 @@ package ceid.netcins;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import rice.p2p.past.messaging.InsertMessage;
 import rice.p2p.past.messaging.LookupHandlesMessage;
 import rice.p2p.past.messaging.LookupMessage;
 import rice.p2p.past.messaging.PastMessage;
+import rice.p2p.util.rawserialization.SimpleOutputBuffer;
 import rice.persistence.StorageManager;
 import ceid.netcins.catalog.Catalog;
 import ceid.netcins.catalog.ContentCatalogEntry;
@@ -58,6 +60,7 @@ import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
 import ceid.netcins.messages.RetrieveContMessage;
 import ceid.netcins.messages.RetrieveContPDU;
+import ceid.netcins.messages.RetrieveContTagsMessage;
 import ceid.netcins.messages.SocialQueryMessage;
 import ceid.netcins.messages.SocialQueryPDU;
 import ceid.netcins.messages.TagContentMessage;
@@ -73,6 +76,7 @@ import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
 import ceid.netcins.utils.CommonUtils;
+import ceid.netcins.utils.JavaSerializer;
 import ceid.netcins.utils.SimulatorOnly;
 
 /**
@@ -627,7 +631,7 @@ public class CatalogService extends DHTService implements SocService {
 		final Id destuid = uid;
 
 		// Issue a lookup request to the underline DHT service
-		lookup(destuid, false, new RetrieveContPDU(contentId),
+		lookup(destuid, false, new RetrieveContPDU(contentId), true,
 				new NamedContinuation(
 						"RetrieveContMessage (RetrieveContPDU) for " + destuid,
 						command) {
@@ -664,6 +668,59 @@ public class CatalogService extends DHTService implements SocService {
 										+ ", result (exception) code : "
 										+ result.getMessage());
 						parent.receiveException(result);
+					}
+				});
+
+	}
+
+	/**
+	 * This method is used to retrieve the original (or pseudodata for
+	 * simulation) and maybe some tagclouds from a user node. In order to know
+	 * where we should travel to fetch the data a nodeId and a data checksum
+	 * must have been obtained previously. This can be done for exmple by using
+	 * a search request.
+	 * 
+	 * @param uid
+	 *            User unique id (destination node).
+	 * @param contentId
+	 *            The Id of the taging content (checksum, SHA-1 of synonyms
+	 *            etc.).
+	 * @param clouds
+	 *            This handles whether tag clouds will be returned or not.
+	 * @param command
+	 *            An asynchronous command which will be executed on return.
+	 */
+	@SuppressWarnings("rawtypes")
+	public void retrieveContentTags(Id uid, Id contentId,
+			final Continuation command) {
+
+		// TODO : maybe an Exception is needed here to be thrown
+		if (this.user == null) {
+			System.out.println("User has not be registered yet!");
+			return;
+		}
+
+		final Id destuid = uid;
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+		extra_args.put("ContentId", contentId);
+		extra_args.put("PDU", new RetrieveContPDU(contentId));
+		
+		// Issue a lookup request to the underline DHT service
+		lookup(uid, RetrieveContTagsMessage.TYPE, extra_args,
+				new NamedContinuation(
+						"RetrieveContTags(" + destuid + ")",
+						command) {
+
+					public void receiveResult(Object result) {
+						if (result instanceof ContentProfile) {
+							parent.receiveResult(result);
+						} else {
+							parent.receiveException(null);
+						}
+					}
+
+					public void receiveException(Exception exception) {
+						parent.receiveException(exception);
 					}
 				});
 
@@ -2358,34 +2415,72 @@ public class CatalogService extends DHTService implements SocService {
 				final RetrieveContMessage rcmsg = (RetrieveContMessage) msg;
 				lookups++;
 
-				Object result;
+				final Vector<Object> ret = new Vector<Object>();
+
+				// Now get the tagclouds if requested
+				final RetrieveContPDU rcpdu = rcmsg.getRetrieveContPDU();
+				final Id contentId = rcpdu.getContentId();
+
+				// TODO : Here we must handle the downloading of the content
+				storage.getObject(contentId, new StandardContinuation(
+						getResponseContinuation(msg)) {
+					public void receiveResult(Object o) {
+						ret.add(Boolean.TRUE);
+						if (o instanceof Serializable) {
+							ret.add(o);
+						} else {
+							SimpleOutputBuffer sob = new SimpleOutputBuffer();
+							try {
+								JavaSerializer.serialize(sob, o);
+							} catch (IOException e) {
+								logger.logException("Error serializing content", e);
+								sob = new SimpleOutputBuffer();
+							}
+							ret.add(sob.getBytes());
+						}
+						if (rcpdu.getCloudFlag()) {
+							Map<Id, TagCloud> mapCloud = user.getContentTagClouds();
+							TagCloud cloud;
+							cloud = mapCloud.get(contentId);
+							ret.add(cloud);
+						}
+
+						if (logger.level <= Logger.FINER)
+							logger
+									.log("Returning response for retrieve content message "
+											+ rcmsg.getId()
+											+ " from "
+											+ endpoint.getId());
+
+						// All was right! Now return the TagCloud or the success
+						// indicator Boolean
+						parent.receiveResult(ret);
+					}
+					
+					public void receiveException(Exception e) {
+						ret.add(Boolean.FALSE);
+						parent.receiveResult(ret);
+					}
+				});
+
+
+			} else if (msg instanceof RetrieveContTagsMessage) {
+				final RetrieveContTagsMessage rcmsg = (RetrieveContTagsMessage)msg;
+				lookups++;
 
 				// Now get the tagclouds if requested
 				RetrieveContPDU rcpdu = rcmsg.getRetrieveContPDU();
-				Id contentId = rcpdu.getCheckSum();
-				if (rcpdu.getCloudFlag()) {
-					Map<Id, TagCloud> mapCloud = user.getContentTagClouds();
-					TagCloud cloud;
-					cloud = mapCloud.get(contentId);
-					result = cloud;
-				} else {
-
-					result = Boolean.valueOf(true);
-				}
+				Id contentId = rcpdu.getContentId();
+				ContentProfile cp = user.getSharedContentProfile().get(contentId).getPublicPart();
 
 				// TODO : Here we must handle the downloading of the content
 
 				if (logger.level <= Logger.FINER)
-					logger
-							.log("Returning response for retrieve content message "
-									+ rcmsg.getId()
-									+ " from "
-									+ endpoint.getId());
+					logger.log("Returning response for retrieve content tags message "
+									+ rcmsg.getContentId() + " from " + endpoint.getId());
 
-				// All was right! Now return the TagCloud or the success
-				// indicator Boolean
-				getResponseContinuation(msg).receiveResult(result);
-
+				// All was right! Now return the TagCloud
+				getResponseContinuation(msg).receiveResult(cp);
 			} else if (msg instanceof LookupMessage) {
 				final LookupMessage lmsg = (LookupMessage) msg;
 				lookups++;

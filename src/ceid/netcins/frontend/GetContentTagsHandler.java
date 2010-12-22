@@ -16,11 +16,9 @@ import org.eclipse.jetty.server.Request;
 import rice.Continuation;
 import rice.pastry.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.json.Json;
-import ceid.netcins.messages.ResponsePDU;
 
 public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 	public GetContentTagsHandler(CatalogService catalogService, Hashtable<String, Object> queue) {
@@ -93,26 +91,16 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		ret.put(ReqIDTag, reqID);
 		response.getWriter().write(Json.toString(ret));
 		try {
-			catalogService.searchQuery(CatalogService.CONTENT, CID, 1,
+			catalogService.retrieveContentTags(Id.build(UID), Id.build(CID), 
 					new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {
-					ScoreBoard sb = null;
-					if (result instanceof ResponsePDU) {
-						ResponsePDU pdu = (ResponsePDU)result;
-						sb = pdu.getScoreBoard();
-					}
+					if (result == null || !(result instanceof ContentProfile))
+						receiveException(null);
 
-					/*
-					HashMap<String, Object> resMap = (HashMap<String, Object>)result;
-					if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
-						receiveException(new RuntimeException());
-					 */
-
-					Vector<String> res = new Vector<String>();
+					Vector<Object> res = new Vector<Object>();
 					res.add(RequestStatusSuccessTag);
-					if (sb != null)
-						res.add(Json.toString(sb));
+					res.add(result);
 					queue.put(reqID, res);
 				}
 

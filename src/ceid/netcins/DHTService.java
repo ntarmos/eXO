@@ -80,6 +80,7 @@ import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
 import ceid.netcins.messages.RetrieveContMessage;
 import ceid.netcins.messages.RetrieveContPDU;
+import ceid.netcins.messages.RetrieveContTagsMessage;
 import ceid.netcins.messages.SocialQueryMessage;
 import ceid.netcins.messages.SocialQueryPDU;
 import ceid.netcins.messages.TagContentMessage;
@@ -248,6 +249,9 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 							contentDeserializer);
 				case MessageType.RetrieveContent:
 					return RetrieveContMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.RetrieveContentTags:
+					return RetrieveContTagsMessage.build(buf, endpoint,
 							contentDeserializer);
 				case MessageType.FriendQuery:
 					return FriendQueryMessage.build(buf, endpoint,
@@ -1270,39 +1274,45 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final boolean cache,
-			RetrieveContPDU retPDU, final Continuation command) {
+			RetrieveContPDU retPDU, boolean getContent,
+			final Continuation command) {
 		if (logger.level <= Logger.FINER)
 			logger.log(" Performing lookup on " + id.toStringFull());
 
 		// send the request across the wire, and see if the result is null or
 		// not
-		sendRequest(id, new RetrieveContMessage(getUID(), id,
-				getLocalNodeHandle(), id, retPDU), new NamedContinuation(
-				"RetrieveContMessage for " + id, command) {
-			public void receiveResult(final Object o) {
-				// if we have an object, we return it
-				// otherwise, we must check all replicas in order to make sure
-				// that the object doesn't exist anywhere
-				if (o != null) {
+		sendRequest(id, 
+				getContent ?
+						new RetrieveContMessage(getUID(), retPDU.getContentId(), getLocalNodeHandle(), id, retPDU) :
+							new RetrieveContTagsMessage(getUID(), retPDU.getContentId(), getLocalNodeHandle(), id, retPDU),
+							new NamedContinuation(
+									(getContent ? "RetrieveContMessage" : "RetrieveContTagsMessage") +
+									" for " + id, command) {
+							public void receiveResult(final Object o) {
+								// if we have an object, we return it
+								// otherwise, we must check all replicas in order to make sure
+								// that the object doesn't exist anywhere
+								if (o != null) {
 
-					command.receiveResult(o);
+									command.receiveResult(o);
 
-				} else {
-					// TODO : examine if the tager's arrays need to be
-					// replicated to the leafset
-					// If so then here we should put the lookupHandles code as
-					// above!!!
-					command.receiveResult(null); // o is NULL
-				}
-			}
+								} else {
+									// TODO : examine if the tager's arrays need to be
+									// replicated to the leafset
+									// If so then here we should put the lookupHandles code as
+									// above!!!
+									command.receiveResult(null); // o is NULL
+								}
+							}
 
-			public void receiveException(Exception e) {
-				// If the lookup message failed , we then try to fetch all of
-				// the handles, just
-				// in case. This may fail too, but at least we tried.
-				receiveResult(null);
-			}
-		});
+							public void receiveException(Exception e) {
+								// If the lookup message failed , we then try to fetch all of
+								// the handles, just
+								// in case. This may fail too, but at least we tried.
+								receiveResult(null);
+							}
+						}
+		);
 
 	}
 
@@ -1532,6 +1542,10 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 			case MessageType.TagUser:
 				message = new TagUserMessage(getUID(), id, getLocalNodeHandle(),
 						id,	(TagPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.RetrieveContentTags:
+				message = new RetrieveContTagsMessage(getUID(), (Id)extra_args.get("ContentId"), getLocalNodeHandle(),
+						id,	 (RetrieveContPDU)extra_args.get("PDU"));
 				break;
 			default:
 				logger.log("Unknown message type. Bailing out...");
