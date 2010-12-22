@@ -7,7 +7,7 @@ import java.io.Serializable;
 import rice.p2p.commonapi.Id;
 
 /**
- * Holds the File Checksum (the File identifier).
+ * Holds the Content Identifier.
  * 
  * @author Andreas Loupasakis
  */
@@ -22,15 +22,15 @@ public class RetrieveContPDU implements Serializable {
 	private static final long serialVersionUID = -3861889468881922351L;
 
 	// The checksum
-	private Id checksum;
+	private Id contentId;
 
 	// Flag for Tagclouds
 	// TODO : Implement it in the requests
 	private boolean cloudflag;
 
-	public RetrieveContPDU(Id checksum) {
+	public RetrieveContPDU(Id contentId) {
 		// this.uid = uid;
-		this.checksum = checksum;
+		this.contentId = contentId;
 		this.cloudflag = true;
 	}
 
@@ -38,8 +38,8 @@ public class RetrieveContPDU implements Serializable {
 	// return uid;
 	// }
 
-	public Id getCheckSum() {
-		return checksum;
+	public Id getContentId() {
+		return contentId;
 	}
 
 	public boolean getCloudFlag() {
