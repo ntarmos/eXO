@@ -78,6 +78,7 @@ import ceid.netcins.messages.MessageType;
 import ceid.netcins.messages.QueryMessage;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
+import ceid.netcins.messages.RetrieveContIDsMessage;
 import ceid.netcins.messages.RetrieveContMessage;
 import ceid.netcins.messages.RetrieveContPDU;
 import ceid.netcins.messages.RetrieveContTagsMessage;
@@ -252,6 +253,9 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 							contentDeserializer);
 				case MessageType.RetrieveContentTags:
 					return RetrieveContTagsMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.RetrieveContentIDs:
+					return RetrieveContIDsMessage.build(buf, endpoint,
 							contentDeserializer);
 				case MessageType.FriendQuery:
 					return FriendQueryMessage.build(buf, endpoint,
@@ -1546,6 +1550,9 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 			case MessageType.RetrieveContentTags:
 				message = new RetrieveContTagsMessage(getUID(), (Id)extra_args.get("ContentId"), getLocalNodeHandle(),
 						id,	 (RetrieveContPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.RetrieveContentIDs:
+				message = new RetrieveContIDsMessage(getUID(), getLocalNodeHandle(), id);
 				break;
 			default:
 				logger.log("Unknown message type. Bailing out...");

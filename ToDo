@@ -134,10 +134,9 @@ tag: ContentField objects
 ✔ vector<CID> getContentIDs()
   // Local operation. Returns list of all content IDs.
 
-✘ vector<CID> getContentIDs(UID) 
+✔ vector<CID> getContentIDs(UID) 
   // Both local and remote operation. Returns list of content IDs shared
   // by the user with ID=UID and accessible by the calling user/node.
-  // Currently not supported by ceid.netcins.CatalogService.
 
 ✔ vector<tag> getContentTags(CID)
   // Local operation. Returns list of tags for local content item CID.

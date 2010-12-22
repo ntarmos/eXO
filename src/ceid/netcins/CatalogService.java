@@ -58,6 +58,7 @@ import ceid.netcins.messages.InsertPDU;
 import ceid.netcins.messages.QueryMessage;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.messages.ResponsePDU;
+import ceid.netcins.messages.RetrieveContIDsMessage;
 import ceid.netcins.messages.RetrieveContMessage;
 import ceid.netcins.messages.RetrieveContPDU;
 import ceid.netcins.messages.RetrieveContTagsMessage;
@@ -715,7 +716,7 @@ public class CatalogService extends DHTService implements SocService {
 						if (result instanceof ContentProfile) {
 							parent.receiveResult(result);
 						} else {
-							parent.receiveException(null);
+							parent.receiveException(new PastException("Result was of wrong type"));
 						}
 					}
 
@@ -724,6 +725,38 @@ public class CatalogService extends DHTService implements SocService {
 					}
 				});
 
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void retrieveContentIDs(Id uid, final Continuation command) {
+
+		// TODO : maybe an Exception is needed here to be thrown
+		if (this.user == null) {
+			System.out.println("User has not be registered yet!");
+			return;
+		}
+
+		final Id destuid = uid;
+		HashMap<String, Object> extra_args = new HashMap<String, Object>();
+
+		// Issue a lookup request to the underline DHT service
+		lookup(uid, RetrieveContIDsMessage.TYPE, extra_args,
+				new NamedContinuation(
+						"RetrieveContIDs(" + destuid + ")",
+						command) {
+
+					public void receiveResult(Object result) {
+						if (result instanceof Vector) {
+							parent.receiveResult(result);
+						} else {
+							parent.receiveException(new PastException("Result was of wrong type"));
+						}
+					}
+
+					public void receiveException(Exception exception) {
+						parent.receiveException(exception);
+					}
+				});
 	}
 
 	/**
@@ -2473,14 +2506,20 @@ public class CatalogService extends DHTService implements SocService {
 				Id contentId = rcpdu.getContentId();
 				ContentProfile cp = user.getSharedContentProfile().get(contentId).getPublicPart();
 
-				// TODO : Here we must handle the downloading of the content
-
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for retrieve content tags message "
 									+ rcmsg.getContentId() + " from " + endpoint.getId());
 
-				// All was right! Now return the TagCloud
 				getResponseContinuation(msg).receiveResult(cp);
+			}  else if (msg instanceof RetrieveContIDsMessage) {
+				lookups++;
+
+				Vector<Id> ret = new Vector<Id>(user.getSharedContentProfile().keySet());
+
+				if (logger.level <= Logger.FINER)
+					logger.log("Returning response for retrieve content ids message from " + endpoint.getId());
+
+				getResponseContinuation(msg).receiveResult(ret);
 			} else if (msg instanceof LookupMessage) {
 				final LookupMessage lmsg = (LookupMessage) msg;
 				lookups++;
