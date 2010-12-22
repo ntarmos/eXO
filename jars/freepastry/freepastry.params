@@ -403,7 +403,7 @@ lookup_service.timeout = 30000
 # how long to wait before the first retry
 lookup_service.firstTimeout = 500
 
-exo_pastry_protocol = direct
+exo_pastry_protocol = socket
 exo_pastry_port = 5009
 exo_pastry_bootstrap = localhost:5009
 exo_jetty_port = 8080
