@@ -15,7 +15,6 @@ import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.TermField;
 import ceid.netcins.messages.QueryPDU;
 import ceid.netcins.social.SocialBookMark;
-//import ceid.netcins.social.SocialLink;
 import ceid.netcins.social.TagCloud;
 
 /**
@@ -365,6 +364,16 @@ public class User {
 
 	public void addSharedContentProfile(Id checksum, ContentProfile cp) {
 		sharedContentProfile.put(checksum, cp);
+		// XXX: Should we also update the content tag clouds?
+		/*
+		TagCloud tc = contentTagClouds.get(checksum);
+		if (tc == null) {
+			tc = new TagCloud();
+		}
+		for (ContentField cf : cp.getAllFields())
+			tc.addTagTFMap(cf);
+		contentTagClouds.put(checksum, tc);
+		*/
 	}
 
 	public void addBookMark(Id bid, SocialBookMark sbm) {
