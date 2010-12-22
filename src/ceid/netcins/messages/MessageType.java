@@ -16,7 +16,8 @@ public final class MessageType {
 	public static final short FriendReject = 13;
 	public static final short GetUserProfile = 14;
 	public static final short RetrieveContent = 15;
-	public static final short RetrieveContentTags = 16;
-	public static final short TagContent = 17;
-	public static final short TagUser = 18;
+	public static final short RetrieveContentIDs = 16;
+	public static final short RetrieveContentTags = 17;
+	public static final short TagContent = 18;
+	public static final short TagUser = 19;
 }
