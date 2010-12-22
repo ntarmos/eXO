@@ -254,15 +254,16 @@ public class CatalogFrontend {
 		root.addFilter(filterHolder, "/*", 1);
 		root.addServlet(DefaultServlet.class, "/*");
 
+		// XXX: Watch out! Handlers are scanned in-order until baseRequest.handled = true, and matched on a String.startsWith() basis
 		Class[] handlerClasses = new Class[] {
-			GetUserProfileHandler.class,
-			SetUserProfileHandler.class,
-			GetUserTagsHandler.class,
-			GetContentIDsHandler.class,
-			GetFriendRequestsHandler.class,
-			GetFriendUIDsHandler.class,
-			GetContentTagsHandler.class,
-			GetContentHandler.class
+				SetUserProfileHandler.class,
+				GetUserProfileHandler.class,
+				GetUserTagsHandler.class,
+				GetFriendRequestsHandler.class,
+				GetFriendUIDsHandler.class,
+				GetContentTagsHandler.class,
+				GetContentIDsHandler.class,
+				GetContentHandler.class,
 		};
 
 		HandlerList handlersList = new HandlerList();

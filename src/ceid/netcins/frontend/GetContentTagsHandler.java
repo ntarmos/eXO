@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import rice.Continuation;
+import rice.p2p.past.PastException;
 import rice.pastry.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentField;
@@ -52,7 +53,6 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 					response.getWriter().write(Json.toString(res.toArray()));
 					response.flushBuffer();
 					queue.remove(reqID);
-					baseRequest.setHandled(true);
 					return;
 				} else {
 					if (jsonMap.containsKey(CIDTag))
@@ -72,10 +72,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		if (UID == null) { // Local resource. Return immediately.
 			if (cp != null) {
 				List<ContentField> cflist = cp.getAllFields();
-				Json json = Json.getInstance();
-				StringBuffer sb = new StringBuffer();
-				json.appendArray(sb, cflist.toArray());
-				response.getWriter().write(sb.toString());
+				response.getWriter().write(Json.toString(cflist.toArray()));
 				return;
 			}
 			response.getWriter().write(Json.toString(new HashMap<String, String>()));
@@ -96,7 +93,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 				@Override
 				public void receiveResult(Object result) {
 					if (result == null || !(result instanceof ContentProfile))
-						receiveException(null);
+						receiveException(new PastException("Result was null or of wrong type"));
 
 					Vector<Object> res = new Vector<Object>();
 					res.add(RequestStatusSuccessTag);

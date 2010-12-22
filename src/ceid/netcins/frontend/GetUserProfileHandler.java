@@ -15,7 +15,6 @@ import org.eclipse.jetty.server.Request;
 
 import rice.Continuation;
 import rice.pastry.Id;
-
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
@@ -53,7 +52,6 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					response.getWriter().write(Json.toString(res.toArray()));
 					response.flushBuffer();
 					queue.remove(reqID);
-					baseRequest.setHandled(true);
 					return;
 				} else if (jsonMap.containsKey(UIDTag)) {
 					final String reqID = Integer.toString(CatalogFrontend.nextReqID());
@@ -101,10 +99,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
 		if (userProfile != null) {
 			List<ContentField> cflist = userProfile.getAllFields();
-			Json json = Json.getInstance();
-			StringBuffer sb = new StringBuffer();
-			json.appendArray(sb, cflist.toArray());
-			response.getWriter().write(sb.toString());
+			response.getWriter().write(Json.toString(cflist.toArray()));
 		} else {
 			response.getWriter().write(Json.toString(new HashMap<String, String>()));
 		}

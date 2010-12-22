@@ -58,7 +58,6 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					response.getWriter().write(Json.toString(res.toArray()));
 					response.flushBuffer();
 					queue.remove(reqID);
-					baseRequest.setHandled(true);
 					return;
 				} else if (jsonMap.containsKey(UIDTag)) {
 					final String reqID = Integer.toString(CatalogFrontend.nextReqID());
