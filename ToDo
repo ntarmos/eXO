@@ -128,6 +128,9 @@ tag: ContentField objects
   // Both local and remote operation. Changes the user tags set on UID
   // by the caller.
 
+✔ vector<tag> getUserTags()
+  // Local operation. Returns tags set on the local user.
+
 ✔ vector<CID> getContentIDs()
   // Local operation. Returns list of all content IDs.
 
