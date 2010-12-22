@@ -257,6 +257,7 @@ public class CatalogFrontend {
 		Class[] handlerClasses = new Class[] {
 			GetUserProfileHandler.class,
 			SetUserProfileHandler.class,
+			GetUserTagsHandler.class,
 			GetContentIDsHandler.class,
 			GetFriendRequestsHandler.class,
 			GetFriendUIDsHandler.class,
