@@ -142,10 +142,9 @@ tag: ContentField objects
 ✔ vector<tag> getContentTags(CID)
   // Local operation. Returns list of tags for local content item CID.
 
-✘ vector<tag> getContentTags(UID, CID)
+✔ vector<tag> getContentTags(UID, CID)
   // Both local and remote operation. Returns tags accessible by the
   // caller for content item CID shared by UID.
-  // Currently not supported as we seem unable to search directly for a CID/UID
 
 ✘ bool        setContentTags(CID, vector<tag>)
   // Local operation.
