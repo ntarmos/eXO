@@ -3,7 +3,7 @@ package ceid.netcins.json;
 import java.util.Iterator;
 import java.util.Map;
 
-import rice.p2p.commonapi.Id;
+import org.eclipse.jetty.util.ajax.JSON;
 
 import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
@@ -14,19 +14,20 @@ import ceid.netcins.content.TermField;
 import ceid.netcins.content.TokenizedField;
 import ceid.netcins.social.TagCloud;
 
-public class Json extends org.eclipse.jetty.util.ajax.JSON {
+public class Json extends JSON {
 	private static final Json instance = new Json();
 
 	private Json() {
-		registerConvertor(TermField.class, new TermFieldJSONConvertor());
-		registerConvertor(StoredField.class, new StoredFieldJSONConvertor());
-		registerConvertor(TokenizedField.class, new TokenizedFieldJSONConvertor());
-		registerConvertor(ContentProfile.class, new ContentProfileJSONConvertor());
-		registerConvertor(CatalogEntry.class, new CatalogEntryJSONConvertor());
-		registerConvertor(UserCatalogEntry.class, new UserCatalogEntryJSONConvertor());
-		registerConvertor(ContentCatalogEntry.class, new ContentCatalogEntryJSONConvertor());
-		registerConvertor(TagCloud.class, new TagCloudJSONConvertor());
-		registerConvertor(Id.class, new IdJSONConvertor());
+		JSON.registerConvertor(TermField.class, new TermFieldJSONConvertor());
+		JSON.registerConvertor(StoredField.class, new StoredFieldJSONConvertor());
+		JSON.registerConvertor(TokenizedField.class, new TokenizedFieldJSONConvertor());
+		JSON.registerConvertor(ContentProfile.class, new ContentProfileJSONConvertor());
+		JSON.registerConvertor(CatalogEntry.class, new CatalogEntryJSONConvertor());
+		JSON.registerConvertor(UserCatalogEntry.class, new UserCatalogEntryJSONConvertor());
+		JSON.registerConvertor(ContentCatalogEntry.class, new ContentCatalogEntryJSONConvertor());
+		JSON.registerConvertor(TagCloud.class, new TagCloudJSONConvertor());
+		JSON.registerConvertor(rice.p2p.commonapi.Id.class, new IdJSONConvertor());
+		JSON.registerConvertor(rice.pastry.Id.class, new IdJSONConvertor());
 	}
 
 	public static Json getInstance() {
