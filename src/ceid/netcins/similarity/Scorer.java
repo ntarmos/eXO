@@ -52,14 +52,9 @@ public class Scorer {
 	 * notify the Scorer Thread that a request has been received
 	 */
 	public void doNotify() {
-		if (this != null) {
-			// TODO: Check if the monitorobject creates deadlock when multiple
-			// requests
-			// are issued simultaneously - when the thread is in a function!
-			synchronized (this) {
-				wasSignalled = true;
-				this.notify();
-			}
+		synchronized (this) {
+			wasSignalled = true;
+			this.notify();
 		}
 	}
 
@@ -190,8 +185,17 @@ public class Scorer {
 			Vector<Float> v2 = new Vector<Float>();
 			v2.addAll(sortedScoreBoard.values());
 
-			// TODO: Drop the zero scored entries, here. 
-			// (discuss if it is necessary)
+			// Dropping the zero scored entries here.
+			Iterator<CatalogEntry> it1 = v1.iterator();
+			Iterator<Float> it2 = v2.iterator();
+			while (it1.hasNext()) {
+				it1.next();
+				Float f = it2.next();
+				if (f == 0) {
+					it1.remove();
+					it2.remove();
+				}
+			}
 			
 			// Resolve ties at the end of results list
 			resolveTies(v1, v2, req.getK());
@@ -309,9 +313,18 @@ public class Scorer {
 			Vector<Float> v2 = new Vector<Float>();
 			v2.addAll(sortedScoreBoard.values());
 
-			// TODO: Drop the zero scored entries, here. 
-			// (discuss if it is necessary)
-			
+			// Drop the zero scored entries, here.
+			Iterator<CatalogEntry> it1 = v1.iterator();
+			Iterator<Float> it2 = v2.iterator();
+			while (it1.hasNext()) {
+				it1.next();
+				Float f = it2.next();
+				if (f == 0) {
+					it1.remove();
+					it2.remove();
+				}
+			}
+
 			// Select the k results that will be returned
 			resolveTies(v1, v2, req.getK());
 
@@ -390,9 +403,7 @@ public class Scorer {
 							System.out.println("Scorer woke up!");
 						}
 					}
-				}
-				// clear signal and continue running.
-				synchronized (this) {
+					// clear signal and continue running.
 					wasSignalled = false;
 				}
 
