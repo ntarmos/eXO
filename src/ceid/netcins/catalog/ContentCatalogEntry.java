@@ -94,7 +94,6 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 		return buf.toString();
 	}
 
-	// TODO : implement this
 	@Override
 	public int compareTo(Object arg0) {
 		if (!(arg0 instanceof ContentCatalogEntry)) {

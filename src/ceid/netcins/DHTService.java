@@ -1301,10 +1301,8 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 									command.receiveResult(o);
 
 								} else {
-									// TODO : examine if the tager's arrays need to be
-									// replicated to the leafset
-									// If so then here we should put the lookupHandles code as
-									// above!!!
+									// TODO : examine if the tager's arrays need to be replicated to the leafset
+									// If so then here we should put the lookupHandles code as above!!!
 									command.receiveResult(null); // o is NULL
 								}
 							}
@@ -1345,8 +1343,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 			public void receiveResult(Object o) {
 				if (o != null) {
 					// TODO : Maybe we want to SCORE this local Catalog
-					command.receiveResult(o); // If We find here then we execute
-												// command
+					command.receiveResult(o); // If we find here then we execute command
 				} else {
 					// send the request across the wire, and see if the result
 					// is null or not
@@ -1485,10 +1482,8 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					command.receiveResult(o);
 
 				} else {
-					// TODO : examine if the tager's arrays need to be
-					// replicated to the leafset
-					// If so then here we should put the lookupHandles code as
-					// above!!!
+					// TODO : examine if the tager's arrays need to be replicated to the leafset
+					// If so then here we should put the lookupHandles code as above!!!
 					command.receiveResult(null); // o is NULL
 				}
 			}

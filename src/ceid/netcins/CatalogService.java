@@ -1400,9 +1400,8 @@ public class CatalogService extends DHTService implements SocService {
 	public void searchQuery(final int queryType, final String rawQuery,
 			final int k, final String delimiter, final Continuation<Object, Exception> command) {
 
-		// Query Parsing
-		// TODO : This should be done with more proffesional Classes using
-		// JavaCC
+		// Elementary Query Parsing
+		// TODO : Examine doing this with JavaCC
 		String query = rawQuery;// .trim();
 		if (query == null || query.equals("")) {
 			System.out.println("I got an empty Query!");
@@ -2214,8 +2213,6 @@ public class CatalogService extends DHTService implements SocService {
 				lookups++;
 
 				int type = qmsg.getQueryPDU().getType();
-				// TODO: Check if the wrapping should be put to Scorer Thread
-				// processing part to make Selector lighter.
 				Vector<?> entries = this.user.
 					getCatalogEntriesForQueryType(type,qmsg.getSource().getId());
 				// Leave the job to be done asynchronously by the
