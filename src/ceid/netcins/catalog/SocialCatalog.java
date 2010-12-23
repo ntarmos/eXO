@@ -2,6 +2,9 @@
 
 package ceid.netcins.catalog;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -16,19 +19,19 @@ public class SocialCatalog {
 	private String tag;
 
 	// The Content CatalogEntries
-	private Vector<ContentCatalogEntry> contentCatalogEntries;
+	private Set<ContentCatalogEntry> contentCatalogEntries;
 
 	// the user catalog entries
-	private Vector<UserCatalogEntry> userCatalogEntries;
+	private Set<UserCatalogEntry> userCatalogEntries;
 
 	// the url catalog entries
-	private Vector<URLCatalogEntry> urlCatalogEntries;
+	private Set<URLCatalogEntry> urlCatalogEntries;
 
 	public SocialCatalog(String tag) {
 		this.tag = tag;
-		contentCatalogEntries = new Vector<ContentCatalogEntry>();
-		userCatalogEntries = new Vector<UserCatalogEntry>();
-		urlCatalogEntries = new Vector<URLCatalogEntry>();
+		contentCatalogEntries = Collections.synchronizedSet(new HashSet<ContentCatalogEntry>());
+		userCatalogEntries = Collections.synchronizedSet(new HashSet<UserCatalogEntry>());
+		urlCatalogEntries = Collections.synchronizedSet(new HashSet<URLCatalogEntry>());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -38,30 +41,30 @@ public class SocialCatalog {
 			this.contentCatalogEntries = null;
 			this.userCatalogEntries = null;
 		} else if (catalogEntries.firstElement() instanceof URLCatalogEntry) {
-			this.urlCatalogEntries = (Vector<URLCatalogEntry>) catalogEntries;
+			this.urlCatalogEntries = Collections.synchronizedSet((Set<URLCatalogEntry>) catalogEntries);
 			this.contentCatalogEntries = null;
 			this.userCatalogEntries = null;
 		} else if (catalogEntries.firstElement() instanceof ContentCatalogEntry) {
-			this.contentCatalogEntries = (Vector<ContentCatalogEntry>) catalogEntries;
+			this.contentCatalogEntries = Collections.synchronizedSet((Set<ContentCatalogEntry>) catalogEntries);
 			this.userCatalogEntries = null;
 			this.urlCatalogEntries = null;
 		} else if (catalogEntries.firstElement() instanceof UserCatalogEntry) {
 			this.contentCatalogEntries = null;
-			this.userCatalogEntries = (Vector<UserCatalogEntry>) catalogEntries;
+			this.userCatalogEntries = Collections.synchronizedSet((Set<UserCatalogEntry>) catalogEntries);
 			this.urlCatalogEntries = null;
 		}
 	}
 
-	public void setContentCatalogEntries(Vector<ContentCatalogEntry> v) {
-		this.contentCatalogEntries = v;
+	public void setContentCatalogEntries(Set<ContentCatalogEntry> v) {
+		this.contentCatalogEntries = Collections.synchronizedSet(v);
 	}
 
-	public void setUserCatalogEntries(Vector<UserCatalogEntry> v) {
-		this.userCatalogEntries = v;
+	public void setUserCatalogEntries(Set<UserCatalogEntry> v) {
+		this.userCatalogEntries = Collections.synchronizedSet(v);
 	}
 
-	public void setURLCatalogEntries(Vector<URLCatalogEntry> v) {
-		this.urlCatalogEntries = v;
+	public void setURLCatalogEntries(Set<URLCatalogEntry> v) {
+		this.urlCatalogEntries = Collections.synchronizedSet(v);
 	}
 
 	/**
@@ -100,9 +103,10 @@ public class SocialCatalog {
 	 */
 	public void replaceContentCatalogEntry(ContentCatalogEntry oldCE,
 			ContentCatalogEntry newCE) {
-		// TODO : Check the correctness of the remove operation
-		contentCatalogEntries.remove(oldCE);
-		contentCatalogEntries.add(newCE);
+		synchronized (contentCatalogEntries) {
+			contentCatalogEntries.remove(oldCE);
+			contentCatalogEntries.add(newCE);
+		}
 	}
 
 	/**
@@ -114,9 +118,10 @@ public class SocialCatalog {
 	 */
 	public void replaceUserCatalogEntry(UserCatalogEntry oldUE,
 			UserCatalogEntry newUE) {
-		// TODO : Check the correctness of the remove operation
-		userCatalogEntries.remove(oldUE);
-		userCatalogEntries.add(newUE);
+		synchronized (userCatalogEntries) {
+			userCatalogEntries.remove(oldUE);
+			userCatalogEntries.add(newUE);
+		}
 	}
 
 	/**
@@ -128,9 +133,10 @@ public class SocialCatalog {
 	 */
 	public void replaceURLCatalogEntry(URLCatalogEntry oldUE,
 			URLCatalogEntry newUE) {
-		// TODO : Check the correctness of the remove operation
-		urlCatalogEntries.remove(oldUE);
-		urlCatalogEntries.add(newUE);
+		synchronized (urlCatalogEntries) {
+			urlCatalogEntries.remove(oldUE);
+			urlCatalogEntries.add(newUE);
+		}
 	}
 
 	/**
@@ -147,7 +153,7 @@ public class SocialCatalog {
 	 * 
 	 * @return the entries of catalog
 	 */
-	public Vector<ContentCatalogEntry> getContentCatalogEntries() {
+	public Set<ContentCatalogEntry> getContentCatalogEntries() {
 		return contentCatalogEntries;
 	}
 
@@ -156,7 +162,7 @@ public class SocialCatalog {
 	 * 
 	 * @return
 	 */
-	public Vector<UserCatalogEntry> getUserCatalogEntries() {
+	public Set<UserCatalogEntry> getUserCatalogEntries() {
 		return userCatalogEntries;
 	}
 
@@ -165,7 +171,7 @@ public class SocialCatalog {
 	 * 
 	 * @return
 	 */
-	public Vector<URLCatalogEntry> getURLCatalogEntries() {
+	public Set<URLCatalogEntry> getURLCatalogEntries() {
 		return urlCatalogEntries;
 	}
 

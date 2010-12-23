@@ -225,7 +225,7 @@ public class CatalogService extends DHTService implements SocService {
 					// First, remove tags not there any more
 					Map<String, SocialCatalog> invMap = user.getTagContentList();
 					for (SocialCatalog sc : invMap.values()) {
-						Vector<UserCatalogEntry> uce = null;
+						Set<UserCatalogEntry> uce = null;
 						if ((uce = sc.getUserCatalogEntries()) != null) {
 							Iterator<UserCatalogEntry> uceIter = uce.iterator();
 							while (uceIter.hasNext()) {
@@ -244,7 +244,7 @@ public class CatalogService extends DHTService implements SocService {
 							SocialCatalog scat = user.getTagContentList().get(tag);
 							if (scat == null)
 								scat = new SocialCatalog(tag);
-							Vector<?> ccatEntries = scat.getUserCatalogEntries();
+							Set<?> ccatEntries = scat.getUserCatalogEntries();
 							if (!ccatEntries.contains(cce))
 								scat.addUserCatalogEntry(cce);
 							user.addTagContentList(tag, scat);
@@ -804,7 +804,7 @@ public class CatalogService extends DHTService implements SocService {
 							SocialCatalog scat = user.getTagContentList().get(tag);
 							if (scat == null)
 								scat = new SocialCatalog(tag);
-							Vector<?> ccatEntries = scat.getContentCatalogEntries();
+							Set<?> ccatEntries = scat.getContentCatalogEntries();
 							if (!ccatEntries.contains(cce))
 								scat.addContentCatalogEntry(cce);
 							user.addTagContentList(tag, scat);
