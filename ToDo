@@ -152,9 +152,10 @@ tag: ContentField objects
   // Remote operation. Changes the set of tags contributed by the
   // calling node/user.
 
-✘ bool        shareFile(FileName)
-  // Local operation. Scans the given filename using libextractor and
-  // lucene and adds it to the shared content container.
+✔ bool        shareFile(FileName)
+  // Local/remote operation. Scans the given filename using libextractor
+  // and lucene and adds it to the shared content container, also
+  // indexing some of its terms across the network.
 
 ✘ vector<UID> searchUsers_DHT(vector<tag>)
 

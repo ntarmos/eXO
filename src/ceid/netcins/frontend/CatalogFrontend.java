@@ -265,6 +265,7 @@ public class CatalogFrontend {
 				GetContentTagsHandler.class,
 				GetContentIDsHandler.class,
 				GetContentHandler.class,
+				ShareFileHandler.class
 		};
 
 		HandlerList handlersList = new HandlerList();
