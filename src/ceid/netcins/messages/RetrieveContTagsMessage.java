@@ -147,7 +147,6 @@ public class RetrieveContTagsMessage extends ContinuationMessage {
 		buf.writeBoolean(cached);
 
 		// Java serialization is used for the serialization of the QueryPDU
-		// TODO: optimization
 		JavaSerializer.serialize(buf, rcpdu);
 	}
 
@@ -181,7 +180,6 @@ public class RetrieveContTagsMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization
 		rcpdu = (RetrieveContPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 

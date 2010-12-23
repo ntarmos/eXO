@@ -171,7 +171,6 @@ public class QueryMessage extends ContinuationMessage {
 		buf.writeInt(hops);
 
 		// Java serialization is used for the serialization of the QueryPDU
-		// TODO: optimization
 		JavaSerializer.serialize(buf, queryPDU);
 	}
 
@@ -208,7 +207,6 @@ public class QueryMessage extends ContinuationMessage {
 		hops = buf.readInt();
 
 		// Java deserialization
-		// TODO: optimization
 		queryPDU = (QueryPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 

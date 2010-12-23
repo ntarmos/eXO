@@ -145,7 +145,6 @@ public class TagContentMessage extends ContinuationMessage {
 		buf.writeBoolean(cached);
 
 		// Java serialization is used for the serialization of the TagContentPDU
-		// TODO: optimization
 		JavaSerializer.serialize(buf, tcPDU);
 
 	}
@@ -180,7 +179,6 @@ public class TagContentMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization
 		tcPDU = (TagPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 }

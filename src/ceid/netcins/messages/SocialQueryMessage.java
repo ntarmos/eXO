@@ -153,7 +153,6 @@ public class SocialQueryMessage extends ContinuationMessage {
 
 		// Java serialization is used for the serialization of the
 		// SocialQueryPDU
-		// TODO: optimization
 		JavaSerializer.serialize(buf, socialQueryPDU);
 	}
 
@@ -187,7 +186,6 @@ public class SocialQueryMessage extends ContinuationMessage {
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization
 		socialQueryPDU = (SocialQueryPDU) JavaSerializer.deserialize(buf,
 				endpoint);
 	}
