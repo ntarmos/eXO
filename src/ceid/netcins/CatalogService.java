@@ -1889,26 +1889,11 @@ public class CatalogService extends DHTService implements SocService {
 				while (itf.hasNext()) {
 					cf = itf.next();
 					if (cf instanceof TermField) {
-						TermField tf = (TermField) cf;
-						buffer.append(" " + tf.getFieldName() + " : "
-								+ tf.getFieldData() + ", ");
+						buffer.append(((TermField)cf).toString());
 					} else if (cf instanceof StoredField) {
-						StoredField sf = (StoredField) cf;
-						buffer.append(" " + sf.getFieldName() + " : "
-								+ sf.getFieldData() + ", ");
+						buffer.append(((StoredField)cf).toString());
 					} else {
-						// TODO : Fill in the tokenized fields we want to
-						// display
-						// debuging only
-						TokenizedField tf = (TokenizedField) cf;
-						String[] tfs = tf.getTerms();
-						buffer.append(" " + tf.getFieldName() + " : [");
-						for (int j = 0; j < tfs.length; j++) {
-							buffer.append(tfs[j]);
-							if (j != tfs.length - 1)
-								buffer.append(", ");
-						}
-						buffer.append("], ");
+						buffer.append(((TokenizedField)cf).toString());
 					}
 				}
 				buffer.append(" }\n");
@@ -2054,26 +2039,11 @@ public class CatalogService extends DHTService implements SocService {
 				while (itf.hasNext()) {
 					cf = itf.next();
 					if (cf instanceof TermField) {
-						TermField tf = (TermField) cf;
-						buffer.append(" " + tf.getFieldName() + " : "
-								+ tf.getFieldData() + ", ");
+						buffer.append(((TermField)cf).toString());
 					} else if (cf instanceof StoredField) {
-						StoredField sf = (StoredField) cf;
-						buffer.append(" " + sf.getFieldName() + " : "
-								+ sf.getFieldData() + ", ");
+						buffer.append(((StoredField)cf).toString());
 					} else {
-						// TODO : Fill in the tokenized fields we want to
-						// display
-						// debuging only
-						TokenizedField tf = (TokenizedField) cf;
-						String[] tfs = tf.getTerms();
-						buffer.append(" " + tf.getFieldName() + " : [");
-						for (int j = 0; j < tfs.length; j++) {
-							buffer.append(tfs[j]);
-							if (j != tfs.length - 1)
-								buffer.append(", ");
-						}
-						buffer.append("], ");
+						buffer.append(((TokenizedField)cf).toString());
 					}
 				}
 				buffer.append(" }\n");
