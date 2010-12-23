@@ -1,15 +1,18 @@
 
 
-package ceid.netcins;
+package ceid.netcins.request;
 
 import ceid.netcins.content.ContentProfileFactory;
 
+import com.sun.net.httpserver.HttpExchange;
+
 /**
- * This is a search request
+ * Represents a request for searching specific content through a number of
+ * content terms
  * 
  * @author Andreas Loupasakis
  */
-public class SearchUserRequest extends Request {
+public class SearchContentRequest extends Request {
 
 	// The string of terms
 	private String query;
@@ -30,23 +33,23 @@ public class SearchUserRequest extends Request {
 	private int source;
 	public static final int RANDOMSOURCE = -1;
 
-	public SearchUserRequest(String query) {
+	public SearchContentRequest(String query) {
 		this(query, SIMPLE, RANDOMSOURCE);
 	}
 
-	public SearchUserRequest(String query, int type) {
+	public SearchContentRequest(String query, int type) {
 		this(query, type, RANDOMSOURCE);
 	}
 
-	public SearchUserRequest(String query, int type, int source) {
+	public SearchContentRequest(String query, int type, int source) {
 		this(query, type, source, RETURN_ALL);
 	}
 
-	public SearchUserRequest(String query, int type, int source, int k) {
+	public SearchContentRequest(String query, int type, int source, int k) {
 		this(query, type, source, k, ContentProfileFactory.DEFAULT_DELIMITER);
 	}
 
-	public SearchUserRequest(String query, int type, int source, int k,
+	public SearchContentRequest(String query, int type, int source, int k,
 			String delimiter) {
 		super();
 		this.query = query;
@@ -56,8 +59,17 @@ public class SearchUserRequest extends Request {
 		this.delimiter = DELIMITER;
 	}
 
+	public SearchContentRequest(String query, int source, HttpExchange t) {
+		super();
+		this.query = query;
+		this.source = source;
+		this.t = t;
+	}
+
+	public HttpExchange t;
+
 	/**
-	 * Getter for the query.
+	 * Getter for the query
 	 * 
 	 * @return
 	 */
@@ -75,7 +87,7 @@ public class SearchUserRequest extends Request {
 	}
 
 	/**
-	 * Getter for the source.
+	 * Getter for the source variable.
 	 * 
 	 * @return
 	 */
@@ -93,20 +105,20 @@ public class SearchUserRequest extends Request {
 	}
 
 	/**
-	 * Sets the query String.
-	 * 
-	 * @param query
-	 */
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	/**
 	 * Getter for query delimiter
 	 * 
 	 * @return
 	 */
 	public String getDelimiter() {
 		return this.delimiter;
+	}
+
+	/**
+	 * Sets the query String.
+	 * 
+	 * @param query
+	 */
+	public void setQuery(String query) {
+		this.query = query;
 	}
 }

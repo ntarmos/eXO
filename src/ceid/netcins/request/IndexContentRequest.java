@@ -1,4 +1,4 @@
-package ceid.netcins;
+package ceid.netcins.request;
 
 import com.sun.net.httpserver.HttpExchange;
 

@@ -1,6 +1,6 @@
 
 
-package ceid.netcins;
+package ceid.netcins.request;
 
 /**
  * This is the request to the dispatcher thread for statistic previews such as

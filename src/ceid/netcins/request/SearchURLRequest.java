@@ -1,6 +1,6 @@
 
 
-package ceid.netcins;
+package ceid.netcins.request;
 
 /**
  * Request for url catalog searching Each term should be a URL

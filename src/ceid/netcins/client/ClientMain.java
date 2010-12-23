@@ -21,10 +21,10 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import rice.environment.Environment;
-import ceid.netcins.FriendsRequest;
-import ceid.netcins.IndexContentRequest;
-import ceid.netcins.IndexUserRequest;
-import ceid.netcins.Request;
+import ceid.netcins.request.FriendsRequest;
+import ceid.netcins.request.IndexContentRequest;
+import ceid.netcins.request.IndexUserRequest;
+import ceid.netcins.request.Request;
 import ceid.netcins.SearchContentRequest;
 import ceid.netcins.SearchUserRequest;
 import ceid.netcins.StatsRequest;

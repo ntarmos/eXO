@@ -1,6 +1,6 @@
 
 
-package ceid.netcins;
+package ceid.netcins.request;
 
 /**
  * A request for social query.

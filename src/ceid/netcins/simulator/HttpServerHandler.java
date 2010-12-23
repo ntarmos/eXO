@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ceid.netcins.IndexContentRequest;
+import ceid.netcins.request.IndexContentRequest;
 import ceid.netcins.SearchContentRequest;
 
 import com.sun.net.httpserver.Headers;

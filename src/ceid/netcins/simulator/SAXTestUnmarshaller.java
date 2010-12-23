@@ -9,10 +9,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.DefaultHandler;
 
-import ceid.netcins.IndexPseudoContentRequest;
-import ceid.netcins.IndexUserRequest;
-import ceid.netcins.RandomQueriesRequest;
-import ceid.netcins.Request;
+import ceid.netcins.request.IndexPseudoContentRequest;
+import ceid.netcins.request.IndexUserRequest;
+import ceid.netcins.request.RandomQueriesRequest;
+import ceid.netcins.request.Request;
 import ceid.netcins.ScenarioRequest;
 
 /**

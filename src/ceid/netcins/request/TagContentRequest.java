@@ -1,21 +1,18 @@
-
-
-package ceid.netcins;
+package ceid.netcins.request;
 
 import rice.p2p.commonapi.Id;
 
 /**
- * A request by the user to retrieve some content object with any tagclouds if
- * requested.
+ * A request by the tager to the tagee's node for tagging some content object
  * 
  * @author Andreas Loupasakis
  */
-public class RetrieveContRequest extends Request {
+public class TagContentRequest extends Request {
 
-	// Request or not tag cloud with the retrieval response
-	private boolean cloud;
+	// The string of tags
+	private String tags;
 
-	// The number of shared content to be retrieved (as given by the stats on
+	// The number of shared content to be tagged (as given by the stats on
 	// node's shared content list). This should be replaced with Id in a
 	// xml based testing. (Simulator only)
 	// Only for dirty debugging.
@@ -38,29 +35,29 @@ public class RetrieveContRequest extends Request {
 	/**
 	 * Constructor For debugging only!
 	 * 
-	 * @param cloud
+	 * @param tags
 	 * @param cid
 	 * @param uid
 	 * @deprecated
 	 */
 	@Deprecated
-	public RetrieveContRequest(boolean cloud, String cid, int uid) {
-		this(cloud, cid, uid, RANDOMSOURCE);
+	public TagContentRequest(String tags, String cid, int uid) {
+		this(tags, cid, uid, RANDOMSOURCE);
 	}
 
 	/**
 	 * Constructor For debugging only!
 	 * 
-	 * @param cloud
+	 * @param tags
 	 * @param cid
 	 * @param uid
 	 * @param source
 	 * @deprecated
 	 */
 	@Deprecated
-	public RetrieveContRequest(boolean cloud, String cid, int uid, int source) {
+	public TagContentRequest(String tags, String cid, int uid, int source) {
 		super();
-		this.cloud = cloud;
+		this.tags = tags;
 		this.source = source;
 		this.uid = uid;
 		this.cid = cid;
@@ -71,14 +68,14 @@ public class RetrieveContRequest extends Request {
 	/**
 	 * Constructor (Simulator only)
 	 * 
-	 * @param cloud
+	 * @param tags
 	 * @param contentId
 	 * @param uid
 	 * @param source
 	 */
-	public RetrieveContRequest(boolean cloud, Id contentId, int uid, int source) {
+	public TagContentRequest(String tags, Id contentId, int uid, int source) {
 		super();
-		this.cloud = cloud;
+		this.tags = tags;
 		this.source = source;
 		this.contentId = contentId;
 		this.uid = uid;
@@ -88,27 +85,26 @@ public class RetrieveContRequest extends Request {
 	/**
 	 * Constructor for real deployment
 	 * 
-	 * @param cloud
+	 * @param tags
 	 * @param contentId
 	 * @param userId
 	 * @param source
 	 */
-	public RetrieveContRequest(boolean cloud, Id contentId, Id userId,
-			int source) {
+	public TagContentRequest(String tags, Id contentId, Id userId, int source) {
 		super();
-		this.cloud = cloud;
+		this.tags = tags;
 		this.source = source;
 		this.contentId = contentId;
 		this.userId = userId;
 	}
 
 	/**
-	 * Getter for the tag cloud flag.
+	 * Getter for the tags.
 	 * 
 	 * @return
 	 */
-	public boolean getCloud() {
-		return cloud;
+	public String getTags() {
+		return tags;
 	}
 
 	/**

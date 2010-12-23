@@ -1,4 +1,4 @@
-package ceid.netcins;
+package ceid.netcins.request;
 
 import java.util.HashMap;
 import java.util.Map;

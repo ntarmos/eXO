@@ -1,6 +1,6 @@
 
 
-package ceid.netcins;
+package ceid.netcins.request;
 
 import java.net.URL;
 import java.util.Map;

@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package ceid.netcins;
+package ceid.netcins.request;
 
 /**
  * Requests are sent by the Frontend thread to RequestDispatcher and they are
