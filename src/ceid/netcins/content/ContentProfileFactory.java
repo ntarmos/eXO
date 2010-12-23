@@ -239,7 +239,7 @@ public class ContentProfileFactory {
 			try {
 
 				for (;;) {
-					Token token = ts.next(reusableToken);
+					Token token = (Token)ts.next(reusableToken).clone();
 					// Debugging only!
 					// if(token!=null)
 					// System.out.println("Token : "+token.toString());
@@ -307,7 +307,7 @@ public class ContentProfileFactory {
 			try {
 
 				for (;;) {
-					Token token = ts.next(reusableToken);
+					Token token = (Token)ts.next(reusableToken).clone();
 					// Debugging only!
 					// if(token!=null)
 					// System.out.println("Token : "+token.toString());
