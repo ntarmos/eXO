@@ -208,7 +208,14 @@ public class ContentProfileFactory {
 		ArrayList<MetaData> keywords = ex.extract(f);
 		if (keywords != null)
 			for (MetaData md : keywords) {
-				tempcontainer.put(md.getTypeAsString(), md.getMetaDataAsString());
+				// Chop off the last byte as the curren libextractor has a nasty bug inserting a '\0' byte there
+				String type = md.getTypeAsString();
+				if (type.charAt(type.length() - 1) == 0)
+					type = type.substring(0, type.length() - 1);
+				String data = md.getMetaDataAsString();
+				if (data.charAt(data.length() - 1) == 0)
+					data = data.substring(0, data.length() - 1);
+				tempcontainer.put(type, data);
 			}
 		return tempcontainer;
 	}
