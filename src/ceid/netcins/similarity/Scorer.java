@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -66,7 +67,8 @@ public class Scorer {
 	@SuppressWarnings("unchecked")
 	private void serveRequest(SimilarityRequest req) {
 
-		Vector<?> profileEntries = req.getProfileEntries();
+		@SuppressWarnings("rawtypes")
+		Set profileEntries = req.getProfileEntries();
 		String[] query = req.getQuery();
 
 		// ************** CONTENT SEARCHING PART **************

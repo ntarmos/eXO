@@ -4,7 +4,7 @@ package ceid.netcins.messages;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.ContentHashPastContent;
@@ -98,7 +98,7 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 				// Here is the main processing of new data
 				if (entry instanceof URLCatalogEntry) { // URL entry
 					URLCatalogEntry newue = (URLCatalogEntry) entry;
-					List<URLCatalogEntry> list = catalog.getURLCatalogEntries();
+					Set<URLCatalogEntry> list = catalog.getURLCatalogEntries();
 					Iterator<URLCatalogEntry> it = list.iterator();
 					URLCatalogEntry ue;
 					while (it.hasNext()) {
@@ -118,7 +118,7 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 				} else if (entry instanceof ContentCatalogEntry) { // Content
 																	// entry
 					ContentCatalogEntry newce = (ContentCatalogEntry) entry;
-					List<ContentCatalogEntry> list = catalog
+					Set<ContentCatalogEntry> list = catalog
 							.getContentCatalogEntries();
 					Iterator<ContentCatalogEntry> it = list.iterator();
 					ContentCatalogEntry ce;
@@ -138,7 +138,7 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 
 				} else if (entry instanceof UserCatalogEntry) { // User entry
 					UserCatalogEntry newue = (UserCatalogEntry) entry;
-					List<UserCatalogEntry> list = catalog
+					Set<UserCatalogEntry> list = catalog
 							.getUserCatalogEntries();
 					Iterator<UserCatalogEntry> it = list.iterator();
 					UserCatalogEntry ue;

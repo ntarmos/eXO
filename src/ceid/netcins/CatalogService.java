@@ -2173,7 +2173,7 @@ public class CatalogService extends DHTService implements SocService {
 						// and return a mini ScoredCatalog (PastContent)
 						if (o instanceof Catalog) {
 							int type = qmsg.getQueryPDU().getType();
-							Vector <?> entries = ((Catalog) o).getCatalogEntriesForQueryType(type);
+							Set entries = ((Catalog) o).getCatalogEntriesForQueryType(type);
 							// Leave the job to be done asynchronously by the
 							// Scorer thread
 							scorer.addRequest(new SimilarityRequest(
@@ -2216,7 +2216,7 @@ public class CatalogService extends DHTService implements SocService {
 				int type = qmsg.getQueryPDU().getType();
 				// TODO: Check if the wrapping should be put to Scorer Thread
 				// processing part to make Selector lighter.
-				Vector <?> entries = this.user.
+				Vector<?> entries = this.user.
 					getCatalogEntriesForQueryType(type,qmsg.getSource().getId());
 				// Leave the job to be done asynchronously by the
 				// Scorer thread

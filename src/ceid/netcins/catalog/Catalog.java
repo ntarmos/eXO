@@ -1,12 +1,14 @@
 package ceid.netcins.catalog;
 
-import java.util.Vector;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.ContentHashPastContent;
 import rice.p2p.past.PastContent;
 import rice.p2p.past.PastException;
-import ceid.netcins.messages.QueryPDU; 
+import ceid.netcins.messages.QueryPDU;
 
 /**
  * A Catalog is a table of CatalogEntries for a specific term identifier(TID).
@@ -19,38 +21,39 @@ public class Catalog extends ContentHashPastContent {
 	private static final long serialVersionUID = -6819758682396530715L;
 
 	// The Content CatalogEntries
-	private Vector<ContentCatalogEntry> contentCatalogEntries;
+	private Set<ContentCatalogEntry> contentCatalogEntries;
 
 	// the user catalog entries
-	private Vector<UserCatalogEntry> userCatalogEntries;
+	private Set<UserCatalogEntry> userCatalogEntries;
 
 	// the url catalog entries
-	private Vector<URLCatalogEntry> urlCatalogEntries;
+	private Set<URLCatalogEntry> urlCatalogEntries;
 
 	public Catalog(Id tid) {
 		super(tid);
-		contentCatalogEntries = new Vector<ContentCatalogEntry>();
-		userCatalogEntries = new Vector<UserCatalogEntry>();
-		urlCatalogEntries = new Vector<URLCatalogEntry>();
+		contentCatalogEntries = Collections.synchronizedSet(new HashSet<ContentCatalogEntry>());
+		userCatalogEntries = Collections.synchronizedSet(new HashSet<UserCatalogEntry>());
+		urlCatalogEntries = Collections.synchronizedSet(new HashSet<URLCatalogEntry>());
 	}
 
-	@SuppressWarnings("unchecked")
-	public Catalog(Id tid, Vector<?> catalogEntries) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Catalog(Id tid, Set catalogEntries) {
 		super(tid);
-		if (catalogEntries.firstElement() == null) {
+		if (catalogEntries == null || catalogEntries.size() == 0) {
 			this.contentCatalogEntries = null;
-			this.userCatalogEntries = null;
-		} else if (catalogEntries.firstElement() instanceof URLCatalogEntry) {
-			this.urlCatalogEntries = (Vector<URLCatalogEntry>) catalogEntries;
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = null;
-		} else if (catalogEntries.firstElement() instanceof ContentCatalogEntry) {
-			this.contentCatalogEntries = (Vector<ContentCatalogEntry>) catalogEntries;
 			this.userCatalogEntries = null;
 			this.urlCatalogEntries = null;
-		} else if (catalogEntries.firstElement() instanceof UserCatalogEntry) {
+		} else if (catalogEntries.iterator().next() instanceof URLCatalogEntry) {
+			this.urlCatalogEntries = Collections.synchronizedSet((Set<URLCatalogEntry>) catalogEntries);
 			this.contentCatalogEntries = null;
-			this.userCatalogEntries = (Vector<UserCatalogEntry>) catalogEntries;
+			this.userCatalogEntries = null;
+		} else if (catalogEntries.iterator().next() instanceof ContentCatalogEntry) {
+			this.contentCatalogEntries = Collections.synchronizedSet((Set<ContentCatalogEntry>) catalogEntries);
+			this.userCatalogEntries = null;
+			this.urlCatalogEntries = null;
+		} else if (catalogEntries.iterator().next() instanceof UserCatalogEntry) {
+			this.contentCatalogEntries = null;
+			this.userCatalogEntries = Collections.synchronizedSet((Set<UserCatalogEntry>) catalogEntries);
 			this.urlCatalogEntries = null;
 		}
 	}
@@ -62,8 +65,9 @@ public class Catalog extends ContentHashPastContent {
 	 * @param type One of the types defined in QueryPDU
 	 * @return Return the corresponding vector of catalog entries.
 	 */
-	public Vector<?> getCatalogEntriesForQueryType(int type){
-		Vector<?> v = null;
+	@SuppressWarnings("rawtypes")
+	public Set getCatalogEntriesForQueryType(int type){
+		Set v = null;
 		switch(type){
 			case QueryPDU.CONTENTQUERY:
 				v = contentCatalogEntries;
@@ -90,16 +94,16 @@ public class Catalog extends ContentHashPastContent {
 		return v; 
 	}
 	
-	public void setContentCatalogEntries(Vector<ContentCatalogEntry> v) {
-		this.contentCatalogEntries = v;
+	public void setContentCatalogEntries(Set<ContentCatalogEntry> v) {
+		this.contentCatalogEntries = Collections.synchronizedSet(v);
 	}
 
-	public void setUserCatalogEntries(Vector<UserCatalogEntry> v) {
-		this.userCatalogEntries = v;
+	public void setUserCatalogEntries(Set<UserCatalogEntry> v) {
+		this.userCatalogEntries = Collections.synchronizedSet(v);
 	}
 
-	public void setURLCatalogEntries(Vector<URLCatalogEntry> v) {
-		this.urlCatalogEntries = v;
+	public void setURLCatalogEntries(Set<URLCatalogEntry> v) {
+		this.urlCatalogEntries = Collections.synchronizedSet(v);
 	}
 
 	/**
@@ -138,7 +142,6 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceContentCatalogEntry(ContentCatalogEntry oldCE,
 			ContentCatalogEntry newCE) {
-		// TODO : Check the correctness of the remove operation
 		contentCatalogEntries.remove(oldCE);
 		contentCatalogEntries.add(newCE);
 	}
@@ -152,7 +155,6 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceUserCatalogEntry(UserCatalogEntry oldUE,
 			UserCatalogEntry newUE) {
-		// TODO : Check the correctness of the remove operation
 		userCatalogEntries.remove(oldUE);
 		userCatalogEntries.add(newUE);
 	}
@@ -166,7 +168,6 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceURLCatalogEntry(URLCatalogEntry oldUE,
 			URLCatalogEntry newUE) {
-		// TODO : Check the correctness of the remove operation
 		urlCatalogEntries.remove(oldUE);
 		urlCatalogEntries.add(newUE);
 	}
@@ -185,7 +186,7 @@ public class Catalog extends ContentHashPastContent {
 	 * 
 	 * @return the entries of catalog
 	 */
-	public Vector<ContentCatalogEntry> getContentCatalogEntries() {
+	public Set<ContentCatalogEntry> getContentCatalogEntries() {
 		return contentCatalogEntries;
 	}
 
@@ -194,7 +195,7 @@ public class Catalog extends ContentHashPastContent {
 	 * 
 	 * @return
 	 */
-	public Vector<UserCatalogEntry> getUserCatalogEntries() {
+	public Set<UserCatalogEntry> getUserCatalogEntries() {
 		return userCatalogEntries;
 	}
 
@@ -203,7 +204,7 @@ public class Catalog extends ContentHashPastContent {
 	 * 
 	 * @return
 	 */
-	public Vector<URLCatalogEntry> getURLCatalogEntries() {
+	public Set<URLCatalogEntry> getURLCatalogEntries() {
 		return urlCatalogEntries;
 	}
 
@@ -249,17 +250,17 @@ public class Catalog extends ContentHashPastContent {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Catalog [TID=" + this.myId + "]");
 		buf.append("\n [Content Catalog Entries] \n");
-		for (int i = 0; i < contentCatalogEntries.size(); i++) {
-			buf.append(contentCatalogEntries.get(i).toString());
-		}
+		if (contentCatalogEntries != null)
+			for (ContentCatalogEntry e : contentCatalogEntries)
+				buf.append(e.toString());
 		buf.append("\n [User Catalog Entries] \n");
-		for (int i = 0; i < userCatalogEntries.size(); i++) {
-			buf.append(userCatalogEntries.get(i).toString());
-		}
+		if (userCatalogEntries != null)
+			for (UserCatalogEntry e : userCatalogEntries)
+				buf.append(e.toString());
 		buf.append("\n [URL Catalog Entries] \n");
-		for (int i = 0; i < urlCatalogEntries.size(); i++) {
-			buf.append(urlCatalogEntries.get(i).toString());
-		}
+		if (urlCatalogEntries != null)
+			for (URLCatalogEntry e : urlCatalogEntries)
+				buf.append(e.toString());
 
 		return buf.toString();
 	}
@@ -268,17 +269,17 @@ public class Catalog extends ContentHashPastContent {
 		double counter = 0;
 		counter += this.myId.getByteArrayLength();
 
-		if (contentCatalogEntries != null) {
-			for (int i = 0; i < contentCatalogEntries.size(); i++) {
-				counter += contentCatalogEntries.get(i).computeTotalBytes();
-			}
-		}
+		if (contentCatalogEntries != null)
+			for (ContentCatalogEntry e : contentCatalogEntries)
+				counter += e.computeTotalBytes();
 
-		if (userCatalogEntries != null) {
-			for (int i = 0; i < userCatalogEntries.size(); i++) {
-				counter += userCatalogEntries.get(i).computeTotalBytes();
-			}
-		}
+		if (userCatalogEntries != null)
+			for (UserCatalogEntry e : userCatalogEntries)
+				counter += e.computeTotalBytes();
+
+		if (urlCatalogEntries != null)
+			for (URLCatalogEntry e : urlCatalogEntries)
+				counter += e.computeTotalBytes();
 
 		return counter;
 	}

@@ -1,5 +1,7 @@
 package ceid.netcins.similarity;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import rice.Continuation;
@@ -22,7 +24,8 @@ public class SimilarityRequest {
 	private ContentProfile sourceUserProfile = null;
 
 	// The collection of (user or content) entries we want to score
-	private Vector<?> profileEntries;
+	@SuppressWarnings("rawtypes")
+	private Set profileEntries;
 
 	// The result which will fill in the Scorer thread and the response will be
 	// routed
@@ -46,7 +49,7 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("rawtypes")
-	public SimilarityRequest(Vector<?> profileEntries, String[] query,
+	public SimilarityRequest(Set profileEntries, String[] query,
 			Continuation result) {
 		this.profileEntries = profileEntries;
 		this.query = query;
@@ -67,7 +70,7 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("rawtypes")
-	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
+	public SimilarityRequest(Set profileEntries, String[] query, int type,
 			int k,	Continuation result) {
 		this.profileEntries = profileEntries;
 		this.query = query;
@@ -92,7 +95,7 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("rawtypes")
-	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
+	public SimilarityRequest(Set profileEntries, String[] query, int type,
 			int k, ContentProfile userProfile, Continuation result) {
 		this.profileEntries = profileEntries;
 		this.query = query;
@@ -117,7 +120,7 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("rawtypes")
-	public SimilarityRequest(Vector<?> profileEntries, String[] query, int type,
+	public SimilarityRequest(Set profileEntries, String[] query, int type,
 			int k, ContentProfile userProfile, Continuation result, 
 			int msgcounter) {
 		this.profileEntries = profileEntries;
@@ -127,6 +130,20 @@ public class SimilarityRequest {
 		this.sourceUserProfile = userProfile;
 		this.messagesCounter = msgcounter;
 		this.k = k;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public SimilarityRequest(Vector profileEntries, String[] query, int type,
+			int k, ContentProfile userProfile, Continuation result, 
+			int msgcounter) {
+		this((Set)null, query, type, k, userProfile, result, msgcounter);
+		if (profileEntries == null)
+			this.profileEntries = null;
+		else {
+			this.profileEntries = new HashSet();
+			for (Object o : profileEntries)
+				this.profileEntries.add(o);
+		}
 	}
 
 	public String[] getQuery() {
@@ -145,7 +162,8 @@ public class SimilarityRequest {
 		return sourceUserProfile;
 	}
 
-	public Vector<?> getProfileEntries() {
+	@SuppressWarnings("rawtypes")
+	public Set getProfileEntries() {
 		return profileEntries;
 	}
 
