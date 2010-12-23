@@ -142,8 +142,10 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceContentCatalogEntry(ContentCatalogEntry oldCE,
 			ContentCatalogEntry newCE) {
-		contentCatalogEntries.remove(oldCE);
-		contentCatalogEntries.add(newCE);
+		synchronized (contentCatalogEntries) {
+			contentCatalogEntries.remove(oldCE);
+			contentCatalogEntries.add(newCE);
+		}
 	}
 
 	/**
@@ -155,8 +157,10 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceUserCatalogEntry(UserCatalogEntry oldUE,
 			UserCatalogEntry newUE) {
-		userCatalogEntries.remove(oldUE);
-		userCatalogEntries.add(newUE);
+		synchronized (userCatalogEntries) {
+			userCatalogEntries.remove(oldUE);
+			userCatalogEntries.add(newUE);
+		}
 	}
 
 	/**
@@ -168,8 +172,10 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceURLCatalogEntry(URLCatalogEntry oldUE,
 			URLCatalogEntry newUE) {
-		urlCatalogEntries.remove(oldUE);
-		urlCatalogEntries.add(newUE);
+		synchronized (urlCatalogEntries) {
+			urlCatalogEntries.remove(oldUE);
+			urlCatalogEntries.add(newUE);
+		}
 	}
 
 	/**
