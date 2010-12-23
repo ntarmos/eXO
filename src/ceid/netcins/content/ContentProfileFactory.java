@@ -16,10 +16,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.document.DateTools;
+import org.apache.lucene.util.Version;
 import org.gnu.libextractor.Extractor;
 import org.gnu.libextractor.MetaData;
 
@@ -35,7 +36,7 @@ import ceid.netcins.htmlparsing.HTMLParser;
  * 
  */
 public class ContentProfileFactory {
-
+	
 	public static final String DEFAULT_DELIMITER = " ";
 
 	// Default length for a field. The max num of terms!
@@ -228,7 +229,6 @@ public class ContentProfileFactory {
 
 			TokenStream ts = sa.tokenStream("contents", reader); // Field name is not used at all :-) in LUCENE!!!
 
-			Token reusableToken = new Token();
 			int length = 0; // Number of terms seen!
 			TreeMap<String, Integer> tfv = new TreeMap<String, Integer>(); // TreeMap to sort terms
 			Integer i = null;
@@ -239,13 +239,9 @@ public class ContentProfileFactory {
 			try {
 
 				for (;;) {
-					Token token = (Token)ts.next(reusableToken).clone();
-					// Debugging only!
-					// if(token!=null)
-					// System.out.println("Token : "+token.toString());
-					if (token == null)
+					if (ts.incrementToken() == false)
 						break;
-					String str = (token.termLength() > 0) ? new String(token.termBuffer(), 0, token.termLength()) : null;
+					String str = ((TermAttribute)ts.getAttribute(TermAttribute.class)).term();
 
 					if (str != null) {
 
@@ -297,7 +293,6 @@ public class ContentProfileFactory {
 																	// in
 																	// LUCENE!!!
 
-			Token reusableToken = new Token();
 			int length = 0; // Number of terms seen!
 			TreeSet<String> tv = new TreeSet<String>(); // TreeSet to sort terms
 
@@ -307,13 +302,9 @@ public class ContentProfileFactory {
 			try {
 
 				for (;;) {
-					Token token = (Token)ts.next(reusableToken).clone();
-					// Debugging only!
-					// if(token!=null)
-					// System.out.println("Token : "+token.toString());
-					if (token == null)
+					if (ts.incrementToken() == false)
 						break;
-					String str = (token.termLength() > 0) ? new String(token.termBuffer(), 0, token.termLength()) : null;
+					String str = ((TermAttribute)ts.getAttribute(TermAttribute.class)).term();
 
 					if (str != null) {
 						tv.add(str);
@@ -445,8 +436,7 @@ public class ContentProfileFactory {
 	}
 
 	public ContentProfileFactory(int maxFieldLength) {
-		sa = new StandardAnalyzer();
+		sa = new StandardAnalyzer(Version.LUCENE_30);
 		this.maxFieldLength = maxFieldLength;
 	}
-
 }
