@@ -27,7 +27,7 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 	@Override
 	public boolean equals(Object o) {
 		return (o instanceof UserCatalogEntry &&
-				((CatalogEntry)this).equals((CatalogEntry)o) &&
+				super.equals((CatalogEntry)o) &&
 				userProfile.equals(((UserCatalogEntry)o).userProfile));
 	}
 

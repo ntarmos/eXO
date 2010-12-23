@@ -45,7 +45,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 	@Override
 	public boolean equals(Object o) {
 		return (o instanceof ContentCatalogEntry &&
-				((UserCatalogEntry)this).equals((UserCatalogEntry)o) &&
+				super.equals((UserCatalogEntry)o) &&
 				contentProfile.equals(((ContentCatalogEntry)o).contentProfile));
 	}
 
