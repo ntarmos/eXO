@@ -63,7 +63,7 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 
 		// If local request, return immediately
 		if (UID == null) {
-			Set<Id> contentIDs = catalogService.getUser().getSharedContentProfile().keySet();
+			Set<Id> contentIDs = catalogService.getUser().getSharedContentIDs();
 			response.getWriter().write(Json.toString(contentIDs.toArray()));
 			return;
 		}

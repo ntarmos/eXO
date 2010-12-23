@@ -68,7 +68,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 			return;
 		}
 
-		ContentProfile cp = catalogService.getUser().getSharedContentProfile().get(Id.build(CID));
+		ContentProfile cp = catalogService.getUser().getSharedContentProfile(Id.build(CID));
 		if (UID == null) { // Local resource. Return immediately.
 			if (cp != null) {
 				List<ContentField> cflist = cp.getAllFields();

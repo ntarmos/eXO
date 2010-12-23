@@ -25,7 +25,7 @@ public class GetContentHandler extends CatalogFrontendAbstractHandler {
 	@Override
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		Map<Id, ContentProfile> content = catalogService.getUser().getSharedContentProfile();
+		Map<Id, ContentProfile> content = catalogService.getUser().getSharedContentProfiles();
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);

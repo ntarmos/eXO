@@ -2349,10 +2349,9 @@ public class CatalogService extends DHTService implements SocService {
 
 				// All was right! Now let's return the ContentCatalogEntry
 				getResponseContinuation(msg).receiveResult(
-						new ContentCatalogEntry(user.getUID(), user
-								.getSharedContentProfile().get(
-										tpdu.getTaggedId()), user
-								.getPublicUserProfile()));
+						new ContentCatalogEntry(user.getUID(),
+								user.getSharedContentProfile(tpdu.getTaggedId()),
+								user.getPublicUserProfile()));
 
 			} else if (msg instanceof TagUserMessage) {
 				final TagUserMessage tcmsg = (TagUserMessage) msg;
@@ -2450,7 +2449,7 @@ public class CatalogService extends DHTService implements SocService {
 				// Now get the tagclouds if requested
 				RetrieveContPDU rcpdu = rcmsg.getRetrieveContPDU();
 				Id contentId = rcpdu.getContentId();
-				ContentProfile cp = user.getSharedContentProfile().get(contentId).getPublicPart();
+				ContentProfile cp = user.getSharedContentProfile(contentId).getPublicPart();
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for retrieve content tags message "
@@ -2460,7 +2459,7 @@ public class CatalogService extends DHTService implements SocService {
 			}  else if (msg instanceof RetrieveContIDsMessage) {
 				lookups++;
 
-				Vector<Id> ret = new Vector<Id>(user.getSharedContentProfile().keySet());
+				Vector<Id> ret = new Vector<Id>(user.getSharedContentIDs());
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for retrieve content ids message from " + endpoint.getId());

@@ -2,8 +2,10 @@ package ceid.netcins.user;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import rice.p2p.commonapi.Id;
@@ -29,6 +31,16 @@ public class User {
 	public static final String NotAvailableTag = "<N/A>";
 	public static final String ScreennameDelimiter = "/";
 
+	class SharedContentInfo {
+		File file;
+		ContentProfile profile;
+
+		SharedContentInfo(File file, ContentProfile profile) {
+			this.file = file;
+			this.profile = profile;
+		}
+	}
+
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
 
@@ -50,14 +62,10 @@ public class User {
 	// Friendship requests that user waits to be approved by his candidate friends
 	private Vector<Id> pendingOutgoingFReq;
 
-	// Map of shared files with their corresponding SHA-1 checksums.
+	// Map of shared files with their corresponding SHA-1 checksums and 	content profile.
 	// TIP : SHA-1 checksum is returned by "libextractor", so we need to use
 	// buildId(String) to obtain the Id instance.
-	private Map<Id, File> sharedContent;
-
-	// Checksum or synonym Id with the the corresponding content profile
-	// TODO : This should be later be merged with the sharedContent!
-	private Map<Id, ContentProfile> sharedContentProfile;
+	private Map<Id, SharedContentInfo> sharedContent;
 
 	// The content Ids (checksums) mapped with their corresponding TagCloud.
 	// TAGEE's PERSPECTIVE (owner of content)
@@ -143,8 +151,7 @@ public class User {
 			this.friends = friends;
 		this.pendingIncomingFReq = new Vector<FriendRequest>();
 		this.pendingOutgoingFReq = new Vector<Id>();
-		this.sharedContent = new HashMap<Id, File>();
-		this.sharedContentProfile = new HashMap<Id, ContentProfile>();
+		this.sharedContent = new HashMap<Id, SharedContentInfo>();
 		this.bookMarks = new HashMap<Id, SocialBookMark>();
 		this.contentTagClouds = new HashMap<Id, TagCloud>();
 		this.userTagClouds = new HashMap<Id, TagCloud>();
@@ -228,9 +235,9 @@ public class User {
 	public Vector<ContentCatalogEntry> wrapContentToCatalogEntries(
 			boolean includeUserProfile,	boolean completeUserProfile){
 		Vector<ContentCatalogEntry> v = new Vector<ContentCatalogEntry>();
-		for(Id id : this.sharedContentProfile.keySet()){
+		for(Id id : this.sharedContent.keySet()){
 			v.add(new ContentCatalogEntry(this.uid,
-					sharedContentProfile.get(id), 
+					sharedContent.get(id).profile, 
 					includeUserProfile?
 							(completeUserProfile?
 									this.getCompleteUserProfile():
@@ -327,12 +334,26 @@ public class User {
 		return pendingOutgoingFReq;
 	}
 
-	public Map<Id, File> getSharedContent() {
+	public Map<Id, SharedContentInfo> getSharedContent() {
 		return sharedContent;
 	}
 
-	public Map<Id, ContentProfile> getSharedContentProfile() {
-		return sharedContentProfile;
+	public Set<Id> getSharedContentIDs() {
+		return sharedContent.keySet();
+	}
+
+	public ContentProfile getSharedContentProfile(Id id) {
+		SharedContentInfo sci = sharedContent.get(id);
+		return (sci == null) ? null : sci.profile;
+	}
+
+	public Map<Id, ContentProfile> getSharedContentProfiles() {
+		Map<Id, ContentProfile> ret = new HashMap<Id, ContentProfile>();
+		Iterator<Id> keys = sharedContent.keySet().iterator();
+		Iterator<SharedContentInfo> values = sharedContent.values().iterator();
+		while (keys.hasNext())
+			ret.put(keys.next(), values.next().profile);
+		return ret;
 	}
 
 	public Map<Id, SocialBookMark> getBookMarks() {
@@ -368,12 +389,21 @@ public class User {
 		pendingOutgoingFReq.add(uid);
 	}
 
+	public void addSharedContent(Id checksum, File file, ContentProfile profile) {
+		sharedContent.put(checksum, new SharedContentInfo(file, profile));
+	}
+
 	public void addSharedContent(Id checksum, File file) {
-		sharedContent.put(checksum, file);
+		addSharedContent(checksum, file, null);
 	}
 
 	public void addSharedContentProfile(Id checksum, ContentProfile cp) {
-		sharedContentProfile.put(checksum, cp);
+		SharedContentInfo sci = sharedContent.get(checksum);
+		if (sci == null)
+			sci = new SharedContentInfo(null, cp);
+		else
+			sci.profile = cp;
+		sharedContent.put(checksum, sci);
 		// XXX: Should we also update the content tag clouds?
 		/*
 		TagCloud tc = contentTagClouds.get(checksum);
@@ -412,10 +442,6 @@ public class User {
 
 	public void removeSharedContent(Id checksum) {
 		sharedContent.remove(checksum);
-	}
-
-	public void removeSharedContentProfile(Id checksum) {
-		sharedContentProfile.remove(checksum);
 	}
 
 	public void removeBookMark(Id bid) {
