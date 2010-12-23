@@ -30,6 +30,10 @@ public class Json extends JSON {
 		JSON.registerConvertor(rice.pastry.Id.class, new IdJSONConvertor());
 	}
 
+	public static void init() {
+		// Force singleton initialization
+	}
+
 	public static Json getInstance() {
 		return instance;
 	}

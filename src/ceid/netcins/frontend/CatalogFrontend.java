@@ -283,7 +283,7 @@ public class CatalogFrontend {
 		handlersList.addHandler(new DefaultHandler());
 
 		server.setHandler(handlersList);
-		Json.getInstance(); // Make sure Json singleton is instantiated
+		Json.init(); // Make sure Json singleton is instantiated
 
 		try {
 			server.start();
