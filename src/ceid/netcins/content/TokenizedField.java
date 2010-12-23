@@ -74,11 +74,19 @@ public class TokenizedField extends ContentField implements Serializable {
 	}
 
 	public String[] getTerms() {
-		return (String[])termFreq.keySet().toArray();
+		Object[] o = termFreq.keySet().toArray();
+		String[] ret = new String[o.length];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = (String)o[i];
+		return ret;
 	}
 
 	public Integer[] getTF() {
-		return (Integer[])termFreq.values().toArray();
+		Object[] o = termFreq.values().toArray();
+		Integer[] ret = new Integer[o.length];
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = (Integer)o[i];
+		return ret;
 	}
 
 	public void addTerm(String term) {
