@@ -39,6 +39,6 @@ public class TermField extends ContentField implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Term Field " + name + "\nTerm FieldData " + fieldData + "\n";
+		return "TF{ \"" + name + "\" : { \"" + fieldData + "\" , " + (isPublic ? "public" : "private") + " }}";
 	}
 }

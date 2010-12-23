@@ -31,6 +31,6 @@ public class StoredField extends ContentField implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Stored Field " + name + "\nStored FieldData " + fieldData + "\n";
+		return "SF{ \"" + name + "\" : { \"" + fieldData + "\" , " + (isPublic ? "public" : "private") + " }}";
 	}
 }

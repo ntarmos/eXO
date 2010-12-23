@@ -22,13 +22,13 @@ public class TokenizedField extends ContentField implements Serializable {
 
 	private static final Random rng = new Random(System.currentTimeMillis());
 
-	// TODO : some error checking
 	public TokenizedField(String name, TreeMap<String, Integer> tfm, boolean isPublic) {
 		super(name, isPublic);
 
 		// Allocate the necessary size and transfer the terms and tfs
 		termFreq = new Hashtable<String, Integer>();
-		termFreq.putAll(tfm);
+		if (tfm != null)
+			termFreq.putAll(tfm);
 	}
 
 	public TokenizedField(String name, TreeMap<String, Integer> tfm) {
@@ -116,29 +116,42 @@ public class TokenizedField extends ContentField implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
+		boolean isFirst = true;
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Tokenized Field " + name);
+		buffer.append("TKF{ \"" + name + "\" : [ ");
 		Iterator<String> keys = termFreq.keySet().iterator();
 		Iterator<Integer> values = termFreq.values().iterator();
 		while (keys.hasNext()) {
+			if (!isFirst)
+				buffer.append(" , ");
+			else
+				isFirst = false;
+
 			String term = keys.next();
 			Integer freq = values.next();
-			buffer.append("\n Term: " + term);
+			buffer.append("{ \" " + term + "\"");
 			if (freq != 0)
-				buffer.append(", TF : " + freq);
+				buffer.append(" : " + freq);
+			buffer.append(" }");
 		}
-		buffer.append("\n");
+		buffer.append("]}");
 		return buffer.toString();
 	}
 
 	public String toStringWithoutTF() {
+		boolean isFirst = true;
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Tokenized Field " + name);
+		buffer.append("TKF{ \"" + name + "\" : [ ");
 		Iterator<String> keys = termFreq.keySet().iterator();
 		while (keys.hasNext()) {
-			buffer.append("\n Term: " + keys.next());
+			if (!isFirst)
+				buffer.append(" , ");
+			else
+				isFirst = false;
+
+			buffer.append(keys.next());
 		}
-		buffer.append("\n");
+		buffer.append("]}");
 		return buffer.toString();
 	}
 }
