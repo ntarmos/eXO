@@ -21,7 +21,7 @@ public class TokenizedFieldJSONConvertor extends ContentFieldJSONConvertor {
 		
 		//name = (String)arg0.get(FieldNameTag);
 		String terms[] = (String[])arg0.get(TermsTag);
-		int tf[] = (int[])arg0.get(TFScoresTag);
+		Integer tf[] = (Integer[])arg0.get(TFScoresTag);
 		//isPublic = (Boolean)arg0.get(FieldIsPublicTag);
 		if (terms != null && tf != null && terms.length == tf.length) {
 			for (int i = 0; i < terms.length; i++)

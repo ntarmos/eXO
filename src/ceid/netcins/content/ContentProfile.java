@@ -158,7 +158,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 			Object o = this.fields.get(random.nextInt(fields.size()));
 			if (o instanceof TokenizedField) {
 				TokenizedField tokf = (TokenizedField) o;
-				return tokf.terms[random.nextInt(tokf.terms.length)];
+				return tokf.randomTerm();
 			} else if (o instanceof TermField) {
 				TermField termf = (TermField) o;
 				return termf.getFieldData();
