@@ -25,10 +25,6 @@ public class FriendRejectMessage extends ContinuationMessage {
 
 	public static final short TYPE = MessageType.FriendReject;
 
-	// TODO: Check if it is necessary and if not remove it as it is DUPE!
-	// The dest UID (duplication of dest)
-	private Id id;
-
 	// whether or not this message has been cached
 	private boolean cached = false;
 
@@ -50,17 +46,7 @@ public class FriendRejectMessage extends ContinuationMessage {
 			FriendReqPDU frPDU) {
 		super(uid, source, dest);
 
-		this.id = id;
 		this.frPDU = frPDU;
-	}
-
-	/**
-	 * Method which returns the id (duplication of dest)
-	 * 
-	 * @return The contained id
-	 */
-	public Id getId() {
-		return id;
 	}
 
 	/**
@@ -140,12 +126,9 @@ public class FriendRejectMessage extends ContinuationMessage {
 		if (handle != null)
 			handle.serialize(buf);
 
-		buf.writeShort(id.getType());
-		id.serialize(buf);
 		buf.writeBoolean(cached);
 
 		// Java serialization is used for the serialization of the FriendReqPDU
-		// TODO: optimization
 		JavaSerializer.serialize(buf, frPDU);
 	}
 
@@ -169,17 +152,9 @@ public class FriendRejectMessage extends ContinuationMessage {
 		}
 		if (buf.readBoolean())
 			handle = endpoint.readNodeHandle(buf);
-		try {
-			id = endpoint.readId(buf, buf.readShort());
-		} catch (IllegalArgumentException iae) {
-			System.out.println(iae + " " + this + " serType:" + serType
-					+ " UID:" + getUID() + " d:" + dest + " s:" + source);
-			throw iae;
-		}
 		cached = buf.readBoolean();
 
 		// Java deserialization
-		// TODO: optimization
 		frPDU = (FriendReqPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 }

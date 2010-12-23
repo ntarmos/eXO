@@ -25,9 +25,6 @@ public class FriendQueryMessage extends ContinuationMessage {
 
 	public static final short TYPE = MessageType.FriendQuery;
 
-	// the destination id (user UID, DUPE of dest) 
-	private Id id;
-
 	// whether or not this message has been cached
 	private boolean cached = false;
 
@@ -45,29 +42,17 @@ public class FriendQueryMessage extends ContinuationMessage {
 	 * 
 	 * @param uid
 	 *            The unique id
-	 * @param id
-	 *            The location to be stored
 	 * @param source
 	 *            The source address
 	 * @param dest
 	 *            The destination address
 	 */
-	public FriendQueryMessage(int uid, Id id, NodeHandle source, Id dest,
+	public FriendQueryMessage(int uid, NodeHandle source, Id dest,
 			QueryPDU qpdu) {
 		super(uid, source, dest);
 
-		this.id = id;
 		this.queryPDU = qpdu;
 		this.hops = 0;
-	}
-
-	/**
-	 * Method which returns the id
-	 * 
-	 * @return The contained id
-	 */
-	public Id getId() {
-		return id;
 	}
 
 	/**
@@ -163,15 +148,12 @@ public class FriendQueryMessage extends ContinuationMessage {
 		if (handle != null)
 			handle.serialize(buf);
 
-		buf.writeShort(id.getType());
-		id.serialize(buf);
 		buf.writeBoolean(cached);
 
 		// Hop count serialization
 		buf.writeInt(hops);
 
 		// Java serialization is used for the serialization of the QueryPDU
-		// TODO: optimization
 		JavaSerializer.serialize(buf, queryPDU);
 	}
 
@@ -195,20 +177,12 @@ public class FriendQueryMessage extends ContinuationMessage {
 		}
 		if (buf.readBoolean())
 			handle = endpoint.readNodeHandle(buf);
-		try {
-			id = endpoint.readId(buf, buf.readShort());
-		} catch (IllegalArgumentException iae) {
-			System.out.println(iae + " " + this + " serType:" + serType
-					+ " UID:" + getUID() + " d:" + dest + " s:" + source);
-			throw iae;
-		}
 		cached = buf.readBoolean();
 
 		// Hop count deserialization
 		hops = buf.readInt();
 
 		// Java deserialization
-		// TODO: optimization
 		queryPDU = (QueryPDU) JavaSerializer.deserialize(buf, endpoint);
 	}
 

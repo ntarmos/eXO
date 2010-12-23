@@ -1471,7 +1471,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 
 		// send the request across the wire, and see if the result is null or
 		// not
-		sendRequest(id, new FriendQueryMessage(getUID(), id,
+		sendRequest(id, new FriendQueryMessage(getUID(),
 				getLocalNodeHandle(), id, qPDU), destNodeHandle,
 				new NamedContinuation(
 				"FriendQueryMessage for " + id, command) {
@@ -1528,7 +1528,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 						getLocalNodeHandle(), id);
 				break;
 			case MessageType.FriendRequest:
-				message = new FriendReqMessage(getUID(), id, getLocalNodeHandle(), 
+				message = new FriendReqMessage(getUID(), getLocalNodeHandle(), 
 						id, (FriendReqPDU)extra_args.get("PDU"));
 				break;
 			case MessageType.FriendReject:

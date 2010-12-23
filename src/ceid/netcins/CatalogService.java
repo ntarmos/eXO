@@ -2287,7 +2287,7 @@ public class CatalogService extends DHTService implements SocService {
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for FriendAcceptMessage "
-							+ famsg.getId() + " from " + endpoint.getId());
+							+ fid + " from " + endpoint.getId());
 
 				// Return the response now.
 				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
@@ -2303,7 +2303,7 @@ public class CatalogService extends DHTService implements SocService {
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for FriendAcceptMessage "
-							+ frmsg.getId() + " from " + endpoint.getId());
+							+ fid + " from " + endpoint.getId());
 
 				// Return the response now.
 				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
@@ -2316,7 +2316,7 @@ public class CatalogService extends DHTService implements SocService {
 						frmsg.getSource()));
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for friendrequest message "
-							+ frmsg.getId() + " from " + endpoint.getId());
+							+ frmsg.getSource().getId() + " from " + endpoint.getId());
 
 				// All was right!
 				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
