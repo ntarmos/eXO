@@ -2036,8 +2036,7 @@ public class CatalogService extends DHTService implements SocService {
 			// ///////////////////////////////////////////////////////////////////
 
 		} else if (type == HYBRID) {
-			buffer.append(printTopKQueryResults(result, USER, k));
-			buffer.append(printTopKQueryResults(result, CONTENT, k));
+			// TODO: Implement this
 		}
 		return buffer.toString();
 	}
