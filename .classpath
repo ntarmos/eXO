@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="jars/freepastry"/>
 	<classpathentry kind="src" path="FreePastry.git-src"/>
-	<classpathentry kind="lib" path="lib/charva.jar"/>
 	<classpathentry kind="lib" path="lib/libextractor-0.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-3.0-20090427.051741-5.jar"/>
