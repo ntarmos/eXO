@@ -42,7 +42,7 @@ public class Json extends JSON {
 	public void appendMap(StringBuffer buffer, Map object) {
 		// Overriding Jetty {@link org.eclipse.jetty.util.ajax.JSON}'s appendMap(...) 
 		// method to let it use Convertors registered for key values.
-		// TODO: should probably also submit upsteram to Jetty
+		// XXX: should probably also submit upsteram to Jetty
 		if (object==null) {
 			appendNull(buffer);
 			return;
