@@ -3,7 +3,6 @@
 package ceid.netcins;
 
 import ceid.netcins.content.ContentProfileFactory;
-import ceid.netcins.simulator.SimMain;
 
 /**
  * This is a search request
@@ -54,7 +53,7 @@ public class SearchUserRequest extends Request {
 		this.queryType = type;
 		this.source = source;
 		this.k = k;
-		this.delimiter = SimMain.DELIMITER;
+		this.delimiter = DELIMITER;
 	}
 
 	/**

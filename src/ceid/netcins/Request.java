@@ -26,6 +26,8 @@ public abstract class Request {
 	public static final int RET_ERROR1 = 1;
 	public static final int RET_ERROR2 = 2;
 
+	public static final String DELIMITER = "::";
+
 	// Holds the reply message of the request
 	private String replyMsg;
 

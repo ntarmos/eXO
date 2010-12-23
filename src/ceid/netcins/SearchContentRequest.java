@@ -3,7 +3,6 @@
 package ceid.netcins;
 
 import ceid.netcins.content.ContentProfileFactory;
-import ceid.netcins.simulator.SimMain;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -57,7 +56,7 @@ public class SearchContentRequest extends Request {
 		this.queryType = type;
 		this.source = source;
 		this.k = k;
-		this.delimiter = SimMain.DELIMITER;
+		this.delimiter = DELIMITER;
 	}
 
 	public SearchContentRequest(String query, int source, HttpExchange t) {
