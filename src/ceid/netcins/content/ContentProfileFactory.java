@@ -62,8 +62,7 @@ public class ContentProfileFactory {
 	 * We use "mimetype" information (e.g. text/html) to discover file content
 	 * that is going to be tokenized. Specifically :
 	 * 
-	 * TODO : In the Future develop classes to tokenize application/pdf,
-	 * text/csv, text/css, text/sgml!!!
+	 * TODO : develop classes to tokenize application/pdf, text/csv, text/css, text/sgml!!!
 	 * 
 	 *  - text/* : Always we use a FileReader to read file content, analyze, 
 	 *             filter and tokenize! 
@@ -180,14 +179,11 @@ public class ContentProfileFactory {
 						.remove("mimetype")));
 			}
 
-			// The rest of Field/Value pairs that libextractor provided us.
-			// Temporarily store them as StoredFields.
-			// TODO : Determine which of these are TermFields or
-			// TokenizedFields!
-			Iterator<String> key = candfields.keySet().iterator();
-			Iterator<String> value = candfields.values().iterator();
-			while (key.hasNext())
-				cprof.add(new StoredField(key.next(), value.next()));
+			// The rest of Field/Value pairs that libextractor provided us, as TermFields.
+			Iterator<String> keys = candfields.keySet().iterator();
+			Iterator<String> values = candfields.values().iterator();
+			while (keys.hasNext())
+				cprof.add(new TermField(keys.next(), values.next()));
 		}
 
 		// return the content profile
@@ -230,19 +226,11 @@ public class ContentProfileFactory {
 		// TODO : compute global Doc term frequency
 		if (reader != null) {
 
-			TokenStream ts = sa.tokenStream("contents", reader); // Field name
-																	// is not
-																	// used at
-																	// all :-)
-																	// in
-																	// LUCENE!!!
+			TokenStream ts = sa.tokenStream("contents", reader); // Field name is not used at all :-) in LUCENE!!!
 
 			Token reusableToken = new Token();
 			int length = 0; // Number of terms seen!
-			TreeMap<String, Integer> tfv = new TreeMap<String, Integer>(); // TreeMap
-																			// to
-																			// sort
-																			// terms
+			TreeMap<String, Integer> tfv = new TreeMap<String, Integer>(); // TreeMap to sort terms
 			Integer i = null;
 
 			// reset the TokenStream to the first token
@@ -408,7 +396,6 @@ public class ContentProfileFactory {
 		// make a new, empty ContentProfile to fill in!
 		ContentProfile cprof = new ContentProfile();
 
-		// TODO : Determine which of these are TermFields or TokenizedFields!
 		Iterator<String> key = candfields.keySet().iterator();
 		Iterator<String> value = candfields.values().iterator();
 		String field;
@@ -427,8 +414,7 @@ public class ContentProfileFactory {
 
 				} else {
 
-					// TODO : a proper tokenizer-filter such as Lucene's must be
-					// used
+					// TODO : we could use a proper tokenizer-filter such as Lucene's
 					// This is used to treat whole phrases like a single term!!!
 					if (!delimiter.equals(DEFAULT_DELIMITER)) {
 						terms = new TreeSet<String>();
