@@ -6,7 +6,6 @@ package ceid.netcins;
  */
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -63,8 +62,6 @@ import rice.p2p.replication.manager.ReplicationManagerClient;
 import rice.p2p.replication.manager.ReplicationManagerImpl;
 import rice.p2p.util.MathUtils;
 import rice.p2p.util.rawserialization.SimpleInputBuffer;
-import rice.p2p.util.rawserialization.SimpleOutputBuffer;
-import rice.persistence.Cache;
 import rice.persistence.LockManager;
 import rice.persistence.LockManagerImpl;
 import rice.persistence.StorageManager;
@@ -115,14 +112,6 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	// the storage manager used by this Past
 	protected StorageManager storage;
 
-	// The trash can, or where objects should go once removed. If null, they are
-	// deleted
-	protected StorageManager trash;
-
-	// The backup store, or location of over-replicated objects, helping PAST to
-	// better deal with churn
-	protected Cache backup;
-
 	// the replication factor for Past
 	protected int replicationFactor;
 
@@ -170,40 +159,6 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 
 	// Load counting variable
 	public int hits;
-
-	/**
-	 * Constructor for Past, using the default policy
-	 * 
-	 * @param node
-	 *            The node below this Past implementation
-	 * @param manager
-	 *            The storage manager to be used by Past
-	 * @param replicas
-	 *            The number of object replicas
-	 * @param instance
-	 *            The unique instance name of this Past
-	 */
-	public DHTService(Node node, StorageManager manager, int replicas,
-			String instance) {
-		this(node, manager, replicas, instance, new DefaultPastPolicy());
-	}
-
-	/**
-	 * Constructor for Past
-	 * 
-	 * @param node
-	 *            The node below this Past implementation
-	 * @param manager
-	 *            The storage manager to be used by Past
-	 * @param replicas
-	 *            The number of object replicas
-	 * @param instance
-	 *            The unique instance name of this Past
-	 */
-	public DHTService(Node node, StorageManager manager, int replicas,
-			String instance, PastPolicy policy) {
-		this(node, manager, null, replicas, instance, policy, null);
-	}
 
 	protected class PastDeserializer implements MessageDeserializer {
 		public Message deserialize(InputBuffer buf, short type, int priority,
@@ -276,31 +231,6 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		}
 	}
 
-	public DHTService(Node node, StorageManager manager, Cache backup,
-			int replicas, String instance, PastPolicy policy,
-			StorageManager trash) {
-		this(node, manager, backup, replicas, instance, policy, trash, false);
-	}
-
-	/**
-	 * 
-	 * @param node
-	 * @param manager
-	 * @param backup
-	 * @param replicas
-	 * @param instance
-	 * @param policy
-	 * @param trash
-	 * @param useOwnSocket
-	 *            send all inserts/fetches over a socket (default is false)
-	 */
-	public DHTService(Node node, StorageManager manager, Cache backup,
-			int replicas, String instance, PastPolicy policy,
-			StorageManager trash, boolean useOwnSocket) {
-		this(node, manager, backup, replicas, instance, policy, trash,
-				new DefaultSocketStrategy(useOwnSocket));
-	}
-
 	/**
 	 * Constructor for Past
 	 * 
@@ -314,36 +244,29 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 *            The unique instance name of this Past
 	 */
 	@SuppressWarnings("rawtypes")
-	public DHTService(Node node, StorageManager manager, Cache backup,
-			int replicas, String instance, PastPolicy policy,
-			StorageManager trash, SocketStrategy strategy) {
+	public DHTService(Node node, StorageManager manager,
+			int replicas, String instance) {
 		this.environment = node.getEnvironment();
 		logger = environment.getLogManager().getLogger(getClass(), instance);
 		Parameters p = environment.getParameters();
 		MESSAGE_TIMEOUT = p.getInt("p2p_past_messageTimeout");// = 30000;
 		SUCCESSFUL_INSERT_THRESHOLD = p
 				.getDouble("p2p_past_successfulInsertThreshold");// = 0.5;
-		this.socketStrategy = strategy;
+		this.socketStrategy = new DefaultSocketStrategy(false);
 		this.storage = manager;
-		this.backup = backup;
 		this.contentDeserializer = new JavaPastContentDeserializer();
 		this.contentHandleDeserializer = new JavaPastContentHandleDeserializer();
 		this.endpoint = node.buildEndpoint(this, instance);
 		this.endpoint.setDeserializer(new PastDeserializer());
 		this.factory = node.getIdFactory();
-		this.policy = policy;
+		this.policy = new DefaultPastPolicy();
 		this.instance = instance;
-		this.trash = trash;
 		this.hits = 0;
 
 		this.id = Integer.MIN_VALUE;
 		this.outstanding = new Hashtable<Integer, Continuation>();
 		this.timers = new Hashtable<Integer, CancellableTask>();
 		this.replicationFactor = replicas;
-
-		// log.addHandler(new ConsoleHandler());
-		// log.setLevel(Level.FINE);
-		// log.getHandlers()[0].setLevel(Level.FINE);
 
 		this.replicaManager = buildReplicationManager(node, instance);
 
@@ -369,16 +292,16 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 						// this is a new message
 
 						// read the size
-						bb = new ByteBuffer[1];
-						bb[0] = ByteBuffer.allocate(4);
-						if (socket.read(bb[0]) == -1) {
-							close(socket);
-							return;
+						byte[] sizeArr = new byte[4];
+						for (int i = 0; i < sizeArr.length; i++) {
+							bb = new ByteBuffer[1];
+							bb[0] = ByteBuffer.allocate(1);
+							if (socket.read(bb[0]) == -1) {
+								close(socket);
+								return;
+							}
+							sizeArr[i] = bb[0].get(0);
 						}
-
-						// TODO: need to handle the condition where we don't
-						// read the whole size...
-						byte[] sizeArr = bb[0].array();
 						int size = MathUtils.byteArrayToInt(sizeArr);
 
 						if (logger.level <= Logger.FINER)
@@ -555,13 +478,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		return new Continuation() {
 			public void receiveResult(Object o) {
 				cmsg.receiveResult(o);
-				PastContent content = (PastContent) o;
-				if (socketStrategy.sendAlongSocket(SocketStrategy.TYPE_FETCH,
-						content)) {
-					sendViaSocket(msg.getSource(), cmsg, null);
-				} else {
-					endpoint.route(null, cmsg, msg.getSource());
-				}
+				endpoint.route(null, cmsg, msg.getSource());
 			}
 
 			public void receiveException(Exception e) {
@@ -577,85 +494,6 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 * Used for receiving the objects.
 	 */
 	WeakHashMap<AppSocket, ByteBuffer[]> pendingSocketTransactions = new WeakHashMap<AppSocket, ByteBuffer[]>();
-
-	@SuppressWarnings("rawtypes")
-	private void sendViaSocket(final NodeHandle handle, final PastMessage m,
-			final Continuation c) {
-		if (c != null) {
-			CancellableTask timer = endpoint.scheduleMessage(
-					new MessageLostMessage(m.getUID(), getLocalNodeHandle(),
-							null, m, handle), MESSAGE_TIMEOUT);
-			insertPending(m.getUID(), timer, c);
-		}
-
-		// create a bb[] to be written
-		SimpleOutputBuffer sob = new SimpleOutputBuffer();
-		try {
-			sob.writeInt(0); // place holder for size...
-			sob.writeShort(m.getType());
-			m.serialize(sob);
-		} catch (IOException ioe) {
-			if (c != null)
-				c.receiveException(ioe);
-		}
-
-		// add the size back to the beginning...
-		int size = sob.getWritten() - 4; // remove the size of the size :)
-		if (logger.level <= Logger.FINER)
-			logger.log("Sending size of " + size + " to " + handle
-					+ " to send " + m);
-		byte[] bytes = sob.getBytes();
-		MathUtils.intToByteArray(size, bytes, 0);
-
-		// prepare the bytes for writing
-		final ByteBuffer[] bb = new ByteBuffer[1];
-		bb[0] = ByteBuffer.wrap(bytes, 0, sob.getWritten()); // the whole thing
-
-		if (logger.level <= Logger.FINE)
-			logger.log("Opening socket to " + handle + " to send " + m);
-		endpoint.connect(handle, new AppSocketReceiver() {
-
-			public void receiveSocket(AppSocket socket) {
-				if (logger.level <= Logger.FINER)
-					logger.log("Opened socket to " + handle + ":" + socket
-							+ " to send " + m);
-				socket.register(false, true, 10000, this);
-			}
-
-			public void receiveSelectResult(AppSocket socket, boolean canRead,
-					boolean canWrite) {
-				if (logger.level <= Logger.FINEST)
-					logger.log("Writing to " + handle + ":" + socket
-							+ " to send " + m);
-
-				try {
-					// ByteBuffer[] outs = new ByteBuffer[1];
-					// ByteBuffer out =
-					// ByteBuffer.wrap(endpoint.getLocalNodeHandle().getId().toByteArray());
-					// outs[0] = out;
-					// socket.write(outs, 0, 1);
-
-					socket.write(bb[0]);
-				} catch (IOException ioe) {
-					if (c != null)
-						c.receiveException(ioe);
-					else if (logger.level <= Logger.WARNING)
-						logger.logException("Error sending " + m, ioe);
-					return; // don't continue to try to send
-				}
-				if (bb[0].remaining() > 0) {
-					socket.register(false, true, 10000, this);
-				} else {
-					socket.close();
-				}
-			}
-
-			public void receiveException(AppSocket socket, Exception e) {
-				if (c != null)
-					c.receiveException(e);
-			}
-		}, 10000);
-	}
 
 	/**
 	 * Sends a request message across the wire, and stores the appropriate
@@ -929,11 +767,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 									"InsertMessage to " + replicas.getHandle(i)
 											+ " for " + id, multi
 											.getSubContinuation(i));
-							if (useSocket) {
-								sendViaSocket(handle, m, c);
-							} else {
-								sendRequest(handle, m, c);
-							}
+							sendRequest(handle, m, c);
 						}
 					}
 				});
@@ -1960,7 +1794,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					.log("Sending out replication fetch request for the id "
 							+ id);
 
-		policy.fetch(id, hint, backup, this, new StandardContinuation(command) {
+		policy.fetch(id, hint, null, this, new StandardContinuation(command) {
 			public void receiveResult(Object o) {
 				if (o == null) {
 					if (logger.level <= Logger.WARNING)
@@ -1993,20 +1827,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void remove(final Id id, Continuation command) {
-		if (backup != null) {
-			storage.getObject(id, new StandardContinuation(command) {
-				public void receiveResult(Object o) {
-					backup.cache(id, storage.getMetadata(id), (Serializable) o,
-							new StandardContinuation(parent) {
-								public void receiveResult(Object o) {
-									storage.unstore(id, parent);
-								}
-							});
-				}
-			});
-		} else {
-			storage.unstore(id, command);
-		}
+		storage.unstore(id, command);
 	}
 
 	/**
