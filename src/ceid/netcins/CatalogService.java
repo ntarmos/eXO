@@ -198,8 +198,8 @@ public class CatalogService extends DHTService implements SocService {
 			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User has to be registered to be able to " +
-					"issue requests to the overlay network!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			return;
 		}
 
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
@@ -327,8 +327,8 @@ public class CatalogService extends DHTService implements SocService {
 			final NodeHandle nodeHandle, final Continuation command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User has to be registered to be able to " +
-					"issue requests to the overlay network!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			return;
 		}
 
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
@@ -439,8 +439,8 @@ public class CatalogService extends DHTService implements SocService {
 			final Continuation command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User has to be registered to be able to " +
-					"issue requests to the overlay network!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			return;
 		}
 
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
@@ -501,8 +501,8 @@ public class CatalogService extends DHTService implements SocService {
 			final Continuation command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User has to be registered to be able to " +
-					"issue requests to the overlay network!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			return;
 		}
 
 		final Id uid = freq.getUID();
@@ -567,8 +567,8 @@ public class CatalogService extends DHTService implements SocService {
 			final Continuation command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User has to be registered to be able to " +
-					"issue requests to the overlay network!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			return;
 		}
 
 		final Id uid = freq.getUID();
@@ -625,9 +625,8 @@ public class CatalogService extends DHTService implements SocService {
 	public void retrieveContent(Id uid, Id contentId, final boolean clouds,
 			final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
@@ -697,9 +696,8 @@ public class CatalogService extends DHTService implements SocService {
 	public void retrieveContentTags(Id uid, Id contentId,
 			final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
@@ -732,9 +730,8 @@ public class CatalogService extends DHTService implements SocService {
 	@SuppressWarnings("rawtypes")
 	public void retrieveContentIDs(Id uid, final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
@@ -778,8 +775,8 @@ public class CatalogService extends DHTService implements SocService {
 			final Continuation command) throws Exception {
 
 		if (this.user == null) {
-			throw new Exception("User has to be registered to be able to " +
-					"issue requests to the overlay network!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			return;
 		}
 
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
@@ -847,9 +844,8 @@ public class CatalogService extends DHTService implements SocService {
 	public void indexURL(URL url, ContentProfile tags,
 			final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
@@ -945,9 +941,8 @@ public class CatalogService extends DHTService implements SocService {
 	@SuppressWarnings("rawtypes") 
 	public void indexContent(final File file, final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
@@ -956,7 +951,7 @@ public class CatalogService extends DHTService implements SocService {
 			// computation
 			final ContentProfile cp = cpf.buildContentProfile(file);
 			if (cp == null) {
-				System.out.println("The content profile is empty!");
+				command.receiveException(new RuntimeException("Empty profile!"));
 				return;
 			}
 
@@ -1010,9 +1005,7 @@ public class CatalogService extends DHTService implements SocService {
 
 			int termscount = indexingTerms.size();
 			if (termscount == 0) {
-
-				// TODO : Maybe throw some Exception
-				System.out.println("No terms to index!");
+				command.receiveException(new RuntimeException("No terms to index!"));
 				return;
 			} else {
 
@@ -1080,7 +1073,7 @@ public class CatalogService extends DHTService implements SocService {
 				// End of Multicontinuation
 			}
 		} catch (IOException e) {
-			e.getStackTrace();
+			command.receiveException(e);
 		}
 	}
 
@@ -1092,16 +1085,15 @@ public class CatalogService extends DHTService implements SocService {
 	@SuppressWarnings("rawtypes")
 	public void indexUser(final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
 		// Fetch the user profile
 		ContentProfile cp = user.getPublicUserProfile();
 		if (cp == null) {
-			System.out.println("User has an empty profile!");
+			command.receiveException(new RuntimeException("Empty profile!"));
 			return;
 		}
 
@@ -1134,9 +1126,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		int termscount = indexingTerms.size();
 		if (termscount == 0) {
-
-			// TODO : Maybe throw some Exception
-			System.out.println("No terms to index!");
+			command.receiveException(new RuntimeException("No terms to index!"));
 			return;
 		} else {
 
@@ -1221,15 +1211,14 @@ public class CatalogService extends DHTService implements SocService {
 	public void indexPseudoContent(final ContentProfile cp,
 			final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
 		// Handle the content profile, check if it is already indexed
 		if (cp == null) {
-			System.out.println("The content profile is empty!");
+			command.receiveException(new RuntimeException("Empty content profile!"));
 			return;
 		}
 
@@ -1285,9 +1274,7 @@ public class CatalogService extends DHTService implements SocService {
 
 		int termscount = indexingTerms.size();
 		if (termscount == 0) {
-
-			// TODO : Maybe throw some Exception
-			System.out.println("No terms to index!");
+			command.receiveException(new RuntimeException("No terms to index!"));
 			return;
 		} else {
 
@@ -1443,9 +1430,8 @@ public class CatalogService extends DHTService implements SocService {
 	public void searchQuery(final int queryType, final String[] queryTerms,
 			final int k, final Continuation<Object, Exception> command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 		
@@ -1540,7 +1526,7 @@ public class CatalogService extends DHTService implements SocService {
 			final String[] queryTerms, final Continuation command) {
 
 		if (this.user == null) {
-			System.out.println("User has not been registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
@@ -1637,9 +1623,8 @@ public class CatalogService extends DHTService implements SocService {
 	public void searchSocialTagsQuery(final int queryType, final String[] tags,
 			final String[] userIds, final Continuation command) {
 
-		// TODO : maybe an Exception is needed here to be thrown
 		if (this.user == null) {
-			System.out.println("User has not be registered yet!");
+			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
