@@ -986,8 +986,6 @@ public class CatalogService extends DHTService implements SocService {
 					cp, user.getPublicUserProfile());
 
 			// Create MultiContinuation
-			// TODO : In order to index once every term we should use a Set
-			// instead of Vector!!!
 			Set<String> indexingTerms = new HashSet<String>(); // holds the
 																	// indexing
 																	// terms
@@ -1264,8 +1262,6 @@ public class CatalogService extends DHTService implements SocService {
 				user.getPublicUserProfile());
 
 		// Create MultiContinuation
-		// TODO : In order to index once every term we should use a Set instead
-		// of Vector!!!
 		Set<String> indexingTerms = new HashSet<String>(); // holds the
 																// indexing
 																// terms
@@ -1741,8 +1737,9 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param k
 	 *            The number of results to be returned.
 	 * @return
+	 * @throws PastException 
 	 */
-	public static String printTopKQueryResults(Object[] result, int type, int k) {
+	public static String printTopKQueryResults(Object[] result, int type, int k) throws PastException {
 
 		StringBuffer buffer = new StringBuffer();
 		ScoreBoard sc = null;
@@ -1774,7 +1771,8 @@ public class CatalogService extends DHTService implements SocService {
 							max = sc.getScores().firstElement().floatValue();
 							point_vector = i;
 						}
-					} else { // TODO : Handle the case we dont have SCORECATALOG
+					} else {
+						throw new PastException("Unexpected class " + result[i].getClass().getName());
 					}
 					// Now remove the topmost as it is the maximum and check if
 					// we finished
@@ -1924,7 +1922,8 @@ public class CatalogService extends DHTService implements SocService {
 							max = sc.getScores().firstElement().floatValue();
 							point_vector = i;
 						}
-					} else { // TODO : Handle the case we dont have SCORECATALOG
+					} else {
+						throw new PastException("Unexpected class " + result[i].getClass().getName());
 					}
 					// Now remove the topmost as it is the maximum and check if
 					// we finished
@@ -2053,8 +2052,8 @@ public class CatalogService extends DHTService implements SocService {
 			// ///////////////////////////////////////////////////////////////////
 
 		} else if (type == HYBRID) {
-			// TODO : Implement this body
-
+			buffer.append(printTopKQueryResults(result, USER, k));
+			buffer.append(printTopKQueryResults(result, CONTENT, k));
 		}
 		return buffer.toString();
 	}
@@ -2351,7 +2350,7 @@ public class CatalogService extends DHTService implements SocService {
 					cloud = new TagCloud();
 					mapCloud.put(contentId, cloud);
 				}
-				// +1
+
 				// TODO : Implement association with User-tagers in the TagCloud
 				ContentProfile tags = tpdu.getTags();
 				if (tags != null)
