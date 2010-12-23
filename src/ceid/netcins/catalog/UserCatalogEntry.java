@@ -24,6 +24,18 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		this.userProfile = usrp;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof UserCatalogEntry &&
+				((CatalogEntry)this).equals((CatalogEntry)o) &&
+				userProfile.equals(((UserCatalogEntry)o).userProfile));
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode() + userProfile.hashCode();
+	}
+
 	/**
 	 * Getter for the userProfile
 	 * 

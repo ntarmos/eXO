@@ -31,7 +31,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 
 	@Override
 	public int hashCode() {
-		return getUID().hashCode() + getCheckSum().hashCode();
+		return super.hashCode() + contentProfile.hashCode();
 	}
 	
 	/**
@@ -44,23 +44,9 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof ContentCatalogEntry)) {
-			return false;
-		}
-		ContentCatalogEntry ce = (ContentCatalogEntry) o;
-
-		String checksum = getCheckSum();
-		// TODO : FieldException!!!!!
-		if (checksum == null || ce.getCheckSum() == null) { // This is a
-															// problematic
-															// occasion. It
-															// should be marked
-															// with an exception
-			return false;
-		}
-
-		return (ce.getUID().equals(getUID()) ? ce.getCheckSum()
-				.equals(checksum) : false);
+		return (o instanceof ContentCatalogEntry &&
+				((UserCatalogEntry)this).equals((UserCatalogEntry)o) &&
+				contentProfile.equals(((ContentCatalogEntry)o).contentProfile));
 	}
 
 	/**

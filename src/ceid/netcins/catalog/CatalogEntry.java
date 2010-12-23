@@ -37,12 +37,8 @@ public abstract class CatalogEntry implements Serializable, Comparable {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof CatalogEntry)) {
-			return false;
-		}
-		CatalogEntry ce = (CatalogEntry) o;
-
-		return ce.getUID().equals(uid);
+		return (o instanceof CatalogEntry &&
+				uid.equals(((CatalogEntry)o).uid));
 	}
 
 	/**
