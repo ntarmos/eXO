@@ -678,7 +678,6 @@ public class HTMLParser implements HTMLParserConstants {
 	private int[] jj_lasttokens = new int[100];
 	private int jj_endpos;
 
-	@SuppressWarnings("unchecked")
 	private void jj_add_error_token(int kind, int pos) {
 		if (pos >= 100)
 			return;
@@ -688,7 +687,8 @@ public class HTMLParser implements HTMLParserConstants {
 			jj_expentry = new int[jj_endpos];
 			System.arraycopy(jj_lasttokens, 0, jj_expentry, 0, jj_endpos);
 			boolean exists = false;
-			for (java.util.Enumeration e = jj_expentries.elements(); e
+			for (@SuppressWarnings("rawtypes")
+			java.util.Enumeration e = jj_expentries.elements(); e
 					.hasMoreElements();) {
 				int[] oldentry = (int[]) (e.nextElement());
 				if (oldentry.length == jj_expentry.length) {
