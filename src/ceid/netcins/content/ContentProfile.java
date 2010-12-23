@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * This Class holds the Content Profile of a content object. Such an object is
@@ -77,8 +76,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 * @return a list with all (public and private) ContentFields
 	 */
 	public List<ContentField> getAllFields() {
-		// TODO: which is better to return: a live reference or a copy?
-		return new ArrayList<ContentField>(fields);
+		return fields;
 	}
 
 	/**
@@ -191,8 +189,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	@Override
 	public Set<String> getTermSet() {
 		List<ContentField> contentFields = this.getAllFields();
-		// FIXME: Any objection on TreeSet? Maybe we can use HashSet!? 
-		Set<String> profileTerms = new TreeSet<String>(); 
+		Set<String> profileTerms = new HashSet<String>();
 		// Put all the terms in the Set object to "discard" duplicates
 		for(ContentField cf : contentFields) {
 			if (cf instanceof TokenizedField) {
