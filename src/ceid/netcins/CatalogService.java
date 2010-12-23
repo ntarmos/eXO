@@ -973,7 +973,12 @@ public class CatalogService extends DHTService implements SocService {
 					}
 				}
 			}
-			// Convinience for use in MultiContinuation inner Class
+			if (checksum == null) {
+				// No checksum in file tags. Create an ID just from the file name
+				logger.log("No SHA-1 checksum! Computing an ID based on the file name alone.");
+				checksum = factory.buildId(file.getAbsolutePath());
+			}
+			// Convenience for use in MultiContinuation inner Class
 			final Id chsum = checksum;
 
 			// Our data which will travel through the network!!!
