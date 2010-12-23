@@ -7,10 +7,12 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -102,7 +104,7 @@ public class CatalogService extends DHTService implements SocService {
 	public static final int SUCCESS = 0;
 	public static final int FAILURE = 1;
 	public static final int EXCEPTION = 2;
-	
+
 	/**
 	 * Constructor pushes the appropriate arguments to DHTService and
 	 * initializes the Service.
@@ -854,51 +856,49 @@ public class CatalogService extends DHTService implements SocService {
 		final Id tid = factory.buildId(url.toString());
 
 		// Check the social bookmarks in the local user space first.
-		// 1.if there exist, update it
 		ContentProfile oldtags = tags;
 		Map<Id, SocialBookMark> bookMarks = user.getBookMarks();
 		if (bookMarks.containsKey(tid)
 				&& bookMarks.get(tid) instanceof URLBookMark) {
+			// 1.if there exist, update it
+
 			SocialBookMark ubm = bookMarks.get(tid);
 			oldtags = ubm.getTags();
-			List<ContentField> oldfields = oldtags.getPublicFields();
-			List<ContentField> fields = tags.getPublicFields();
-			Iterator<ContentField> it1 = oldfields.listIterator();
-			Iterator<ContentField> it2 = fields.listIterator();
-			ContentField cf1, cf2;
-			// Old profile loop
-			while (it1.hasNext()) {
-				cf1 = it1.next();
-				// new tags loop
-				while (it2.hasNext()) {
-					cf2 = it2.next();
+
+			for (Iterator<ContentField> it1 = oldtags.getAllFields().iterator(); it1.hasNext(); ) {
+				ContentField cf1 = it1.next();
+				for (Iterator<ContentField> it2 = tags.getAllFields().iterator(); it2.hasNext(); ) {
+					ContentField cf2 = it2.next();
 					if (cf1.getFieldName().equals(cf2.getFieldName())) {
-						// TODO : Check THIS
-						// TokenizedField should be more flexible (switch to
-						// vectors instead of static tables)
 						if (cf1 instanceof TokenizedField
-								&& cf2 instanceof TokenizedField) { // merge the
-																	// tags!!!!!
-							TokenizedField tf1 = (TokenizedField) cf1;
-							TokenizedField tf2 = (TokenizedField) cf2;
-							// TODO : The tf array now will contain arbitrary
-							// positions of term freqs
-							TreeSet<String> tags1 = new TreeSet<String>(Arrays
-									.asList(tf1.getTerms()));
-							TreeSet<String> tags2 = new TreeSet<String>(Arrays
-									.asList(tf2.getTerms()));
-							tags1.addAll(tags2);
-							tf1.setTerms(tags1.toArray(tf1.getTerms()));
+								&& cf2 instanceof TokenizedField) {
+							// merge the tags and add up the frequencies
+							((TokenizedField)cf1).merge((TokenizedField)cf2);
 						} else {
-							// TODO : IMPLEMENT THIS
+							String termA = null, termB = null;
+							if (!(cf1 instanceof TokenizedField)) {
+								termA = ((TermField)cf1).getFieldData();
+							}
+							if (!(cf2 instanceof TokenizedField)) {
+								termB = ((TermField)cf2).getFieldData();
+							}
+							if (termA != null && termB != null)
+								cf1 = new TermField(cf2.getFieldName(), termB);
+							else if (termA == null) {
+								((TokenizedField)cf1).addTerm(termB);
+							} else {
+								((TokenizedField)cf2).addTerm(termA);
+								cf1 = cf2;
+							}
 						}
 					} else {
 						oldtags.add(cf2);
 					}
 				}
 			}
-			// 2.if there is not, create it
 		} else {
+			// 2.if there is not, create it
+
 			user.addBookMark(tid, new URLBookMark(url, tags));
 		}
 
@@ -988,7 +988,7 @@ public class CatalogService extends DHTService implements SocService {
 			// Create MultiContinuation
 			// TODO : In order to index once every term we should use a Set
 			// instead of Vector!!!
-			Vector<String> indexingTerms = new Vector<String>(); // holds the
+			Set<String> indexingTerms = new HashSet<String>(); // holds the
 																	// indexing
 																	// terms
 																	// (Strings)
@@ -1067,10 +1067,9 @@ public class CatalogService extends DHTService implements SocService {
 				int index = 0;
 				Id tid;
 				String term;
-
-				while (!indexingTerms.isEmpty()) {
-
-					term = indexingTerms.remove(0);
+				Iterator<String> iter = indexingTerms.iterator();
+				while (iter.hasNext()) {
+					term = iter.next();
 					tid = factory.buildId(term);
 					PastContent pdu = new InsertPDU(tid, cce);
 					Continuation c = new NamedContinuation(
@@ -1078,6 +1077,7 @@ public class CatalogService extends DHTService implements SocService {
 									.getSubContinuation(index));
 					index++;
 					insert(pdu, c); // Here is the message post
+					iter.remove();
 				}
 				// End of Multicontinuation
 			}
@@ -1266,7 +1266,7 @@ public class CatalogService extends DHTService implements SocService {
 		// Create MultiContinuation
 		// TODO : In order to index once every term we should use a Set instead
 		// of Vector!!!
-		Vector<String> indexingTerms = new Vector<String>(); // holds the
+		Set<String> indexingTerms = new HashSet<String>(); // holds the
 																// indexing
 																// terms
 																// (Strings)
@@ -1362,9 +1362,9 @@ public class CatalogService extends DHTService implements SocService {
 			Id tid;
 			String term;
 
-			while (!indexingTerms.isEmpty()) {
-
-				term = indexingTerms.remove(0);
+			Iterator<String> iter = indexingTerms.iterator();
+			while (iter.hasNext()) {
+				term = iter.next();
 				tid = factory.buildId(term);
 				PastContent pdu = new InsertPDU(tid, cce);
 				Continuation c = new NamedContinuation(
@@ -1372,6 +1372,7 @@ public class CatalogService extends DHTService implements SocService {
 								.getSubContinuation(index));
 				index++;
 				insert(pdu, c); // Here is the message post
+				iter.remove();
 			}
 			// End of Multicontinuation
 		}
@@ -2322,8 +2323,6 @@ public class CatalogService extends DHTService implements SocService {
 				final FriendAcceptMessage famsg = (FriendAcceptMessage) msg;
 				lookups++;
 
-				// TODO : check "famsg.getSource().getId()" if NodeHandle calls
-				// some socket to retrieve ID
 				Id fid = famsg.getSource().getId();
 				user.removePendingOutgoingFReq(fid);
 
@@ -2338,13 +2337,10 @@ public class CatalogService extends DHTService implements SocService {
 
 				// Return the response now.
 				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
-				
 			} else if (msg instanceof FriendRejectMessage) {
 				final FriendRejectMessage frmsg = (FriendRejectMessage) msg;
 				lookups++;
 
-				// TODO : check "famsg.getSource().getId()" if NodeHandle calls
-				// some socket to retrieve ID
 				Id fid = frmsg.getSource().getId();
 				user.removePendingOutgoingFReq(fid);
 
@@ -2357,13 +2353,10 @@ public class CatalogService extends DHTService implements SocService {
 
 				// Return the response now.
 				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
-				
 			} else if (msg instanceof FriendReqMessage) {
 				final FriendReqMessage frmsg = (FriendReqMessage) msg;
 				lookups++;
 
-				// TODO : check "frmsg.getSource().getId()" if NodeHandle calls
-				// some socket to retrieve ID
 				user.addPendingIncomingFReq(new FriendRequest(frmsg.getFriendReqPDU(),
 						frmsg.getSource().getId(),
 						frmsg.getSource()));
@@ -2373,7 +2366,6 @@ public class CatalogService extends DHTService implements SocService {
 
 				// All was right!
 				getResponseContinuation(msg).receiveResult(Boolean.valueOf(true));
-				
 			} else if (msg instanceof TagContentMessage) {
 				final TagContentMessage tcmsg = (TagContentMessage) msg;
 				lookups++;
