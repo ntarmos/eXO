@@ -19,7 +19,7 @@ public abstract class ContentField implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3881344031651483680L;
-	public static final boolean defaultAccessMode = false;
+	public static final boolean defaultAccessMode = true;
 
 	// No setters for the fields below; remove and readd to update
 	String name;
