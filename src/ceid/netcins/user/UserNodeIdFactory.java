@@ -2,6 +2,8 @@ package ceid.netcins.user;
 
 import rice.pastry.Id;
 import rice.pastry.NodeIdFactory;
+import rice.pastry.standard.IPNodeIdFactory;
+import rice.pastry.standard.RandomNodeIdFactory;
 
 /**
  * Node ID factory, to be used in place of {@link NodeIdFactory} and friends.
@@ -51,13 +53,16 @@ public class UserNodeIdFactory implements NodeIdFactory {
 	}
 
 	public static Id generateNodeId(String username, String resource) {
-		byte ubytes[] = username.getBytes();
-		byte nbytes[] = resource.getBytes();
-		byte idbytes[] = new byte[ubytes.length + nbytes.length];
-		for (int i = 0; i < ubytes.length; i++)
-			idbytes[i] = ubytes[i];
-		for (int i = 0; i < nbytes.length; i++)
-			idbytes[ubytes.length + i] = nbytes[i];
-		return rice.pastry.Id.build(idbytes);
+		if (username == null || username.contains(User.ScreennameDelimiter) ||
+			resource == null || resource.contains(User.ScreennameDelimiter))
+			throw new RuntimeException(
+					"Username and resource name cannot be null or contain '" +
+					User.ScreennameDelimiter + "'");
+		StringBuffer buf = new StringBuffer();
+		buf.append(username);
+		buf.append(User.ScreennameDelimiter);
+		buf.append(resource);
+		byte bytes[] = buf.toString().getBytes();
+		return rice.pastry.Id.build(bytes);
 	}
 }

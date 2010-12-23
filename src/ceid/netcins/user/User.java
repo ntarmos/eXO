@@ -27,6 +27,7 @@ public class User {
 	public static final String UsernameTag = "Username";
 	public static final String ResourceTag = "Resource";
 	public static final String NotAvailableTag = "<N/A>";
+	public static final String ScreennameDelimiter = "/";
 
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
@@ -129,6 +130,11 @@ public class User {
 		this.uid = uid;
 		this.username = username;
 		this.resourceName = resourceName;
+		if ((username != null && username.contains(ScreennameDelimiter)) ||
+				(resourceName != null && resourceName.contains(ScreennameDelimiter)))
+			throw new RuntimeException("Username and resource name cannot contain '" +
+					ScreennameDelimiter + "'");
+
 		setUserProfile(userProfile);
 
 		if (friends == null)
@@ -307,6 +313,10 @@ public class User {
 
 	public String getResourceName() {
 		return resourceName;
+	}
+
+	public String getScreenName() {
+		return username + ScreennameDelimiter + resourceName;
 	}
 
 	public Vector<FriendRequest> getPendingIncomingFReq() {
