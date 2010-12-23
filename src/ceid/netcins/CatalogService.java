@@ -2159,8 +2159,7 @@ public class CatalogService extends DHTService implements SocService {
 				lookups++;
 
 				// if the data is here, we send the reply. 
-				// TODO: we may want to  push a cached copy back to the 
-				// previous node
+				// TODO: we may want to  push a cached copy back to the previous node
 				storage.getObject(qmsg.getId(), new StandardContinuation(
 						getResponseContinuation(qmsg)) {
 					public void receiveResult(Object o) {
@@ -2294,9 +2293,6 @@ public class CatalogService extends DHTService implements SocService {
 
 				Id fid = frmsg.getSource().getId();
 				user.removePendingOutgoingFReq(fid);
-
-				// TODO: Put the notification message somewhere to be read
-				// from the user.
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for FriendAcceptMessage "
