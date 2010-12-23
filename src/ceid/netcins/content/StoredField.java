@@ -18,6 +18,10 @@ public class StoredField extends ContentField implements Serializable {
 	private static final long serialVersionUID = 1163562213103678794L;
 	String fieldData;
 
+	public StoredField(String name, String fieldData, boolean isPublic) {
+		super(name, isPublic);
+		this.fieldData = fieldData;
+	}
 	public StoredField(String name, String fieldData) {
 		super(name);
 		this.fieldData = fieldData;
