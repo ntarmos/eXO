@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1563,7 +1564,7 @@ public class CatalogService extends DHTService implements SocService {
 			return;
 		}
 
-		List<Friend> friends = user.getFriends();
+		Hashtable<Id, Friend> friends = user.getFriends();
 		MultiContinuation multi = new MultiContinuation(command,
 				friends.size()) {
 
@@ -1601,7 +1602,7 @@ public class CatalogService extends DHTService implements SocService {
 		int i = 0;
 
 		// Iterate to lookup for every node we want to visit!
-		for (Friend friend : friends) {
+		for (Friend friend : friends.values()) {
 			
 			// Get the UID of the specific friend 
 			destId = friend.getUID();
