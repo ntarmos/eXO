@@ -5,7 +5,6 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -16,7 +15,6 @@ import rice.Continuation;
 import rice.p2p.past.PastException;
 import rice.pastry.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.json.Json;
 
