@@ -129,8 +129,37 @@ public class CatalogService extends DHTService implements SocService {
 		}, "Scorer");
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void start() {
 		scorerThread.start();
+
+		indexUser(new Continuation() {
+			public void receiveResult(Object result) {
+				System.out.println("User : " + user.getUID()
+						+ ", indexed successfully");
+				// TODO : Check the replicas if are updated correctly!
+				// run replica maintenance
+				// runReplicaMaintence();
+				if (result instanceof Boolean[]) {
+					Boolean[] results = (Boolean[]) result;
+					int indexedNum = 0;
+					if (results != null)
+						for (Boolean isIndexedTerm : results) {
+							if (isIndexedTerm)
+								indexedNum++;
+						}
+					System.out.println("Total " + indexedNum
+							+ " terms indexed out of " + results.length
+							+ "!");
+				}
+			}
+
+			public void receiveException(Exception result) {
+				System.out.println("User : " + user.getUID()
+						+ ", indexed with errors : "
+						+ result.getMessage());
+			}
+		});
 	}
 
 	/**
