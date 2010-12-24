@@ -72,8 +72,11 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 
 		// If local request, return immediately
 		if (UID == null) {
+			Vector<Object> na = new Vector<Object>();
+			na.add(RequestStatusSuccessTag);
 			Set<Id> contentIDs = catalogService.getUser().getSharedContentIDs();
-			response.getWriter().write(Json.toString(contentIDs.toArray()));
+			na.add(contentIDs.toArray());
+			response.getWriter().write(Json.toString(na.toArray()));
 			return;
 		}
 
