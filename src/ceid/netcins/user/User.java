@@ -1,7 +1,10 @@
 package ceid.netcins.user;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +59,10 @@ public class User {
 	private List<Friend> friends;
 
 	// Friendship requests pending to be confirmed by user
-	private Vector<FriendRequest> pendingIncomingFReq;
+	private Hashtable<Id, FriendRequest> pendingIncomingFReq;
 
 	// Friendship requests that user waits to be approved by his candidate friends
-	private Vector<Id> pendingOutgoingFReq;
+	private Set<Id> pendingOutgoingFReq;
 
 	// Map of shared files with their corresponding SHA-1 checksums and 	content profile.
 	// TIP : SHA-1 checksum is returned by "libextractor", so we need to use
@@ -148,8 +151,8 @@ public class User {
 			this.friends = new Vector<Friend>();
 		else
 			this.friends = friends;
-		this.pendingIncomingFReq = new Vector<FriendRequest>();
-		this.pendingOutgoingFReq = new Vector<Id>();
+		this.pendingIncomingFReq = new Hashtable<Id, FriendRequest>();
+		this.pendingOutgoingFReq = Collections.synchronizedSet(new HashSet<Id>());
 		this.sharedContent = new HashMap<Id, SharedContentInfo>();
 		this.bookMarks = new HashMap<Id, SocialBookMark>();
 		this.contentTagClouds = new HashMap<Id, TagCloud>();
@@ -303,11 +306,11 @@ public class User {
 		return username + ScreennameDelimiter + resourceName;
 	}
 
-	public Vector<FriendRequest> getPendingIncomingFReq() {
+	public Hashtable<Id, FriendRequest> getPendingIncomingFReq() {
 		return pendingIncomingFReq;
 	}
 
-	public Vector<Id> getPendingOutgoingFReq() {
+	public Set<Id> getPendingOutgoingFReq() {
 		return pendingOutgoingFReq;
 	}
 
@@ -359,7 +362,7 @@ public class User {
 	}
 
 	public void addPendingIncomingFReq(FriendRequest freq) {
-		pendingIncomingFReq.add(freq);
+		pendingIncomingFReq.put(freq.getUID(), freq);
 	}
 
 	public void addPendingOutgoingFReq(Id uid) {
