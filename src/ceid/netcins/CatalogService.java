@@ -1272,11 +1272,19 @@ public class CatalogService extends DHTService implements SocService {
 			if (cf.getFieldName().equals("SHA-1")) {
 				checksum = factory.buildIdFromToString(((StoredField) cf)
 						.getFieldData());
+				/*
 				if (user.getSharedContent().containsKey(checksum)) {
 					System.out.println("File has already been indexed!");
+					command.receiveException(new PastException("File has already been indexed!"));
 					return;
 				}
+				*/
 			}
+		}
+		if (checksum == null) {
+			// No checksum in file tags. Create an ID just from the file name
+			logger.log("No SHA-1 checksum! Computing an ID based on the file name alone.");
+			checksum = factory.buildId(cp.toStringWithoutTF().getBytes());
 		}
 		// Convinience for use in MultiContinuation inner Class
 		final Id chsum = checksum;
