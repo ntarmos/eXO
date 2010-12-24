@@ -69,6 +69,35 @@ public class Json extends JSON {
 		buffer.append('}');
 	}
 
+	/*
+	 * Hide JSON.toString(Object)
+	 */
+    public static String toString(Object object)
+    {
+        StringBuffer buffer=new StringBuffer(DEFAULT.getStringBufferSize());
+        synchronized (buffer)
+        {
+            DEFAULT.append(buffer,object);
+            return buffer.toString();
+        }
+    }
+
+	/*
+	 * Hide JSON.toString(Object[])
+	 */
+    public static String toString(Object[] array)
+    {
+        StringBuffer buffer=new StringBuffer(instance.getStringBufferSize());
+        synchronized (buffer)
+        {
+            instance.appendArray(buffer,array);
+            return buffer.toString();
+        }
+    }
+
+    /*
+     * Hide JSON.toString(Map)
+     */
 	@SuppressWarnings("rawtypes")
 	public static String toString(Map object)
 	{
