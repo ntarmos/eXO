@@ -122,7 +122,32 @@
     return true;
   }
 
+  function start_polling(reqID){
+    $.ajax({
+      type: 'POST',
+      url: "/servlet/SetUserProfile/",
+      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
+      success: function(data){ polling_callback(data, reqID) },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert("An error occurred : "+textStatus);
+      }
+    });
+  }
+  function polling_callback(polling_data, reqID){
+    if("eXO::Status" in polling_data[0]){
+      if(polling_data[0]["eXO::Status"]=="eXO::Processing"){
+        start_polling(reqID);
+      }
+      // On stop of processing issue a new get profile request.
+      do_get_profile();
+    }
+  }
+
   function do_post_profile(){
+    // Show loading indicator
+    $("#content-main-loading").show();
+    $("#myprofile-body").hide();
+
     // Get username and resource
     $.ajax({
       type: 'POST',
@@ -130,7 +155,17 @@
       dataType: 'json',
       data: {eXO_data: JSON.stringify({"eXO::Profile" :profile_dict })},
       success: function(data){
-          alert("successfully updated");
+          // Returned data e.g.: {"eXO::reqID":"-65916537"}
+          // Poll till success
+          // Rerender profiles and rebind events
+          if("eXO::reqID" in data){
+              start_polling(data["eXO::reqID"]);
+          }else if("eXO::Status" in data[0]){
+              do_get_profile();
+          }
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert("An error occurred : "+textStatus);
       }
     });
   }
@@ -201,55 +236,7 @@
     return template;
   }
 
-  $(function (){
-    // Show/hide the Loading indicator
-    $("#loading-indicator").ajaxStart(function(){
-       $(this).show();
-    }).ajaxStop(function(){
-      var indicator = $(this);
-      setTimeout(function(){ indicator.fadeOut() }, 500);
-    });
-
-    $('.add-field').click(function(){
-      var instance = $(this).parents(".profile-wrapper");
-      $('.new-field', instance).toggle();
-      return false;
-    });
-
-    $('.new-field .button-wrapper a.form-cancel').click(function(){
-      $(this).parents('.new-field').hide();
-      return false;
-    });
-
-    $('.new-field .add-tag-form').submit(function(){
-      var instance = $(this);
-      var new_field_instance = $(this).parents(".new-field");
-      var str = $('.tag-input', instance).val().trim();
-      if(str!=''){
-        var tag_html = '<span class="single-tag">'
-                     + '  <span class="value">'
-                     + str
-                     + '  </span>'
-                     + '  <a class="close" href="#">1</a>'
-                     + '</span>';
-        $('div.tag-field-data', new_field_instance).append(tag_html);
-
-        // Bind remove event for new tag
-        $('.single-tag a.close', new_field_instance).click(function(){
-          $(this).parent().remove();
-          return false;
-        });
-        $('.tag-input', new_field_instance).val('');
-      }
-      return false;
-    });
-
-    $(".new-field .create-action").click(function(){
-      var instance = $(this).parents('.new-field');
-      update_profile_instance(null, instance);
-      do_post_profile();
-    });
-
+  function do_get_profile(){
     // Get username and resource
     $.ajax({
       url: "/servlet/GetUserProfile/",
@@ -432,6 +419,11 @@
           return false;
         });
 
+        // Clean hidden forms
+        $(".new-field div.tag-field-data").html("");
+        $(".new-field .field-name").val("");
+        $(".new-field .tag-input").val("");
+
         // Hide/show content divs
         setTimeout(function(){ 
           $("#content-main-loading").hide();
@@ -442,6 +434,58 @@
         alert("An error occurred : "+textStatus);
       }
     });
+  }
+
+  $(function (){
+    // Show/hide the Loading indicator
+    $("#loading-indicator").ajaxStart(function(){
+       $(this).show();
+    }).ajaxStop(function(){
+      var indicator = $(this);
+      setTimeout(function(){ indicator.fadeOut() }, 500);
+    });
+
+    $('.add-field').click(function(){
+      var instance = $(this).parents(".profile-wrapper");
+      $('.new-field', instance).toggle();
+      return false;
+    });
+
+    $('.new-field .button-wrapper a.form-cancel').click(function(){
+      $(this).parents('.new-field').hide();
+      return false;
+    });
+
+    $('.new-field .add-tag-form').submit(function(){
+      var instance = $(this);
+      var new_field_instance = $(this).parents(".new-field");
+      var str = $('.tag-input', instance).val().trim();
+      if(str!=''){
+        var tag_html = '<span class="single-tag">'
+                     + '  <span class="value">'
+                     + str
+                     + '  </span>'
+                     + '  <a class="close" href="#">1</a>'
+                     + '</span>';
+        $('div.tag-field-data', new_field_instance).append(tag_html);
+
+        // Bind remove event for new tag
+        $('.single-tag a.close', new_field_instance).click(function(){
+          $(this).parent().remove();
+          return false;
+        });
+        $('.tag-input', new_field_instance).val('');
+      }
+      return false;
+    });
+
+    $(".new-field .create-action").click(function(){
+      var instance = $(this).parents('.new-field');
+      update_profile_instance(null, instance);
+      do_post_profile();
+    });
+
+   do_get_profile();
   });
   </script>
 </head>
