@@ -151,6 +151,7 @@ public class CatalogFrontend {
 			logger.logException("Unable to create pastry node", e);
 			throw e;
 		}
+		System.err.println("User/Node ID: " + id.toStringFull());
 	}
 
 	public static int nextReqID() {

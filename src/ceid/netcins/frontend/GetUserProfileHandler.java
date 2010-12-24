@@ -104,7 +104,6 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 			}
 		}
 		ContentProfile userProfile = catalogService.getUserProfile();
-		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
 		Vector<Object> res = new Vector<Object>();
 		if (userProfile != null) {
 			res.add(RequestSuccess);
