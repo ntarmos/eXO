@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -56,7 +55,7 @@ public class User {
 	private ContentProfile userProfile;
 
 	// The list of friends' UIDs
-	private List<Friend> friends;
+	private Hashtable<Id, Friend> friends;
 
 	// Friendship requests pending to be confirmed by user
 	private Hashtable<Id, FriendRequest> pendingIncomingFReq;
@@ -136,7 +135,7 @@ public class User {
 	 * @param friends
 	 */
 	public User(Id uid, String username, String resourceName, ContentProfile userProfile,
-			List<Friend> friends) {
+			Hashtable<Id, Friend> friends) {
 		this.uid = uid;
 		this.username = username;
 		this.resourceName = resourceName;
@@ -148,7 +147,7 @@ public class User {
 		setUserProfile(userProfile);
 
 		if (friends == null)
-			this.friends = new Vector<Friend>();
+			this.friends = new Hashtable<Id, Friend>();
 		else
 			this.friends = friends;
 		this.pendingIncomingFReq = new Hashtable<Id, FriendRequest>();
@@ -255,11 +254,7 @@ public class User {
 	 * @return True if he is a friend, false if he is not.
 	 */
 	public boolean isFriend(Id user){
-		for(Friend f : this.friends){
-			if(f.getUID().equals(user))
-				return true;
-		}
-		return false;
+		return friends.containsKey(user);
 	}
 
 	public void setUserProfile(ContentProfile userProfile) {
@@ -274,10 +269,6 @@ public class User {
 		this.userProfile.add(new TermField(ResourceTag, resourceName, true));
 	}
 
-	public void setFriends(List<Friend> friends) {
-		this.friends = friends;
-	}
-
 	public ContentProfile getCompleteUserProfile() {
 		return userProfile;
 	}
@@ -286,7 +277,7 @@ public class User {
 		return userProfile.getPublicPart();
 	}
 
-	public List<Friend> getFriends() {
+	public Hashtable<Id, Friend> getFriends() {
 		return friends;
 	}
 
@@ -358,7 +349,7 @@ public class User {
 	 * @param friend
 	 */
 	public void addFriend(Friend friend) {
-		friends.add(friend);
+		friends.put(friend.getUID(), friend);
 	}
 
 	public void addPendingIncomingFReq(FriendRequest freq) {
