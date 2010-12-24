@@ -22,6 +22,119 @@
   /* Global Vars */
   var profile_dict = null;
 
+   // If the field_name is null, a new field is about to be created!
+  function update_profile_instance(old_field_name, form_obj){
+    if(profile_dict==null)
+      return false;
+    var i=0;
+    if(old_field_name!=null){
+      for(i in profile_dict){
+        if(profile_dict[i]["eXO::FieldName"]==old_field_name)
+          break;
+      }
+    }
+    
+    // Get new field name
+    var new_field_name = $(".field-name", form_obj).val();
+    if(new_field_name == ''){
+      alert("Field name should not be empty!");
+      return false;
+    }
+    // For new fields only
+    if(old_field_name==null){
+      for(j in profile_dict){
+        if(profile_dict[j]["eXO::FieldName"]==new_field_name){
+          alert("The field name "+ new_field_name +" already exists. Please insert"
+               +" a non-existent field name!");
+          return false;
+        }
+      }
+    }
+
+    // Get priv/public
+    var new_privacy = false;
+    if(old_field_name==null){
+      var prefix = form_obj.attr('id').split("-")[0];
+      if(prefix=='pri')
+        new_privacy = false;
+      else
+        new_privacy = true;
+    }else{
+      if($("input.change_privacy", form_obj).is(":checked")){
+        if(profile_dict[i]["eXO::FieldIsPublic"] == false){
+          new_privacy = true;
+        }else{
+          new_privacy = false;
+        }
+      }else{
+        if(profile_dict[i]["eXO::FieldIsPublic"] == false){
+          new_privacy = false;
+        }else{
+          new_privacy = true;
+        }
+      }
+    }
+
+    // Get new field data/terms
+    var tags = $(".single-tag .value", form_obj);
+    
+    if(tags.length == 0){
+      alert("Fields should contain at least one tag!");
+      return false;
+    }else if(tags.length>1){
+      var terms = [], tf = [] ;
+      tags.each(function(index){
+        terms[index] = $(this).text().trim();
+        tf[index] = 0;
+        if(terms[index] == ""){
+          alert("Fields should not contain empty tags!");
+          return false;
+        }
+      });
+      if(old_field_name==null)
+        profile_dict[profile_dict.length] = { 'eXO::FieldName' : new_field_name,
+                                              'eXO::Terms' : terms,
+                                              'eXO::TFScores' : tf,
+                                              'eXO::FieldIsPublic' : new_privacy };
+      else
+        profile_dict[i] = { 'eXO::FieldName' : new_field_name,
+                            'eXO::Terms' : terms,
+                            'eXO::TFScores' : tf,
+                            'eXO::FieldIsPublic' : new_privacy };
+    } else {
+      var field_data = ''
+      tags.each(function(index){
+        field_data = $(this).text().trim();
+        if(field_data == ""){
+          alert("Fields should not contain empty tags!");
+          return false;
+        }
+      });
+      if(old_field_name==null)
+        profile_dict[profile_dict.length] = { 'eXO::FieldName' : new_field_name,
+                                              'eXO::FieldData' : field_data,
+                                              'eXO::FieldIsPublic' : new_privacy };
+      else
+        profile_dict[i] = { 'eXO::FieldName' : new_field_name,
+                            'eXO::FieldData' : field_data,
+                            'eXO::FieldIsPublic' : new_privacy };
+    }
+    return true;
+  }
+
+  function do_post_profile(){
+    // Get username and resource
+    $.ajax({
+      type: 'POST',
+      url: "/servlet/SetUserProfile/",
+      dataType: 'json',
+      data: {eXO_data: JSON.stringify({"eXO::Profile" :profile_dict })},
+      success: function(data){
+          alert("successfully updated");
+      }
+    });
+  }
+
   function edit_field_template(field_name, row_number){
     var template = '';
     var row_dict = null;
@@ -44,7 +157,7 @@
         +'  <div class="span-9">Field Name</div>'
         +'  <div class="span-10">Add Tags</div>'
         +'  <div class="span-9 clear">'
-        +'    <input type="text" name="fieldname" value="'+ field_name +'">'
+        +'    <input class="field-name" type="text" name="fieldname" value="'+ field_name +'">'
         +'  </div>'
         +'  <div class="span-10">'
         +'  <form class="add-tag-form" action="#/add_tag" method="post">'
@@ -55,17 +168,21 @@
         +'  <div class="clear">Currently Added Tags :</div>'
         +'  <div class="clear tag-field-data" style="margin-top:1em">';
 
-      if(typeof(row_dict["eXO::FieldData"])==Array){
-        for(tag in row_dict["eXO::FieldData"]){
+      if(row_dict["eXO::FieldData"]=== undefined){
+        for(tag in row_dict["eXO::Terms"]){
           var tag_html = '<span class="single-tag">'
-                     + row_dict["eXO::FieldData"][tag]
+                     + '  <span class="value">'
+                     + row_dict["eXO::Terms"][tag]
+                     + '  </span>'
                      + '  <a class="close" href="#">1</a>'
                      + '</span>';
           template += tag_html;
         }
       } else {
         var tag_html = '<span class="single-tag">'
+                   + '  <span class="value">'
                    + row_dict["eXO::FieldData"]
+                   + '  </span>'
                    + '  <a class="close" href="#">1</a>'
                    + '</span>';
         template += tag_html;
@@ -73,10 +190,10 @@
 
       template += '  </div>'
         +'  <div class="clear">'
-        +'    <label>'+ label +'</label><input type="checkbox">'
+        +'    <label>'+ label +'</label><input class="change_privacy" type="checkbox">'
         +'  </div>'
         +'  <div class="button-wrapper" class="clear">'
-        +'    <button>update</button>'
+        +'    <button class="update-action">update</button>'
         +'    <span>or <a class="form-cancel" href="#">cancel</a>'
         +'  </div>'
         +'</div>';
@@ -110,7 +227,9 @@
       var str = $('.tag-input', instance).val().trim();
       if(str!=''){
         var tag_html = '<span class="single-tag">'
+                     + '  <span class="value">'
                      + str
+                     + '  </span>'
                      + '  <a class="close" href="#">1</a>'
                      + '</span>';
         $('div.tag-field-data', new_field_instance).append(tag_html);
@@ -123,6 +242,12 @@
         $('.tag-input', new_field_instance).val('');
       }
       return false;
+    });
+
+    $(".new-field .create-action").click(function(){
+      var instance = $(this).parents('.new-field');
+      update_profile_instance(null, instance);
+      do_post_profile();
     });
 
     // Get username and resource
@@ -141,15 +266,21 @@
           }else if(data[dict]["eXO::FieldName"]=="Resource"){
             resource = data[dict]["eXO::FieldData"];
           }else{
+            var tags;
+            if(data[dict]["eXO::FieldData"]=== undefined){
+              tags = data[dict]["eXO::Terms"];
+            }else{
+              tags = data[dict]["eXO::FieldData"];
+            }
             fieldname = data[dict]["eXO::FieldName"];
             if(data[dict]["eXO::FieldIsPublic"]==true){
               if(public_profile_body==null)
                 public_profile_body = {};
-              public_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+              public_profile_body[fieldname] = tags;
             }else{
               if(private_profile_body==null)
                 private_profile_body = {};
-              private_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+              private_profile_body[fieldname] = tags;
             }
           }
         }
@@ -161,9 +292,23 @@
 
         // Fill the body with the retrieved data
         if(public_profile_body!=null){
-          var tag_rows = '';
+          var tag_rows = '', tags_template;
           var i = 0;
           for(field in public_profile_body){
+            tags_template = '';
+            if(public_profile_body[field].constructor == Array){
+              for(t in public_profile_body[field]){
+               tags_template += '<span class="single-tag">'
+                              + public_profile_body[field][t]
+                              + '  <a class="close" href="#">1</a>'
+                              + '</span>&nbsp;';
+              }
+            }else{
+              tags_template += '<span class="single-tag">'
+                              + public_profile_body[field]
+                              + '  <a class="close" href="#">1</a>'
+                              + '</span>&nbsp;';
+            }
             tag_rows += '<div id="pub-tag-row-'+ i +'" class="tag-row">'
               + '  <div class="actions-wrapper">'
               + '    <div class="row-actions">'
@@ -179,9 +324,7 @@
               + '  </div>'
               + '  <div class="tag-field-name span-3">'+ field + '</div>'
               + '  <div class="tag-field-data">'
-              + '    <span class="single-tag">' + public_profile_body[field]
-              + '      <a class="close" href="#">1</a>'
-              + '    </span>&nbsp;'
+              + tags_template
               + '  </div>'
               + '</div>';
             i++;
@@ -248,7 +391,9 @@
              var str = $('.tag-input', edit_intance).val().trim();
              if(str!=''){
                var tag_html = '<span class="single-tag">'
+                            + '  <span class="value">'
                             + str
+                            + '  </span>'
                             + '  <a class="close" href="#">1</a>'
                             + '</span>';
                $('div.tag-field-data', edit_intance).append(tag_html);
@@ -261,6 +406,12 @@
                $('.tag-input', edit_intance).val('');
             }
             return false;
+          });
+
+          // Bind update click
+          $(".update-action", edit_intance).click(function(){
+            update_profile_instance(field_name, edit_intance)
+            do_post_profile();
           });
           return false;
         });
@@ -362,7 +513,7 @@
               <div class="span-9">Field Name</div>
               <div class="span-10">Add Tags</div>
               <div class="span-9 clear">
-                <input type="text" name="fieldname" />
+                <input class="field-name" type="text" name="fieldname" />
               </div>
               <div class="span-10">
                 <form class="add-tag-form" action="#/add_tag/public" method="post">
@@ -373,7 +524,7 @@
               <div class="clear">Currently Added Tags :</div>
               <div class="clear tag-field-data" style="margin-top:1em"></div>
               <div class="button-wrapper" class="clear">
-                <button>create</button>
+                <button class="create-action">create</button>
                 <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
               </div>
             </div>
@@ -393,7 +544,7 @@
               <div class="span-9">Field Name</div>
               <div class="span-10">Add Tags</div>
               <div class="span-9 clear">
-                <input type="text" name="fieldname" />
+                <input class="field-name" type="text" name="fieldname" />
               </div>
               <div class="span-10">
                 <form class="add-tag-form" action="#/add_tag/private" method="post">
@@ -404,7 +555,7 @@
               <div class="clear">Currently Added Tags :</div>
               <div class="clear tag-field-data" style="margin-top:1em"></div>
               <div class="button-wrapper" class="clear">
-                <button>create</button>
+                <button class="create-action">create</button>
                 <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
               </div>
             </div>
