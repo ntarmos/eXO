@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import rice.Continuation;
 import rice.pastry.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.json.Json;
 
@@ -96,12 +94,14 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		}
 		ContentProfile userProfile = catalogService.getUserProfile();
 		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
+		Vector<Object> res = new Vector<Object>();
 		if (userProfile != null) {
-			Set<ContentField> cflist = userProfile.getAllFields();
-			response.getWriter().write(Json.toString(cflist.toArray()));
+			res.add(RequestStatusSuccessTag);
+			res.add(userProfile);
 		} else {
-			response.getWriter().write(Json.toString(new HashMap<String, String>()));
+			res.add(RequestStatusFailureTag);
 		}
+		response.getWriter().write(Json.toString(res.toArray()));
 		response.flushBuffer();
 	}
 }
