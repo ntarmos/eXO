@@ -38,7 +38,16 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
 			param = URLDecoder.decode(param, DefaultEncoding);
-			Object jsonParams = Json.parse(param);
+			Object jsonParams = null;
+			try {
+				jsonParams = Json.parse(param);
+			} catch (IllegalStateException e) {
+				Vector<Object> res = new Vector<Object>();
+				res.add(RequestStatusFailureTag);
+				response.getWriter().write(Json.toString(res.toArray()));
+				System.err.println("Error parsing JSON request");
+				return;
+			}
 			if (jsonParams instanceof Map) {
 				Map jsonMap = (Map)jsonParams;
 				if (jsonMap.containsKey(ReqIDTag)) {

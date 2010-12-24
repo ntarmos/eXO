@@ -36,7 +36,16 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 		String UID = null;
 		if (param != null) {
 			param = URLDecoder.decode(param, DefaultEncoding);
-			Object jsonParams = Json.parse(param);
+			Object jsonParams = null;
+			try {
+				jsonParams = Json.parse(param);
+			} catch (IllegalStateException e) {
+				Vector<Object> res = new Vector<Object>();
+				res.add(RequestStatusFailureTag);
+				response.getWriter().write(Json.toString(res.toArray()));
+				System.err.println("Error parsing JSON request");
+				return;
+			}
 			if (jsonParams instanceof Map) {
 				@SuppressWarnings("rawtypes")
 				Map jsonMap = (Map)jsonParams;
