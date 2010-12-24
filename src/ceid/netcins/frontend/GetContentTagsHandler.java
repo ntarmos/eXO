@@ -83,7 +83,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 			if (cp != null) {
 				Vector<Object> res = new Vector<Object>();
 				res.add(RequestSuccess);
-				res.add(cp.getAllFields().toArray());
+				res.add(cp);
 				response.getWriter().write(Json.toString(res.toArray()));
 				return;
 			}
@@ -111,7 +111,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 
 					Vector<Object> res = new Vector<Object>();
 					res.add(RequestSuccess);
-					res.add(((ContentProfile)result).getAllFields().toArray());
+					res.add(((ContentProfile)result));
 					queue.put(reqID, res);
 				}
 
