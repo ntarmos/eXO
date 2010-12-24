@@ -1734,7 +1734,7 @@ public class CatalogService extends DHTService implements SocService {
 		ScoreBoard sc = null;
 		boolean done = false;
 		ContentProfile cprof;
-		List<ContentField> listFields;
+		Set<ContentField> listFields;
 		Iterator<ContentField> itf;
 		ContentField cf;
 

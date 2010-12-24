@@ -2,7 +2,7 @@ package ceid.netcins.catalog;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import rice.p2p.commonapi.Id;
 import ceid.netcins.content.ContentField;
@@ -55,7 +55,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 	 */
 	public String getCheckSum() {
 
-		List<ContentField> list = contentProfile.getAllFields();
+		Set<ContentField> list = contentProfile.getAllFields();
 		Iterator<ContentField> it = list.iterator();
 		ContentField cf;
 		while (it.hasNext()) {

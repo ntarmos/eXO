@@ -3,8 +3,8 @@ package ceid.netcins.frontend;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -97,7 +97,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		ContentProfile userProfile = catalogService.getUserProfile();
 		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
 		if (userProfile != null) {
-			List<ContentField> cflist = userProfile.getAllFields();
+			Set<ContentField> cflist = userProfile.getAllFields();
 			response.getWriter().write(Json.toString(cflist.toArray()));
 		} else {
 			response.getWriter().write(Json.toString(new HashMap<String, String>()));

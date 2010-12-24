@@ -267,7 +267,7 @@ public class User {
 			this.userProfile = new ContentProfile();
 
 		boolean foundUName = false, foundRName = false;
-		List<ContentField> fields = this.userProfile.getAllFields();
+		Set<ContentField> fields = this.userProfile.getAllFields();
 		if (fields != null) {
 			for (ContentField cf : fields) {
 				if (cf instanceof TermField) {

@@ -3,6 +3,7 @@ package ceid.netcins.content;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -19,13 +20,13 @@ public class ContentProfile implements Serializable, ProfileSet {
 
 	private static final long serialVersionUID = -3971044346421201440L;
 
-	List<ContentField> fields;
+	Set<ContentField> fields;
 
 	/**
 	 * Default constructor
 	 */
 	public ContentProfile() {
-		this.fields = new ArrayList<ContentField>();
+		this.fields = Collections.synchronizedSet(new HashSet<ContentField>());
 	}
 
 	/**
@@ -35,7 +36,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 */
 	public ContentProfile(ContentProfile cp) {
 		if (cp != null)
-			this.fields = new ArrayList<ContentField>(cp.fields);
+			this.fields = Collections.synchronizedSet(new HashSet<ContentField>(cp.fields));
 		else
 			this.fields = null;
 	}
@@ -75,7 +76,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 *
 	 * @return a list with all (public and private) ContentFields
 	 */
-	public List<ContentField> getAllFields() {
+	public Set<ContentField> getAllFields() {
 		return fields;
 	}
 
@@ -153,7 +154,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 		Random random = new Random();
 		int i = 0;
 		while (i++ < 1000) {
-			Object o = this.fields.get(random.nextInt(fields.size()));
+			Object o = this.fields.toArray()[random.nextInt(fields.size())];
 			if (o instanceof TokenizedField) {
 				TokenizedField tokf = (TokenizedField) o;
 				return tokf.randomTerm();
@@ -188,7 +189,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 
 	@Override
 	public Set<String> getTermSet() {
-		List<ContentField> contentFields = this.getAllFields();
+		Set<ContentField> contentFields = this.getAllFields();
 		Set<String> profileTerms = new HashSet<String>();
 		// Put all the terms in the Set object to "discard" duplicates
 		for(ContentField cf : contentFields) {
@@ -208,7 +209,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 
 	@Override
 	public Set<String> getTermSet(Set<String> reusableContainer) {
-		List<ContentField> contentFields = this.getAllFields();
+		Set<ContentField> contentFields = this.getAllFields();
 		// Ensure container is empty 
 		reusableContainer.clear();
 		// Put all the terms in the Set object to "discard" duplicates

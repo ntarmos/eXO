@@ -3,8 +3,8 @@ package ceid.netcins.frontend;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -70,7 +70,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		ContentProfile cp = catalogService.getUser().getSharedContentProfile(Id.build(CID));
 		if (UID == null) { // Local resource. Return immediately.
 			if (cp != null) {
-				List<ContentField> cflist = cp.getAllFields();
+				Set<ContentField> cflist = cp.getAllFields();
 				response.getWriter().write(Json.toString(cflist.toArray()));
 				return;
 			}
