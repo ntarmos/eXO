@@ -256,24 +256,28 @@
       dataType: 'json',
       data: "",
       success: function(data){
-        profile_dict = data;
+        if(data[0]["eXO::Status"]!="eXO::Success"){
+          alert("Failed to access user profile data!");
+          return false;
+        }
+        profile_dict = data[1]["eXO::Profile"];
         // Fill in the data to the corresponding places
         var username="Incognito", resource="Home", public_profile_body = null,
           private_profile_body = null, fieldname;
-        for(dict in data){
-          if(data[dict]["eXO::FieldName"]=="Username"){
-            username = data[dict]["eXO::FieldData"];
-          }else if(data[dict]["eXO::FieldName"]=="Resource"){
-            resource = data[dict]["eXO::FieldData"];
+        for(dict in profile_dict){
+          if(profile_dict[dict]["eXO::FieldName"]=="Username"){
+            username = profile_dict[dict]["eXO::FieldData"];
+          }else if(profile_dict[dict]["eXO::FieldName"]=="Resource"){
+            resource = profile_dict[dict]["eXO::FieldData"];
           }else{
             var tags;
-            if(data[dict]["eXO::FieldData"]=== undefined){
-              tags = data[dict]["eXO::Terms"];
+            if(profile_dict[dict]["eXO::FieldData"]=== undefined){
+              tags = profile_dict[dict]["eXO::Terms"];
             }else{
-              tags = data[dict]["eXO::FieldData"];
+              tags = profile_dict[dict]["eXO::FieldData"];
             }
-            fieldname = data[dict]["eXO::FieldName"];
-            if(data[dict]["eXO::FieldIsPublic"]==true){
+            fieldname = profile_dict[dict]["eXO::FieldName"];
+            if(profile_dict[dict]["eXO::FieldIsPublic"]==true){
               if(public_profile_body==null)
                 public_profile_body = {};
               public_profile_body[fieldname] = tags;
@@ -422,8 +426,8 @@
 
           // Bind update click
           $(".update-action", edit_intance).click(function(){
-            update_profile_instance(field_name, edit_intance)
-            do_post_profile();
+            if(update_profile_instance(field_name, edit_intance))
+              do_post_profile();
           });
           return false;
         });
