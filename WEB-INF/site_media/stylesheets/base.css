@@ -341,12 +341,12 @@ a:hover {
   color: #333;
   font-size: 1.2em;
 }
-/* line 169, ../src/_middle_wrapper.scss */
-#content-main #myprofile-body .tag-row .tag-field-data {
+/* line 170, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-field-data {
   font-size: 1.1em;
 }
-/* line 171, ../src/_middle_wrapper.scss */
-#content-main #myprofile-body .tag-row .tag-field-data .single-tag {
+/* line 172, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-field-data .single-tag {
   position: relative;
   padding: 3px 15px 3px 8px;
   border-radius: 6px;
@@ -359,12 +359,12 @@ a:hover {
   font-size: 0.75em;
   font-weight: bold;
 }
-/* line 185, ../src/_middle_wrapper.scss */
-#content-main #myprofile-body .tag-row .tag-field-data .single-tag:hover {
+/* line 186, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-field-data .single-tag:hover {
   background-color: #d6e1f6;
 }
-/* line 188, ../src/_middle_wrapper.scss */
-#content-main #myprofile-body .tag-row .tag-field-data .single-tag a.close {
+/* line 189, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .tag-field-data .single-tag a.close {
   display: block;
   position: absolute;
   right: 4px;
@@ -382,32 +382,66 @@ a:hover {
 #content-main #myprofile-body a.close:hover {
   background-position: center;
 }
-/* line 209, ../src/_middle_wrapper.scss */
+/* line 207, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .new-field, #content-main #myprofile-body .edit-field {
+  background-color: #efefef;
+  margin: 1em 3em;
+  padding: 2em;
+  min-height: 100px;
+}
+/* line 212, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .new-field .single-tag, #content-main #myprofile-body .edit-field .single-tag {
+  font-size: 1em;
+  /* Resetting the font-size */
+  display: inline-block;
+  margin: 0.2em;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+/* line 219, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .new-field .button-wrapper, #content-main #myprofile-body .edit-field .button-wrapper {
+  margin-top: 1em;
+  text-align: center;
+}
+/* line 222, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .new-field .button-wrapper a, #content-main #myprofile-body .edit-field .button-wrapper a {
+  color: #FF0000;
+}
+/* line 227, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .new-field {
+  display: none;
+}
+/* line 230, ../src/_middle_wrapper.scss */
+#content-main #myprofile-body .edit-field {
+  font-size: 0.8em;
+  text-align: left;
+}
+/* line 236, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 213, ../src/_middle_wrapper.scss */
+/* line 240, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper span {
   font-size: 1.2em;
 }
-/* line 216, ../src/_middle_wrapper.scss */
+/* line 243, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper #search {
   width: 500px;
 }
-/* line 220, ../src/_middle_wrapper.scss */
+/* line 247, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper {
   border-top: 1px solid #666;
   background-color: #DDD;
   padding: 1em;
 }
-/* line 224, ../src/_middle_wrapper.scss */
+/* line 251, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 228, ../src/_middle_wrapper.scss */
+/* line 255, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper p {
   text-align: center;
 }
@@ -445,7 +479,7 @@ a:hover {
 }
 
 /* line 2, ../src/_common_forms.scss */
-input {
+input[type="text"] {
   font-size: 1.1em;
   border-radius: 2px;
   -moz-border-radius: 2px;
@@ -486,14 +520,14 @@ table.search-select input#search {
 
 /*** COMMON CSS ***/
 /* One-line list */
-/* line 24, ../src/base.scss */
+/* line 25, ../src/base.scss */
 ul.horizontal {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-/* line 30, ../src/base.scss */
+/* line 31, ../src/base.scss */
 ul.horizontal li {
   display: inline;
   float: left;

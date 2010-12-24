@@ -19,6 +19,71 @@
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
   <script type="text/javascript">
+  /* Global Vars */
+  var profile_dict = null;
+
+  function edit_field_template(field_name, row_number){
+    var template = '';
+    var row_dict = null;
+    for(row_num in profile_dict){
+      row_dict = profile_dict[row_num];
+      if(row_dict["eXO::FieldName"]==field_name)
+        break;
+    }
+    if(profile_dict!=null && row_dict!=null){
+      var label = '', prefix = '';
+      if(row_dict["eXO::FieldIsPublic"]){
+        label = "Make this field private?";
+        prefix = "pub";
+      }else{
+        label ="Make this field public?";
+        prefix = "pri";
+      }
+
+      template = '<div id="'+ prefix +'-edit-field-'+ row_number +'" class="clear edit-field">'
+        +'  <div class="span-9">Field Name</div>'
+        +'  <div class="span-10">Add Tags</div>'
+        +'  <div class="span-9 clear">'
+        +'    <input type="text" name="fieldname" value="'+ field_name +'">'
+        +'  </div>'
+        +'  <div class="span-10">'
+        +'  <form class="add-tag-form" action="#/add_tag" method="post">'
+        +'    <input type="text" name="tag" class="tag-input">'
+        +'    <input type="submit" class="add-tag" value="Add">'
+        +'  </form>'
+        +'  </div>'
+        +'  <div class="clear">Currently Added Tags :</div>'
+        +'  <div class="clear tag-field-data" style="margin-top:1em">';
+
+      if(typeof(row_dict["eXO::FieldData"])==Array){
+        for(tag in row_dict["eXO::FieldData"]){
+          var tag_html = '<span class="single-tag">'
+                     + row_dict["eXO::FieldData"][tag]
+                     + '  <a class="close" href="#">1</a>'
+                     + '</span>';
+          template += tag_html;
+        }
+      } else {
+        var tag_html = '<span class="single-tag">'
+                   + row_dict["eXO::FieldData"]
+                   + '  <a class="close" href="#">1</a>'
+                   + '</span>';
+        template += tag_html;
+      }
+
+      template += '  </div>'
+        +'  <div class="clear">'
+        +'    <label>'+ label +'</label><input type="checkbox">'
+        +'  </div>'
+        +'  <div class="button-wrapper" class="clear">'
+        +'    <button>update</button>'
+        +'    <span>or <a class="form-cancel" href="#">cancel</a>'
+        +'  </div>'
+        +'</div>';
+    }
+    return template;
+  }
+
   $(function (){
     // Show/hide the Loading indicator
     $("#loading-indicator").ajaxStart(function(){
@@ -27,13 +92,46 @@
       var indicator = $(this);
       setTimeout(function(){ indicator.fadeOut() }, 500);
     });
-    
+
+    $('.add-field').click(function(){
+      var instance = $(this).parents(".profile-wrapper");
+      $('.new-field', instance).toggle();
+      return false;
+    });
+
+    $('.new-field .button-wrapper a.form-cancel').click(function(){
+      $(this).parents('.new-field').hide();
+      return false;
+    });
+
+    $('.new-field .add-tag-form').submit(function(){
+      var instance = $(this);
+      var new_field_instance = $(this).parents(".new-field");
+      var str = $('.tag-input', instance).val().trim();
+      if(str!=''){
+        var tag_html = '<span class="single-tag">'
+                     + str
+                     + '  <a class="close" href="#">1</a>'
+                     + '</span>';
+        $('div.tag-field-data', new_field_instance).append(tag_html);
+
+        // Bind remove event for new tag
+        $('.single-tag a.close', new_field_instance).click(function(){
+          $(this).parent().remove();
+          return false;
+        });
+        $('.tag-input', new_field_instance).val('');
+      }
+      return false;
+    });
+
     // Get username and resource
     $.ajax({
       url: "/servlet/GetUserProfile/",
       dataType: 'json',
       data: "",
       success: function(data){
+        profile_dict = data;
         // Fill in the data to the corresponding places
         var username="Incognito", resource="Home", public_profile_body = null,
           private_profile_body = null, fieldname;
@@ -42,17 +140,17 @@
             username = data[dict]["eXO::FieldData"];
           }else if(data[dict]["eXO::FieldName"]=="Resource"){
             resource = data[dict]["eXO::FieldData"];
-          }
-          fieldname = data[dict]["eXO::FieldName"];
-          if(data[dict]["eXO::FieldIsPublic"]==true){
-            if(public_profile_body==null)
-              public_profile_body = {};
-            public_profile_body[fieldname] = data[dict]["eXO::FieldData"];
           }else{
-            if(private_profile_body==null)
-              private_profile_body = {};
-            private_profile_body[fieldname] = data[dict]["eXO::FieldData"];
-
+            fieldname = data[dict]["eXO::FieldName"];
+            if(data[dict]["eXO::FieldIsPublic"]==true){
+              if(public_profile_body==null)
+                public_profile_body = {};
+              public_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+            }else{
+              if(private_profile_body==null)
+                private_profile_body = {};
+              private_profile_body[fieldname] = data[dict]["eXO::FieldData"];
+            }
           }
         }
 
@@ -66,18 +164,20 @@
           var tag_rows = '';
           var i = 0;
           for(field in public_profile_body){
-            tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
+            tag_rows += '<div id="pub-tag-row-'+ i +'" class="tag-row">'
               + '  <div class="actions-wrapper">'
               + '    <div class="row-actions">'
               + '      <div class="buttons">'
               + '        <span class="button-action">'
               + '          <a class="close" href="#">1</a>'
               + '        </span>'
-              + '        <span class="button-action"><a href="#">Edit</a></span>'
+              + '        <span class="button-action">'
+              + '          <a class="edit" id="pub-edit-action-'+ i +'" href="#">Edit</a>'
+              + '        </span>'
               + '      </div>'
               + '    </div>'
               + '  </div>'
-              + '  <div class="tag-field-name span-3">'+ field + ':</div>'
+              + '  <div class="tag-field-name span-3">'+ field + '</div>'
               + '  <div class="tag-field-data">'
               + '    <span class="single-tag">' + public_profile_body[field]
               + '      <a class="close" href="#">1</a>'
@@ -86,24 +186,26 @@
               + '</div>';
             i++;
           }
-          $("#public-fields-wrapper").html(tag_rows);
+          $("#pub-fields-wrapper").html(tag_rows);
         }
         if(private_profile_body!=null){
           var tag_rows = '';
           var i = 0;
           for(field in private_profile_body){
-            tag_rows += '<div id="tag-row-'+ i +'" class="tag-row">'
+            tag_rows += '<div id="pri-tag-row-'+ i +'" class="tag-row">'
               + '  <div class="actions-wrapper">'
               + '    <div class="row-actions">'
               + '      <div class="buttons">'
               + '        <span class="button-action">'
               + '          <a class="close" href="#">1</a>'
               + '        </span>'
-              + '        <span class="button-action"><a href="#">Edit</a></span>'
+              + '        <span class="button-action">'
+              + '          <a class="edit" id="pri-edit-action-'+ i +'" href="#">Edit</a>'
+              + '        </span>'
               + '      </div>'
               + '    </div>'
               + '  </div>'
-              + '  <div class="tag-field-name span-3">'+ field + ':</div>'
+              + '  <div class="tag-field-name span-3">'+ field + '</div>'
               + '  <div class="tag-field-data">'
               + '    <span class="single-tag">' + private_profile_body[field]
               + '      <a class="close" href="#">1</a>'
@@ -112,7 +214,7 @@
               + '</div>';
             i++;
           }
-          $("#private-fields-wrapper").html(tag_rows);
+          $("#pri-fields-wrapper").html(tag_rows);
         }
 
         // Bind hover row events
@@ -122,6 +224,45 @@
         },function(){
             var row = $(this);
             $(".actions-wrapper", row).hide();
+        });
+
+        // Bind edit action
+        $(".button-action a.edit").click(function(){
+          var array = $(this).attr('id').split("-");
+          var id = array[array.length - 1];
+          var prefix = array[0];
+          var field_row_instance = $("#"+prefix+"-tag-row-"+id);
+          var field_name = $(".tag-field-name", field_row_instance).html();
+          field_row_instance.after(edit_field_template(field_name, id)).hide();
+          
+          var edit_intance = $("#"+prefix+"-edit-field-"+id);
+          // Bind edit form cancel event
+          $("a.form-cancel", edit_intance).click(function(){
+            field_row_instance.show();
+            edit_intance.remove();
+            return false;
+          });
+
+          // Bind add tag event
+          $(".add-tag-form", edit_intance).submit(function(){
+             var str = $('.tag-input', edit_intance).val().trim();
+             if(str!=''){
+               var tag_html = '<span class="single-tag">'
+                            + str
+                            + '  <a class="close" href="#">1</a>'
+                            + '</span>';
+               $('div.tag-field-data', edit_intance).append(tag_html);
+
+               // Bind remove event for new tag
+               $('.single-tag a.close', edit_intance).click(function(){
+                 $(this).parent().remove();
+                 return false;
+               });
+               $('.tag-input', edit_intance).val('');
+            }
+            return false;
+          });
+          return false;
         });
 
         // Hide/show content divs
@@ -180,15 +321,15 @@
 
       <div id="content-header-wrapper" class="container">
       <div id="content-header">
-        <div id="content_title" class="span-12">
+        <div id="content_title" class="span-16">
           <h2>
             <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
             <span id="username">Incognito</span>
-            <span id="at">@</span>
+            <span id="at">/</span>
             <span id="resource">Home</span>
           </h2>
         </div>
-        <div id="content_nav" class="span-14 last">
+        <div id="content_nav" class="span-10 last">
           <ul class="horizontal">
             <li class="current">
               <a href="/">My Profile</a>
@@ -209,27 +350,65 @@
 
       <div id="content-main" class="span-26">
         <div id="myprofile-body" class="content-body">
-          <div id="public-profile-wrapper">
+          <div id="pub-profile-wrapper" class="profile-wrapper">
             <h2>
               Public Profile 
               <span>
                 <img src="/site_media/images/add.png" />
-                <a href="#">Add New Field</a>
+                <a id="pub-add-field" class="add-field" href="#">Add New Field</a>
               </span>
             </h2>
-            <div id="public-fields-wrapper" class="tag-fields-wrapper">
+            <div id="pub-new-field" class="clear new-field">
+              <div class="span-9">Field Name</div>
+              <div class="span-10">Add Tags</div>
+              <div class="span-9 clear">
+                <input type="text" name="fieldname" />
+              </div>
+              <div class="span-10">
+                <form class="add-tag-form" action="#/add_tag/public" method="post">
+                  <input type="text" name="tag" class="tag-input"/>
+                  <input type="submit" class="add-tag" value="Add" />
+                </form>
+              </div>
+              <div class="clear">Currently Added Tags :</div>
+              <div class="clear tag-field-data" style="margin-top:1em"></div>
+              <div class="button-wrapper" class="clear">
+                <button>create</button>
+                <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
+              </div>
+            </div>
+            <div id="pub-fields-wrapper" class="tag-fields-wrapper">
               <span class="quiet">There is no data yet. Why don't you add some now?</span>
             </div>
           </div>
-          <div id="private-profile-wrapper" class="clear">
+          <div id="pri-profile-wrapper" class="clear profile-wrapper">
             <h2>
               Private Profile (viewable only by friends)
               <span>
                 <img src="/site_media/images/add.png" />
-                <a href="#">Add New Field</a>
+                <a id="pri-add-field" class="add-field" href="#">Add New Field</a>
               </span>
             </h2>
-            <div id="private-fields-wrapper" class="tag-fields-wrapper">
+            <div id="pri-new-field" class="clear new-field">
+              <div class="span-9">Field Name</div>
+              <div class="span-10">Add Tags</div>
+              <div class="span-9 clear">
+                <input type="text" name="fieldname" />
+              </div>
+              <div class="span-10">
+                <form class="add-tag-form" action="#/add_tag/private" method="post">
+                  <input type="text" name="tag" class="tag-input"/>
+                  <input type="submit" class="add-tag" value="Add" />
+                </form>
+              </div>
+              <div class="clear">Currently Added Tags :</div>
+              <div class="clear tag-field-data" style="margin-top:1em"></div>
+              <div class="button-wrapper" class="clear">
+                <button>create</button>
+                <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
+              </div>
+            </div>
+            <div id="pri-fields-wrapper" class="tag-fields-wrapper">
               <span class="quiet">There is no data yet. Why don't you add some now?</span>
             </div>
           </div>

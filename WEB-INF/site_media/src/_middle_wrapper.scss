@@ -166,31 +166,31 @@
         color: #333;
         font-size: 1.2em;
       }
-      .tag-field-data {
-        font-size: 1.1em;
-        .single-tag {
-          position: relative;
-          padding: 3px 15px 3px 8px;
-          border-radius: 6px;
-          -moz-border-radius: 6px;
-          -webkit-box-shadow: 0px 0px 2px #A8B6D1;
-          -moz-box-shadow: 0px 0px 2px #A8B6D1;
-          background-color: #CAD8F3;
-          border: 1px solid #A8B6D1;
-          color: #333333;
-          font: {
-            size: 0.75em;
-            weight: bold;
-          }
-          &:hover {
-            background-color: lighten(#CAD8F3, 3%);
-          }
-          a.close {
-            display: block;
-            position: absolute;
-            right: 4px;
-            top: 7px;
-          }
+    }
+    .tag-field-data {
+      font-size: 1.1em;
+      .single-tag {
+        position: relative;
+        padding: 3px 15px 3px 8px;
+        border-radius: 6px;
+        -moz-border-radius: 6px;
+        -webkit-box-shadow: 0px 0px 2px #A8B6D1;
+        -moz-box-shadow: 0px 0px 2px #A8B6D1;
+        background-color: #CAD8F3;
+        border: 1px solid #A8B6D1;
+        color: #333333;
+        font: {
+          size: 0.75em;
+          weight: bold;
+        }
+        &:hover {
+          background-color: lighten(#CAD8F3, 3%);
+        }
+        a.close {
+          display: block;
+          position: absolute;
+          right: 4px;
+          top: 7px;
         }
       }
     }
@@ -203,6 +203,33 @@
       &:hover {
         background-position: center;
       }
+    }
+    .new-field, .edit-field {
+      background-color: $middle-form-bgcolor;
+      margin: 1em 3em;
+      padding: 2em;
+      min-height: 100px;
+      .single-tag {
+        font-size: 1em; /* Resetting the font-size */
+        display: inline-block;
+        margin: 0.2em;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .button-wrapper {
+        margin-top: 1em;
+        text-align: center;
+        a {
+          color: #FF0000;
+        }
+      }
+    }
+    .new-field {
+      display: none;
+    }
+    .edit-field {
+      font-size: 0.8em;
+      text-align: left;
     }
   }
   #search-body {
