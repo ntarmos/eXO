@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +28,15 @@ public class GetUserTagsHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 
+		Vector<Object> res = new Vector<Object>();
+		res.add(RequestStatusSuccessTag);
 		Map<Id, TagCloud> userTags = catalogService.getUser().getUserTagClouds();
 		if (userTags == null) {
-			response.getWriter().write(Json.toString(new HashMap<String, String>()));
+			res.add(new HashMap<String, String>());
+			response.getWriter().write(Json.toString(res.toArray()));
 			return;
 		}
-
-		response.getWriter().write(Json.toString(userTags));
+		res.add(userTags);
+		response.getWriter().write(Json.toString(res.toArray()));
 	}
 }
