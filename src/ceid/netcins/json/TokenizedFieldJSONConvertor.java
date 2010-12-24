@@ -20,12 +20,12 @@ public class TokenizedFieldJSONConvertor extends ContentFieldJSONConvertor {
 		TreeMap<String, Integer> tfm = new TreeMap<String, Integer>();
 		
 		//name = (String)arg0.get(FieldNameTag);
-		String terms[] = (String[])arg0.get(TermsTag);
-		Integer tf[] = (Integer[])arg0.get(TFScoresTag);
+		Object terms[] = (Object[])arg0.get(TermsTag);
+		Object tf[] = (Object[])arg0.get(TFScoresTag);
 		//isPublic = (Boolean)arg0.get(FieldIsPublicTag);
 		if (terms != null && tf != null && terms.length == tf.length) {
 			for (int i = 0; i < terms.length; i++)
-				tfm.put(terms[i], tf[i]);
+				tfm.put((String)terms[i], (Integer)tf[i]);
 		}
 
 		return new TokenizedField(
