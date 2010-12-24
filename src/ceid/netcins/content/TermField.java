@@ -41,4 +41,16 @@ public class TermField extends ContentField implements Serializable {
 	public String toString() {
 		return "TF{ \"" + name + "\" : { \"" + fieldData + "\" , " + (isPublic ? "public" : "private") + " }}";
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof TermField &&
+				super.equals((ContentField)o) &&
+				fieldData.equals(((TermField)o).fieldData));
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode() + fieldData.hashCode();
+	}
 }

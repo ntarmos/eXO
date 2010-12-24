@@ -162,4 +162,16 @@ public class TokenizedField extends ContentField implements Serializable {
 		buffer.append("]}");
 		return buffer.toString();
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof TokenizedField &&
+				super.equals((ContentField)o) &&
+				termFreq.equals(((TokenizedField)o).termFreq));
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode() + termFreq.hashCode();
+	}
 }

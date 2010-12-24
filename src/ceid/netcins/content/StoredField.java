@@ -37,4 +37,16 @@ public class StoredField extends ContentField implements Serializable {
 	public String toString() {
 		return "SF{ \"" + name + "\" : { \"" + fieldData + "\" , " + (isPublic ? "public" : "private") + " }}";
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof StoredField &&
+				super.equals((ContentField)o) &&
+				fieldData.equals(((StoredField)o).fieldData));
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode() + fieldData.hashCode();
+	}
 }

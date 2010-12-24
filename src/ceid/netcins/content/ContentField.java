@@ -50,4 +50,16 @@ public abstract class ContentField implements Serializable {
 		// Don't count isPublic in the object's size as it is not sent out to the network
 		return name.getBytes().length;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		// Don't care for isPublic as far as equals() is concerned
+		return (o instanceof ContentField &&
+				name.equals(((ContentField)o).name));
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }
