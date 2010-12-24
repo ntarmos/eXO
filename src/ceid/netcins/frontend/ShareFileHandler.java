@@ -31,8 +31,8 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 
-		final Vector<String> failRet = new Vector<String>();
-		failRet.add(RequestStatusFailureTag);
+		final Vector<Object> failRet = new Vector<Object>();
+		failRet.add(RequestFailure);
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
@@ -42,7 +42,7 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 				jsonParams = Json.parse(param);
 			} catch (IllegalStateException e) {
 				Vector<Object> res = new Vector<Object>();
-				res.add(RequestStatusFailureTag);
+				res.add(RequestFailure);
 				response.getWriter().write(Json.toString(res.toArray()));
 				System.err.println("Error parsing JSON request");
 				return;
@@ -54,11 +54,11 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 					String reqID = (String)jsonMap.get(ReqIDTag);
 					@SuppressWarnings("unchecked")
 					Vector<Object> res = (Vector<Object>) queue.get(reqID);
-					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
-						Map<String, String> ret = new HashMap<String, String>();
-						ret.put(RequestStatusTag, RequestStatusProcessingTag);
-						response.getWriter().write(Json.toString(ret));
-						response.flushBuffer();
+					if (res == null) {
+						response.getWriter().write(Json.toString(new Map[] { RequestUnknown }));
+						return;
+					} else if (res.get(0).equals(RequestProcessing)) {
+						response.getWriter().write(Json.toString(new Map[] { RequestProcessing }));
 						return;
 					}
 					response.getWriter().write(Json.toString(res.toArray()));
@@ -71,8 +71,8 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 					File f = new File(filename);
 					if (f.canRead()) {
 						final String reqID = Integer.toString(CatalogFrontend.nextReqID());
-						Vector<String> na = new Vector<String>();
-						na.add(RequestStatusProcessingTag);
+						Vector<Object> na = new Vector<Object>();
+						na.add(RequestProcessing);
 						queue.put(reqID, na);
 						Map<String, String> ret = new HashMap<String, String>();
 						ret.put(ReqIDTag, reqID);
@@ -88,12 +88,12 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 								for (int i = 0; i < resBool.length && !didit; i++)
 									didit = resBool[i];
 
-								Vector<String> res = new Vector<String>();
+								Vector<Object> res = new Vector<Object>();
 								if (didit)
-									res.add(RequestStatusSuccessTag);
+									res.add(RequestSuccess);
 								else
-									res.add(RequestStatusFailureTag);
-								queue.put(reqID, res);
+									res.add(RequestFailure);
+								queue.put(reqID, res.toArray());
 							}
 
 							@Override

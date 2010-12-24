@@ -39,7 +39,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				jsonParams = Json.parse(param);
 			} catch (IllegalStateException e) {
 				Vector<Object> res = new Vector<Object>();
-				res.add(RequestStatusFailureTag);
+				res.add(RequestFailure);
 				response.getWriter().write(Json.toString(res.toArray()));
 				System.err.println("Error parsing JSON request");
 				return;
@@ -50,11 +50,11 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					String reqID = (String)jsonMap.get(ReqIDTag);
 					@SuppressWarnings("unchecked")
 					Vector<Object> res = (Vector<Object>) queue.get(reqID);
-					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
-						Map<String, String> ret = new HashMap<String, String>();
-						ret.put(RequestStatusTag, RequestStatusProcessingTag);
-						response.getWriter().write(Json.toString(ret));
-						response.flushBuffer();
+					if (res == null) {
+						response.getWriter().write(Json.toString(new Map[] { RequestUnknown }));
+						return;
+					} else if (res.get(0).equals(RequestProcessing)) {
+						response.getWriter().write(Json.toString(new Map[] { RequestProcessing }));
 						return;
 					}
 					response.getWriter().write(Json.toString(res.toArray()));
@@ -63,8 +63,8 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					return;
 				} else if (jsonMap.containsKey(UIDTag)) {
 					final String reqID = Integer.toString(CatalogFrontend.nextReqID());
-					Vector<String> na = new Vector<String>();
-					na.add(RequestStatusProcessingTag);
+					Vector<Object> na = new Vector<Object>();
+					na.add(RequestProcessing);
 					queue.put(reqID, na);
 					Map<String, String> ret = new HashMap<String, String>();
 					ret.put(ReqIDTag, reqID);
@@ -81,7 +81,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 									receiveException(new RuntimeException());
 
 								Vector<Object> res = new Vector<Object>();
-								res.add(RequestStatusSuccessTag);
+								res.add(RequestSuccess);
 								ContentProfile cp = (ContentProfile)resMap.get("data");
 								res.add(cp);
 								queue.put(reqID, res);
@@ -89,14 +89,14 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 
 							@Override
 							public void receiveException(Exception exception) {
-								Vector<String> res = new Vector<String>();
-								res.add(RequestStatusFailureTag);
+								Vector<Object> res = new Vector<Object>();
+								res.add(RequestFailure);
 								queue.put(reqID, res);
 							}
 						});
 					} catch (Exception e) {
-						Vector<String> res = new Vector<String>();
-						res.add(RequestStatusFailureTag);
+						Vector<Object> res = new Vector<Object>();
+						res.add(RequestFailure);
 						queue.put(reqID, res);
 					}
 					return;
@@ -107,10 +107,10 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 		System.err.println("Returning profile for user: " + catalogService.getUser().getUID().toStringFull());
 		Vector<Object> res = new Vector<Object>();
 		if (userProfile != null) {
-			res.add(RequestStatusSuccessTag);
+			res.add(RequestSuccess);
 			res.add(userProfile);
 		} else {
-			res.add(RequestStatusFailureTag);
+			res.add(RequestFailure);
 		}
 		response.getWriter().write(Json.toString(res.toArray()));
 		response.flushBuffer();

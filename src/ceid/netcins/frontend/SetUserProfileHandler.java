@@ -41,7 +41,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				jsonParams = Json.parse(param);
 			} catch (IllegalStateException e) {
 				Vector<Object> res = new Vector<Object>();
-				res.add(RequestStatusFailureTag);
+				res.add(RequestFailure);
 				response.getWriter().write(Json.toString(res.toArray()));
 				System.err.println("Error parsing JSON request");
 				return;
@@ -52,16 +52,10 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					String reqID = (String)((Map)jsonParams).get(ReqIDTag);
 					Vector<Object> res = (Vector<Object>)queue.get(reqID);
 					if (res == null) {
-						Map<String, String> ret = new HashMap<String, String>();
-						ret.put(RequestStatusTag, RequestStatusUnknownTag);
-						response.getWriter().write(Json.toString(ret));
-						response.flushBuffer();
+						response.getWriter().write(Json.toString(new Map[] { RequestUnknown }));
 						return;
-					} else if (res.get(0).equals(RequestStatusProcessingTag)) {
-						Map<String, String> ret = new HashMap<String, String>();
-						ret.put(RequestStatusTag, RequestStatusProcessingTag);
-						response.getWriter().write(Json.toString(ret));
-						response.flushBuffer();
+					} else if (res.get(0).equals(RequestProcessing)) {
+						response.getWriter().write(Json.toString(new Map[] { RequestProcessing }));
 						return;
 					}
 					response.getWriter().write(Json.toString(res.toArray()));
@@ -71,7 +65,7 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				} else if (jsonMap.containsKey(UIDTag)) {
 					final String reqID = Integer.toString(CatalogFrontend.nextReqID());
 					Vector<Object> na = new Vector<Object>();
-					na.add(RequestStatusProcessingTag);
+					na.add(RequestProcessing);
 					queue.put(reqID, na);
 					Map<String, String> ret = new HashMap<String, String>();
 					ret.put(ReqIDTag, reqID);
@@ -89,22 +83,22 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 									receiveException(new RuntimeException());
 
 								Vector<Object> res = new Vector<Object>();
-								res.add(RequestStatusSuccessTag);
+								res.add(RequestSuccess);
 								res.add(resMap.get("data"));
 								queue.put(reqID, res);
 							}
 
 							@Override
 							public void receiveException(Exception exception) {
-								Vector<String> res = new Vector<String>();
-								res.add(RequestStatusFailureTag);
+								Vector<Object> res = new Vector<Object>();
+								res.add(RequestFailure);
 								queue.put(reqID, res);
 							}
 						});
 					} catch (Exception e) {
-						Vector<String> res = new Vector<String>();
+						Vector<Object> res = new Vector<Object>();
 						e.printStackTrace();
-						res.add(RequestStatusFailureTag);
+						res.add(RequestFailure);
 						queue.put(reqID, res);
 					}
 					return;
@@ -117,8 +111,8 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 				user.setUserProfile(profile);
 				if (!oldProfile.equalsPublic(profile)) {
 					final String reqID = Integer.toString(CatalogFrontend.nextReqID());
-					Vector<String> na = new Vector<String>();
-					na.add(RequestStatusProcessingTag);
+					Vector<Object> na = new Vector<Object>();
+					na.add(RequestProcessing);
 					queue.put(reqID, na);
 					Map<String, String> ret = new HashMap<String, String>();
 					ret.put(ReqIDTag, reqID);
@@ -132,8 +126,8 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 							// run replica maintenance
 							// runReplicaMaintence();
 							int indexedNum = 0;
-							Vector<String> res = new Vector<String>();
-							res.add(RequestStatusSuccessTag);
+							Vector<Object> res = new Vector<Object>();
+							res.add(RequestSuccess);
 							if (result instanceof Boolean[]) {
 								Boolean[] results = (Boolean[]) result;
 								if (results != null)
@@ -153,21 +147,21 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 							System.out.println("User : " + user.getUID()
 									+ ", indexed with errors : "
 									+ result.getMessage());
-							Vector<String> res = new Vector<String>();
-							res.add(RequestStatusFailureTag);
+							Vector<Object> res = new Vector<Object>();
+							res.add(RequestFailure);
 							queue.put(reqID, res);
 						}
 					});
 				} else {
-					Map<String, String> ret = new HashMap<String, String>();
-					ret.put(RequestStatusTag, RequestStatusSuccessTag);
-					response.getWriter().write(Json.toString(ret));
+					Vector<Object> res = new Vector<Object>();
+					res.add(RequestSuccess);
+					response.getWriter().write(Json.toString(res));
 				}
 				return;
 			}
 		}
-		Map<String, String> ret = new HashMap<String, String>();
-		ret.put(RequestStatusTag, RequestStatusFailureTag);
-		response.getWriter().write(Json.toString(ret));
+		Vector<Object> res = new Vector<Object>();
+		res.add(RequestFailure);
+		response.getWriter().write(Json.toString(res));
 	}
 }

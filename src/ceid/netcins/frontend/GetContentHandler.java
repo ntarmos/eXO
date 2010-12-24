@@ -29,7 +29,7 @@ public class GetContentHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		Vector<Object> ret = new Vector<Object>();
-		ret.add(RequestStatusSuccessTag);
+		ret.add(RequestSuccess);
 		Map<Id, ContentProfile> content = catalogService.getUser().getSharedContentProfiles();
 		ret.add(content);
 		response.getWriter().write(Json.toString(ret.toArray()));

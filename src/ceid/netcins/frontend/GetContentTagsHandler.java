@@ -41,7 +41,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 				jsonParams = Json.parse(param);
 			} catch (IllegalStateException e) {
 				Vector<Object> res = new Vector<Object>();
-				res.add(RequestStatusFailureTag);
+				res.add(RequestFailure);
 				response.getWriter().write(Json.toString(res.toArray()));
 				System.err.println("Error parsing JSON request");
 				return;
@@ -51,11 +51,11 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 				if (jsonMap.containsKey(ReqIDTag)) {
 					String reqID = (String)jsonMap.get(ReqIDTag);
 					Vector<String> res = (Vector<String>)queue.get(reqID);
-					if (res == null || res.get(0).equals(RequestStatusProcessingTag)) {
-						Map<String, String> ret = new HashMap<String, String>();
-						ret.put(RequestStatusTag, RequestStatusProcessingTag);
-						response.getWriter().write(Json.toString(ret));
-						response.flushBuffer();
+					if (res == null) {
+						response.getWriter().write(Json.toString(new Map[] { RequestUnknown }));
+						return;
+					} else if (res.get(0).equals(RequestProcessing)) {
+						response.getWriter().write(Json.toString(new Map[] { RequestProcessing }));
 						return;
 					}
 					response.getWriter().write(Json.toString(res.toArray()));
@@ -73,7 +73,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 
 		if (CID == null) {
 			Vector<Object> res = new Vector<Object>();
-			res.add(RequestStatusFailureTag);
+			res.add(RequestFailure);
 			response.getWriter().write(Json.toString(res.toArray()));
 			return;
 		}
@@ -82,21 +82,21 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 			ContentProfile cp = catalogService.getUser().getSharedContentProfile(Id.build(CID));
 			if (cp != null) {
 				Vector<Object> res = new Vector<Object>();
-				res.add(RequestStatusSuccessTag);
+				res.add(RequestSuccess);
 				res.add(cp.getAllFields().toArray());
 				response.getWriter().write(Json.toString(res.toArray()));
 				return;
 			}
 			Vector<Object> res = new Vector<Object>();
-			res.add(RequestStatusFailureTag);
+			res.add(RequestFailure);
 			response.getWriter().write(Json.toString(res.toArray()));
 			return;
 		}
 
 		// Search for it in the network
 		final String reqID = Integer.toString(CatalogFrontend.nextReqID());
-		Vector<String> na = new Vector<String>();
-		na.add(RequestStatusProcessingTag);
+		Vector<Object> na = new Vector<Object>();
+		na.add(RequestProcessing);
 		queue.put(reqID, na);
 		Map<String, String> ret = new HashMap<String, String>();
 		ret.put(ReqIDTag, reqID);
@@ -110,21 +110,21 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 						receiveException(new PastException("Result was null or of wrong type"));
 
 					Vector<Object> res = new Vector<Object>();
-					res.add(RequestStatusSuccessTag);
+					res.add(RequestSuccess);
 					res.add(((ContentProfile)result).getAllFields().toArray());
 					queue.put(reqID, res);
 				}
 
 				@Override
 				public void receiveException(Exception exception) {
-					Vector<String> res = new Vector<String>();
-					res.add(RequestStatusFailureTag);
+					Vector<Object> res = new Vector<Object>();
+					res.add(RequestFailure);
 					queue.put(reqID, res);
 				}
 			});
 		} catch (Exception e) {
-			Vector<String> res = new Vector<String>();
-			res.add(RequestStatusFailureTag);
+			Vector<Object> res = new Vector<Object>();
+			res.add(RequestFailure);
 			queue.put(reqID, res);
 		}
 	}

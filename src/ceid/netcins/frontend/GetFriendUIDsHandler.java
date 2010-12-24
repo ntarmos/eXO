@@ -27,7 +27,7 @@ public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		Vector<Object> res = new Vector<Object>();
-		res.add(RequestStatusSuccessTag);
+		res.add(RequestSuccess);
 		Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
 		res.add(friends.keySet().toArray());
 		response.getWriter().write(Json.toString(res.toArray()));

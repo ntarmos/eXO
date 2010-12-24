@@ -29,7 +29,7 @@ public class GetUserTagsHandler extends CatalogFrontendAbstractHandler {
 		response.setStatus(HttpServletResponse.SC_OK);
 
 		Vector<Object> res = new Vector<Object>();
-		res.add(RequestStatusSuccessTag);
+		res.add(RequestSuccess);
 		Map<Id, TagCloud> userTags = catalogService.getUser().getUserTagClouds();
 		if (userTags == null) {
 			res.add(new HashMap<String, String>());

@@ -28,7 +28,7 @@ public class GetFriendRequestsHandler extends CatalogFrontendAbstractHandler {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		Vector<Object> res = new Vector<Object>();
-		res.add(RequestStatusSuccessTag);
+		res.add(RequestSuccess);
 		Hashtable<Id, FriendRequest> friendRequests = catalogService.getUser().getPendingIncomingFReq();
 		Set<Id> friendReqIDs = friendRequests.keySet();
 		res.add(friendReqIDs.toArray());
