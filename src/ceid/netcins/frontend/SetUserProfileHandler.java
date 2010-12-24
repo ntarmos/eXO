@@ -147,7 +147,12 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 							queue.put(reqID, res);
 						}
 					});
+				} else {
+					Map<String, String> ret = new HashMap<String, String>();
+					ret.put(RequestStatusTag, RequestStatusSuccessTag);
+					response.getWriter().write(Json.toString(ret));
 				}
+				return;
 			}
 		}
 		Map<String, String> ret = new HashMap<String, String>();
