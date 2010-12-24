@@ -1,6 +1,7 @@
 package ceid.netcins.frontend;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class GetUserProfileHandler extends CatalogFrontendAbstractHandler {
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
+			param = URLDecoder.decode(param, DefaultEncoding);
 			Object jsonParams = Json.parse(param);
 			if (jsonParams instanceof Map) {
 				Map jsonMap = (Map)jsonParams;

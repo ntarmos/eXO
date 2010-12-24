@@ -23,6 +23,7 @@ public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 	public static final String RequestStatusFailureTag = "eXO::Failure";
 	public static final String RequestStatusProcessingTag = "eXO::Processing";
 	public static final String RequestStatusUnknownTag = "eXO::Unknown";
+	public static final String DefaultEncoding = "UTF-8";
 
 	protected CatalogService catalogService = null;
 	protected Hashtable<String, Object> queue = null;
