@@ -263,7 +263,9 @@ public class CatalogFrontend {
 
 		// XXX: Watch out! Handlers are scanned in-order until baseRequest.handled = true, and matched on a String.startsWith() basis
 		Class[] handlerClasses = new Class[] {
+				ShareFileHandler.class,
 				SetUserProfileHandler.class,
+				SetContentTagsHandler.class,
 				GetUserProfileHandler.class,
 				GetUserTagsHandler.class,
 				GetFriendRequestsHandler.class,
@@ -271,7 +273,6 @@ public class CatalogFrontend {
 				GetContentTagsHandler.class,
 				GetContentIDsHandler.class,
 				GetContentHandler.class,
-				ShareFileHandler.class
 		};
 		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletContextHandler.setContextPath("/servlet");

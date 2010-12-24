@@ -145,10 +145,10 @@ tag: ContentField objects
   // Both local and remote operation. Returns tags accessible by the
   // caller for content item CID shared by UID.
 
-✘ bool        setContentTags(CID, vector<tag>)
-  // Local operation.
+✔ bool        setContentTags(CID, vector<tag>)
+  // Local/remote operation.
 
-✘ bool        setContentTags(UID, CID, vector<tag>)
+✔ bool        setContentTags(UID, CID, vector<tag>)
   // Remote operation. Changes the set of tags contributed by the
   // calling node/user.
 
