@@ -11,13 +11,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Request;
-
 import rice.Continuation;
 import ceid.netcins.CatalogService;
 import ceid.netcins.json.Json;
 
 public class ShareFileHandler extends CatalogFrontendAbstractHandler {
+
+	private static final long serialVersionUID = 6460386943881811107L;
 	public static final String FilenameTag = "eXO::Filename";
 
 	public ShareFileHandler(CatalogService catalogService,
@@ -26,11 +26,9 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
-		baseRequest.setHandled(true);
 
 		final Vector<String> failRet = new Vector<String>();
 		failRet.add(RequestStatusFailureTag);

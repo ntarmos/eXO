@@ -9,8 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Request;
-
 import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.json.Json;
@@ -18,14 +16,15 @@ import ceid.netcins.user.Friend;
 
 public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 
+	private static final long serialVersionUID = 5244547683415352126L;
+
 	public GetFriendUIDsHandler(CatalogService catalogService,
 			Hashtable<String, Object> queue) {
 		super(catalogService, queue);
 	}
 
 	@Override
-	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		List<Friend> friends = catalogService.getUser().getFriends();
 		HashSet<Id> friendIDs = new HashSet<Id>();
 		if (friends != null)
@@ -34,7 +33,6 @@ public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
-		baseRequest.setHandled(true);
 		response.getWriter().write(Json.toString(friendIDs));
 	}
 }

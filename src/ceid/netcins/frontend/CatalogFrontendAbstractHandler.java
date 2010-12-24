@@ -3,12 +3,16 @@ package ceid.netcins.frontend;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import ceid.netcins.CatalogService;
 import ceid.netcins.json.ContentProfileJSONConvertor;
 
-public abstract class CatalogFrontendAbstractHandler extends AbstractHandler {
+public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
+	private static final long serialVersionUID = -5657532444852074783L;
 	public static final String ReqIDTag = "eXO::reqID";
 	public static final String UIDTag = "eXO::UID";
 	public static final String CIDTag = "eXO::CID";
@@ -27,22 +31,8 @@ public abstract class CatalogFrontendAbstractHandler extends AbstractHandler {
 		this.catalogService = catalogService;
 		this.queue = queue;
 	}
-	
-	public static String streamToString(java.io.InputStream is)
-	{
-		java.io.InputStreamReader ir = new java.io.InputStreamReader(is);
-		java.io.BufferedReader    in = new java.io.BufferedReader(ir);
 
-		StringBuffer buffer = new StringBuffer();
-		try {
-			String line = null;
-			while((line=in.readLine()) != null) {
-				buffer.append( line );
-				buffer.append( '\n' );
-			}
-		} catch (IOException e) {
-			return null;
-		}
-		return buffer.toString();
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		doPost(request, response);
 	}
 }

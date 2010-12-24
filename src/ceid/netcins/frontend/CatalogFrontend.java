@@ -9,18 +9,17 @@ import java.util.Hashtable;
 import java.util.Random;
 import java.util.Vector;
 
-import org.apache.wicket.protocol.http.WicketFilter;
+import javax.servlet.http.HttpServlet;
+
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 import rice.environment.Environment;
 import rice.environment.logging.Logger;
@@ -197,6 +196,7 @@ public class CatalogFrontend {
 		tags.add(new TermField("Username", userName, true));
 		tags.add(new TermField("Resource", resourceName, true));
 		catalogService.setUserProfile(new ContentProfile(tags));
+		// TODO: Remove the following two lines when out of the RnD phase
 		catalogService.getUser().addSharedContentProfile(catalogService.getUser().getUID(), new ContentProfile(tags));
 		catalogService.getUser().addSharedContentProfile(rice.pastry.Id.makeRandomId(reqIdGenerator), new ContentProfile(tags));
 
@@ -204,33 +204,28 @@ public class CatalogFrontend {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private ContextHandler makeContextHandler(Class handlerClass) {
+	private void addServletToContext(Class handlerClass, ServletContextHandler context) {
 		Constructor constructor = null;
 		Class[] params = new Class[] { CatalogService.class, Hashtable.class };
 		try {
 			constructor = handlerClass.getConstructor(params);
 		} catch (Exception e) {
 			logger.logException("Unable to find constructor", e);
-			return null;
+			return;
 		}
-		ContextHandler newContextHandler = new ContextHandler();
-		newContextHandler.setContextPath("/servlet/" + handlerClass.getSimpleName().replace("Handler", ""));
-		newContextHandler.setResourceBase(System.getProperty("jetty.home", "/"));
-		newContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
 		try {
-			newContextHandler.setHandler((Handler)constructor.newInstance(catalogService, queue));
+			context.addServlet(new ServletHolder((HttpServlet)constructor.newInstance(catalogService, queue)),  "/" + handlerClass.getSimpleName().replace("Handler", "/"));
 		} catch (Exception e) {
 			logger.logException("Unable to instantiate new handler", e);
-			return null;
+			return;
 		}
-		return newContextHandler;
 	}
 
 	private ContextHandler mountFileRoute(String url, String templateName) {
 		ContextHandler plainFileContext = new ContextHandler();
 		plainFileContext.setContextPath(url);
 		ResourceHandler plainFileHandler = new ResourceHandler();
-		plainFileHandler.setDirectoriesListed(true);
+		plainFileHandler.setDirectoriesListed(false);
 		plainFileHandler.setWelcomeFiles(new String[] { templateName});
 		plainFileHandler.setResourceBase(System.getProperty("jetty.home", "/"));
 		plainFileContext.setHandler(plainFileHandler);
@@ -248,12 +243,22 @@ public class CatalogFrontend {
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(webServerPort);
 		server.setConnectors(new Connector[] { connector });
+
+		ContextHandlerCollection handlersList = new ContextHandlerCollection();
+
+		/*
+		 * Placeholder for Wicket integration
+		 */
+		/*
+		// Needs slf4j jars
 		ServletContextHandler root = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS);
 		FilterHolder filterHolder = new FilterHolder(WicketFilter.class);
-		//filterHolder.setInitParameter(ContextParamWebApplicationFactory.APP_CLASS_PARAM,
-		//		WICKET_WEBAPP_CLASS_NAME);
+		filterHolder.setInitParameter(ContextParamWebApplicationFactory.APP_CLASS_PARAM,
+				WICKET_WEBAPP_CLASS_NAME);
 		root.addFilter(filterHolder, "/*", 1);
 		root.addServlet(DefaultServlet.class, "/*");
+		handlersList.addHandler(root);
+		*/
 
 		// XXX: Watch out! Handlers are scanned in-order until baseRequest.handled = true, and matched on a String.startsWith() basis
 		Class[] handlerClasses = new Class[] {
@@ -267,13 +272,15 @@ public class CatalogFrontend {
 				GetContentHandler.class,
 				ShareFileHandler.class
 		};
-
-		HandlerList handlersList = new HandlerList();
+		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		servletContextHandler.setContextPath("/servlet");
+		servletContextHandler.setResourceBase(System.getProperty("jetty.home", "/"));
+		servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
+		servletContextHandler.setAllowNullPathInfo(true);
 		for (Class<ContextHandler> handlerClass : handlerClasses) {
-			ContextHandler newHandler;
-			if ((newHandler = makeContextHandler(handlerClass)) != null)
-				handlersList.addHandler(newHandler);
+			addServletToContext(handlerClass, servletContextHandler);
 		}
+		handlersList.addHandler(servletContextHandler);
 
 		/*
 		 * File URL routes deployment  
