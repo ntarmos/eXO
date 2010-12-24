@@ -1,9 +1,8 @@
 package ceid.netcins.frontend;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,14 +24,12 @@ public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		List<Friend> friends = catalogService.getUser().getFriends();
-		HashSet<Id> friendIDs = new HashSet<Id>();
-		if (friends != null)
-			for (Friend fr : friends)
-				friendIDs.add(fr.getUID());
-
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.getWriter().write(Json.toString(friendIDs));
+		Vector<Object> res = new Vector<Object>();
+		res.add(RequestStatusSuccessTag);
+		Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
+		res.add(friends.keySet().toArray());
+		response.getWriter().write(Json.toString(res.toArray()));
 	}
 }
