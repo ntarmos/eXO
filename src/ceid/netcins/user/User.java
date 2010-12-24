@@ -12,7 +12,6 @@ import rice.p2p.commonapi.Id;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.catalog.UserCatalogEntry;
-import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.TermField;
 import ceid.netcins.messages.QueryPDU;
@@ -266,32 +265,10 @@ public class User {
 		else
 			this.userProfile = new ContentProfile();
 
-		boolean foundUName = false, foundRName = false;
-		Set<ContentField> fields = this.userProfile.getAllFields();
-		if (fields != null) {
-			for (ContentField cf : fields) {
-				if (cf instanceof TermField) {
-					if(((TermField)cf).getFieldName().equals(UsernameTag))
-						foundUName = true;
-					else if (((TermField)cf).getFieldName().equals(ResourceTag))
-						foundRName = true;
-				}
-				if (foundUName && foundRName)
-					break;
-			}
-		}
-		if (!foundUName) {
-			if (username != null)
-				this.userProfile.add(new TermField(UsernameTag, username, true));
-			else
-				this.userProfile.add(new TermField(UsernameTag, NotAvailableTag, true));
-		}
-		if (!foundRName) { 
-			if (resourceName != null)
-				this.userProfile.add(new TermField(ResourceTag, resourceName, true));
-			else
-				this.userProfile.add(new TermField(ResourceTag, NotAvailableTag, true));
-		}
+		// (Re-)Set the Username and Resource in the user's profile from the 
+		// current User object (ignoring any relevant data provided)
+		this.userProfile.add(new TermField(UsernameTag, username, true));
+		this.userProfile.add(new TermField(ResourceTag, resourceName, true));
 	}
 
 	public void setFriends(List<Friend> friends) {
