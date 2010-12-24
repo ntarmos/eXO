@@ -74,18 +74,24 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 		}
 
 		if (CID == null) {
-			response.getWriter().write(Json.toString(new HashMap<String, String>()));
+			Vector<Object> res = new Vector<Object>();
+			res.add(RequestStatusFailureTag);
+			response.getWriter().write(Json.toString(res.toArray()));
 			return;
 		}
 
-		ContentProfile cp = catalogService.getUser().getSharedContentProfile(Id.build(CID));
 		if (UID == null) { // Local resource. Return immediately.
+			ContentProfile cp = catalogService.getUser().getSharedContentProfile(Id.build(CID));
 			if (cp != null) {
-				Set<ContentField> cflist = cp.getAllFields();
-				response.getWriter().write(Json.toString(cflist.toArray()));
+				Vector<Object> res = new Vector<Object>();
+				res.add(RequestStatusSuccessTag);
+				res.add(cp.getAllFields().toArray());
+				response.getWriter().write(Json.toString(res.toArray()));
 				return;
 			}
-			response.getWriter().write(Json.toString(new HashMap<String, String>()));
+			Vector<Object> res = new Vector<Object>();
+			res.add(RequestStatusFailureTag);
+			response.getWriter().write(Json.toString(res.toArray()));
 			return;
 		}
 
@@ -107,7 +113,7 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 
 					Vector<Object> res = new Vector<Object>();
 					res.add(RequestStatusSuccessTag);
-					res.add(result);
+					res.add(((ContentProfile)result).getAllFields().toArray());
 					queue.put(reqID, res);
 				}
 
