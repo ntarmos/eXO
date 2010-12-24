@@ -42,6 +42,7 @@ public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 		this.queue = queue;
 	}
 
+	// TODO: We only want POST access; remove this method when RnD is over.
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		doPost(request, response);
 	}
