@@ -21,7 +21,7 @@ import rice.p2p.past.rawserialization.RawPastContent;
  */
 public class FriendRejectMessage extends ContinuationMessage {
 
-	private static final long serialVersionUID = 7419229279778572351L;
+	private static final long serialVersionUID = -3806559028918837945L;
 
 	public static final short TYPE = MessageType.FriendReject;
 
