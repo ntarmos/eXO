@@ -22,6 +22,23 @@
   /* Global Vars */
   var profile_dict = null;
 
+  // Helper to delete a user profile entry
+  function delete_profile_entry(key){
+    if(profile_dict==null)
+      return false;
+    if(key==null){
+      return false;
+    }
+    var i=0;
+    for(i in profile_dict){
+      if(profile_dict[i]["eXO::FieldName"]==key){
+        delete profile_dict[i];
+        return true;
+      }
+    }
+    return false;
+  }
+
    // If the field_name is null, a new field is about to be created!
   function update_profile_instance(old_field_name, form_obj){
     if(profile_dict==null)
@@ -288,9 +305,10 @@
         if(resource!=null)
           $("#resource").html(resource);
 
+        var tag_rows = '';
         // Fill the body with the retrieved data
         if(public_profile_body!=null){
-          var tag_rows = '', tags_template;
+          var tags_template;
           var i = 0;
           for(field in public_profile_body){
             tags_template = '';
@@ -312,7 +330,7 @@
               + '    <div class="row-actions">'
               + '      <div class="buttons">'
               + '        <span class="button-action">'
-              + '          <a class="close" href="#">1</a>'
+              + '          <a class="delete close" id="pub-delete-action-'+ i +'" href="#">1</a>'
               + '        </span>'
               + '        <span class="button-action">'
               + '          <a class="edit" id="pub-edit-action-'+ i +'" href="#">Edit</a>'
@@ -327,10 +345,14 @@
               + '</div>';
             i++;
           }
-          $("#pub-fields-wrapper").html(tag_rows);
+        }else{
+          tag_rows = '<span class="quiet">There is no data yet. Why don\'t you add some now?</span>';
         }
+        $("#pub-fields-wrapper").html(tag_rows);
+
+        tag_rows = '';
         if(private_profile_body!=null){
-          var tag_rows = '', tags_template;
+          var tags_template;
           var i = 0;
           for(field in private_profile_body){
             tags_template = '';
@@ -352,7 +374,7 @@
               + '    <div class="row-actions">'
               + '      <div class="buttons">'
               + '        <span class="button-action">'
-              + '          <a class="close" href="#">1</a>'
+              + '          <a class="delete close" id="pri-delete-action-'+ i +'" href="#">1</a>'
               + '        </span>'
               + '        <span class="button-action">'
               + '          <a class="edit" id="pri-edit-action-'+ i +'" href="#">Edit</a>'
@@ -367,8 +389,10 @@
               + '</div>';
             i++;
           }
-          $("#pri-fields-wrapper").html(tag_rows);
+        }else{
+          tag_rows = '<span class="quiet">There is no data yet. Why don\'t you add some now?</span>';
         }
+        $("#pri-fields-wrapper").html(tag_rows);
 
         // Bind hover row events
         $(".tag-row").hover(function(){
@@ -377,6 +401,18 @@
         },function(){
             var row = $(this);
             $(".actions-wrapper", row).hide();
+        });
+
+        // Bind delete action
+        $(".button-action a.delete").click(function(){
+          // Delete entry from profile_dict
+          var array = $(this).attr('id').split("-");
+          var id = array[array.length - 1];
+          var prefix = array[0];
+          var field_row_instance = $("#"+prefix+"-tag-row-"+id);
+          var field_name = $(".tag-field-name", field_row_instance).html();
+          if(delete_profile_entry(field_name))
+            do_post_profile();
         });
 
         // Bind edit action
@@ -493,8 +529,8 @@
 
     $(".new-field .create-action").click(function(){
       var instance = $(this).parents('.new-field');
-      update_profile_instance(null, instance);
-      do_post_profile();
+      if(update_profile_instance(null, instance))
+        do_post_profile();
     });
 
    do_get_profile();
@@ -600,9 +636,7 @@
                 <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
               </div>
             </div>
-            <div id="pub-fields-wrapper" class="tag-fields-wrapper">
-              <span class="quiet">There is no data yet. Why don't you add some now?</span>
-            </div>
+            <div id="pub-fields-wrapper" class="tag-fields-wrapper"></div>
           </div>
           <div id="pri-profile-wrapper" class="clear profile-wrapper">
             <h2>
@@ -631,9 +665,7 @@
                 <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
               </div>
             </div>
-            <div id="pri-fields-wrapper" class="tag-fields-wrapper">
-              <span class="quiet">There is no data yet. Why don't you add some now?</span>
-            </div>
+            <div id="pri-fields-wrapper" class="tag-fields-wrapper"></div>
           </div>
         </div>
         <div id="content-main-loading">
