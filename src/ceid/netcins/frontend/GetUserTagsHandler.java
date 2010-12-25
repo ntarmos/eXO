@@ -12,31 +12,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.frontend.json.Json;
 import ceid.netcins.social.TagCloud;
 
 public class GetUserTagsHandler extends CatalogFrontendAbstractHandler {
 
 	private static final long serialVersionUID = 7508245962714729908L;
 
-	public GetUserTagsHandler(CatalogService catalogService, Hashtable<String, Object> queue) {
+	public GetUserTagsHandler(CatalogService catalogService,
+			Hashtable<String, Vector<Object>> queue) {
 		super(catalogService, queue);
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		response.setContentType("application/json");
-		response.setStatus(HttpServletResponse.SC_OK);
-
-		Vector<Object> res = new Vector<Object>();
-		res.add(RequestSuccess);
-		Map<Id, TagCloud> userTags = catalogService.getUser().getUserTagClouds();
-		if (userTags == null) {
-			res.add(new HashMap<String, String>());
-			response.getWriter().write(Json.toString(res.toArray()));
+		if (prepare(request, response) == JobStatus.FINISHED)
 			return;
-		}
-		res.add(userTags);
-		response.getWriter().write(Json.toString(res.toArray()));
+		Map<Id, TagCloud> userTags = catalogService.getUser().getUserTagClouds();
+		sendStatus(response, RequestSuccess, (userTags != null) ? userTags :new HashMap<String, String>());
 	}
 }

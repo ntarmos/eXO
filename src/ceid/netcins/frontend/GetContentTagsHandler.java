@@ -1,10 +1,7 @@
 package ceid.netcins.frontend;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -13,96 +10,42 @@ import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
 import rice.p2p.past.PastException;
-import rice.pastry.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.frontend.json.Json;
 
 public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 
 	private static final long serialVersionUID = -358145592191291166L;
 
-	public GetContentTagsHandler(CatalogService catalogService, Hashtable<String, Object> queue) {
+	public GetContentTagsHandler(CatalogService catalogService,
+			Hashtable<String, Vector<Object>> queue) {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		String CID = null, UID = null;
-		response.setContentType("application/json");
-		response.setStatus(HttpServletResponse.SC_OK);
+		if (prepare(request, response) == JobStatus.FINISHED)
+			return;
 
-		String param = request.getParameter(PostParamTag);
-		if (param != null) {
-			param = URLDecoder.decode(param, DefaultEncoding);
-			Object jsonParams = null;
-			try {
-				jsonParams = Json.parse(param);
-			} catch (IllegalStateException e) {
-				Vector<Object> res = new Vector<Object>();
-				res.add(RequestFailure);
-				response.getWriter().write(Json.toString(res.toArray()));
-				System.err.println("Error parsing JSON request");
-				return;
-			}
-			if (jsonParams instanceof Map) {
-				Map jsonMap = (Map)jsonParams;
-				if (jsonMap.containsKey(ReqIDTag)) {
-					String reqID = (String)jsonMap.get(ReqIDTag);
-					Vector<String> res = (Vector<String>)queue.get(reqID);
-					if (res == null) {
-						response.getWriter().write(Json.toString(new Map[] { RequestUnknown }));
-						return;
-					} else if (res.get(0).equals(RequestProcessing)) {
-						response.getWriter().write(Json.toString(new Map[] { RequestProcessing }));
-						return;
-					}
-					response.getWriter().write(Json.toString(res.toArray()));
-					response.flushBuffer();
-					queue.remove(reqID);
-					return;
-				} else {
-					if (jsonMap.containsKey(CIDTag))
-						CID = (String)jsonMap.get(CIDTag);
-					if (jsonMap.containsKey(UIDTag))
-						UID = (String)jsonMap.get(UIDTag);
-				}
-			}
-		}
-
-		if (CID == null) {
-			Vector<Object> res = new Vector<Object>();
-			res.add(RequestFailure);
-			response.getWriter().write(Json.toString(res.toArray()));
+		if (cid == null) {
+			sendStatus(response, RequestFailure);
 			return;
 		}
 
-		if (UID == null) { // Local resource. Return immediately.
-			ContentProfile cp = catalogService.getUser().getSharedContentProfile(Id.build(CID));
+		if (uid == null) { // Local resource. Return immediately.
+			ContentProfile cp = catalogService.getUser().getSharedContentProfile(cid);
 			if (cp != null) {
-				Vector<Object> res = new Vector<Object>();
-				res.add(RequestSuccess);
-				res.add(cp);
-				response.getWriter().write(Json.toString(res.toArray()));
+				sendStatus(response, RequestSuccess, cp);
 				return;
 			}
-			Vector<Object> res = new Vector<Object>();
-			res.add(RequestFailure);
-			response.getWriter().write(Json.toString(res.toArray()));
+			sendStatus(response, RequestFailure);
 			return;
 		}
 
 		// Search for it in the network
-		final String reqID = Integer.toString(CatalogFrontend.nextReqID());
-		Vector<Object> na = new Vector<Object>();
-		na.add(RequestProcessing);
-		queue.put(reqID, na);
-		Map<String, String> ret = new HashMap<String, String>();
-		ret.put(ReqIDTag, reqID);
-		response.getWriter().write(Json.toString(ret));
+		final String reqID = getNewReqID(response);
 		try {
-			catalogService.retrieveContentTags(Id.build(UID), Id.build(CID), 
+			catalogService.retrieveContentTags(uid, cid,
 					new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {
