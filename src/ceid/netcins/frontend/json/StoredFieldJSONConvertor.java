@@ -1,21 +1,21 @@
-package ceid.netcins.json;
+package ceid.netcins.frontend.json;
 
 import java.util.Map;
 
 import org.eclipse.jetty.util.ajax.JSON.Output;
 
-import ceid.netcins.content.TermField;
+import ceid.netcins.content.StoredField;
 
-public class TermFieldJSONConvertor extends ContentFieldJSONConvertor {
-	static final String FieldDataTag = "eXO::FieldData";
+public class StoredFieldJSONConvertor extends ContentFieldJSONConvertor {
+	private static final String FieldDataTag = "eXO::FieldData";
 
-	public TermFieldJSONConvertor() {
+	public StoredFieldJSONConvertor() {
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
-		return new TermField(
+		return new StoredField(
 				(String)arg0.get(FieldNameTag),
 				(String)arg0.get(FieldDataTag),
 				(Boolean)arg0.get(FieldIsPublicTag)
@@ -28,7 +28,7 @@ public class TermFieldJSONConvertor extends ContentFieldJSONConvertor {
 			arg1.add(null);
 			return;
 		}
-		TermField tf = (TermField)arg0;
+		StoredField tf = (StoredField)arg0;
 		arg1.add(FieldNameTag, tf.getFieldName());
 		arg1.add(FieldDataTag, tf.getFieldData());
 		arg1.add(FieldIsPublicTag, tf.isPublic());

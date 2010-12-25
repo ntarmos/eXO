@@ -16,7 +16,7 @@ import rice.p2p.past.PastException;
 import rice.pastry.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.Json;
 
 public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 

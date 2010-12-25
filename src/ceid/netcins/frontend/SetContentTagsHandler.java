@@ -17,8 +17,8 @@ import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.StoredField;
 import ceid.netcins.content.TermField;
-import ceid.netcins.json.ContentProfileJSONConvertor;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
+import ceid.netcins.frontend.json.Json;
 
 public class SetContentTagsHandler extends CatalogFrontendAbstractHandler {
 

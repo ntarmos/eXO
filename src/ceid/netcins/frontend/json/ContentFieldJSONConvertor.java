@@ -1,4 +1,4 @@
-package ceid.netcins.json;
+package ceid.netcins.frontend.json;
 
 import org.eclipse.jetty.util.ajax.JSON.Convertor;
 

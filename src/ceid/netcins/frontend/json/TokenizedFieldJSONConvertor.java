@@ -1,4 +1,4 @@
-package ceid.netcins.json;
+package ceid.netcins.frontend.json;
 
 import java.util.Map;
 import java.util.TreeMap;

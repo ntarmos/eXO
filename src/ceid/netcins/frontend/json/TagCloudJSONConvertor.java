@@ -1,4 +1,4 @@
-package ceid.netcins.json;
+package ceid.netcins.frontend.json;
 
 import java.util.Hashtable;
 import java.util.Iterator;

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ceid.netcins.CatalogService;
-import ceid.netcins.json.ContentProfileJSONConvertor;
+import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
 
 public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 	private static final long serialVersionUID = -5657532444852074783L;

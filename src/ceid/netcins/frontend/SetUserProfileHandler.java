@@ -15,8 +15,8 @@ import rice.Continuation;
 import rice.pastry.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
-import ceid.netcins.json.ContentProfileJSONConvertor;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
+import ceid.netcins.frontend.json.Json;
 import ceid.netcins.user.User;
 
 public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.Json;
 import ceid.netcins.user.FriendRequest;
 
 public class GetFriendRequestsHandler extends CatalogFrontendAbstractHandler {

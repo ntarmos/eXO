@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
 import ceid.netcins.CatalogService;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.Json;
 
 public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 

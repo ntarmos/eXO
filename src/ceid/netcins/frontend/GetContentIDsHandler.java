@@ -16,7 +16,7 @@ import rice.Continuation;
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastException;
 import ceid.netcins.CatalogService;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.Json;
 
 public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 

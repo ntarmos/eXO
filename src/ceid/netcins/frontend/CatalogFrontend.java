@@ -48,7 +48,7 @@ import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.TermField;
-import ceid.netcins.json.Json;
+import ceid.netcins.frontend.json.Json;
 import ceid.netcins.user.User;
 import ceid.netcins.user.UserNodeIdFactory;
 
