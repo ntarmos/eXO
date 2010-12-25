@@ -127,19 +127,26 @@
       type: 'POST',
       url: "/servlet/SetUserProfile/",
       data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
-      success: function(data){ polling_callback(data, reqID) },
+      success: function(data){
+        polling_callback(data, reqID);
+        return true;
+      },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
         alert("An error occurred : "+textStatus);
+        return false;
       }
     });
   }
   function polling_callback(polling_data, reqID){
     if("eXO::Status" in polling_data[0]){
       if(polling_data[0]["eXO::Status"]=="eXO::Processing"){
-        start_polling(reqID);
+        // Continue polling after 100ms
+        setTimeout(function(){ start_polling(reqID); }, 100);
+        return true;
       }
       // On stop of processing issue a new get profile request.
       do_get_profile();
+      return true;
     }
   }
 
@@ -413,8 +420,13 @@
 
           // Bind update click
           $(".update-action", edit_intance).click(function(){
-            if(update_profile_instance(field_name, edit_intance))
+            if(update_profile_instance(field_name, edit_intance)!=false)
               do_post_profile();
+          });
+          // Bind remove event for new tag
+          $('.single-tag a.close', edit_intance).click(function(){
+            $(this).parent().remove();
+            return false;
           });
           return false;
         });
