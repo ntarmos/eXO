@@ -1,6 +1,5 @@
 package ceid.netcins.frontend;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
@@ -12,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
 
-public class GetFriendRequestsHandler extends CatalogFrontendAbstractHandler {
+public class GetFriendRequestsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = -7350932922284839640L;
 
@@ -22,10 +21,11 @@ public class GetFriendRequestsHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 		Set<Id> friendReqIDs = catalogService.getUser().getPendingIncomingFReq().keySet();
-		sendStatus(response, RequestSuccess, friendReqIDs.toArray());
+		sendStatus(response, RequestStatus.SUCCESS, friendReqIDs.toArray());
 	}
 }

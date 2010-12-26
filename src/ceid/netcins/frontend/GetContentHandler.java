@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import ceid.netcins.CatalogService;
 
-public class GetContentHandler extends CatalogFrontendAbstractHandler {
+public class GetContentHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = -2901313244513782698L;
 
@@ -21,8 +21,8 @@ public class GetContentHandler extends CatalogFrontendAbstractHandler {
 	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		sendStatus(response, RequestSuccess, catalogService.getUser().getSharedContentProfiles());
+		sendStatus(response, RequestStatus.SUCCESS, catalogService.getUser().getSharedContentProfiles());
 	}
 }

@@ -1,6 +1,5 @@
 package ceid.netcins.frontend;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -12,7 +11,7 @@ import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.user.Friend;
 
-public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
+public class GetFriendUIDsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = 5244547683415352126L;
 
@@ -22,10 +21,11 @@ public class GetFriendUIDsHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 		Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
-		sendStatus(response, RequestSuccess, friends.keySet().toArray());
+		sendStatus(response, RequestStatus.SUCCESS, friends.keySet().toArray());
 	}
 }

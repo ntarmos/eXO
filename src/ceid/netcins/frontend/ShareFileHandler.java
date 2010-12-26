@@ -1,7 +1,6 @@
 package ceid.netcins.frontend;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -12,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import rice.Continuation;
 import ceid.netcins.CatalogService;
 
-public class ShareFileHandler extends CatalogFrontendAbstractHandler {
+public class ShareFileHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = 6460386943881811107L;
 	public static final String FilenameTag = "eXO::Filename";
@@ -23,8 +22,9 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 		if (jsonMap.containsKey(FilenameTag)) {
 			String filename = (String)jsonMap.get(FilenameTag);
@@ -40,22 +40,17 @@ public class ShareFileHandler extends CatalogFrontendAbstractHandler {
 						boolean didit = false;
 						for (int i = 0; i < resBool.length && !didit; i++)
 							didit = resBool[i];
-
-						Vector<Object> res = new Vector<Object>();
-						res.add(didit ? RequestSuccess : RequestFailure);
-						queue.put(reqID, res);
+						queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
 					}
 
 					@Override
 					public void receiveException(Exception exception) {
-						Vector<Object> res = new Vector<Object>();
-						res.add(RequestFailure);
-						queue.put(reqID, res);
+						queueStatus(reqID, RequestStatus.FAILURE, null);
 					}
 				});
 				return;
 			}
 		}
-		sendStatus(response, RequestFailure);
+		sendStatus(response, RequestStatus.FAILURE, null);
 	}
 }

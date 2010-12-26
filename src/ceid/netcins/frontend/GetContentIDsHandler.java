@@ -1,6 +1,5 @@
 package ceid.netcins.frontend;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
@@ -14,7 +13,7 @@ import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastException;
 import ceid.netcins.CatalogService;
 
-public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
+public class GetContentIDsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = 2066271262351320193L;
 
@@ -24,14 +23,15 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
 		// If local request, return immediately
 		if (uid == null) {
 			Set<Id> contentIDs = catalogService.getUser().getSharedContentIDs();
-			sendStatus(response, RequestSuccess, contentIDs.toArray());
+			sendStatus(response, RequestStatus.SUCCESS, contentIDs.toArray());
 			return;
 		}
 
@@ -45,24 +45,16 @@ public class GetContentIDsHandler extends CatalogFrontendAbstractHandler {
 				public void receiveResult(Object result) {
 					if (result == null || !(result instanceof Vector))
 						receiveException(new PastException("Result was null or of wrong type"));
-
-					Vector<Object> res = new Vector<Object>();
-					res.add(RequestSuccess);
-					res.add(((Vector<Id>)result).toArray());
-					queue.put(reqID, res);
+					queueStatus(reqID, RequestStatus.SUCCESS, ((Vector<Id>)result).toArray());
 				}
 
 				@Override
 				public void receiveException(Exception exception) {
-					Vector<Object> res = new Vector<Object>();
-					res.add(RequestFailure);
-					queue.put(reqID, res);
+					queueStatus(reqID, RequestStatus.FAILURE, null);
 				}
 			});
 		} catch (Exception e) {
-			Vector<Object> res = new Vector<Object>();
-			res.add(RequestFailure);
-			queue.put(reqID, res);
+			queueStatus(reqID, RequestStatus.FAILURE, null);
 		}
 	}
 }

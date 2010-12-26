@@ -1,6 +1,5 @@
 package ceid.netcins.frontend;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -13,7 +12,7 @@ import rice.p2p.past.PastException;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 
-public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
+public class GetContentTagsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = -358145592191291166L;
 
@@ -23,22 +22,23 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
 		if (cid == null) {
-			sendStatus(response, RequestFailure);
+			sendStatus(response, RequestStatus.FAILURE, null);
 			return;
 		}
 
 		if (uid == null) { // Local resource. Return immediately.
 			ContentProfile cp = catalogService.getUser().getSharedContentProfile(cid);
 			if (cp != null) {
-				sendStatus(response, RequestSuccess, cp);
+				sendStatus(response, RequestStatus.SUCCESS, cp);
 				return;
 			}
-			sendStatus(response, RequestFailure);
+			sendStatus(response, RequestStatus.FAILURE, null);
 			return;
 		}
 
@@ -51,24 +51,16 @@ public class GetContentTagsHandler extends CatalogFrontendAbstractHandler {
 				public void receiveResult(Object result) {
 					if (result == null || !(result instanceof ContentProfile))
 						receiveException(new PastException("Result was null or of wrong type"));
-
-					Vector<Object> res = new Vector<Object>();
-					res.add(RequestSuccess);
-					res.add(((ContentProfile)result));
-					queue.put(reqID, res);
+					queueStatus(reqID, RequestStatus.SUCCESS, result);
 				}
 
 				@Override
 				public void receiveException(Exception exception) {
-					Vector<Object> res = new Vector<Object>();
-					res.add(RequestFailure);
-					queue.put(reqID, res);
+					queueStatus(reqID, RequestStatus.FAILURE, null);
 				}
 			});
 		} catch (Exception e) {
-			Vector<Object> res = new Vector<Object>();
-			res.add(RequestFailure);
-			queue.put(reqID, res);
+			queueStatus(reqID, RequestStatus.FAILURE, null);
 		}
 	}
 }

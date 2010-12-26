@@ -1,6 +1,5 @@
 package ceid.netcins.frontend;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -13,10 +12,9 @@ import rice.Continuation;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
-import ceid.netcins.frontend.json.Json;
 import ceid.netcins.user.User;
 
-public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
+public class SetUserProfileHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = 5124127253356875812L;
 
@@ -27,8 +25,9 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
 		ContentProfileJSONConvertor cpj = new ContentProfileJSONConvertor();
@@ -49,10 +48,9 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 						// run replica maintenance
 						// runReplicaMaintence();
 						int indexedNum = 0;
-						Vector<Object> res = new Vector<Object>();
-						res.add(RequestSuccess);
+						Boolean[] results = null;
 						if (result instanceof Boolean[]) {
-							Boolean[] results = (Boolean[]) result;
+							results = (Boolean[]) result;
 							if (results != null)
 								for (Boolean isIndexedTerm : results) {
 									if (isIndexedTerm)
@@ -61,24 +59,19 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 							System.out.println("Total " + indexedNum
 									+ " terms indexed out of " + results.length
 									+ "!");
-							res.add(results);
 						}
-						queue.put(reqID, res);
+						queueStatus(reqID, RequestStatus.SUCCESS, results);
 					}
 
 					public void receiveException(Exception result) {
 						System.out.println("User : " + user.getUID()
 								+ ", indexed with errors : "
 								+ result.getMessage());
-						Vector<Object> res = new Vector<Object>();
-						res.add(RequestFailure);
-						queue.put(reqID, res);
+						queueStatus(reqID, RequestStatus.FAILURE, null);
 					}
 				});
 			} else {
-				Vector<Object> res = new Vector<Object>();
-				res.add(RequestSuccess);
-				response.getWriter().write(Json.toString(res));
+				sendStatus(response, RequestStatus.SUCCESS, null);
 			}
 			return;
 		}
@@ -93,25 +86,17 @@ public class SetUserProfileHandler extends CatalogFrontendAbstractHandler {
 					HashMap<String, Object> resMap = (HashMap<String, Object>)result;
 					if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
 						receiveException(new RuntimeException());
-
-					Vector<Object> res = new Vector<Object>();
-					res.add(RequestSuccess);
-					res.add(resMap.get("data"));
-					queue.put(reqID, res);
+					queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
 				}
 
 				@Override
 				public void receiveException(Exception exception) {
-					Vector<Object> res = new Vector<Object>();
-					res.add(RequestFailure);
-					queue.put(reqID, res);
+					queueStatus(reqID, RequestStatus.FAILURE, null);
 				}
 			});
 		} catch (Exception e) {
-			Vector<Object> res = new Vector<Object>();
 			e.printStackTrace();
-			res.add(RequestFailure);
-			queue.put(reqID, res);
+			queueStatus(reqID, RequestStatus.FAILURE, null);
 		}
 	}
 }

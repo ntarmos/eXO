@@ -1,6 +1,5 @@
 package ceid.netcins.frontend;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -14,7 +13,7 @@ import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
 import ceid.netcins.social.TagCloud;
 
-public class GetUserTagsHandler extends CatalogFrontendAbstractHandler {
+public class GetUserTagsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = 7508245962714729908L;
 
@@ -24,10 +23,11 @@ public class GetUserTagsHandler extends CatalogFrontendAbstractHandler {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (prepare(request, response) == JobStatus.FINISHED)
+	public void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 		Map<Id, TagCloud> userTags = catalogService.getUser().getUserTagClouds();
-		sendStatus(response, RequestSuccess, (userTags != null) ? userTags :new HashMap<String, String>());
+		sendStatus(response, RequestStatus.SUCCESS, (userTags != null) ? userTags :new HashMap<String, String>());
 	}
 }
