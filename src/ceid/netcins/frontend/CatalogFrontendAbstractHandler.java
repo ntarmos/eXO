@@ -20,6 +20,8 @@ import ceid.netcins.frontend.json.Json;
 
 public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 	private static final long serialVersionUID = -5657532444852074783L;
+
+	protected static final long DefaultSleepTime = 3000;
 	protected static final String ReqIDTag = "eXO::reqID";
 	protected static final String UIDTag = "eXO::UID";
 	protected static final String CIDTag = "eXO::CID";
@@ -40,19 +42,25 @@ public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 
 	protected CatalogService catalogService = null;
 	protected Hashtable<String, Vector<Object>> queue = null;
+	protected long sleepTime;
 
 	@SuppressWarnings("rawtypes")
 	protected Map jsonMap = null;
 	protected Id uid = null;
 	protected Id cid = null;
 
-	public CatalogFrontendAbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue) {
+	public CatalogFrontendAbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue, long sleepTime) {
+		this.catalogService = catalogService;
+		this.queue = queue;
+		this.sleepTime = sleepTime;
 		RequestSuccess.put(RequestStatusTag, RequestStatusSuccessTag);
 		RequestFailure.put(RequestStatusTag, RequestStatusFailureTag);
 		RequestProcessing.put(RequestStatusTag, RequestStatusProcessingTag);
 		RequestUnknown.put(RequestStatusTag, RequestStatusUnknownTag);
-		this.catalogService = catalogService;
-		this.queue = queue;
+	}
+
+	public CatalogFrontendAbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue) {
+		this(catalogService, queue, DefaultSleepTime);
 	}
 
 	// TODO: We only want POST access; remove this method when RnD is over.
@@ -132,6 +140,12 @@ public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 						sendStatus(response, RequestUnknown);
 						return JobStatus.FINISHED;
 					} else if (res.get(0).equals(RequestProcessing)) {
+						// Sleep as in long polling
+						try {
+							Thread.sleep(sleepTime);
+						} catch (InterruptedException e) {
+							System.err.println("Sleep interrupted. Ignoring...");
+						}
 						sendStatus(response, RequestProcessing);
 						return JobStatus.FINISHED;
 					}
@@ -149,5 +163,14 @@ public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 			return JobStatus.FINISHED;
 		}
 		return JobStatus.LOCAL;
+	}
+
+	protected long getSleepTime() {
+		return sleepTime;
+	}
+
+	protected void setSleepTime(long sleepTime) {
+		if (sleepTime >= 0)
+			this.sleepTime = sleepTime;
 	}
 }
