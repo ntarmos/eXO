@@ -106,6 +106,7 @@ public abstract class CatalogFrontendAbstractHandler extends HttpServlet {
 	protected JobStatus prepare(HttpServletRequest request, HttpServletResponse response) {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
+		response.setCharacterEncoding("utf-8");
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
