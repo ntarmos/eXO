@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import rice.Continuation;
 import ceid.netcins.CatalogService;
 
 /**
@@ -21,9 +20,8 @@ import ceid.netcins.CatalogService;
  * January 9-12, 2011, Asilomar, California, USA.
  * 
  */
-public class SendFriendRequestHandler extends AbstractHandler {
+public class SendFriendRequestHandler extends FriendRequestBaseHandler {
 	private static final long serialVersionUID = -5535744211758924495L;
-	public static final String FriendMessageTag = "eXO::FriendMessage";
 
 	public SendFriendRequestHandler(CatalogService catalogService,
 			Hashtable<String, Vector<Object>> queue) {
@@ -35,29 +33,6 @@ public class SendFriendRequestHandler extends AbstractHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		if (uid == null)
-			sendStatus(response, RequestStatus.FAILURE, null);
-		String msg = (String)jsonMap.get(FriendMessageTag);
-		if (msg == null)
-			msg = "";
-		final String reqID = getNewReqID(response);
-		try {
-			catalogService.friendRequest(uid, msg, 
-					new Continuation<Object, Exception>() {
-				@Override
-				public void receiveResult(Object result) {
-					boolean didit = (result instanceof Boolean && (Boolean)result == true);
-					queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
-				}
-
-				@Override
-				public void receiveException(Exception exception) {
-					queueStatus(reqID, RequestStatus.FAILURE, null);
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-			sendStatus(response, RequestStatus.FAILURE, null);
-		}
+		catalogService.friendRequest(uid, msg, command);
 	}
 }

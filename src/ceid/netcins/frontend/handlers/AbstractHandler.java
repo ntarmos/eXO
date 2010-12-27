@@ -91,6 +91,10 @@ public abstract class AbstractHandler extends HttpServlet {
 		doPost(request, response);
 	}
 
+
+	@Override
+	public abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException;
+
 	private void makeStatusMaps() {
 		for (RequestStatus v : RequestStatus.values()) {
 			HashMap<String, String> ret = new HashMap<String, String>();

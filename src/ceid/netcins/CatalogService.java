@@ -446,7 +446,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void friendRequest(final Id uid, final String message,
-			final Continuation command) throws Exception {
+			final Continuation command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -490,7 +490,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for the generic form of this function.
 	 */
 	public void acceptFriend(final FriendRequest freq,
-			@SuppressWarnings("rawtypes") final Continuation command) throws Exception {
+			@SuppressWarnings("rawtypes") final Continuation command) {
 		acceptFriend(freq, "", command);
 	}
 	
@@ -508,7 +508,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void acceptFriend(final FriendRequest freq, String message,
-			final Continuation command) throws Exception {
+			final Continuation command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -556,7 +556,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for the generic form of this function.
 	 */
 	public void rejectFriend(final FriendRequest freq,
-			@SuppressWarnings("rawtypes") final Continuation command) throws Exception {
+			@SuppressWarnings("rawtypes") final Continuation command) {
 		rejectFriend(freq, "", command);
 	}
 	
@@ -574,7 +574,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void rejectFriend(final FriendRequest freq, String message,
-			final Continuation command) throws Exception {
+			final Continuation command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
