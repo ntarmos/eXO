@@ -300,7 +300,8 @@ public class CatalogFrontend {
 				GetContentIDsHandler.class,
 				GetContentHandler.class,
 				SendFriendRequestHandler.class,
-				AcceptFriendRequestHandler.class
+				AcceptFriendRequestHandler.class,
+				RejectFriendRequestHandler.class
 		};
 		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletContextHandler.setContextPath("/servlet");

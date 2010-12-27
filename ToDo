@@ -175,4 +175,4 @@ tag: ContentField objects
 
 ✔ bool        acceptFriendRequest(UID)
 
-✘ bool        rejectFriendRequest(UID)
+✔ bool        rejectFriendRequest(UID)
