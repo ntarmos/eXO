@@ -124,7 +124,7 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 			break;
 		}
 
-		CatalogEntry finalEntry = (CatalogEntry)catalogEntries.get(additions.getUID());
+		CatalogEntry finalEntry = (CatalogEntry)catalogEntries.get((additions != null) ? additions.getUID() : deletions.getUID());
 		if (finalEntry == null) {
 			finalEntry = additions;
 			if (finalEntry != null)
