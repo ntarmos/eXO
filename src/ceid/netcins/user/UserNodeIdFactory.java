@@ -22,7 +22,13 @@ import rice.pastry.standard.RandomNodeIdFactory;
  * resulting in a a node ID (e.g., as computed by {@link
  * IPNodeIdFactory} or {@link RandomNodeIdFactory}).
  *
- * @author Nikos Ntarmos &lt;<a href="mailto:ntarmos@cs.uoi.gr">ntarmos@cs.uoi.gr</a>&gt;
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
  */
 public class UserNodeIdFactory implements NodeIdFactory {
 	private String username;

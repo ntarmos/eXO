@@ -17,7 +17,13 @@ import ceid.netcins.catalog.URLCatalogEntry;
  * our DHTService. This class will include mostly CatalogEntries or data for the
  * update of the Catalog entries.
  * 
- * @author Andreas Loupasakis
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
  * @version 1.0
  */
 public class InsertPDU extends ContentHashPastContent implements Serializable {

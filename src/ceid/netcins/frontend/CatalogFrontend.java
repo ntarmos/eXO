@@ -53,6 +53,17 @@ import ceid.netcins.frontend.json.Json;
 import ceid.netcins.user.User;
 import ceid.netcins.user.UserNodeIdFactory;
 
+/**
+ * 
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
+ * 
+ */
 public class CatalogFrontend {
 	public static final int REPLICATION_FACTOR = 3;
 	public static final int LEASE_PERIOD = 10000; // 10 seconds

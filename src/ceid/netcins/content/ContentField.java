@@ -11,7 +11,13 @@ import java.io.Serializable;
  *   	    values.
  *    	 2) a "String" object for STORED and UNTOKENIZED fields
  * 
- * @author Andreas Loupasakis
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
  */
 public abstract class ContentField implements Serializable {
 

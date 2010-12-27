@@ -7,6 +7,17 @@ import org.eclipse.jetty.util.ajax.JSON.Output;
 
 import ceid.netcins.content.TokenizedField;
 
+/**
+ * 
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
+ * 
+ */
 public class TokenizedFieldJSONConvertor extends ContentFieldJSONConvertor {
 	private static final String TermsTag = "eXO::Terms";
 	private static final String TFScoresTag = "eXO::TFScores";

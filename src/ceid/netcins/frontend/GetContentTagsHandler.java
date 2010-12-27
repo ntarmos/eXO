@@ -12,6 +12,17 @@ import rice.p2p.past.PastException;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 
+/**
+ * 
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
+ * 
+ */
 public class GetContentTagsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = -358145592191291166L;

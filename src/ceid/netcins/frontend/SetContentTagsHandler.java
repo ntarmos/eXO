@@ -15,6 +15,17 @@ import ceid.netcins.content.StoredField;
 import ceid.netcins.content.TermField;
 import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
 
+/**
+ * 
+ * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
+ * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
+ * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
+ * 
+ * "eXO: Decentralized Autonomous Scalable Social Networking"
+ * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ * January 9-12, 2011, Asilomar, California, USA.
+ * 
+ */
 public class SetContentTagsHandler extends AbstractHandler {
 
 	private static final long serialVersionUID = -565717952819033549L;
