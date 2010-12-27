@@ -1248,7 +1248,8 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command
 	 */
 	@SuppressWarnings("rawtypes")
-	public void indexPseudoContent(final ContentProfile cp,
+	public void indexPseudoContent(Id cid, final ContentProfile additions,
+			final ContentProfile deletions,
 			final Continuation command) {
 
 		if (this.user == null) {
@@ -1257,155 +1258,111 @@ public class CatalogService extends DHTService implements SocService {
 		}
 
 		// Handle the content profile, check if it is already indexed
-		if (cp == null) {
+		if (additions == null && deletions == null) {
 			command.receiveException(new RuntimeException("Empty content profile!"));
 			return;
 		}
 
 		// Check in the user's sharedContent map to see if we have already
 		// indexed it!
-		List<ContentField> fields = cp.getPublicFields();
-		Iterator<ContentField> it = fields.listIterator();
-		ContentField cf;
-		Id checksum = null;
-		String identifier = "";
-		while (it.hasNext()) {
-			cf = it.next();
-			if (cf.getFieldName().equals("Identifier")) {
-				identifier = ((TermField) cf).getFieldData();
-			}
-			if (cf.getFieldName().equals("SHA-1")) {
-				checksum = factory.buildIdFromToString(((StoredField) cf)
-						.getFieldData());
-				/*
-				if (user.getSharedContent().containsKey(checksum)) {
-					System.out.println("File has already been indexed!");
-					command.receiveException(new PastException("File has already been indexed!"));
-					return;
-				}
-				*/
-			}
-		}
-		if (checksum == null) {
+		final Id chsum = cid;
+		if (chsum == null) {
 			// No checksum in file tags. Create an ID just from the file name
-			logger.log("No SHA-1 checksum! Computing an ID based on the file name alone.");
-			checksum = factory.buildId(cp.toStringWithoutTF().getBytes());
+			logger.log("No SHA-1 checksum! Bailing out...");
+			command.receiveException(new PastException("No SHA-1 checksum!"));
+			return;
 		}
-		// Convinience for use in MultiContinuation inner Class
-		final Id chsum = checksum;
 
-		// Our data which will travel through the network!!!
-		ContentCatalogEntry cce = new ContentCatalogEntry(user.getUID(), cp,
-				user.getPublicUserProfile());
+		ContentCatalogEntry uceAdd = null, uceDel = null;
+		ContentProfile cpAdd = null, cpDel = null;
+		if (additions != null && (cpAdd = additions.getPublicPart()).getPublicFields().size() > 0)
+			uceAdd = new ContentCatalogEntry(user.getUID(), cpAdd, user.getPublicUserProfile());
+		if (deletions != null && (cpDel = deletions.getPublicPart()).getPublicFields().size() > 0)
+			uceDel = new ContentCatalogEntry(user.getUID(), cpDel, null);
 
-		// Create MultiContinuation
-		Set<String> indexingTerms = new HashSet<String>(); // holds the
-																// indexing
-																// terms
-																// (Strings)
-		it = fields.listIterator();
-		while (it.hasNext()) {
-			cf = it.next();
-			if (cf instanceof TermField) { // These fields are indexed as whole
-				TermField termf = (TermField) cf;
-				indexingTerms.add(termf.getFieldData());
+		if (uceAdd != null && uceDel != null)
+			uceAdd.subtract(uceDel);
 
-			} else if (cf instanceof TokenizedField) { // These fields are
-														// indexed
-				TokenizedField tokf = (TokenizedField) cf;
-				String[] terms = tokf.getTerms();
-				for (int i = 0; i < terms.length; i++) {
-					indexingTerms.add(terms[i]);
-				}
-			}
-		}
+		// Vector of indexing terms (Strings)
+		Vector<String> indexingTerms = new Vector<String>();
+		catalogToTermVector(indexingTerms, uceAdd);
+		catalogToTermVector(indexingTerms, uceDel);
 
 		int termscount = indexingTerms.size();
 		if (termscount == 0) {
 			command.receiveException(new RuntimeException("No terms to index!"));
 			return;
-		} else {
+		}
 
-			final String filename = identifier;
-			MultiContinuation multi = new MultiContinuation(command, termscount) {
+		MultiContinuation multi = new MultiContinuation(command, termscount) {
 
-				public boolean isDone() throws Exception {
-					int numSuccess = 0;
-					for (int i = 0; i < haveResult.length; i++)
-						if ((haveResult[i]) && (result[i] instanceof Boolean[]))
-							numSuccess++;
+			public boolean isDone() throws Exception {
+				int numSuccess = 0;
+				for (int i = 0; i < haveResult.length; i++)
+					if ((haveResult[i]) && (result[i] instanceof Boolean[]))
+						numSuccess++;
 
-					if (numSuccess >= (1.0 * haveResult.length))
-						return true;
+				if (numSuccess >= (1.0 * haveResult.length))
+					return true;
 
-					if (super.isDone()) {
-						for (int i = 0; i < result.length; i++)
-							if (result[i] instanceof Exception)
-								if (logger.level <= Logger.WARNING)
-									logger.logException("result[" + i + "]:",
-											(Exception) result[i]);
-						throw new PastException("Had only " + numSuccess
-								+ " successful inserted indices out of "
-								+ result.length + " - aborting.");
-					}
-
-					return false;
+				if (super.isDone()) {
+					for (int i = 0; i < result.length; i++)
+						if (result[i] instanceof Exception)
+							if (logger.level <= Logger.WARNING)
+								logger.logException("result[" + i + "]:",
+										(Exception) result[i]);
+					throw new PastException("Had only " + numSuccess
+							+ " successful inserted indices out of "
+							+ result.length + " - aborting.");
 				}
 
-				// This is called once we have sent all the messages (signaling
-				// Success).
-				public Object getResult() {
-					Boolean[] b = new Boolean[result.length];
-
-					for (int i = 0; i < b.length; i++) {
-						if (result[i] != null && result[i] instanceof Boolean[]) {
-							// Check the replicas' return values for true to
-							// return true or false
-							Boolean temp[] = (Boolean[]) result[i];
-							b[i] = Boolean.valueOf(false);
-							// We want all the replicas to have been indexed (so
-							// all true)
-							int j;
-							for (j = 0; j < temp.length; j++) {
-								if (temp[j] == false)
-									break;
-							}
-							// HERE WE WANT 100% SUCCESS IN REPLICATION INDEXING
-							if (j == temp.length)
-								b[i] = Boolean.valueOf(true);
-						} else { // If it is null or it is not of type Boolean[]
-							b[i] = Boolean.valueOf(false);
-						}
-					}
-
-					// As we have sent all the necessary data, add the file to
-					// the user Map
-					if (chsum != null) {
-						user.addSharedContent(chsum, new File(filename));
-						user.addSharedContentProfile(chsum, cp);
-					}
-
-					return b;
-				}
-			};
-
-			int index = 0;
-			Id tid;
-			String term;
-
-			Iterator<String> iter = indexingTerms.iterator();
-			while (iter.hasNext()) {
-				term = iter.next();
-				tid = factory.buildId(term);
-				PastContent pdu = new InsertPDU(tid, cce, null);
-				Continuation c = new NamedContinuation(
-						"InsertMessage (InsertPDU) for " + tid, multi
-								.getSubContinuation(index));
-				index++;
-				insert(pdu, c); // Here is the message post
-				iter.remove();
+				return false;
 			}
-			// End of Multicontinuation
+
+			// This is called once we have sent all the messages (signaling
+			// Success).
+			public Object getResult() {
+				Boolean[] b = new Boolean[result.length];
+
+				for (int i = 0; i < b.length; i++) {
+					if (result[i] != null && result[i] instanceof Boolean[]) {
+						// Check the replicas' return values for true to
+						// return true or false
+						Boolean temp[] = (Boolean[]) result[i];
+						b[i] = Boolean.valueOf(false);
+						// We want all the replicas to have been indexed (so
+						// all true)
+						int j;
+						for (j = 0; j < temp.length; j++) {
+							if (temp[j] == false)
+								break;
+						}
+						// HERE WE WANT 100% SUCCESS IN REPLICATION INDEXING
+						if (j == temp.length)
+							b[i] = Boolean.valueOf(true);
+					} else { // If it is null or it is not of type Boolean[]
+						b[i] = Boolean.valueOf(false);
+					}
+				}
+				return b;
+			}
+		};
+
+		ContentProfile cp = user.getSharedContentProfile(chsum);
+		ContentCatalogEntry cce = new ContentCatalogEntry(chsum, cp, null);
+		cce.add(uceAdd);
+		cce.subtract(uceDel);
+		user.addSharedContentProfile(chsum, cce.getContentProfile());
+
+		int index = 0;
+		for (String term : indexingTerms) {
+			Id tid = factory.buildId(term);
+			PastContent pdu = new InsertPDU(tid, uceAdd, uceDel);
+			Continuation c = new NamedContinuation(
+					"InsertMessage (InsertPDU) for " + tid + "(" + term + ")",
+					multi.getSubContinuation(index));
+			index++;
+			insert(pdu, c); // Here is the message post
 		}
 	}
 

@@ -46,7 +46,8 @@ public class SetContentTagsHandler extends AbstractHandler {
 
 		if (uid == null) { // Local resource.
 			// New tag-less content item
-			catalogService.indexPseudoContent(profile, new Continuation<Object, Exception>() {
+			catalogService.indexPseudoContent(cid, profile, null,
+					new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {
 					if (!(result instanceof Boolean[]))
