@@ -1,6 +1,7 @@
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -18,9 +19,27 @@ import java.util.Vector;
  */
 public class ScoreBoard  implements Serializable {
 
-	private static final long serialVersionUID = -7733473333205719161L;
-	private Vector<Float> scoreValues;
-	private Vector<CatalogEntry> catalogEntries;
+	private static final long serialVersionUID = 4381039714176907029L;
+
+	public class Score {
+		private CatalogEntry entry;
+		private Float score;
+
+		Score(CatalogEntry entry, Float score) {
+			this.entry = entry;
+			this.score = score;
+		}
+
+		public CatalogEntry getEntry() {
+			return entry;
+		}
+
+		public Float getScore() {
+			return score;
+		}
+	}
+
+	private Vector<Score> entries;
 
 	/**
 	 * rows and scoreValues must be sorted appropriately in Scorer!
@@ -31,26 +50,42 @@ public class ScoreBoard  implements Serializable {
 	 */
 	public ScoreBoard(Vector<CatalogEntry> catalogEntries,
 			Vector<Float> scoreValues) {
-		this.catalogEntries = catalogEntries;
-		this.scoreValues = scoreValues;
+		if (catalogEntries == null || scoreValues == null ||
+				catalogEntries.size() != scoreValues.size())
+			throw new RuntimeException("Illegal scoreboard initialization");
+		entries = new Vector<ScoreBoard.Score>();
+		Iterator<CatalogEntry> itce = catalogEntries.iterator();
+		Iterator<Float> itf = scoreValues.iterator();
+		while (itce.hasNext())
+			entries.add(new Score(itce.next(), itf.next()));
 	}
 
 	public Vector<Float> getScores() {
-		return this.scoreValues;
+		Vector<Float> ret = new Vector<Float>();
+		for (Score sc : entries) {
+			ret.add(sc.score);
+		}
+		return ret;
 	}
 	
 	public Vector<CatalogEntry> getCatalogEntries(){
-		return this.catalogEntries;
+		Vector<CatalogEntry> ret = new Vector<CatalogEntry>();
+		for (Score sc : entries) {
+			ret.add(sc.entry);
+		}
+		return ret;
 	}
-	
+
+	public Vector<Score> getAllEntries() {
+		return entries;
+	}
+
 	public double computeBytes() {
 		double counter = 0;
-		counter += Float.SIZE * scoreValues.size();
+		counter += Float.SIZE * entries.size();
 
-		if (catalogEntries != null) {
-			for (CatalogEntry ce : catalogEntries) {
-				counter += ce.computeTotalBytes();
-			}
+		for (Score ce : entries) {
+			counter += ce.entry.computeTotalBytes();
 		}
 
 		return counter;

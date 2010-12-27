@@ -7,6 +7,7 @@ import org.eclipse.jetty.util.ajax.JSON;
 
 import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
+import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.catalog.UserCatalogEntry;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.StoredField;
@@ -39,6 +40,7 @@ public class Json extends JSON {
 		JSON.registerConvertor(TagCloud.class, new TagCloudJSONConvertor());
 		JSON.registerConvertor(rice.p2p.commonapi.Id.class, new IdJSONConvertor());
 		JSON.registerConvertor(rice.pastry.Id.class, new IdJSONConvertor());
+		JSON.registerConvertor(ScoreBoard.class, new ScoreBoardJSONConvertor());
 	}
 
 	public static void init() {
