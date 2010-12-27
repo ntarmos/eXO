@@ -302,8 +302,8 @@ public class CatalogService extends DHTService implements SocService {
 
 		// The public part has changed. We should reindex the user profile in the network
 		if (!oldProfile.equalsPublic(profile)) {
-			ContentProfile additions = profile.minus(oldProfile);
-			ContentProfile deletions = oldProfile.minus(profile);
+			ContentProfile additions = profile.getPublicPart().minus(oldProfile.getPublicPart());
+			ContentProfile deletions = oldProfile.getPublicPart().minus(profile.getPublicPart());
 			indexUser(additions, deletions,
 					(command != null) ? command : new Continuation<Object, Exception>() {
 				@Override
