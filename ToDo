@@ -24,7 +24,7 @@ eXO TODOs
         updating/removing tags from the public profile if they're
         updated/removed from the private one, etc.)
           
-+N 2. Profile updates.
+=N 2. Profile updates.
       - Update user profiles (add/remove tags).
       - Update content profiles (add/remove tags).
       - Update profile tags to select between private and public sharing
