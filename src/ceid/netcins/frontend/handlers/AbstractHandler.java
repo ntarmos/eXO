@@ -184,7 +184,7 @@ public abstract class AbstractHandler extends HttpServlet {
 				if (jsonMap.containsKey(UIDTag))
 					uid = rice.pastry.Id.build((String)jsonMap.get(UIDTag));
 				if (jsonMap.containsKey(CIDTag))
-					cid = rice.pastry.Id.build((String)jsonMap.get(UIDTag));
+					cid = rice.pastry.Id.build((String)jsonMap.get(CIDTag));
 				return RequestState.REMOTE;
 			}
 			sendStatus(response, RequestStatus.FAILURE, null, "Error in JSON request");
