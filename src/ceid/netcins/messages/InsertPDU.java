@@ -1,10 +1,7 @@
-
-
 package ceid.netcins.messages;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.Hashtable;
 
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.ContentHashPastContent;
@@ -14,7 +11,6 @@ import ceid.netcins.catalog.Catalog;
 import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.URLCatalogEntry;
-import ceid.netcins.catalog.UserCatalogEntry;
 
 /**
  * This class represents the Protocol Data Unit (PDU) of the insert message of
@@ -26,15 +22,28 @@ import ceid.netcins.catalog.UserCatalogEntry;
  */
 public class InsertPDU extends ContentHashPastContent implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1904494570321601347L;
-	Object data; // The packet data
+	public static enum CatalogType { USER, CONTENT, URL };
+	private CatalogEntry additions, deletions; // The packet data
+	private CatalogType type;
 
-	public InsertPDU(Id tid, Object obj) {
+	public InsertPDU(Id tid, CatalogEntry add, CatalogEntry del) {
 		super(tid);
-		this.data = obj;
+		if ((add != null && del != null) && 
+				!(add.getClass().equals(del.getClass()) &&
+						add.getUID().equals(del.getUID())
+				)
+		)
+			throw new RuntimeException("Attempting to create an InsertPDU with non-matching entry types or UIDs");
+		CatalogEntry nonNull = (add == null ? add : del);
+		if (nonNull instanceof URLCatalogEntry)
+			type = CatalogType.URL;
+		else if (nonNull instanceof ContentCatalogEntry)
+			type = CatalogType.CONTENT;
+		else
+			type = CatalogType.USER;
+		this.additions = add;
+		this.deletions = del;
 	}
 
 	/**
@@ -72,6 +81,7 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 	 *                DESCRIBE THE EXCEPTION
 	 */
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public PastContent checkInsert(Id id, PastContent existingContent)
 			throws PastException {
@@ -82,98 +92,48 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 					"ContentHashPastContent: can't insert, content hash incorrect");
 		}
 
-		CatalogEntry entry;
-		if (this.data instanceof CatalogEntry) {
-			entry = (CatalogEntry) this.data;
-		} else {
+		if (existingContent != null && !(existingContent instanceof Catalog))
 			throw new PastException(
-					"Catalog : can't insert, the insertion object for the TID("
+					"Catalog : can't insert, existing object for the TID("
 							+ this.myId + ") is of unknown class type");
-		}
 
-		if (existingContent != null) {
-			if (existingContent instanceof Catalog) {
-				Catalog catalog = (Catalog) existingContent;
-				// TODO : check if the appropriate synchronization is done!
-				// Here is the main processing of new data
-				if (entry instanceof URLCatalogEntry) { // URL entry
-					URLCatalogEntry newue = (URLCatalogEntry) entry;
-					Set<URLCatalogEntry> list = catalog.getURLCatalogEntries();
-					Iterator<URLCatalogEntry> it = list.iterator();
-					URLCatalogEntry ue;
-					while (it.hasNext()) {
-						ue = it.next();
-						// TODO : Update of the existing entry!
-						if (ue.equals(newue)) { // We must do some update here
-												// or we have a duplicate!
-							catalog.replaceURLCatalogEntry(ue, newue);
-							return existingContent; // The same reference as
-													// catalog!
-						}
-					}
-					// A new entry for our catalog, as we didn't find the same
-					// entry!
-					catalog.addURLCatalogEntry(newue);
-
-				} else if (entry instanceof ContentCatalogEntry) { // Content
-																	// entry
-					ContentCatalogEntry newce = (ContentCatalogEntry) entry;
-					Set<ContentCatalogEntry> list = catalog
-							.getContentCatalogEntries();
-					Iterator<ContentCatalogEntry> it = list.iterator();
-					ContentCatalogEntry ce;
-					while (it.hasNext()) {
-						ce = it.next();
-						// TODO : Update of the existing entry!
-						if (ce.equals(newce)) { // We must do some update here
-												// or we have a duplicate!
-							catalog.replaceContentCatalogEntry(ce, newce);
-							return existingContent; // The same reference as
-													// catalog!
-						}
-					}
-					// A new entry for our catalog, as we didn't find the same
-					// entry!
-					catalog.addContentCatalogEntry(newce);
-
-				} else if (entry instanceof UserCatalogEntry) { // User entry
-					UserCatalogEntry newue = (UserCatalogEntry) entry;
-					Set<UserCatalogEntry> list = catalog
-							.getUserCatalogEntries();
-					Iterator<UserCatalogEntry> it = list.iterator();
-					UserCatalogEntry ue;
-					while (it.hasNext()) {
-						ue = it.next();
-						// TODO : Update of the existing entry!
-						if (ue.equals(newue)) { // We must do some update here
-												// or we have a duplicate!
-							catalog.replaceUserCatalogEntry(ue, newue);
-							return existingContent; // The same reference as
-													// catalog!
-						}
-					}
-					// A new entry for our catalog, as we didn't find the same
-					// entry!
-					catalog.addUserCatalogEntry(newue);
-				}
-				return existingContent; // The same reference as catalog!
-			} else
-				throw new PastException(
-						"Catalog : can't insert, existing object for the TID("
-								+ this.myId + ") is of unknown class type");
-
-		} else { // There is no Catalog for this TID! Let's create one :-)
-
+		if (existingContent == null) {
+			// There is no Catalog for this TID! Let's create one :-)
 			Catalog c = new Catalog(id);
-			if (entry instanceof URLCatalogEntry)
-				c.addURLCatalogEntry((URLCatalogEntry) entry);
-			else if (entry instanceof ContentCatalogEntry)
-				c.addContentCatalogEntry((ContentCatalogEntry) entry);
-			else if (entry instanceof UserCatalogEntry) {
-				c.addUserCatalogEntry((UserCatalogEntry) entry);
-			}
+			CatalogEntry finalEntry = additions;
+			finalEntry.subtract(deletions);
+			c.addCatalogEntry(finalEntry);
 			return c;
 		}
-	}
 
+		// Update existing Catalog entry
+		Catalog catalog = (Catalog) existingContent;
+		// TODO : check if the appropriate synchronization is done!
+		// Here is the main processing of new data
+		@SuppressWarnings("rawtypes")
+		Hashtable catalogEntries = null;
+		switch (type) {
+		case USER:
+			catalogEntries = catalog.getUserCatalogEntries();
+			break;
+		case CONTENT:
+			catalogEntries = catalog.getContentCatalogEntries();
+			break;
+		case URL:
+			catalogEntries = catalog.getURLCatalogEntries();
+			break;
+		}
+
+		CatalogEntry finalEntry = (CatalogEntry)catalogEntries.get(additions.getUID());
+		if (finalEntry == null) {
+			finalEntry = additions;
+			if (finalEntry != null)
+				finalEntry.subtract(deletions);
+		} else {
+			finalEntry.add(additions);
+			finalEntry.subtract(deletions);
+		}
+		catalogEntries.put(finalEntry.getUID(), finalEntry);
+		return existingContent; // The same reference as catalog!
+	}
 }

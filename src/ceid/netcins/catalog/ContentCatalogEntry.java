@@ -2,6 +2,7 @@ package ceid.netcins.catalog;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import rice.p2p.commonapi.Id;
@@ -129,5 +130,51 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 		counter += this.contentProfile.computeTotalBytes();
 
 		return counter;
+	}
+
+	@Override
+	public CatalogEntry add(CatalogEntry additions) {
+		if (additions != null && (
+				!(additions instanceof ContentCatalogEntry) ||
+				!(getUID().equals(additions.getUID())))
+		) {
+			return null;
+		}
+		if (additions == null)
+			return this;
+
+		ContentCatalogEntry addCE = ((ContentCatalogEntry)additions);
+		List<ContentField> add = null;
+		super.add(new UserCatalogEntry(getUID(), addCE.getUserProfile()));
+		if (addCE.contentProfile == null ||
+				(add = addCE.contentProfile.getPublicFields()).size() == 0)
+			return this;
+
+		for (ContentField cf : add)
+			contentProfile.add(cf);
+		return this;
+	}
+
+	@Override
+	public CatalogEntry subtract(CatalogEntry deletions) {
+		if (deletions != null && (
+				!(deletions instanceof ContentCatalogEntry) ||
+				!(getUID().equals(deletions.getUID())))
+		) {
+			return null;
+		}
+		if (deletions == null)
+			return this;
+
+		ContentCatalogEntry addCE = ((ContentCatalogEntry)deletions);
+		List<ContentField> add = null;
+		super.subtract(new UserCatalogEntry(getUID(), addCE.getUserProfile()));
+		if (addCE.contentProfile == null ||
+				(add = addCE.contentProfile.getPublicFields()).size() == 0)
+			return this;
+
+		for (ContentField cf : add)
+			contentProfile.remove(cf);
+		return this;
 	}
 }

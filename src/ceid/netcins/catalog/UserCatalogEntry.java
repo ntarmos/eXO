@@ -1,8 +1,10 @@
 package ceid.netcins.catalog;
 
 import java.io.Serializable;
+import java.util.List;
 
 import rice.p2p.commonapi.Id;
+import ceid.netcins.content.ContentField;
 import ceid.netcins.content.ContentProfile;
 
 /**
@@ -68,5 +70,39 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		counter += this.userProfile.computeTotalBytes();
 
 		return counter;
+	}
+
+	@Override
+	public CatalogEntry add(CatalogEntry additions) {
+		if (additions != null && (
+				!(additions instanceof UserCatalogEntry) ||
+				!(getUID().equals(additions.getUID())))
+		) {
+			return null;
+		}
+		List<ContentField> add = null;
+		if (additions == null ||
+				(add = ((UserCatalogEntry)additions).getUserProfile().getPublicFields()).size() == 0)
+			return this;
+		for (ContentField cf : add)
+			userProfile.add(cf);
+		return this;
+	}
+
+	@Override
+	public CatalogEntry subtract(CatalogEntry deletions) {
+		if (deletions != null && (
+				!(deletions instanceof UserCatalogEntry) ||
+				!(getUID().equals(deletions.getUID())))
+		) {
+			return null;
+		}
+		List<ContentField> add = null;
+		if (deletions == null ||
+				(add = ((UserCatalogEntry)deletions).getUserProfile().getPublicFields()) == null)
+			return this;
+		for (ContentField cf : add)
+			userProfile.remove(cf);
+		return this;
 	}
 }

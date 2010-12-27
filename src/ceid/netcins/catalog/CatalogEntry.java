@@ -83,4 +83,20 @@ public abstract class CatalogEntry implements Serializable, Comparable {
 	 * @return A sum of the UserCatalogEntry data in bytes
 	 */
 	public abstract double computeTotalBytes();
+
+	/**
+	 * Adds content profile entries to the current object
+	 * 
+	 * @param additions entries to add
+	 * @return the final result
+	 */
+	public abstract CatalogEntry add(CatalogEntry additions);
+
+	/**
+	 * Removes content profile entries to the current object
+	 * 
+	 * @param deletions entries to be removed
+	 * @return the final result
+	 */
+	public abstract CatalogEntry subtract(CatalogEntry deletions);
 }

@@ -40,6 +40,7 @@ import rice.p2p.past.messaging.PastMessage;
 import rice.p2p.util.rawserialization.SimpleOutputBuffer;
 import rice.persistence.StorageManager;
 import ceid.netcins.catalog.Catalog;
+import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.ScoreBoard;
 import ceid.netcins.catalog.SocialCatalog;
@@ -134,7 +135,7 @@ public class CatalogService extends DHTService implements SocService {
 	public void start() {
 		scorerThread.start();
 
-		indexUser(new Continuation() {
+		indexUser(user.getPublicUserProfile(), null, new Continuation() {
 			public void receiveResult(Object result) {
 				System.out.println("User : " + user.getUID()
 						+ ", indexed successfully");
@@ -295,15 +296,17 @@ public class CatalogService extends DHTService implements SocService {
 		});
 	}
 
-	@SuppressWarnings("rawtypes")
-	public void setUserProfile(ContentProfile profile) {
+	public void setUserProfile(ContentProfile profile, Continuation<Object, Exception> command) {
 		ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
 		user.setUserProfile(profile);
 
+		// The public part has changed. We should reindex the user profile in the network
 		if (!oldProfile.equalsPublic(profile)) {
-			// The public part has changed. We should reindex the user profile in the network
-			indexUser(new Continuation() {
-
+			ContentProfile additions = profile.minus(oldProfile);
+			ContentProfile deletions = oldProfile.minus(profile);
+			indexUser(additions, deletions,
+					(command != null) ? command : new Continuation<Object, Exception>() {
+				@Override
 				public void receiveResult(Object result) {
 
 					System.out.println("User : " + user.getUID()
@@ -320,15 +323,14 @@ public class CatalogService extends DHTService implements SocService {
 									indexedNum++;
 							}
 						System.out.println("Total " + indexedNum
-								+ " terms indexed out of " + results.length
-								+ "!");
+								+ " terms indexed out of " + results.length);
 					}
 				}
 
+				@Override
 				public void receiveException(Exception result) {
 					System.out.println("User : " + user.getUID()
-							+ ", indexed with errors : "
-							+ result.getMessage());
+							+ ", indexed with errors : " + result.getMessage());
 				}
 			});
 		}
@@ -931,7 +933,7 @@ public class CatalogService extends DHTService implements SocService {
 		// Our data which will travel through the network!!!
 		URLCatalogEntry ue = new URLCatalogEntry(user.getUID(), oldtags, user
 				.getPublicUserProfile(), url);
-		PastContent pdu = new InsertPDU(tid, ue);
+		PastContent pdu = new InsertPDU(tid, ue, null);
 		// Here is the message post
 		// Issue an insert request to the uderline DHT service
 		insert(pdu, new NamedContinuation(
@@ -1097,7 +1099,7 @@ public class CatalogService extends DHTService implements SocService {
 				while (iter.hasNext()) {
 					term = iter.next();
 					tid = factory.buildId(term);
-					PastContent pdu = new InsertPDU(tid, cce);
+					PastContent pdu = new InsertPDU(tid, cce, null);
 					Continuation c = new NamedContinuation(
 							"InsertMessage (InsertPDU) for " + tid, multi
 									.getSubContinuation(index));
@@ -1112,127 +1114,130 @@ public class CatalogService extends DHTService implements SocService {
 		}
 	}
 
+	private void catalogToTermVector(Vector<String> v, CatalogEntry ce) {
+		if (v == null || ce == null)
+			return;
+		if (ce instanceof UserCatalogEntry) {
+			ContentProfile cp = ((UserCatalogEntry)ce).getUserProfile();
+			if (cp != null && cp.getPublicFields().size() > 0) {
+				for (ContentField cf : cp.getPublicFields()) {
+					if (cf instanceof TermField) {
+						v.add(((TermField)cf).getFieldData());
+					} else if (cf instanceof TokenizedField) {
+						for (String s : ((TokenizedField)cf).getTerms())
+							v.add(s);
+					}
+				}
+			}
+		}
+		if (ce instanceof ContentCatalogEntry) {
+			ContentProfile cp = ((ContentCatalogEntry)ce).getContentProfile();
+			if (cp != null && cp.getPublicFields().size() > 0) {
+				for (ContentField cf : cp.getPublicFields()) {
+					if (cf instanceof TermField) {
+						v.add(((TermField)cf).getFieldData());
+					} else if (cf instanceof TokenizedField) {
+						for (String s : ((TokenizedField)cf).getTerms())
+							v.add(s);
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * This function indexes the user's profile keywords around the network.
 	 * 
 	 * @param command
 	 */
 	@SuppressWarnings("rawtypes")
-	public void indexUser(final Continuation command) {
+	public void indexUser(ContentProfile additions, ContentProfile deletions, final Continuation command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
 
-		// Fetch the user profile
-		ContentProfile cp = user.getPublicUserProfile();
-		if (cp == null) {
+		if (additions == null && deletions == null) {
 			command.receiveException(new RuntimeException("Empty profile!"));
 			return;
 		}
 
 		// Our data which will travel through the network!!!
-		UserCatalogEntry uce = new UserCatalogEntry(user.getUID(), cp);
+		UserCatalogEntry uceAdd = null, uceDel = null;
+		ContentProfile cpAdd = null, cpDel = null;
+		if (additions != null && (cpAdd = additions.getPublicPart()).getPublicFields().size() > 0)
+			uceAdd = new UserCatalogEntry(user.getUID(), cpAdd);
+		if (deletions != null && (cpDel = deletions.getPublicPart()).getPublicFields().size() > 0)
+			uceDel = new UserCatalogEntry(user.getUID(), cpDel);
 
-		// Create MultiContinuation
-		List<ContentField> fields = cp.getPublicFields();
-		Iterator<ContentField> it = fields.iterator();
-		ContentField cf;
-		Vector<String> indexingTerms = new Vector<String>(); // holds the
-																// indexing
-																// terms
-																// (Strings)
-		while (it.hasNext()) {
-			cf = it.next();
-			if (cf instanceof TermField) { // These fields are indexed as whole
-				TermField termf = (TermField) cf;
-				indexingTerms.add(termf.getFieldData());
+		if (uceAdd != null && uceDel != null)
+			uceAdd.subtract(uceDel);
 
-			} else if (cf instanceof TokenizedField) { // These fields are
-														// indexed
-				TokenizedField tokf = (TokenizedField) cf;
-				String[] terms = tokf.getTerms();
-				for (int i = 0; i < terms.length; i++) {
-					indexingTerms.add(terms[i]);
-				}
-			}
-		}
+		// Vector of indexing terms (Strings)
+		Vector<String> indexingTerms = new Vector<String>();
+		catalogToTermVector(indexingTerms, uceAdd);
+		catalogToTermVector(indexingTerms, uceDel);
 
-		int termscount = indexingTerms.size();
-		if (termscount == 0) {
+		if (indexingTerms.size() == 0) {
 			command.receiveException(new RuntimeException("No terms to index!"));
 			return;
-		} else {
+		}
 
-			MultiContinuation multi = new MultiContinuation(command, termscount) {
+		MultiContinuation multi = new MultiContinuation(command, indexingTerms.size()) {
+			public boolean isDone() throws Exception {
+				int numSuccess = 0;
+				for (int i = 0; i < haveResult.length; i++)
+					if ((haveResult[i]) && (result[i] instanceof Boolean[]))
+						numSuccess++;
 
-				public boolean isDone() throws Exception {
-					int numSuccess = 0;
-					for (int i = 0; i < haveResult.length; i++)
-						if ((haveResult[i]) && (result[i] instanceof Boolean[]))
-							numSuccess++;
+				if (numSuccess >= haveResult.length)
+					return true;
 
-					if (numSuccess >= (1.0 * haveResult.length))
-						return true;
-
-					if (super.isDone()) {
-						for (int i = 0; i < result.length; i++)
-							if (result[i] instanceof Exception)
-								if (logger.level <= Logger.WARNING)
-									logger.logException("result[" + i + "]:",
-											(Exception) result[i]);
-						throw new PastException("Had only " + numSuccess
-								+ " successful inserted indices out of "
-								+ result.length + " - aborting.");
-					}
-
-					return false;
+				if (super.isDone()) {
+					for (int i = 0; i < result.length; i++)
+						if (result[i] instanceof Exception)
+							if (logger.level <= Logger.WARNING)
+								logger.logException("result[" + i + "]:",
+										(Exception) result[i]);
+					throw new PastException("Had only " + numSuccess
+							+ " successful inserted indices out of "
+							+ result.length + " - aborting.");
 				}
 
-				public Object getResult() {
-					Boolean[] b = new Boolean[result.length];
-
-					for (int i = 0; i < b.length; i++) {
-						if (result[i] != null && result[i] instanceof Boolean[]) {
-							// Check the replicas' return values for true to
-							// return true or false
-							Boolean temp[] = (Boolean[]) result[i];
-							b[i] = Boolean.valueOf(false);
-							// We want all the replicas to have been indexed (so
-							// all true)
-							int j;
-							for (j = 0; j < temp.length; j++) {
-								if (temp[j] == false)
-									break;
-							}
-							// HERE WE WANT 100% SUCCESS IN REPLICATION INDEXING
-							if (j == temp.length)
-								b[i] = Boolean.valueOf(true);
-						} else { // If it is null or it is not of type Boolean[]
-							b[i] = Boolean.valueOf(false);
-						}
-					}
-					return b;
-				}
-			};
-
-			int index = 0;
-			Id tid;
-			String term;
-
-			while (!indexingTerms.isEmpty()) {
-
-				term = indexingTerms.remove(0);
-				tid = factory.buildId(term);
-				PastContent pdu = new InsertPDU(tid, uce);
-				Continuation c = new NamedContinuation(
-						"InsertMessage (InsertPDU) for " + tid, multi
-								.getSubContinuation(index));
-				index++;
-				insert(pdu, c); // Here is the message post
+				return false;
 			}
-			// End of Multicontinuation
+
+			public Object getResult() {
+				Boolean[] b = new Boolean[result.length];
+
+				for (int i = 0; i < b.length; i++) {
+					if (result[i] != null && result[i] instanceof Boolean[]) {
+						// Check the replicas' return values for true to
+						// return true or false
+						Boolean temp[] = (Boolean[]) result[i];
+						b[i] = true;
+						// We want all the replicas to have been indexed (so all true)
+						for (int j = 0; j < temp.length && b[i]; j++) {
+							b[i] = temp[j];
+						}
+					} else { // If it is null or it is not of type Boolean[]
+						b[i] = false;
+					}
+				}
+				return b;
+			}
+		};
+
+		int index = 0;
+		for (String term : indexingTerms) {
+			Id tid = factory.buildId(term);
+			PastContent pdu = new InsertPDU(tid, uceAdd, uceDel);
+			Continuation c = new NamedContinuation(
+					"InsertMessage (InsertPDU) for " + tid + "(" + term + ")",
+					multi.getSubContinuation(index));
+			index++;
+			insert(pdu, c); // Here is the message post
 		}
 	}
 
@@ -1392,7 +1397,7 @@ public class CatalogService extends DHTService implements SocService {
 			while (iter.hasNext()) {
 				term = iter.next();
 				tid = factory.buildId(term);
-				PastContent pdu = new InsertPDU(tid, cce);
+				PastContent pdu = new InsertPDU(tid, cce, null);
 				Continuation c = new NamedContinuation(
 						"InsertMessage (InsertPDU) for " + tid, multi
 								.getSubContinuation(index));
@@ -2213,11 +2218,11 @@ public class CatalogService extends DHTService implements SocService {
 						// and return a mini ScoredCatalog (PastContent)
 						if (o instanceof Catalog) {
 							int type = qmsg.getQueryPDU().getType();
-							Set entries = ((Catalog) o).getCatalogEntriesForQueryType(type);
+							Hashtable entries = ((Catalog) o).getCatalogEntriesForQueryType(type);
 							// Leave the job to be done asynchronously by the
 							// Scorer thread
 							scorer.addRequest(new SimilarityRequest(
-									entries, qmsg.getQueryPDU().getData(),
+									entries.values(), qmsg.getQueryPDU().getData(),
 									type, qmsg.getQueryPDU().getK(),
 									qmsg.getQueryPDU().getSourceUserProfile(),
 									parent,	qmsg.getHops()));
