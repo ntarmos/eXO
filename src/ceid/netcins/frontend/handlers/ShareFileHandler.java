@@ -1,4 +1,4 @@
-package ceid.netcins.frontend;
+package ceid.netcins.frontend.handlers;
 
 import java.io.File;
 import java.util.Hashtable;

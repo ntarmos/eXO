@@ -1,4 +1,4 @@
-package ceid.netcins.frontend;
+package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
-import rice.p2p.past.PastException;
+import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.content.ContentProfile;
+import ceid.netcins.user.FriendRequest;
 
 /**
  * 
@@ -23,11 +23,11 @@ import ceid.netcins.content.ContentProfile;
  * January 9-12, 2011, Asilomar, California, USA.
  * 
  */
-public class GetContentTagsHandler extends AbstractHandler {
+public class AcceptFriendRequestHandler extends AbstractHandler {
+	private static final long serialVersionUID = -5852818920517847654L;
+	public static final String FriendMessageTag = "eXO::FriendMessage";
 
-	private static final long serialVersionUID = -358145592191291166L;
-
-	public GetContentTagsHandler(CatalogService catalogService,
+	public AcceptFriendRequestHandler(CatalogService catalogService,
 			Hashtable<String, Vector<Object>> queue) {
 		super(catalogService, queue);
 	}
@@ -37,32 +37,21 @@ public class GetContentTagsHandler extends AbstractHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-
-		if (cid == null) {
+		if (uid == null)
 			sendStatus(response, RequestStatus.FAILURE, null);
-			return;
-		}
-
-		if (uid == null) { // Local resource. Return immediately.
-			ContentProfile cp = catalogService.getUser().getSharedContentProfile(cid);
-			if (cp != null) {
-				sendStatus(response, RequestStatus.SUCCESS, cp);
-				return;
-			}
-			sendStatus(response, RequestStatus.FAILURE, null);
-			return;
-		}
-
-		// Search for it in the network
+		String msg = (String)jsonMap.get(FriendMessageTag);
 		final String reqID = getNewReqID(response);
+		final Hashtable<Id, FriendRequest> fr = catalogService.getUser().getPendingIncomingFReq();
+		if (!fr.containsKey(uid)) {
+			sendStatus(response, RequestStatus.FAILURE, null);
+		}
 		try {
-			catalogService.retrieveContentTags(uid, cid,
+			catalogService.acceptFriend(fr.get(uid), msg, 
 					new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {
-					if (result == null || !(result instanceof ContentProfile))
-						receiveException(new PastException("Result was null or of wrong type"));
-					queueStatus(reqID, RequestStatus.SUCCESS, result);
+					boolean didit = (result instanceof Boolean && (Boolean)result == true);
+					queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
 				}
 
 				@Override
@@ -71,7 +60,8 @@ public class GetContentTagsHandler extends AbstractHandler {
 				}
 			});
 		} catch (Exception e) {
-			queueStatus(reqID, RequestStatus.FAILURE, null);
+			e.printStackTrace();
+			sendStatus(response, RequestStatus.FAILURE, null);
 		}
 	}
 }

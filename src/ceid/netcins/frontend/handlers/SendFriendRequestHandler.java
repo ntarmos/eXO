@@ -1,4 +1,4 @@
-package ceid.netcins.frontend;
+package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
-import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
-import ceid.netcins.user.FriendRequest;
 
 /**
  * 
@@ -23,11 +21,11 @@ import ceid.netcins.user.FriendRequest;
  * January 9-12, 2011, Asilomar, California, USA.
  * 
  */
-public class AcceptFriendRequestHandler extends AbstractHandler {
-	private static final long serialVersionUID = -5852818920517847654L;
+public class SendFriendRequestHandler extends AbstractHandler {
+	private static final long serialVersionUID = -5535744211758924495L;
 	public static final String FriendMessageTag = "eXO::FriendMessage";
 
-	public AcceptFriendRequestHandler(CatalogService catalogService,
+	public SendFriendRequestHandler(CatalogService catalogService,
 			Hashtable<String, Vector<Object>> queue) {
 		super(catalogService, queue);
 	}
@@ -40,13 +38,11 @@ public class AcceptFriendRequestHandler extends AbstractHandler {
 		if (uid == null)
 			sendStatus(response, RequestStatus.FAILURE, null);
 		String msg = (String)jsonMap.get(FriendMessageTag);
+		if (msg == null)
+			msg = "";
 		final String reqID = getNewReqID(response);
-		final Hashtable<Id, FriendRequest> fr = catalogService.getUser().getPendingIncomingFReq();
-		if (!fr.containsKey(uid)) {
-			sendStatus(response, RequestStatus.FAILURE, null);
-		}
 		try {
-			catalogService.acceptFriend(fr.get(uid), msg, 
+			catalogService.friendRequest(uid, msg, 
 					new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {

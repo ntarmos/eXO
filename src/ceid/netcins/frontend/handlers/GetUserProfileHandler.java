@@ -1,7 +1,7 @@
-package ceid.netcins.frontend;
+package ceid.netcins.frontend.handlers;
 
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -9,9 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
-import rice.p2p.commonapi.Id;
-import rice.p2p.past.PastException;
 import ceid.netcins.CatalogService;
+import ceid.netcins.content.ContentProfile;
 
 /**
  * 
@@ -24,11 +23,11 @@ import ceid.netcins.CatalogService;
  * January 9-12, 2011, Asilomar, California, USA.
  * 
  */
-public class GetContentIDsHandler extends AbstractHandler {
+public class GetUserProfileHandler extends AbstractHandler {
 
-	private static final long serialVersionUID = 2066271262351320193L;
+	private static final long serialVersionUID = 2401227782075291999L;
 
-	public GetContentIDsHandler(CatalogService catalogService,
+	public GetUserProfileHandler(CatalogService catalogService,
 			Hashtable<String, Vector<Object>> queue) {
 		super(catalogService, queue);
 	}
@@ -39,24 +38,26 @@ public class GetContentIDsHandler extends AbstractHandler {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
-		// If local request, return immediately
-		if (uid == null) {
-			Set<Id> contentIDs = catalogService.getUser().getSharedContentIDs();
-			sendStatus(response, RequestStatus.SUCCESS, contentIDs.toArray());
+		if (uid == null) { // Local operation. Return immediately.
+			ContentProfile userProfile = catalogService.getUserProfile();
+			if (userProfile != null)
+				sendStatus(response, RequestStatus.SUCCESS, userProfile);
+			else
+				sendStatus(response, RequestStatus.FAILURE, null);
 			return;
 		}
 
-		// Search for it in the network
 		final String reqID = getNewReqID(response);
 		try {
-			catalogService.retrieveContentIDs(uid,
-					new Continuation<Object, Exception>() {
+			catalogService.getUserProfile(uid, new Continuation<Object, Exception>() {
+
 				@SuppressWarnings("unchecked")
 				@Override
 				public void receiveResult(Object result) {
-					if (result == null || !(result instanceof Vector))
-						receiveException(new PastException("Result was null or of wrong type"));
-					queueStatus(reqID, RequestStatus.SUCCESS, ((Vector<Id>)result).toArray());
+					HashMap<String, Object> resMap = (HashMap<String, Object>)result;
+					if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
+						receiveException(new RuntimeException());
+					queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
 				}
 
 				@Override

@@ -1,4 +1,4 @@
-package ceid.netcins.frontend;
+package ceid.netcins.frontend.handlers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import rice.p2p.commonapi.Id;
 import ceid.netcins.CatalogService;
+import ceid.netcins.frontend.CatalogFrontend;
 import ceid.netcins.frontend.json.Json;
 
 /**
