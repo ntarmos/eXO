@@ -1179,6 +1179,15 @@ public class CatalogService extends DHTService implements SocService {
 		catalogToTermVector(indexingTerms, uceAdd);
 		catalogToTermVector(indexingTerms, uceDel);
 
+		// Also add all terms from shared content profiles
+		Iterator<ContentProfile> itv = user.getSharedContentProfiles().values().iterator();
+		Iterator<Id> itk = user.getSharedContentProfiles().keySet().iterator();
+		while (itv.hasNext()) {
+			Id key = itk.next();
+			ContentProfile cp = itv.next().getPublicPart();
+			catalogToTermVector(indexingTerms, new ContentCatalogEntry(key, cp, null));
+		}
+
 		if (indexingTerms.size() == 0) {
 			command.receiveException(new RuntimeException("No terms to index!"));
 			return;
