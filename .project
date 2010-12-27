@@ -14,16 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>FreePastry.git-lib</name>
-			<type>2</type>
-			<locationURI>DEV_ROOT/FreePastry.git/pastry/lib</locationURI>
-		</link>
-		<link>
-			<name>FreePastry.git-src</name>
-			<type>2</type>
-			<locationURI>DEV_ROOT/FreePastry.git/pastry/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
