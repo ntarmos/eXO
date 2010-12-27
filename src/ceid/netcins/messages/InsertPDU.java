@@ -133,7 +133,8 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 			finalEntry.add(additions);
 			finalEntry.subtract(deletions);
 		}
-		catalogEntries.put(finalEntry.getUID(), finalEntry);
+		if (finalEntry != null)
+			catalogEntries.put(finalEntry.getUID(), finalEntry);
 		return existingContent; // The same reference as catalog!
 	}
 }
