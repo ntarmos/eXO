@@ -230,6 +230,7 @@
     <jar destfile="Sim.jar">
       <fileset dir="${build.dir}" includes="**/*.class"/>
       <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/> <!-- activate if u want to include freepastry.params -->
+      <fileset dir="${jar.dir}/eXO" includes="eXO.params"/> <!-- activate if u want to include eXO.params -->
       <!--<fileset dir="images" includes="*.gif" /> -->
         <!--  KILLERLOOP   --> 
         <!--<fileset dir="${lib.dir}" includes="**/*.jar" />-->
@@ -314,6 +315,7 @@ events that take effect in the program.
               <include name="lib/trayicon.jar" />
               <include name="lib/AbsoluteLayout.jar"/>
               <include name="jars/freepastry/freepastry.params"/>
+              <include name="jars/eXO/eXO.params"/>
           </fileset>
       </zip>
   </target>
@@ -355,6 +357,7 @@ events that take effect in the program.
         <include name="rice/tutorial/**/*.class"/>
       </fileset>
       <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+      <fileset dir="${jar.dir}/eXO" includes="eXO.params"/>
     </jar>
   </target>
 
@@ -388,6 +391,7 @@ events that take effect in the program.
         <exclude name="**/testing/*.class"/>
       </fileset>
       <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+      <fileset dir="${jar.dir}/eXO" includes="eXO.params"/>
     </jar>
   </target>
 
@@ -437,6 +441,7 @@ events that take effect in the program.
       <tarfileset dir="ant" includes="**/*" prefix="pastry-${freepastry-version}/ant"/>
       <tarfileset dir="html" includes="**/*" prefix="pastry-${freepastry-version}/html"/>
       <tarfileset dir="jars/freepastry" includes="freepastry.params" prefix="pastry-${freepastry-version}/jars/freepastry"/>
+      <tarfileset dir="jars/eXO" includes="eXO.params" prefix="pastry-${freepastry-version}/jars/eXO"/>
       <tarfileset dir="license" includes="**/*" prefix="pastry-${freepastry-version}/license"/>
       <tarfileset dir="licensing" includes="**/*" prefix="pastry-${freepastry-version}/licensing"/>
       <tarfileset dir="tools/wireshark" includes="**/*" prefix="pastry-${freepastry-version}/tools/wireshark"/>
@@ -485,6 +490,7 @@ events that take effect in the program.
       <zipfileset dir="ant" includes="**/*" prefix="pastry-${freepastry-version}/ant" />
       <zipfileset dir="html" includes="**/*" prefix="pastry-${freepastry-version}/html" />
       <zipfileset dir="jars/freepastry" includes="freepastry.params" prefix="pastry-${freepastry-version}/jars/freepastry" />
+      <zipfileset dir="jars/eXO" includes="eXO.params" prefix="pastry-${freepastry-version}/jars/eXO" />
       <zipfileset dir="license" includes="**/*" prefix="pastry-${freepastry-version}/license" />
       <zipfileset dir="licensing" includes="**/*" prefix="pastry-${freepastry-version}/licensing" />
       <zipfileset dir="tools/wireshark" includes="**/*" prefix="pastry-${freepastry-version}/tools/wireshark"/>
@@ -573,6 +579,7 @@ events that take effect in the program.
       <fileset dir="${build.dir}" includes="rice/visualization/**/*.class"/>
       <fileset dir="${jar.dir}/epost" includes="ca.publickey,epost.params,ePOST_certificate.cer,ringcert.list,*.ringcert"/>
       <fileset dir="${jar.dir}/freepastry" includes="freepastry.params"/>
+      <fileset dir="${jar.dir}/eXO" includes="eXO.params"/>
     </jar>
   </target>
 

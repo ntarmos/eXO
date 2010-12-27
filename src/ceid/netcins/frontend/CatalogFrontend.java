@@ -370,7 +370,7 @@ public class CatalogFrontend {
 			}
 		}
 
-		Environment env = new Environment();
+		Environment env = new Environment(new String[] { "freepastry", "eXO" }, null);
 		CatalogFrontend cf = null;
 		try {
 			cf = (args.length == 3) ?
