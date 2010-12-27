@@ -1,13 +1,13 @@
 package ceid.netcins.similarity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -68,7 +68,7 @@ public class Scorer {
 	private void serveRequest(SimilarityRequest req) {
 
 		@SuppressWarnings("rawtypes")
-		Set profileEntries = req.getProfileEntries();
+		Collection profileEntries = req.getProfileEntries();
 		String[] query = req.getQuery();
 
 		// ************** CONTENT SEARCHING PART **************

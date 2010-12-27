@@ -1,5 +1,6 @@
 package ceid.netcins.similarity;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -25,7 +26,7 @@ public class SimilarityRequest {
 
 	// The collection of (user or content) entries we want to score
 	@SuppressWarnings("rawtypes")
-	private Set profileEntries;
+	private Collection profileEntries;
 
 	// The result which will fill in the Scorer thread and the response will be
 	// routed
@@ -120,7 +121,7 @@ public class SimilarityRequest {
 	 *            endpoint.route
 	 */
 	@SuppressWarnings("rawtypes")
-	public SimilarityRequest(Set profileEntries, String[] query, int type,
+	public SimilarityRequest(Collection profileEntries, String[] query, int type,
 			int k, ContentProfile userProfile, Continuation result, 
 			int msgcounter) {
 		this.profileEntries = profileEntries;
@@ -163,7 +164,7 @@ public class SimilarityRequest {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Set getProfileEntries() {
+	public Collection getProfileEntries() {
 		return profileEntries;
 	}
 

@@ -1,7 +1,6 @@
 package ceid.netcins.catalog;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import rice.p2p.commonapi.Id;
@@ -21,19 +20,19 @@ public class Catalog extends ContentHashPastContent {
 	private static final long serialVersionUID = -6819758682396530715L;
 
 	// The Content CatalogEntries
-	private Set<ContentCatalogEntry> contentCatalogEntries;
+	private Hashtable<Id, ContentCatalogEntry> contentCatalogEntries;
 
 	// the user catalog entries
-	private Set<UserCatalogEntry> userCatalogEntries;
+	private Hashtable<Id, UserCatalogEntry> userCatalogEntries;
 
 	// the url catalog entries
-	private Set<URLCatalogEntry> urlCatalogEntries;
+	private Hashtable<Id, URLCatalogEntry> urlCatalogEntries;
 
 	public Catalog(Id tid) {
 		super(tid);
-		contentCatalogEntries = Collections.synchronizedSet(new HashSet<ContentCatalogEntry>());
-		userCatalogEntries = Collections.synchronizedSet(new HashSet<UserCatalogEntry>());
-		urlCatalogEntries = Collections.synchronizedSet(new HashSet<URLCatalogEntry>());
+		contentCatalogEntries = new Hashtable<Id, ContentCatalogEntry>();
+		userCatalogEntries = new Hashtable<Id, UserCatalogEntry>();
+		urlCatalogEntries = new Hashtable<Id, URLCatalogEntry>();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -44,16 +43,16 @@ public class Catalog extends ContentHashPastContent {
 			this.userCatalogEntries = null;
 			this.urlCatalogEntries = null;
 		} else if (catalogEntries.iterator().next() instanceof URLCatalogEntry) {
-			this.urlCatalogEntries = Collections.synchronizedSet((Set<URLCatalogEntry>) catalogEntries);
+			this.urlCatalogEntries = (Hashtable<Id, URLCatalogEntry>) catalogEntries;
 			this.contentCatalogEntries = null;
 			this.userCatalogEntries = null;
 		} else if (catalogEntries.iterator().next() instanceof ContentCatalogEntry) {
-			this.contentCatalogEntries = Collections.synchronizedSet((Set<ContentCatalogEntry>) catalogEntries);
+			this.contentCatalogEntries = (Hashtable<Id, ContentCatalogEntry>) catalogEntries;
 			this.userCatalogEntries = null;
 			this.urlCatalogEntries = null;
 		} else if (catalogEntries.iterator().next() instanceof UserCatalogEntry) {
 			this.contentCatalogEntries = null;
-			this.userCatalogEntries = Collections.synchronizedSet((Set<UserCatalogEntry>) catalogEntries);
+			this.userCatalogEntries = (Hashtable<Id, UserCatalogEntry>)catalogEntries;
 			this.urlCatalogEntries = null;
 		}
 	}
@@ -66,44 +65,32 @@ public class Catalog extends ContentHashPastContent {
 	 * @return Return the corresponding vector of catalog entries.
 	 */
 	@SuppressWarnings("rawtypes")
-	public Set getCatalogEntriesForQueryType(int type){
-		Set v = null;
+	public Hashtable getCatalogEntriesForQueryType(int type){
 		switch(type){
 			case QueryPDU.CONTENTQUERY:
-				v = contentCatalogEntries;
-				break;
 			case QueryPDU.CONTENT_ENHANCEDQUERY:
-				v = contentCatalogEntries;
-				break;
-			case QueryPDU.USERQUERY:
-				v = userCatalogEntries;
-				break;
-			case QueryPDU.USER_ENHANCEDQUERY:
-				v = userCatalogEntries;
-				break;
 			case QueryPDU.HYBRIDQUERY:
-				v = contentCatalogEntries;
-				break;
 			case QueryPDU.HYBRID_ENHANCEDQUERY:
-				v = contentCatalogEntries;
-				break;
+				return contentCatalogEntries;
+			case QueryPDU.USERQUERY:
+			case QueryPDU.USER_ENHANCEDQUERY:
+				return userCatalogEntries;
 			case QueryPDU.URLQUERY:
-				v = urlCatalogEntries;
-				break;
+				return urlCatalogEntries;
 		}
-		return v; 
+		return null; 
 	}
 	
-	public void setContentCatalogEntries(Set<ContentCatalogEntry> v) {
-		this.contentCatalogEntries = Collections.synchronizedSet(v);
+	public void setContentCatalogEntries(Hashtable<Id, ContentCatalogEntry> v) {
+		this.contentCatalogEntries = v;
 	}
 
-	public void setUserCatalogEntries(Set<UserCatalogEntry> v) {
-		this.userCatalogEntries = Collections.synchronizedSet(v);
+	public void setUserCatalogEntries(Hashtable<Id, UserCatalogEntry> v) {
+		this.userCatalogEntries = v;
 	}
 
-	public void setURLCatalogEntries(Set<URLCatalogEntry> v) {
-		this.urlCatalogEntries = Collections.synchronizedSet(v);
+	public void setURLCatalogEntries(Hashtable<Id, URLCatalogEntry> v) {
+		this.urlCatalogEntries = v;
 	}
 
 	/**
@@ -112,7 +99,7 @@ public class Catalog extends ContentHashPastContent {
 	 * @param ce
 	 */
 	public void addContentCatalogEntry(ContentCatalogEntry ce) {
-		contentCatalogEntries.add(ce);
+		contentCatalogEntries.put(ce.getUID(), ce);
 	}
 
 	/**
@@ -121,7 +108,7 @@ public class Catalog extends ContentHashPastContent {
 	 * @param ue
 	 */
 	public void addUserCatalogEntry(UserCatalogEntry ue) {
-		userCatalogEntries.add(ue);
+		userCatalogEntries.put(ue.getUID(), ue);
 	}
 
 	/**
@@ -130,7 +117,16 @@ public class Catalog extends ContentHashPastContent {
 	 * @param ue
 	 */
 	public void addURLCatalogEntry(URLCatalogEntry ue) {
-		urlCatalogEntries.add(ue);
+		urlCatalogEntries.put(ue.getUID(), ue);
+	}
+
+	public void addCatalogEntry(CatalogEntry ce) {
+		if (ce instanceof URLCatalogEntry)
+			addURLCatalogEntry((URLCatalogEntry)ce);
+		else if (ce instanceof ContentCatalogEntry)
+			addContentCatalogEntry((ContentCatalogEntry)ce);
+		else
+			addUserCatalogEntry((UserCatalogEntry)ce);
 	}
 
 	/**
@@ -142,9 +138,12 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceContentCatalogEntry(ContentCatalogEntry oldCE,
 			ContentCatalogEntry newCE) {
+		if (!oldCE.getUID().equals(newCE.getUID()))
+			throw new RuntimeException("Trying to replace entry with one with a different id");
+
 		synchronized (contentCatalogEntries) {
-			contentCatalogEntries.remove(oldCE);
-			contentCatalogEntries.add(newCE);
+			contentCatalogEntries.remove(oldCE.getUID());
+			contentCatalogEntries.put(newCE.getUID(), newCE);
 		}
 	}
 
@@ -157,9 +156,12 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceUserCatalogEntry(UserCatalogEntry oldUE,
 			UserCatalogEntry newUE) {
+		if (!oldUE.getUID().equals(newUE.getUID()))
+			throw new RuntimeException("Trying to replace entry with one with a different id");
+
 		synchronized (userCatalogEntries) {
-			userCatalogEntries.remove(oldUE);
-			userCatalogEntries.add(newUE);
+			userCatalogEntries.remove(oldUE.getUID());
+			userCatalogEntries.put(newUE.getUID(), newUE);
 		}
 	}
 
@@ -172,9 +174,12 @@ public class Catalog extends ContentHashPastContent {
 	 */
 	public void replaceURLCatalogEntry(URLCatalogEntry oldUE,
 			URLCatalogEntry newUE) {
+		if (!oldUE.getUID().equals(newUE.getUID()))
+			throw new RuntimeException("Trying to replace entry with one with a different id");
+
 		synchronized (urlCatalogEntries) {
-			urlCatalogEntries.remove(oldUE);
-			urlCatalogEntries.add(newUE);
+			urlCatalogEntries.remove(oldUE.getUID());
+			urlCatalogEntries.put(newUE.getUID(), newUE);
 		}
 	}
 
@@ -192,7 +197,7 @@ public class Catalog extends ContentHashPastContent {
 	 * 
 	 * @return the entries of catalog
 	 */
-	public Set<ContentCatalogEntry> getContentCatalogEntries() {
+	public Hashtable<Id, ContentCatalogEntry> getContentCatalogEntries() {
 		return contentCatalogEntries;
 	}
 
@@ -201,7 +206,7 @@ public class Catalog extends ContentHashPastContent {
 	 * 
 	 * @return
 	 */
-	public Set<UserCatalogEntry> getUserCatalogEntries() {
+	public Hashtable<Id, UserCatalogEntry> getUserCatalogEntries() {
 		return userCatalogEntries;
 	}
 
@@ -210,7 +215,7 @@ public class Catalog extends ContentHashPastContent {
 	 * 
 	 * @return
 	 */
-	public Set<URLCatalogEntry> getURLCatalogEntries() {
+	public Hashtable<Id, URLCatalogEntry> getURLCatalogEntries() {
 		return urlCatalogEntries;
 	}
 
@@ -257,15 +262,15 @@ public class Catalog extends ContentHashPastContent {
 		buf.append("Catalog [TID=" + this.myId + "]");
 		buf.append("\n [Content Catalog Entries] \n");
 		if (contentCatalogEntries != null)
-			for (ContentCatalogEntry e : contentCatalogEntries)
+			for (ContentCatalogEntry e : contentCatalogEntries.values())
 				buf.append(e.toString());
 		buf.append("\n [User Catalog Entries] \n");
 		if (userCatalogEntries != null)
-			for (UserCatalogEntry e : userCatalogEntries)
+			for (UserCatalogEntry e : userCatalogEntries.values())
 				buf.append(e.toString());
 		buf.append("\n [URL Catalog Entries] \n");
 		if (urlCatalogEntries != null)
-			for (URLCatalogEntry e : urlCatalogEntries)
+			for (URLCatalogEntry e : urlCatalogEntries.values())
 				buf.append(e.toString());
 
 		return buf.toString();
@@ -276,15 +281,15 @@ public class Catalog extends ContentHashPastContent {
 		counter += this.myId.getByteArrayLength();
 
 		if (contentCatalogEntries != null)
-			for (ContentCatalogEntry e : contentCatalogEntries)
+			for (ContentCatalogEntry e : contentCatalogEntries.values())
 				counter += e.computeTotalBytes();
 
 		if (userCatalogEntries != null)
-			for (UserCatalogEntry e : userCatalogEntries)
+			for (UserCatalogEntry e : userCatalogEntries.values())
 				counter += e.computeTotalBytes();
 
 		if (urlCatalogEntries != null)
-			for (URLCatalogEntry e : urlCatalogEntries)
+			for (URLCatalogEntry e : urlCatalogEntries.values())
 				counter += e.computeTotalBytes();
 
 		return counter;

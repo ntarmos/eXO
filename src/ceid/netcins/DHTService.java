@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 import rice.Continuation;
@@ -982,11 +981,11 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 					// return a mini ScoredCatalog (PastContent)
 					if (o instanceof ceid.netcins.catalog.Catalog) {
 						int type = queryPDU.getType();
-						Set<?> entries = ((ceid.netcins.catalog.Catalog) o).getCatalogEntriesForQueryType(type);
+						Hashtable entries = ((ceid.netcins.catalog.Catalog) o).getCatalogEntriesForQueryType(type);
 						// Leave the job to be done asynchronously by the
 						// Scorer thread
 						scorer.addRequest(new SimilarityRequest(
-								entries, queryPDU.getData(), type,
+								entries.values(), queryPDU.getData(), type,
 								queryPDU.getK(), 
 								queryPDU.getSourceUserProfile(), parent, 0));
 						scorer.doNotify();
