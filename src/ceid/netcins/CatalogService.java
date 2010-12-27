@@ -81,7 +81,6 @@ import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
 import ceid.netcins.utils.JavaSerializer;
-import ceid.netcins.utils.SimulatorOnly;
 
 /**
  * 
@@ -161,31 +160,6 @@ public class CatalogService extends DHTService implements SocService {
 						+ result.getMessage());
 			}
 		});
-	}
-
-	/**
-	 * Simulator Costructor ONLY Constructor pushes the appropriate arguments to
-	 * DHTService and initializes the Service.
-	 * 
-	 */
-	@SimulatorOnly
-	public CatalogService(Node node, StorageManager manager, int replicas,
-			String instance, Scorer scorer) {
-		this(node, manager, replicas, instance, null, scorer);
-	}
-
-	/**
-	 * Simulator Constructor ONLY! Constructor pushes the appropriate arguments
-	 * to DHTService and initializes the Service.
-	 * 
-	 */
-	@SimulatorOnly
-	public CatalogService(Node node, StorageManager manager, int replicas,
-			String instance, User user, Scorer scorer) {
-		super(node, manager, replicas, instance);
-		cpf = new ContentProfileFactory();
-		this.user = user;
-		this.scorer = scorer;
 	}
 
 	/**
@@ -1999,17 +1973,6 @@ public class CatalogService extends DHTService implements SocService {
 			// TODO: Implement this
 		}
 		return buffer.toString();
-	}
-
-	/**
-	 * For quick setup through simulator only!
-	 * 
-	 * @param user
-	 * @deprecated
-	 */
-	@SimulatorOnly
-	public void registerUser(User user) {
-		this.user = user;
 	}
 
 	/**
