@@ -28,18 +28,6 @@ public abstract class FriendRequestBaseHandler extends AbstractHandler {
 	public FriendRequestBaseHandler(CatalogService catalogService,
 			Hashtable<String, Vector<Object>> queue) {
 		super(catalogService, queue);
-		command = new Continuation<Object, Exception>() {
-			@Override
-			public void receiveResult(Object result) {
-				boolean didit = (result instanceof Boolean && (Boolean)result == true);
-				queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
-			}
-
-			@Override
-			public void receiveException(Exception exception) {
-				queueStatus(reqID, RequestStatus.FAILURE, null);
-			}
-		};
 	}
 
 	@Override
@@ -52,6 +40,18 @@ public abstract class FriendRequestBaseHandler extends AbstractHandler {
 			return RequestState.FINISHED;
 		}
 		reqID = getNewReqID(response);
+		command = new Continuation<Object, Exception>() {
+			@Override
+			public void receiveResult(Object result) {
+				boolean didit = (result instanceof Boolean && (Boolean)result == true);
+				queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
+			}
+
+			@Override
+			public void receiveException(Exception exception) {
+				queueStatus(reqID, RequestStatus.FAILURE, null);
+			}
+		};
 		return RequestState.REMOTE;
 	}
 }
