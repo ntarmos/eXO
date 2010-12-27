@@ -12,7 +12,6 @@ import rice.Continuation;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
-import ceid.netcins.user.User;
 
 public class SetUserProfileHandler extends AbstractHandler {
 
@@ -34,16 +33,12 @@ public class SetUserProfileHandler extends AbstractHandler {
 		ContentProfile profile = (ContentProfile)cpj.fromJSON(jsonMap);
 
 		if (uid == null) { // Local operation
-			final User user = catalogService.getUser();
-			ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
-			user.setUserProfile(profile);
+			ContentProfile oldProfile = catalogService.getUser().getPublicUserProfile();
 			if (!oldProfile.equalsPublic(profile)) {
 				final String reqID = getNewReqID(response);
 				// The public part has changed. We should reindex the user profile in the network
-				catalogService.indexUser(new Continuation<Object, Exception>() {
+				catalogService.setUserProfile(profile, new Continuation<Object, Exception>() {
 					public void receiveResult(Object result) {
-						System.out.println("SUPH: User : " + user.getUID()
-								+ ", indexed successfully");
 						// TODO : Check the replicas if are updated correctly!
 						// run replica maintenance
 						// runReplicaMaintence();
@@ -64,13 +59,11 @@ public class SetUserProfileHandler extends AbstractHandler {
 					}
 
 					public void receiveException(Exception result) {
-						System.out.println("User : " + user.getUID()
-								+ ", indexed with errors : "
-								+ result.getMessage());
 						queueStatus(reqID, RequestStatus.FAILURE, null);
 					}
 				});
 			} else {
+				catalogService.getUser().setUserProfile(profile);
 				sendStatus(response, RequestStatus.SUCCESS, null);
 			}
 			return;

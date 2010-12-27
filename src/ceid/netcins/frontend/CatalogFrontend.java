@@ -21,6 +21,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import rice.Continuation;
 import rice.environment.Environment;
 import rice.environment.logging.Logger;
 import rice.environment.params.Parameters;
@@ -196,7 +197,32 @@ public class CatalogFrontend {
 		ArrayList<ContentField> tags = new ArrayList<ContentField>();
 		tags.add(new TermField("Username", userName, true));
 		tags.add(new TermField("Resource", resourceName, true));
-		catalogService.setUserProfile(new ContentProfile(tags));
+		catalogService.setUserProfile(new ContentProfile(tags),
+				new Continuation<Object, Exception>() {
+			public void receiveResult(Object result) {
+				// TODO : Check the replicas if are updated correctly!
+				// run replica maintenance
+				// runReplicaMaintence();
+				int indexedNum = 0;
+				Boolean[] results = null;
+				if (result instanceof Boolean[]) {
+					results = (Boolean[]) result;
+					if (results != null)
+						for (Boolean isIndexedTerm : results) {
+							if (isIndexedTerm)
+								indexedNum++;
+						}
+				}
+				if (indexedNum < 2)
+					receiveException(new RuntimeException("Unable to index basic user attributes"));
+				System.err.println("Basic user attributes indexed successfully");
+			}
+
+			public void receiveException(Exception result) {
+				result.printStackTrace();
+				System.exit(1);
+			}
+		});
 		// TODO: Remove the following two lines when out of the RnD phase
 		catalogService.getUser().addSharedContentProfile(catalogService.getUser().getUID(), new ContentProfile(tags));
 		catalogService.getUser().addSharedContentProfile(rice.pastry.Id.makeRandomId(reqIdGenerator), new ContentProfile(tags));
