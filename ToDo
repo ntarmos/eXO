@@ -167,7 +167,7 @@ tag: ContentField objects
   // The GUI can search on both DHT and PSN by calling both of the _DHT
   // and _PSN search variants and merging the result lists.
 
-✘ bool        sendFriendRequest(UID)
+✔ bool        sendFriendRequest(UID)
 
 ✔ vector<UID> getFriendUIDs()
 
