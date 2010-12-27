@@ -161,7 +161,7 @@ tag: ContentField objects
 
 ✘ vector<UID> searchUsersPSN(vector<tag>)
 
-✘ vector<UID> searchContentDHT(vector<tag>)
+✔ vector<UID> searchContentDHT(vector<tag>)
 
 ✘ vector<UID> searchContentPSN(vector<tag>)
   // The GUI can search on both DHT and PSN by calling both of the _DHT

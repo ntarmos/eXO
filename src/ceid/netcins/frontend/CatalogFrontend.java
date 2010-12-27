@@ -58,6 +58,7 @@ import ceid.netcins.frontend.handlers.GetFriendUIDsHandler;
 import ceid.netcins.frontend.handlers.GetUserProfileHandler;
 import ceid.netcins.frontend.handlers.GetUserTagsHandler;
 import ceid.netcins.frontend.handlers.RejectFriendRequestHandler;
+import ceid.netcins.frontend.handlers.SearchContentDHTHandler;
 import ceid.netcins.frontend.handlers.SearchUserDHTHandler;
 import ceid.netcins.frontend.handlers.SendFriendRequestHandler;
 import ceid.netcins.frontend.handlers.SetContentTagsHandler;
@@ -327,7 +328,8 @@ public class CatalogFrontend {
 				SendFriendRequestHandler.class,
 				AcceptFriendRequestHandler.class,
 				RejectFriendRequestHandler.class,
-				SearchUserDHTHandler.class
+				SearchUserDHTHandler.class,
+				SearchContentDHTHandler.class
 		};
 		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletContextHandler.setContextPath("/servlet");

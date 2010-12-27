@@ -1372,7 +1372,16 @@ public class CatalogService extends DHTService implements SocService {
 		searchQuery(QueryPDU.USER_ENHANCEDQUERY, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
-	
+
+	/**
+	 * Wrapper for searchQuery to help searching only for users. 
+	 */
+	public void searchContent(final String rawQuery, final int k,
+			final Continuation<Object, Exception> command) {
+		searchQuery(QueryPDU.CONTENTQUERY, rawQuery, k,
+				ContentProfileFactory.DEFAULT_DELIMITER, command);
+	}
+
 	/**
 	 * Wrapper for searchQuery to help searching only for users. 
 	 */
