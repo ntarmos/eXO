@@ -22,8 +22,7 @@ import ceid.netcins.CatalogService;
  */
 public abstract class FriendRequestBaseHandler extends AbstractHandler {
 	private static final long serialVersionUID = 6574754775170389536L;
-	public static final String FriendMessageTag = "eXO::FriendMessage";
-	protected String msg = null, reqID = null;
+	protected String reqID = null;
 	Continuation<Object, Exception> command = null;
 
 	public FriendRequestBaseHandler(CatalogService catalogService,
@@ -52,9 +51,6 @@ public abstract class FriendRequestBaseHandler extends AbstractHandler {
 			sendStatus(response, RequestStatus.FAILURE, null);
 			return RequestState.FINISHED;
 		}
-		msg = (String)jsonMap.get(FriendMessageTag);
-		if (msg == null)
-			msg = "";
 		reqID = getNewReqID(response);
 		return RequestState.REMOTE;
 	}

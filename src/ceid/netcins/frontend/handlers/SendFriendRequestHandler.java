@@ -33,6 +33,6 @@ public class SendFriendRequestHandler extends FriendRequestBaseHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		catalogService.friendRequest(uid, msg, command);
+		catalogService.friendRequest(uid, frMsg, command);
 	}
 }

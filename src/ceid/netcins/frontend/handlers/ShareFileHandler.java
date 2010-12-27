@@ -23,9 +23,7 @@ import ceid.netcins.CatalogService;
  * 
  */
 public class ShareFileHandler extends AbstractHandler {
-
 	private static final long serialVersionUID = 6460386943881811107L;
-	public static final String FilenameTag = "eXO::Filename";
 
 	public ShareFileHandler(CatalogService catalogService,
 			Hashtable<String, Vector<Object>> queue) {
@@ -37,8 +35,7 @@ public class ShareFileHandler extends AbstractHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		if (jsonMap.containsKey(FilenameTag)) {
-			String filename = (String)jsonMap.get(FilenameTag);
+		if (filename != null) {
 			File f = new File(filename);
 			if (f.canRead()) {
 				final String reqID = getNewReqID(response);

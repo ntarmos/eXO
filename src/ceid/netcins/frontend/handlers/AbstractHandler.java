@@ -39,6 +39,8 @@ public abstract class AbstractHandler extends HttpServlet {
 	private static final String UIDTag = "eXO::UID";
 	private static final String CIDTag = "eXO::CID";
 	private static final String ReqIDTag = "eXO::reqID";
+	private static final String FilenameTag = "eXO::Filename";
+	private static final String FriendMessageTag = "eXO::FriendMessage";
 
 	protected static enum RequestState {
 		LOCAL,
@@ -74,6 +76,8 @@ public abstract class AbstractHandler extends HttpServlet {
 	protected Map jsonMap = null;
 	protected Id uid = null;
 	protected Id cid = null;
+	protected String frMsg = null;
+	protected String filename = null;
 
 	public AbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue, long sleepTime) {
 		this.catalogService = catalogService;
@@ -185,6 +189,12 @@ public abstract class AbstractHandler extends HttpServlet {
 					uid = rice.pastry.Id.build((String)jsonMap.get(UIDTag));
 				if (jsonMap.containsKey(CIDTag))
 					cid = rice.pastry.Id.build((String)jsonMap.get(CIDTag));
+				if (jsonMap.containsKey(FriendMessageTag))
+					frMsg = (String)jsonMap.get(FriendMessageTag);
+				if (frMsg == null)
+					frMsg = "";
+				if (jsonMap.containsKey(FilenameTag))
+					filename = (String)jsonMap.get(FilenameTag);
 				return RequestState.REMOTE;
 			}
 			sendStatus(response, RequestStatus.FAILURE, null, "Error in JSON request");

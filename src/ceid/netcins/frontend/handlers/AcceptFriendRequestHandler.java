@@ -38,6 +38,6 @@ public class AcceptFriendRequestHandler extends FriendRequestBaseHandler {
 		final Hashtable<Id, FriendRequest> fr = catalogService.getUser().getPendingIncomingFReq();
 		if (!fr.containsKey(uid))
 			sendStatus(response, RequestStatus.FAILURE, null);
-		catalogService.acceptFriend(fr.get(uid), msg, command);
+		catalogService.acceptFriend(fr.get(uid), frMsg, command);
 	}
 }
