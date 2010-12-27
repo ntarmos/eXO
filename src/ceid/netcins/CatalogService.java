@@ -1377,7 +1377,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery to help searching only for users. 
 	 */
 	public void searchUser(final String rawQuery, final int k,
-			@SuppressWarnings("rawtypes") final Continuation command) {
+			final Continuation<Object, Exception> command) {
 		searchQuery(QueryPDU.USERQUERY, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
