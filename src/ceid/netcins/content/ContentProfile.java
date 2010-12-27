@@ -47,7 +47,8 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 */
 	public ContentProfile(Collection<ContentField> c) {
 		this();
-		fields.addAll(c);
+		if (c != null)
+			fields.addAll(c);
 	}
 
 	/**
@@ -57,6 +58,15 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 */
 	public final void add(ContentField field) {
 		fields.add(field);
+	}
+
+	/**
+	 * Removes a ContentField object (any of three types) in the List fields
+	 * 
+	 * @param field
+	 */
+	public final void remove(ContentField field) {
+		fields.remove(field);
 	}
 
 	/**
@@ -226,5 +236,15 @@ public class ContentProfile implements Serializable, ProfileSet {
 			}
 		}
 		return reusableContainer;
+	}
+
+	public ContentProfile minus(ContentProfile other) {
+		if (other == null || (fields != null && other.fields == null))
+			return new ContentProfile(this);
+		if (fields == null && other.fields != null)
+			return new ContentProfile(other);
+		HashSet<ContentField> diff = new HashSet<ContentField>(fields);
+		diff.removeAll(other.fields);
+		return (diff.size() > 0) ?new ContentProfile(diff) : null;
 	}
 }
