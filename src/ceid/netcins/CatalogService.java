@@ -80,7 +80,6 @@ import ceid.netcins.social.URLBookMark;
 import ceid.netcins.user.Friend;
 import ceid.netcins.user.FriendRequest;
 import ceid.netcins.user.User;
-import ceid.netcins.utils.CommonUtils;
 import ceid.netcins.utils.JavaSerializer;
 import ceid.netcins.utils.SimulatorOnly;
 
@@ -1447,80 +1446,27 @@ public class CatalogService extends DHTService implements SocService {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
-		
-		MultiContinuation multi = new MultiContinuation(command, queryTerms.length) {
 
-			public boolean isDone() throws Exception {
-				int numSuccess = 0;
-				for (int i = 0; i < haveResult.length; i++)
-					if ((haveResult[i]) && (result[i] == null)
-							|| (result[i] instanceof ResponsePDU)) // The check
-																	// "instanceof"
-																	// is
-																	// important
-						numSuccess++;
-
-				if (numSuccess >= (1.0 * haveResult.length))
-					return true;
-
-				if (super.isDone()) {
-					for (int i = 0; i < result.length; i++)
-						if (result[i] instanceof Exception)
-							if (logger.level <= Logger.WARNING)
-								logger.logException("result[" + i + "]:",
-										(Exception) result[i]);
-					throw new PastException("Had only " + numSuccess
-							+ " successful lookups out of " + result.length
-							+ " - aborting.");
-				}
-				return false;
-			}
-
-			public Object getResult() {
-				return result;
-			}
-		};
-
-		Id querytid = null;
 		// Iterate to lookup for every term in query!
 		for (int i = 0; i < queryTerms.length; i++) {
 			// Compute each terms TID
-			querytid = factory.buildId(queryTerms[i]);
+			Id querytid = factory.buildId(queryTerms[i]);
 
-			final int num = i;
-			// final Id tid = querytid;
 			final QueryPDU qPDU;
 			if (queryType == QueryPDU.CONTENT_ENHANCEDQUERY
 					|| queryType == QueryPDU.USER_ENHANCEDQUERY
 					|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
 				qPDU = new QueryPDU(queryTerms, queryType, k, this.user
-						.getCompleteUserProfile());
+						.getPublicUserProfile());
 			} else {
 				qPDU = new QueryPDU(queryTerms, queryType, k);
 			}
 
 			// Issue a lookup request to the uderline DHT service
-			lookup(querytid, false, qPDU, new NamedContinuation(
-					"QueryMessage (QueryPDU) for " + querytid, multi
-							.getSubContinuation(i)) {
-
-				public void receiveResult(Object result) {
-					// DEBUGGING
-					// System.out.println("\n\nQuery : "+queryOld+", #"+num+" result (success) for TID = "+tid);
-					if (result instanceof ResponsePDU) {
-						// System.out.println(printQueryResults((Catalog)result));
-					} else
-						System.out.println("Result : " + result);
-					parent.receiveResult(result);
-				}
-
-				public void receiveException(Exception result) {
-					System.out.println("Query : " + CommonUtils.join(queryTerms,
-							",") + ", #" + num
-							+ " result (error) " + result.getMessage());
-					parent.receiveException(result);
-				}
-			});
+			lookup(querytid, false, qPDU,
+					new NamedContinuation(
+							"QueryMessage (QueryPDU) for " + queryTerms[i] + "(" + querytid + ")",
+							command));
 		}
 	}
 
