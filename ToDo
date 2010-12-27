@@ -157,7 +157,7 @@ tag: ContentField objects
   // and lucene and adds it to the shared content container, also
   // indexing some of its terms across the network.
 
-✘ vector<UID> searchUsersDHT(vector<tag>)
+✔ vector<UID> searchUsersDHT(vector<tag>)
 
 ✘ vector<UID> searchUsersPSN(vector<tag>)
 

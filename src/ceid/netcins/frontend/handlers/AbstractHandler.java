@@ -41,6 +41,8 @@ public abstract class AbstractHandler extends HttpServlet {
 	private static final String ReqIDTag = "eXO::reqID";
 	private static final String FilenameTag = "eXO::Filename";
 	private static final String FriendMessageTag = "eXO::FriendMessage";
+	private static final String SearchQueryTag = "eXO::SearchQuery";
+	private static final String QueryTopKTag = "eXO::TopK";
 
 	protected static enum RequestState {
 		LOCAL,
@@ -78,6 +80,8 @@ public abstract class AbstractHandler extends HttpServlet {
 	protected Id cid = null;
 	protected String frMsg = null;
 	protected String filename = null;
+	protected String rawQuery = null;
+	protected Integer queryTopK = null;
 
 	public AbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue, long sleepTime) {
 		this.catalogService = catalogService;
@@ -195,6 +199,10 @@ public abstract class AbstractHandler extends HttpServlet {
 					frMsg = "";
 				if (jsonMap.containsKey(FilenameTag))
 					filename = (String)jsonMap.get(FilenameTag);
+				if (jsonMap.containsKey(SearchQueryTag))
+					rawQuery = (String)jsonMap.get(SearchQueryTag);
+				if (jsonMap.containsKey(QueryTopKTag))
+					queryTopK = ((Long)jsonMap.get(QueryTopKTag)).intValue();
 				return RequestState.REMOTE;
 			}
 			sendStatus(response, RequestStatus.FAILURE, null, "Error in JSON request");
