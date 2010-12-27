@@ -36,6 +36,11 @@ public class SearchUserDHTHandler extends AbstractHandler {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
+		if (rawQuery == null || queryTopK == null) {
+			sendStatus(response, RequestStatus.FAILURE, null);
+			return;
+		}
+
 		final String reqID = getNewReqID(response);
 		catalogService.searchUser(rawQuery, queryTopK, new Continuation<Object, Exception>() {
 			@Override
