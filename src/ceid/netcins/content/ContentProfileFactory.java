@@ -1,9 +1,7 @@
 package ceid.netcins.content;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -23,8 +21,6 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.util.Version;
 import org.gnu.libextractor.Extractor;
 import org.gnu.libextractor.MetaData;
-
-import ceid.netcins.htmlparsing.HTMLParser;
 
 /**
  * 
@@ -135,7 +131,12 @@ public class ContentProfileFactory {
 				// The case we can tokenize using a char encoding stream
 				// (FileReader)
 				if (candfields.get("mimetype").equals("text/html")) { // HTML
-
+					/*
+					 * This is an example of how we could go about extracting
+					 * tags from HTML documents using an HTML parser and
+					 * Lucene.
+					 */
+					/*
 					FileInputStream fis = new FileInputStream(f);
 					HTMLParser parser = new HTMLParser(fis);
 					Reader reader = parser.getReader();
@@ -149,10 +150,13 @@ public class ContentProfileFactory {
 							cprof.add(new TokenizedField("contents", tfm));
 						}
 					}
-
-				} else if (candfields.get("mimetype").startsWith("text")) { // Other
-																			// TEXT
-
+					 */
+				} else if (candfields.get("mimetype").startsWith("text")) { // TEXT
+					/*
+					 * This is an example of how we could go about extracting
+					 * tags from text documents using Lucene.
+					 */
+					/*
 					// Add the contents of the file to a field named "contents".
 					// Specify a Reader,
 					// so that the text of the file is tokenized and indexed,
@@ -170,10 +174,10 @@ public class ContentProfileFactory {
 							cprof.add(new TokenizedField("contents", tfm));
 						}
 					}
+					*/
 				} else {
-
 					// TODO : Develop handlers for other mimetypes such as
-					// pdf,html,xml etc.
+					// pdf, xml, etc.
 				}
 
 				cprof.add(new StoredField("mimetype", candfields
