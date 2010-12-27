@@ -277,7 +277,6 @@ public class CatalogService extends DHTService implements SocService {
 
 	public void setUserProfile(ContentProfile profile, Continuation<Object, Exception> command) {
 		ContentProfile oldProfile = new ContentProfile(user.getCompleteUserProfile());
-		user.setUserProfile(profile);
 
 		// The public part has changed. We should reindex the user profile in the network
 		if (!oldProfile.equalsPublic(profile)) {
@@ -1152,6 +1151,11 @@ public class CatalogService extends DHTService implements SocService {
 
 		if (uceAdd != null && uceDel != null)
 			uceAdd.subtract(uceDel);
+
+		UserCatalogEntry uce = new UserCatalogEntry(user.getUID(), user.getCompleteUserProfile());
+		uce.add(uceAdd);
+		uce.subtract(uceDel);
+		user.setUserProfile(uce.getUserProfile());
 
 		// Vector of indexing terms (Strings)
 		Vector<String> indexingTerms = new Vector<String>();
