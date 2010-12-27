@@ -94,7 +94,7 @@ public abstract class AbstractHandler extends HttpServlet {
 	private void sendStatus(HttpServletResponse response, RequestStatus status, Object data, String msg) {
 		if (msg != null)
 			System.err.println(msg);
-		Vector<Object> ret = makeResult(status, data);
+		Vector<Object> ret = makeSendResult(status, data);
 		try {
 			response.getWriter().write(Json.toString(ret.toArray()));
 		} catch (IOException e) {
@@ -145,12 +145,13 @@ public abstract class AbstractHandler extends HttpServlet {
 			if (jsonParams instanceof Map) {
 				this.jsonMap = (Map)jsonParams;
 				if (jsonMap.containsKey(ReqIDTag)) {
+					RequestStatus curStatus = null;
 					String reqID = (String)jsonMap.get(ReqIDTag);
 					Vector<Object> res = (Vector<Object>)queue.get(reqID);
 					if (res == null) {
 						sendStatus(response, RequestStatus.UNKNOWN, null, null);
 						return RequestState.FINISHED;
-					} else if (((RequestStatus)res.get(0)).equals(RequestStatus.PROCESSING)) {
+					} else if ((curStatus = ((RequestStatus)res.get(0))).equals(RequestStatus.PROCESSING)) {
 						// Sleep as in long polling
 						try {
 							Thread.sleep(sleepTime);
@@ -160,7 +161,7 @@ public abstract class AbstractHandler extends HttpServlet {
 						sendStatus(response, RequestStatus.PROCESSING, null, null);
 						return RequestState.FINISHED;
 					}
-					sendStatus(response, (RequestStatus)res.get(0), res.size() > 1 ? res.get(1) : null, null);
+					sendStatus(response, curStatus, res.size() > 1 ? res.get(1) : null, null);
 					queue.remove(reqID);
 					return RequestState.FINISHED;
 				}
@@ -186,10 +187,21 @@ public abstract class AbstractHandler extends HttpServlet {
 	}
 
 	protected void queueStatus(String reqID, RequestStatus status, Object data) {
-		queue.put(reqID, makeResult(status, data));
+		queue.put(reqID, makeQueueResult(status, data));
 	}
 
-	private Vector<Object> makeResult(RequestStatus status, Object data) {
+	private Vector<Object> makeQueueResult(RequestStatus status, Object data) {
+		Vector<Object> res = new Vector<Object>();
+		if (status != null)
+			res.add(status);
+		else
+			System.err.println("Bogus response format: No status supplied!");
+		if (data != null)
+			res.add(data);
+		return res;
+	}
+
+	private Vector<Object> makeSendResult(RequestStatus status, Object data) {
 		Vector<Object> res = new Vector<Object>();
 		if (status != null)
 			res.add(getStatusMap(status));
