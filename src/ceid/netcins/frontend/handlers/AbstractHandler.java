@@ -132,6 +132,14 @@ public abstract class AbstractHandler extends HttpServlet {
 
 	@SuppressWarnings("rawtypes")
 	protected RequestState prepare(HttpServletRequest request, HttpServletResponse response) {
+		jsonMap = null;
+		uid = null;
+		cid = null;
+		frMsg = null;
+		filename = null;
+		rawQuery = null;
+		queryTopK = null;
+
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setCharacterEncoding("utf-8");
