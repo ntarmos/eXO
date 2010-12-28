@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import rice.p2p.commonapi.Id;
+import ceid.netcins.catalog.CatalogEntry;
 import ceid.netcins.catalog.ContentCatalogEntry;
 import ceid.netcins.catalog.SocialCatalog;
 import ceid.netcins.catalog.UserCatalogEntry;
@@ -172,32 +173,19 @@ public class User {
 	 * @param type One of the types defined in QueryPDU
 	 * @return Return the corresponding vector of catalog entries.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Vector getCatalogEntriesForQueryType(int type, Id requester){
-		Vector v = null;
+	public Vector<CatalogEntry> getCatalogEntriesForQueryType(int type, Id requester){
+		Vector<CatalogEntry> v = new Vector<CatalogEntry>();
 		switch(type){
-			case QueryPDU.CONTENTQUERY:
-				v = this.wrapContentToCatalogEntries();
-				break;
-			case QueryPDU.CONTENT_ENHANCEDQUERY:
-				v = this.wrapContentToCatalogEntries(isFriend(requester)?true:
-					false);
+			case QueryPDU.USERQUERY:
+			case QueryPDU.USER_ENHANCEDQUERY:
+				v.add(this.wrapUserProfileToCatalogEntry(isFriend(requester)));
 				break;
 			case QueryPDU.HYBRIDQUERY:
-				// TODO: Implement this
-				break;
 			case QueryPDU.HYBRID_ENHANCEDQUERY:
-				// TODO: Implement this 
-				break;
-			case QueryPDU.USERQUERY:
-				v = new Vector<UserCatalogEntry>();
-				v.add(this.wrapUserProfileToCatalogEntry(
-						isFriend(requester)?true:false));
-				break;
-			case QueryPDU.USER_ENHANCEDQUERY:
-				v = new Vector<UserCatalogEntry>();
-				v.add(this.wrapUserProfileToCatalogEntry(
-						isFriend(requester)?true:false));
+				v.add(this.wrapUserProfileToCatalogEntry(isFriend(requester)));
+			case QueryPDU.CONTENTQUERY:
+			case QueryPDU.CONTENT_ENHANCEDQUERY:
+				v.addAll(this.wrapContentToCatalogEntries(isFriend(requester)));
 				break;
 		}
 		return v; 
