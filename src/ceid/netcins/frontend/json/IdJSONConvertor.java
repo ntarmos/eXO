@@ -19,7 +19,6 @@ import rice.pastry.Id;
  * 
  */
 public class IdJSONConvertor implements Convertor {
-	public static final String IDTag = "eXO::ID";
 
 	public IdJSONConvertor() {
 	}
@@ -27,11 +26,11 @@ public class IdJSONConvertor implements Convertor {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
-		return Id.build((String)arg0.get(IDTag));
+		throw new RuntimeException("The thing that shouldn't be!");
 	}
 
 	@Override
 	public void toJSON(Object arg0, Output arg1) {
-		arg1.add(IDTag, ((Id)arg0).toStringFull());
+		arg1.add(((Id)arg0).toStringFull());
 	}
 }
