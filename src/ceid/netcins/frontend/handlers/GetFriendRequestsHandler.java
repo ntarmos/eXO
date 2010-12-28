@@ -2,7 +2,6 @@ package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +26,7 @@ public class GetFriendRequestsHandler extends AbstractHandler {
 	private static final long serialVersionUID = -7350932922284839640L;
 
 	public GetFriendRequestsHandler(CatalogService catalogService,
-			Hashtable<String, Vector<Object>> queue) {
+			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 

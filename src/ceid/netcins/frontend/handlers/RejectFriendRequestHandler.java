@@ -1,7 +1,6 @@
 package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class RejectFriendRequestHandler extends FriendRequestBaseHandler {
 	private static final long serialVersionUID = -3228871623527689289L;
 
 	public RejectFriendRequestHandler(CatalogService catalogService,
-			Hashtable<String, Vector<Object>> queue) {
+			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 

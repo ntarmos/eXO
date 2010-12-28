@@ -3,10 +3,8 @@ package ceid.netcins.frontend.handlers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +33,8 @@ public abstract class AbstractHandler extends HttpServlet {
 	private static final long DefaultSleepTime = 3000;
 	private static final String DefaultEncoding = "utf-8";
 	private static final String PostParamTag = "eXO_data";
+	private static final String RequestStatusTag = "eXO::Status";
+	private static final String ResponseDataTag = "eXO::Data";
 
 	private static final String UIDTag = "eXO::UID";
 	private static final String CIDTag = "eXO::CID";
@@ -57,7 +57,6 @@ public abstract class AbstractHandler extends HttpServlet {
 		UNKNOWN("eXO::Unknown");
 
 		private String tag;
-		public static final String RequestStatusTag = "eXO::Status";
 
 		private RequestStatus(String tag) {
 			this.tag = tag;
@@ -69,8 +68,7 @@ public abstract class AbstractHandler extends HttpServlet {
 	}
 
 	private long sleepTime;
-	private Hashtable<String, Vector<Object>> queue = null;
-	private static final Map<RequestStatus, Map<String, String>> JobStatusMaps = new HashMap<RequestStatus, Map<String, String>>(); 
+	private Hashtable<String, Hashtable<String, Object>> queue = null;
 
 	protected CatalogService catalogService = null;
 
@@ -83,14 +81,13 @@ public abstract class AbstractHandler extends HttpServlet {
 	protected String rawQuery = null;
 	protected Integer queryTopK = null;
 
-	public AbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue, long sleepTime) {
+	public AbstractHandler(CatalogService catalogService, Hashtable<String, Hashtable<String, Object>> queue, long sleepTime) {
 		this.catalogService = catalogService;
 		this.queue = queue;
 		this.sleepTime = sleepTime;
-		makeStatusMaps();
 	}
 
-	public AbstractHandler(CatalogService catalogService, Hashtable<String, Vector<Object>> queue) {
+	public AbstractHandler(CatalogService catalogService, Hashtable<String, Hashtable<String, Object>> queue) {
 		this(catalogService, queue, DefaultSleepTime);
 	}
 
@@ -103,24 +100,12 @@ public abstract class AbstractHandler extends HttpServlet {
 	@Override
 	public abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException;
 
-	private void makeStatusMaps() {
-		for (RequestStatus v : RequestStatus.values()) {
-			HashMap<String, String> ret = new HashMap<String, String>();
-			ret.put(RequestStatus.RequestStatusTag, v.toString());
-			JobStatusMaps.put(v, ret);
-		}
-	}
-
-	private Map<String, String> getStatusMap(RequestStatus status) {
-		return JobStatusMaps.get(status);
-	}
-
 	private void sendStatus(HttpServletResponse response, RequestStatus status, Object data, String msg) {
 		if (msg != null)
 			System.err.println(msg);
-		Vector<Object> ret = makeSendResult(status, data);
+		Map<String, Object> ret = makeSendResult(status, data);
 		try {
-			response.getWriter().write(Json.toString(ret.toArray()));
+			response.getWriter().write(Json.toString(ret));
 		} catch (IOException e) {
 			System.err.println("Error sending response to client");
 			e.printStackTrace();
@@ -134,7 +119,7 @@ public abstract class AbstractHandler extends HttpServlet {
 	protected String getNewReqID(HttpServletResponse response) {
 		String reqID = Integer.toString(CatalogFrontend.nextReqID());
 		queueStatus(reqID, RequestStatus.PROCESSING, null);
-		Map<String, String> ret = new HashMap<String, String>();
+		Map<String, String> ret = new Hashtable<String, String>();
 		ret.put(ReqIDTag, reqID);
 		try {
 			response.getWriter().write(Json.toString(ret));
@@ -171,11 +156,11 @@ public abstract class AbstractHandler extends HttpServlet {
 				if (jsonMap.containsKey(ReqIDTag)) {
 					RequestStatus curStatus = null;
 					String reqID = (String)jsonMap.get(ReqIDTag);
-					Vector<Object> res = (Vector<Object>)queue.get(reqID);
+					Map<String, Object> res = (Map<String, Object>)queue.get(reqID);
 					if (res == null) {
 						sendStatus(response, RequestStatus.UNKNOWN, null, null);
 						return RequestState.FINISHED;
-					} else if ((curStatus = ((RequestStatus)res.get(0))).equals(RequestStatus.PROCESSING)) {
+					} else if ((curStatus = ((RequestStatus)res.get(RequestStatusTag))).equals(RequestStatus.PROCESSING)) {
 						// Sleep as in long polling
 						try {
 							Thread.sleep(sleepTime);
@@ -185,7 +170,7 @@ public abstract class AbstractHandler extends HttpServlet {
 						sendStatus(response, RequestStatus.PROCESSING, null, null);
 						return RequestState.FINISHED;
 					}
-					sendStatus(response, curStatus, res.size() > 1 ? res.get(1) : null, null);
+					sendStatus(response, curStatus, res.get(ResponseDataTag), null);
 					queue.remove(reqID);
 					return RequestState.FINISHED;
 				}
@@ -224,25 +209,25 @@ public abstract class AbstractHandler extends HttpServlet {
 		queue.put(reqID, makeQueueResult(status, data));
 	}
 
-	private Vector<Object> makeQueueResult(RequestStatus status, Object data) {
-		Vector<Object> res = new Vector<Object>();
+	private Hashtable<String, Object> makeQueueResult(RequestStatus status, Object data) {
+		Hashtable<String, Object> res = new Hashtable<String, Object>();
 		if (status != null)
-			res.add(status);
+			res.put(RequestStatusTag, status);
 		else
 			System.err.println("Bogus response format: No status supplied!");
 		if (data != null)
-			res.add(data);
+			res.put(ResponseDataTag, data);
 		return res;
 	}
 
-	private Vector<Object> makeSendResult(RequestStatus status, Object data) {
-		Vector<Object> res = new Vector<Object>();
+	private Map<String, Object> makeSendResult(RequestStatus status, Object data) {
+		Map<String, Object> res = new Hashtable<String, Object>();
 		if (status != null)
-			res.add(getStatusMap(status));
+			res.put(RequestStatusTag, status);
 		else
 			System.err.println("Bogus response format: No status supplied!");
 		if (data != null)
-			res.add(data);
+			res.put(ResponseDataTag, data);
 		return res;
 	}
 }

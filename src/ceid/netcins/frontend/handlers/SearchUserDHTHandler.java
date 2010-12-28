@@ -1,7 +1,6 @@
 package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class SearchUserDHTHandler extends AbstractHandler {
 	private static final long serialVersionUID = 2138885947637986858L;
 
 	public SearchUserDHTHandler(CatalogService catalogService,
-			Hashtable<String, Vector<Object>> queue) {
+			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 

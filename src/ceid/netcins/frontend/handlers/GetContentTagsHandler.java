@@ -1,7 +1,6 @@
 package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +27,7 @@ public class GetContentTagsHandler extends AbstractHandler {
 	private static final long serialVersionUID = -358145592191291166L;
 
 	public GetContentTagsHandler(CatalogService catalogService,
-			Hashtable<String, Vector<Object>> queue) {
+			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 

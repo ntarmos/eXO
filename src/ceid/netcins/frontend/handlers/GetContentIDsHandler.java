@@ -29,7 +29,7 @@ public class GetContentIDsHandler extends AbstractHandler {
 	private static final long serialVersionUID = 2066271262351320193L;
 
 	public GetContentIDsHandler(CatalogService catalogService,
-			Hashtable<String, Vector<Object>> queue) {
+			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 

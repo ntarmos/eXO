@@ -1,7 +1,6 @@
 package ceid.netcins.frontend.handlers;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +25,7 @@ public abstract class FriendRequestBaseHandler extends AbstractHandler {
 	Continuation<Object, Exception> command = null;
 
 	public FriendRequestBaseHandler(CatalogService catalogService,
-			Hashtable<String, Vector<Object>> queue) {
+			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 
