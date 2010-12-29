@@ -1392,7 +1392,6 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				logger.log("Unknown message type. Bailing out...");
 				return;
 		}
-		// TODO: Fill in the remaining message types to handle.
 		
 		// send the request across the wire, and see if the result is null or not
 		sendRequest(id, message, destNodeHandle,

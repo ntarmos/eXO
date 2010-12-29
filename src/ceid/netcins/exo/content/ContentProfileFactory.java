@@ -65,8 +65,6 @@ public class ContentProfileFactory {
 	 * We use "mimetype" information (e.g. text/html) to discover file content
 	 * that is going to be tokenized. Specifically :
 	 * 
-	 * TODO : develop classes to tokenize application/pdf, text/csv, text/css, text/sgml!!!
-	 * 
 	 *  - text/* : Always we use a FileReader to read file content, analyze, 
 	 *             filter and tokenize! 
 	 *  - text/html, text/xml : Special handling to parse main content!
