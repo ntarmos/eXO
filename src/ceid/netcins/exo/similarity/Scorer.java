@@ -133,7 +133,7 @@ public class Scorer {
 
 			// For every CatalogEntry of compute 1)global term set and 2) the
 			// CosineSimilarity
-			for(ContentCatalogEntry entry : (Vector<ContentCatalogEntry>)profileEntries) {
+			for(ContentCatalogEntry entry : (Collection<ContentCatalogEntry>)profileEntries) {
 
 				// Content Profile
 				cprof = entry.getContentProfile();
@@ -268,7 +268,7 @@ public class Scorer {
 
 			// For every CatalogEntry compute 1)global term set and 2) the
 			// CosineSimilarity
-			for(UserCatalogEntry entry : (Vector<UserCatalogEntry>)profileEntries) {
+			for(UserCatalogEntry entry : (Collection<UserCatalogEntry>)profileEntries) {
 
 				// User Profile
 				cprof = entry.getUserProfile();
