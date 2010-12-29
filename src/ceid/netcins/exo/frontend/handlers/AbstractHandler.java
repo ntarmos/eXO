@@ -195,7 +195,7 @@ public abstract class AbstractHandler extends HttpServlet {
 				if (jsonMap.containsKey(SearchQueryTag))
 					rawQuery = (String)jsonMap.get(SearchQueryTag);
 				if (jsonMap.containsKey(QueryTopKTag))
-					queryTopK = ((Long)jsonMap.get(QueryTopKTag)).intValue();
+					queryTopK = Long.valueOf((String)jsonMap.get(QueryTopKTag)).intValue();
 				return RequestState.REMOTE;
 			}
 			sendStatus(response, RequestStatus.FAILURE, null, "Error in JSON request");
