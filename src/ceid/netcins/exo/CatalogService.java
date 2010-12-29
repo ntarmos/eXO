@@ -1474,6 +1474,21 @@ public class CatalogService extends DHTService implements SocService {
 		}
 	}
 
+	public void searchFriendsNetwork(final int queryType, final String rawQuery,
+			final int k, final Continuation<Object, Exception> command) {
+
+		// Elementary Query Parsing
+		// TODO : Examine doing this with JavaCC
+		String query = rawQuery;// .trim();
+		if (query == null || query.equals("")) {
+			System.out.println("I got an empty Query!");
+			return;
+		}
+		String[] qterms = query.split(ContentProfileFactory.DEFAULT_DELIMITER);
+
+		searchFriendsNetwork(queryType, qterms, k, command);
+	}
+
 	/**
 	 * This method uses a query to search in every friend node.
 	 * 
@@ -1486,7 +1501,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void searchFriendsNetwork(final int queryType, 
-			final String[] queryTerms, final Continuation command) {
+			final String[] queryTerms, int topk, final Continuation command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1542,7 +1557,7 @@ public class CatalogService extends DHTService implements SocService {
 			final Id uid = destId;
 			final QueryPDU qPDU;
 
-			qPDU = new QueryPDU(queryTerms, queryType);
+			qPDU = new QueryPDU(queryTerms, queryType, topk);
 
 			// Issue a lookup request to the uderline DHT service
 			// Use nodeHandle as first hop hint!

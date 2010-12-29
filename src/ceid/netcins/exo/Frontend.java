@@ -59,7 +59,9 @@ import ceid.netcins.exo.frontend.handlers.GetUserProfileHandler;
 import ceid.netcins.exo.frontend.handlers.GetUserTagsHandler;
 import ceid.netcins.exo.frontend.handlers.RejectFriendRequestHandler;
 import ceid.netcins.exo.frontend.handlers.SearchContentDHTHandler;
+import ceid.netcins.exo.frontend.handlers.SearchContentPNHandler;
 import ceid.netcins.exo.frontend.handlers.SearchUserDHTHandler;
+import ceid.netcins.exo.frontend.handlers.SearchUserPNHandler;
 import ceid.netcins.exo.frontend.handlers.SendFriendRequestHandler;
 import ceid.netcins.exo.frontend.handlers.SetContentTagsHandler;
 import ceid.netcins.exo.frontend.handlers.SetUserProfileHandler;
@@ -406,7 +408,9 @@ public class Frontend {
 				AcceptFriendRequestHandler.class,
 				RejectFriendRequestHandler.class,
 				SearchUserDHTHandler.class,
-				SearchContentDHTHandler.class
+				SearchUserPNHandler.class,
+				SearchContentDHTHandler.class,
+				SearchContentPNHandler.class
 		};
 		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletContextHandler.setContextPath("/servlet");
