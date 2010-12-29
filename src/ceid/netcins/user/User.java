@@ -38,13 +38,19 @@ public class User {
 	public static final String NotAvailableTag = "<N/A>";
 	public static final String ScreennameDelimiter = "/";
 
-	class SharedContentInfo {
+	public class SharedContentInfo {
 		File file;
 		ContentProfile profile;
 
 		SharedContentInfo(File file, ContentProfile profile) {
 			this.file = file;
 			this.profile = profile;
+		}
+
+		public String getFilename() {
+			if (file != null)
+				return file.getName();
+			return null;
 		}
 	}
 

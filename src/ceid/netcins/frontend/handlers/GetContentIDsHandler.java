@@ -1,7 +1,9 @@
 package ceid.netcins.frontend.handlers;
 
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -12,6 +14,7 @@ import rice.Continuation;
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastException;
 import ceid.netcins.CatalogService;
+import ceid.netcins.user.User.SharedContentInfo;
 
 /**
  * 
@@ -41,8 +44,14 @@ public class GetContentIDsHandler extends AbstractHandler {
 
 		// If local request, return immediately
 		if (uid == null) {
-			Set<Id> contentIDs = catalogService.getUser().getSharedContentIDs();
-			sendStatus(response, RequestStatus.SUCCESS, contentIDs.toArray());
+			Map<Id, String> ret = new HashMap<Id, String>();
+			Map<Id, SharedContentInfo> map = catalogService.getUser().getSharedContent();
+			Iterator<Id> itid = map.keySet().iterator();
+			Iterator<SharedContentInfo> itsci = map.values().iterator();
+			while (itid.hasNext()) {
+				ret.put(itid.next(), itsci.next().getFilename());
+			}
+			sendStatus(response, RequestStatus.SUCCESS, ret);
 			return;
 		}
 
