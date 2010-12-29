@@ -30,4 +30,8 @@ if [ ! -z `echo "$EXORESP" | grep "eXO::reqID"` ]; then
 		fi
 	done;
 fi;
-echo "$EXORESP"
+if [ -z `echo "$EXORESP" | grep "eXO::Status"` ]; then
+	echo "ERROR"
+else
+	echo "$EXORESP"
+fi
