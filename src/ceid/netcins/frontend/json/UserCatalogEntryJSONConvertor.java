@@ -1,6 +1,9 @@
 package ceid.netcins.frontend.json;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jetty.util.ajax.JSON.Convertor;
 import org.eclipse.jetty.util.ajax.JSON.Output;
@@ -21,8 +24,8 @@ import ceid.netcins.content.ContentProfile;
  * 
  */
 public class UserCatalogEntryJSONConvertor implements Convertor {
-	protected static final CatalogEntryJSONConvertor cejc = new CatalogEntryJSONConvertor();
-	protected static final ContentProfileJSONConvertor cpjc = new ContentProfileJSONConvertor();
+	private static final String UCETag = "eXO::UCE";
+	ContentProfileJSONConvertor cpjc = new ContentProfileJSONConvertor();
 
 	public UserCatalogEntryJSONConvertor() {
 	}
@@ -34,15 +37,25 @@ public class UserCatalogEntryJSONConvertor implements Convertor {
 			return;
 		}
 		UserCatalogEntry uce = (UserCatalogEntry)obj;
-		cejc.toJSON(uce, out);
-		cpjc.toJSON(uce.getUserProfile(), out);
+		Map<Id, ContentProfile> ret = new HashMap<Id, ContentProfile>();
+		ret.put(uce.getUID(), uce.getUserProfile());
+		out.add(UCETag, ret);
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map object) {
-		Id id = (Id)cejc.fromJSON(object);
-		ContentProfile cp = (ContentProfile)cpjc.fromJSON(object);
-		return new UserCatalogEntry(id, cp);
+		if (object == null || !object.containsKey(UCETag))
+			return null;
+			Map map = (Map) object.get(UCETag);
+			if (map.size() > 1)
+				return null;
+			Id id = rice.pastry.Id.build((String)map.keySet().iterator().next());
+			Set set = (Set)map.values().iterator().next();
+			Iterator it = set.iterator();
+			ContentProfile up = (ContentProfile)cpjc.fromJSON(new Object[] { it.next() });
+			if (id == null || up == null)
+				return null;
+			return new UserCatalogEntry(id, up);
 	}
 }
