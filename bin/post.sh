@@ -17,7 +17,7 @@ EXORESP=`
 			"http://localhost:8080/servlet/$1/" 2>/dev/null | tail -1
 	fi;`
 
-if [ ! -z `echo "$EXORESP" | grep "eXO::reqID"` ]; then
+if [ ! -z "`echo "$EXORESP" | grep "eXO::reqID"`" ]; then
 	EXOREQID="$EXORESP";
 	echo "Got eXO::reqID. Long-polling..."
 	while true; do
@@ -25,12 +25,12 @@ if [ ! -z `echo "$EXORESP" | grep "eXO::reqID"` ]; then
 			-i -H "Accept: application/json" -X POST \
 			-d "eXO_data=${EXOREQID}" \
 			"http://localhost:8080/servlet/$1/" 2>/dev/null | tail -1`
-		if [ -z `echo "$EXORESP" | grep "eXO::Processing"` ]; then
+		if [ -z "`echo "$EXORESP" | grep "eXO::Processing"`" ]; then
 			break;
 		fi
 	done;
 fi;
-if [ -z `echo "$EXORESP" | grep "eXO::Status"` ]; then
+if [ -z "`echo "$EXORESP" | grep "eXO::Status"`" ]; then
 	echo "ERROR"
 else
 	echo "$EXORESP"
