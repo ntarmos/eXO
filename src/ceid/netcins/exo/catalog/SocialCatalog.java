@@ -5,7 +5,6 @@ package ceid.netcins.exo.catalog;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * This is a Catalog type (inverted List) with a set of CatalogEntries, which
@@ -38,27 +37,6 @@ public class SocialCatalog {
 		contentCatalogEntries = Collections.synchronizedSet(new HashSet<ContentCatalogEntry>());
 		userCatalogEntries = Collections.synchronizedSet(new HashSet<UserCatalogEntry>());
 		urlCatalogEntries = Collections.synchronizedSet(new HashSet<URLCatalogEntry>());
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public SocialCatalog(String tag, Vector catalogEntries) {
-		this.tag = tag;
-		if (catalogEntries.firstElement() == null) {
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = null;
-		} else if (catalogEntries.firstElement() instanceof URLCatalogEntry) {
-			this.urlCatalogEntries = Collections.synchronizedSet((Set<URLCatalogEntry>) catalogEntries);
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = null;
-		} else if (catalogEntries.firstElement() instanceof ContentCatalogEntry) {
-			this.contentCatalogEntries = Collections.synchronizedSet((Set<ContentCatalogEntry>) catalogEntries);
-			this.userCatalogEntries = null;
-			this.urlCatalogEntries = null;
-		} else if (catalogEntries.firstElement() instanceof UserCatalogEntry) {
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = Collections.synchronizedSet((Set<UserCatalogEntry>) catalogEntries);
-			this.urlCatalogEntries = null;
-		}
 	}
 
 	public void setContentCatalogEntries(Set<ContentCatalogEntry> v) {

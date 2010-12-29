@@ -38,26 +38,6 @@ public class User {
 	public static final String NotAvailableTag = "<N/A>";
 	public static final String ScreennameDelimiter = "/";
 
-	public class SharedContentInfo {
-		File file;
-		String filename;
-		ContentProfile profile;
-
-		SharedContentInfo(File file, String filename, ContentProfile profile) {
-			this.file = file;
-			this.filename = filename;
-			this.profile = profile;
-		}
-
-		public String getFilename() {
-			if (filename != null)
-				return filename;
-			if (file != null)
-				return file.getName();
-			return null;
-		}
-	}
-
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
 
@@ -192,6 +172,8 @@ public class User {
 			case QueryPDU.HYBRIDQUERY:
 			case QueryPDU.HYBRID_ENHANCEDQUERY:
 				v.add(this.wrapUserProfileToCatalogEntry(isFriend(requester)));
+				v.addAll(this.wrapContentToCatalogEntries(isFriend(requester)));
+				break;
 			case QueryPDU.CONTENTQUERY:
 			case QueryPDU.CONTENT_ENHANCEDQUERY:
 				v.addAll(this.wrapContentToCatalogEntries(isFriend(requester)));
@@ -241,7 +223,7 @@ public class User {
 		Vector<ContentCatalogEntry> v = new Vector<ContentCatalogEntry>();
 		for(Id id : this.sharedContent.keySet()){
 			v.add(new ContentCatalogEntry(this.uid,
-					sharedContent.get(id).profile, 
+					sharedContent.get(id).getProfile(), 
 					includeUserProfile?
 							(completeUserProfile?
 									this.getCompleteUserProfile():
@@ -318,7 +300,7 @@ public class User {
 
 	public ContentProfile getSharedContentProfile(Id id) {
 		SharedContentInfo sci = sharedContent.get(id);
-		return (sci == null) ? null : sci.profile;
+		return (sci == null) ? null : sci.getProfile();
 	}
 
 	public Map<Id, ContentProfile> getSharedContentProfiles() {
@@ -326,7 +308,7 @@ public class User {
 		Iterator<Id> keys = sharedContent.keySet().iterator();
 		Iterator<SharedContentInfo> values = sharedContent.values().iterator();
 		while (keys.hasNext())
-			ret.put(keys.next(), values.next().profile);
+			ret.put(keys.next(), values.next().getProfile());
 		return ret;
 	}
 
@@ -376,9 +358,9 @@ public class User {
 		if (sci == null)
 			sci = new SharedContentInfo(null, identifier, cp);
 		else {
-			sci.profile = cp;
+			sci.setProfile(cp);
 			if (identifier != null)
-				sci.filename = identifier;
+				sci.setFilename(identifier);
 		}
 		sharedContent.put(checksum, sci);
 		// XXX: Should we also update the content tag clouds?
@@ -406,11 +388,11 @@ public class User {
 	}
 
 	public void removeFriend(Friend friend) {
-		friends.remove(friend);
+		friends.remove(friend.getUID());
 	}
 
 	public void removePendingIncomingFReq(FriendRequest freq) {
-		pendingIncomingFReq.remove(freq);
+		pendingIncomingFReq.remove(freq.getUID());
 	}
 
 	public void removePendingOutgoingFReq(Id uid) {

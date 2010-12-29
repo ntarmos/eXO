@@ -1,7 +1,6 @@
 package ceid.netcins.exo.catalog;
 
 import java.util.Hashtable;
-import java.util.Set;
 
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.ContentHashPastContent;
@@ -41,28 +40,6 @@ public class Catalog extends ContentHashPastContent {
 		urlCatalogEntries = new Hashtable<Id, URLCatalogEntry>();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Catalog(Id tid, Set catalogEntries) {
-		super(tid);
-		if (catalogEntries == null || catalogEntries.size() == 0) {
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = null;
-			this.urlCatalogEntries = null;
-		} else if (catalogEntries.iterator().next() instanceof URLCatalogEntry) {
-			this.urlCatalogEntries = (Hashtable<Id, URLCatalogEntry>) catalogEntries;
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = null;
-		} else if (catalogEntries.iterator().next() instanceof ContentCatalogEntry) {
-			this.contentCatalogEntries = (Hashtable<Id, ContentCatalogEntry>) catalogEntries;
-			this.userCatalogEntries = null;
-			this.urlCatalogEntries = null;
-		} else if (catalogEntries.iterator().next() instanceof UserCatalogEntry) {
-			this.contentCatalogEntries = null;
-			this.userCatalogEntries = (Hashtable<Id, UserCatalogEntry>)catalogEntries;
-			this.urlCatalogEntries = null;
-		}
-	}
-	
 	/**
 	 * Helper to get the proper entries corresponding to the query type issued
 	 * by the user.

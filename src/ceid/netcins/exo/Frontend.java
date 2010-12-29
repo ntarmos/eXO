@@ -112,7 +112,7 @@ public class Frontend {
 	private Environment environment = null;
 	private IdFactory pastryIdFactory = null;
 	private NetworkSimulator<DirectNodeHandle, RawMessage> simulator = null;
-	private static RandomSource reqIdGenerator = null;
+	private volatile static RandomSource reqIdGenerator = null;
 
 	public Frontend(Environment env, String userName, String resourceName, boolean isBootstrap) throws IOException {
 		this(env, userName, resourceName, env.getParameters().getInt("exo_jetty_port"), isBootstrap);

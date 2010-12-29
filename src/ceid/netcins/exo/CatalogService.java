@@ -1284,12 +1284,14 @@ public class CatalogService extends DHTService implements SocService {
 			uceAdd.subtract(uceDel);
 
 		ContentProfile cp = user.getSharedContentProfile(chsum);
+		if (cp == null)
+			cp = new ContentProfile(uceAdd.getContentProfile());
 		ContentCatalogEntry cce = new ContentCatalogEntry(chsum, cp, null);
 		cce.add(uceAdd);
 		cce.subtract(uceDel);
 		user.addSharedContentProfile(chsum, identifier, cce.getContentProfile());
 		uceAdd = new ContentCatalogEntry(chsum, cp.getPublicPart(), user.getPublicUserProfile());
-		uceDel = new ContentCatalogEntry(chsum, cpDel.getPublicPart(), null);
+		uceDel = (cpDel != null) ? new ContentCatalogEntry(chsum, cpDel.getPublicPart(), null) : null;
 
 		// Vector of indexing terms (Strings)
 		Vector<String> indexingTerms = new Vector<String>();

@@ -63,17 +63,6 @@ public class TagCloud {
 			tfm.put(tag, 1);
 		}
 	}
-
-	/**
-	 * Remove the named tag from the Map
-	 * 
-	 * @param tag The tag to be removed.
-	 */
-	public void removeTag(String tag){
-		if (tfm.containsKey(tag)) {
-			tfm.remove(tag);
-		}
-	}
 	
 	/**
 	 * String representation of TagCloud

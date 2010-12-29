@@ -14,7 +14,7 @@ import rice.Continuation;
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastException;
 import ceid.netcins.exo.CatalogService;
-import ceid.netcins.exo.user.User.SharedContentInfo;
+import ceid.netcins.exo.user.SharedContentInfo;
 
 /**
  * 
@@ -65,7 +65,8 @@ public class GetContentIDsHandler extends AbstractHandler {
 				public void receiveResult(Object result) {
 					if (result == null || !(result instanceof Vector))
 						receiveException(new PastException("Result was null or of wrong type"));
-					queueStatus(reqID, RequestStatus.SUCCESS, ((Vector<Id>)result).toArray());
+					else
+						queueStatus(reqID, RequestStatus.SUCCESS, ((Vector<Id>)result).toArray());
 				}
 
 				@Override

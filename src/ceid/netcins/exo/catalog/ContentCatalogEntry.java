@@ -152,7 +152,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 		ContentCatalogEntry addCE = ((ContentCatalogEntry)additions);
 		List<ContentField> add = null;
 		super.add(new UserCatalogEntry(getUID(), addCE.getUserProfile()));
-		if (addCE.contentProfile == null || addCE.contentProfile == null ||
+		if (addCE.contentProfile == null ||
 				(add = addCE.contentProfile.getPublicFields()).size() == 0)
 			return this;
 
@@ -175,7 +175,7 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 		ContentCatalogEntry delCE = ((ContentCatalogEntry)deletions);
 		List<ContentField> del = null;
 		super.subtract(new UserCatalogEntry(getUID(), delCE.getUserProfile()));
-		if (delCE.contentProfile == null || delCE.contentProfile == null ||
+		if (delCE.contentProfile == null ||
 				(del = delCE.contentProfile.getPublicFields()).size() == 0)
 			return this;
 

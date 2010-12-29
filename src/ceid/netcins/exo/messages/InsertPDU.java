@@ -41,7 +41,7 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 				)
 		)
 			throw new RuntimeException("Attempting to create an InsertPDU with non-matching entry types or UIDs");
-		CatalogEntry nonNull = (add == null ? add : del);
+		CatalogEntry nonNull = (add != null) ? add : del;
 		if (nonNull instanceof URLCatalogEntry)
 			type = CatalogType.URL;
 		else if (nonNull instanceof ContentCatalogEntry)
