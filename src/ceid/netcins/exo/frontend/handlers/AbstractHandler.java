@@ -91,12 +91,6 @@ public abstract class AbstractHandler extends HttpServlet {
 		this(catalogService, queue, DefaultSleepTime);
 	}
 
-	// TODO: We only want POST access; remove this method when RnD is over.
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		doPost(request, response);
-	}
-
-
 	@Override
 	public abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException;
 
