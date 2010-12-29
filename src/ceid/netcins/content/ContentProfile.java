@@ -253,4 +253,11 @@ public class ContentProfile implements Serializable, ProfileSet {
 		diff.removeAll(other.fields);
 		return (diff.size() > 0) ?new ContentProfile(diff) : null;
 	}
+
+	public void addAll(List<ContentField> add) {
+		if (add == null)
+			return;
+		for (ContentField cf : add)
+			add(cf);
+    }
 }

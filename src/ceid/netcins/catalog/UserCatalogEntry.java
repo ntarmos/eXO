@@ -72,8 +72,9 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 	 */
 	public double computeTotalBytes() {
 		double counter = 0;
-		counter += this.getUID().getByteArrayLength();
-		counter += this.userProfile.computeTotalBytes();
+		counter += getUID().getByteArrayLength();
+		if (userProfile != null)
+			counter += userProfile.computeTotalBytes();
 
 		return counter;
 	}
@@ -90,8 +91,10 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		if (additions == null ||
 				(add = ((UserCatalogEntry)additions).getUserProfile().getPublicFields()).size() == 0)
 			return this;
-		for (ContentField cf : add)
-			userProfile.add(cf);
+		if (userProfile == null)
+			userProfile = new ContentProfile(add);
+		else
+			userProfile.addAll(add);
 		return this;
 	}
 
