@@ -6,7 +6,6 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Random;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServlet;
@@ -25,6 +24,7 @@ import rice.Continuation;
 import rice.environment.Environment;
 import rice.environment.logging.Logger;
 import rice.environment.params.Parameters;
+import rice.environment.random.RandomSource;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.IdFactory;
 import rice.p2p.commonapi.rawserialization.RawMessage;
@@ -110,8 +110,7 @@ public class Frontend {
 	private Environment environment = null;
 	private IdFactory pastryIdFactory = null;
 	private NetworkSimulator<DirectNodeHandle, RawMessage> simulator = null;
-
-	private static Random reqIdGenerator = new Random(System.currentTimeMillis());
+	private static RandomSource reqIdGenerator = null;
 
 	public Frontend(Environment env, String userName, String resourceName, boolean isBootstrap) throws IOException {
 		this(env, userName, resourceName, env.getParameters().getInt("exo_jetty_port"), isBootstrap);
@@ -128,6 +127,8 @@ public class Frontend {
 	public Frontend(Environment env, String userName, String resourceName, int jettyPort, boolean isBootstrap) throws IOException {
 		this.logger = env.getLogManager().getLogger(getClass(),null);
 		this.environment = env;
+		if (reqIdGenerator == null)
+			reqIdGenerator = env.getRandomSource();
 		pastryIdFactory = new PastryIdFactory(env);
 
 		this.userName = userName;
