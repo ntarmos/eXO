@@ -2,7 +2,6 @@ package ceid.netcins.user;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -159,11 +158,11 @@ public class User {
 			this.friends = friends;
 		this.pendingIncomingFReq = new Hashtable<Id, FriendRequest>();
 		this.pendingOutgoingFReq = Collections.synchronizedSet(new HashSet<Id>());
-		this.sharedContent = new HashMap<Id, SharedContentInfo>();
-		this.bookMarks = new HashMap<Id, SocialBookMark>();
-		this.contentTagClouds = new HashMap<Id, TagCloud>();
-		this.userTagClouds = new HashMap<Id, TagCloud>();
-		this.invertedTagContentList = new HashMap<String, SocialCatalog>();
+		this.sharedContent = new Hashtable<Id, SharedContentInfo>();
+		this.bookMarks = new Hashtable<Id, SocialBookMark>();
+		this.contentTagClouds = new Hashtable<Id, TagCloud>();
+		this.userTagClouds = new Hashtable<Id, TagCloud>();
+		this.invertedTagContentList = new Hashtable<String, SocialCatalog>();
 	}
 
 	/**
@@ -313,7 +312,7 @@ public class User {
 	}
 
 	public Map<Id, ContentProfile> getSharedContentProfiles() {
-		Map<Id, ContentProfile> ret = new HashMap<Id, ContentProfile>();
+		Map<Id, ContentProfile> ret = new Hashtable<Id, ContentProfile>();
 		Iterator<Id> keys = sharedContent.keySet().iterator();
 		Iterator<SharedContentInfo> values = sharedContent.values().iterator();
 		while (keys.hasNext())
