@@ -24,8 +24,6 @@ import ceid.netcins.exo.messages.ResponsePDU;
  * a scoring request has been issued to the scoringRequest queue! The thread
  * itself is created in the CatalogService class!
  * 
- * TODO : REFINEMENT
- * 
  * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
  * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
  * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
@@ -33,6 +31,7 @@ import ceid.netcins.exo.messages.ResponsePDU;
  * "eXO: Decentralized Autonomous Scalable Social Networking"
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
+ * 
  * @version 1.0
  */
 public class Scorer {
