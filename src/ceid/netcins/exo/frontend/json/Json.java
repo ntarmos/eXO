@@ -8,6 +8,7 @@ import org.eclipse.jetty.util.ajax.JSON;
 import ceid.netcins.exo.catalog.CatalogEntry;
 import ceid.netcins.exo.catalog.ContentCatalogEntry;
 import ceid.netcins.exo.catalog.ScoreBoard;
+import ceid.netcins.exo.catalog.ScoreBoard.Score;
 import ceid.netcins.exo.catalog.UserCatalogEntry;
 import ceid.netcins.exo.content.ContentProfile;
 import ceid.netcins.exo.content.StoredField;
@@ -41,6 +42,7 @@ public class Json extends JSON {
 		JSON.registerConvertor(rice.p2p.commonapi.Id.class, new IdJSONConvertor());
 		JSON.registerConvertor(rice.pastry.Id.class, new IdJSONConvertor());
 		JSON.registerConvertor(ScoreBoard.class, new ScoreBoardJSONConvertor());
+		JSON.registerConvertor(Score.class, new ScoreJSONConvertor());
 	}
 
 	public static void init() {
