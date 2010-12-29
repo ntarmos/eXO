@@ -1,5 +1,10 @@
 package ceid.netcins.exo.similarity;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This class implements the cosine similarity equation.
  * 
@@ -16,7 +21,7 @@ package ceid.netcins.exo.similarity;
 public class CosineSimilarity implements Similarity {
 
 	// The vectors we want to compare.
-	private TermWeight docWeights[], queryWeights[];
+	private Set<TermWeight> docWeights, queryWeights;
 
 	/*
 	 * Constructor wrapper for cases we haven't yet docWeights computed .
@@ -32,8 +37,8 @@ public class CosineSimilarity implements Similarity {
 	 * @param queryWeights Array of query weight values
 	 */
 	public CosineSimilarity(TermWeight docWeights[], TermWeight queryWeights[]) {
-		this.docWeights = docWeights;
-		this.queryWeights = queryWeights;
+		this.docWeights = (docWeights != null) ? Collections.synchronizedSet(new HashSet<TermWeight>(Arrays.asList(docWeights))) : null;
+		this.queryWeights = (queryWeights != null) ? Collections.synchronizedSet(new HashSet<TermWeight>(Arrays.asList(queryWeights))) : null;
 	}
 
 	/**
@@ -42,34 +47,30 @@ public class CosineSimilarity implements Similarity {
 	 * @return
 	 */
 	public float getScore() {
-		int i, j;
 		float score = 0;
 
 		if(queryWeights!=null && docWeights!=null){
-			for (i = 0; i < queryWeights.length; i++) {
-				for (j = 0; j < docWeights.length; j++) {
-					// TODO : check that indeed the |Q| and |E| are SETS!
-					if (this.queryWeights[i].getWeightedObject().equals(
-							docWeights[j].getWeightedObject())) {
-						score += this.docWeights[j].getWeight()
-								* this.queryWeights[i].getWeight();
-						// DEBUGGING System.out.println("Score "+i+" : "+score);
-						break; // the innermost loop only
+			for (TermWeight twq : queryWeights) {
+				for (TermWeight twd : docWeights) {
+					if (twq.getWeightedObject().equals(
+							twd.getWeightedObject())) {
+						score += twd.getWeight()
+								* twq.getWeight();
+						break;
 					}
 				}
 			}
 			score /= norm();
-			// DEBUGGING System.out.println("Final : "+score);
 		}
 		return score;
 	}
 
 	public float norm() {
-		if (queryWeights[0] instanceof BinaryWeight) {
-			return queryWeights.length;
-		} else { // sum of squares
-			return 1;
+		if (queryWeights.iterator().next() instanceof BinaryWeight) {
+			return queryWeights.size();
 		}
+		// sum of squares
+		return 1;
 	}
 
 	public Object[] getSimilarityFactors() {
@@ -82,7 +83,6 @@ public class CosineSimilarity implements Similarity {
 	 * @param docWeights
 	 */
 	public void setDocWeights(TermWeight[] docWeights) {
-		this.docWeights = docWeights;
+		this.docWeights = (docWeights != null) ? Collections.synchronizedSet(new HashSet<TermWeight>(Arrays.asList(docWeights))) : null;
 	}
-
 }

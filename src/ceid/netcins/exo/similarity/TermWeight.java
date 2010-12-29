@@ -27,4 +27,14 @@ public abstract class TermWeight implements Weight {
 		return term;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof TermWeight &&
+				term.equals(((TermWeight)o).term));
+	}
+
+	@Override
+	public int hashCode() {
+	    return (term != null) ? term.hashCode() : 0;
+	}
 }
