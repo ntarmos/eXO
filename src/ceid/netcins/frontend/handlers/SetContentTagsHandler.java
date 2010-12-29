@@ -11,7 +11,6 @@ import rice.Continuation;
 import ceid.netcins.CatalogService;
 import ceid.netcins.content.ContentProfile;
 import ceid.netcins.content.StoredField;
-import ceid.netcins.content.TermField;
 import ceid.netcins.frontend.json.ContentProfileJSONConvertor;
 
 /**
@@ -52,7 +51,6 @@ public class SetContentTagsHandler extends AbstractHandler {
 		final String reqID = getNewReqID(response);
 
 		profile.add(new StoredField("SHA-1", cid.toStringFull()));
-		profile.add(new TermField("Identifier", cid.toStringFull()));
 
 		if (uid == null) { // Local resource.
 			// New tag-less content item
