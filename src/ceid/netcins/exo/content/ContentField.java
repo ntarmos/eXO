@@ -59,9 +59,9 @@ public abstract class ContentField implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		// Don't care for isPublic as far as equals() is concerned
 		return (o instanceof ContentField &&
-				name.equals(((ContentField)o).name));
+				name.equals(((ContentField)o).name) &&
+				isPublic.equals(((ContentField)o).isPublic));
 	}
 
 	@Override
