@@ -1697,6 +1697,8 @@ public class CatalogService extends DHTService implements SocService {
 		Iterator<ContentField> itf;
 		ContentField cf;
 
+		Random random = new Random(System.currentTimeMillis());
+
 		if (type == CONTENT) {
 			float max = 0, current_max = 0;
 			int point_vector = 0, resnum = 1;
@@ -1734,7 +1736,6 @@ public class CatalogService extends DHTService implements SocService {
 								int answer = k - printed.size();
 								int choice;
 								// Pick radomly a CCE and put it in the printed
-								Random random = new Random();
 								for (int l = 0; l < answer; l++) {
 									choice = random.nextInt(randomSet.size());
 									printed.add(randomSet.get(choice));
@@ -1777,7 +1778,6 @@ public class CatalogService extends DHTService implements SocService {
 									int choice;
 									// Pick radomly a CCE and put it in the
 									// printed
-									Random random = new Random();
 									for (int l = 0; l < answer; l++) {
 										choice = random.nextInt(randomSet
 												.size());
@@ -1885,7 +1885,6 @@ public class CatalogService extends DHTService implements SocService {
 								int answer = k - printed.size();
 								int choice;
 								// Pick radomly a CCE and put it in the printed
-								Random random = new Random();
 								for (int l = 0; l < answer; l++) {
 									choice = random.nextInt(randomSet.size());
 									printed.add(randomSet.get(choice));
@@ -1928,7 +1927,6 @@ public class CatalogService extends DHTService implements SocService {
 									int choice;
 									// Pick radomly a UCE and put it in the
 									// printed
-									Random random = new Random();
 									for (int l = 0; l < answer; l++) {
 										choice = random.nextInt(randomSet
 												.size());

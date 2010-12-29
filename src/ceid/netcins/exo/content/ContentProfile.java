@@ -174,7 +174,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	 * @return A random term of the content profile
 	 */
 	public String randomTerm() {
-		Random random = new Random();
+		Random random = new Random(System.currentTimeMillis());
 		int i = 0;
 		while (i++ < 1000) {
 			Object o = this.fields.toArray()[random.nextInt(fields.size())];

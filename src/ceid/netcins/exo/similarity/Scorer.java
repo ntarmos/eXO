@@ -383,7 +383,7 @@ public class Scorer {
 			int answer = k - startOfTies;
 			int choice;
 			// Pick randomly an entry and put it in the printed
-			Random random = new Random();
+			Random random = new Random(System.currentTimeMillis());
 			for (int l = 0; l < answer; l++) {
 				choice = random.nextInt(randomSet.size());
 				v1.add(randomSet.get(choice));
