@@ -112,35 +112,37 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 			return c;
 		}
 
-		// Update existing Catalog entry
-		Catalog catalog = (Catalog) existingContent;
-		// TODO : check if the appropriate synchronization is done!
-		// Here is the main processing of new data
-		@SuppressWarnings("rawtypes")
-		Hashtable catalogEntries = null;
-		switch (type) {
-		case USER:
-			catalogEntries = catalog.getUserCatalogEntries();
-			break;
-		case CONTENT:
-			catalogEntries = catalog.getContentCatalogEntries();
-			break;
-		case URL:
-			catalogEntries = catalog.getURLCatalogEntries();
-			break;
-		}
+		synchronized (existingContent) {
+			// Update existing Catalog entry
+			Catalog catalog = (Catalog) existingContent;
 
-		CatalogEntry finalEntry = (CatalogEntry)catalogEntries.get((additions != null) ? additions.getUID() : deletions.getUID());
-		if (finalEntry == null) {
-			finalEntry = additions;
-			if (finalEntry != null)
+			// Here is the main processing of new data
+			@SuppressWarnings("rawtypes")
+			Hashtable catalogEntries = null;
+			switch (type) {
+				case USER:
+					catalogEntries = catalog.getUserCatalogEntries();
+					break;
+				case CONTENT:
+					catalogEntries = catalog.getContentCatalogEntries();
+					break;
+				case URL:
+					catalogEntries = catalog.getURLCatalogEntries();
+					break;
+			}
+
+			CatalogEntry finalEntry = (CatalogEntry)catalogEntries.get((additions != null) ? additions.getUID() : deletions.getUID());
+			if (finalEntry == null) {
+				finalEntry = additions;
+				if (finalEntry != null)
+					finalEntry.subtract(deletions);
+			} else {
+				finalEntry.add(additions);
 				finalEntry.subtract(deletions);
-		} else {
-			finalEntry.add(additions);
-			finalEntry.subtract(deletions);
+			}
+			if (finalEntry != null)
+				catalogEntries.put(finalEntry.getUID(), finalEntry);
+			return existingContent; // The same reference as catalog!
 		}
-		if (finalEntry != null)
-			catalogEntries.put(finalEntry.getUID(), finalEntry);
-		return existingContent; // The same reference as catalog!
 	}
 }
