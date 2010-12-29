@@ -41,6 +41,7 @@ import rice.pastry.direct.SphereNetwork;
 import rice.pastry.dist.DistPastryNodeFactory;
 import rice.pastry.socket.SocketPastryNodeFactory;
 import rice.pastry.socket.nat.rendezvous.RendezvousSocketPastryNodeFactory;
+import rice.pastry.standard.RandomNodeIdFactory;
 import rice.persistence.LRUCache;
 import rice.persistence.MemoryStorage;
 import rice.persistence.PersistentStorage;
@@ -157,7 +158,7 @@ public class Frontend {
 		}
 
 		if (nodeFactory == null)
-			nodeFactory = DistPastryNodeFactory.getFactory(nodeIdFactory,
+			nodeFactory = DistPastryNodeFactory.getFactory(new RandomNodeIdFactory(environment),
 					DistPastryNodeFactory.PROTOCOL_SOCKET, pastryNodePort, env);
 
 		if (!isBootstrap && !pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT)) {
@@ -169,7 +170,7 @@ public class Frontend {
 			bootstrapNodeHandle =((SocketPastryNodeFactory)nodeFactory).getNodeHandle(bootstrapNodeAddress, pastryNodePort);
 		}
 
-		Id id = nodeIdFactory.generateNodeId();
+		Id id = UserNodeIdFactory.generateNodeId(userName, resourceName);
 		this.user = new User(id, userName, resourceName);
 		try {
 			node = nodeFactory.newNode((rice.pastry.Id)id);
