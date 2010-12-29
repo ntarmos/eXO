@@ -40,14 +40,18 @@ public class User {
 
 	public class SharedContentInfo {
 		File file;
+		String filename;
 		ContentProfile profile;
 
-		SharedContentInfo(File file, ContentProfile profile) {
+		SharedContentInfo(File file, String filename, ContentProfile profile) {
 			this.file = file;
+			this.filename = filename;
 			this.profile = profile;
 		}
 
 		public String getFilename() {
+			if (filename != null)
+				return filename;
 			if (file != null)
 				return file.getName();
 			return null;
@@ -360,19 +364,22 @@ public class User {
 	}
 
 	public void addSharedContent(Id checksum, File file, ContentProfile profile) {
-		sharedContent.put(checksum, new SharedContentInfo(file, profile));
+		sharedContent.put(checksum, new SharedContentInfo(file, null, profile));
 	}
 
 	public void addSharedContent(Id checksum, File file) {
 		addSharedContent(checksum, file, null);
 	}
 
-	public void addSharedContentProfile(Id checksum, ContentProfile cp) {
+	public void addSharedContentProfile(Id checksum, String identifier, ContentProfile cp) {
 		SharedContentInfo sci = sharedContent.get(checksum);
 		if (sci == null)
-			sci = new SharedContentInfo(null, cp);
-		else
+			sci = new SharedContentInfo(null, identifier, cp);
+		else {
 			sci.profile = cp;
+			if (identifier != null)
+				sci.filename = identifier;
+		}
 		sharedContent.put(checksum, sci);
 		// XXX: Should we also update the content tag clouds?
 		/*

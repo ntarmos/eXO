@@ -1063,7 +1063,7 @@ public class CatalogService extends DHTService implements SocService {
 						// to the user Map
 						if (chsum != null) {
 							user.addSharedContent(chsum, file);
-							user.addSharedContentProfile(chsum, cp);
+							user.addSharedContentProfile(chsum, null, cp);
 						}
 
 						return b;
@@ -1240,7 +1240,8 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command
 	 */
 	@SuppressWarnings("rawtypes")
-	public void indexPseudoContent(Id cid, final ContentProfile additions,
+	public void indexPseudoContent(Id cid, String identifier,
+			final ContentProfile additions,
 			final ContentProfile deletions,
 			final Continuation command) {
 
@@ -1344,7 +1345,7 @@ public class CatalogService extends DHTService implements SocService {
 		ContentCatalogEntry cce = new ContentCatalogEntry(chsum, cp, null);
 		cce.add(uceAdd);
 		cce.subtract(uceDel);
-		user.addSharedContentProfile(chsum, cce.getContentProfile());
+		user.addSharedContentProfile(chsum, identifier, cce.getContentProfile());
 
 		int index = 0;
 		for (String term : indexingTerms) {

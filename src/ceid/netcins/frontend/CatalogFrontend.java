@@ -250,8 +250,8 @@ public class CatalogFrontend {
 			}
 		});
 		// TODO: Remove the following two lines when out of the RnD phase
-		catalogService.getUser().addSharedContentProfile(catalogService.getUser().getUID(), new ContentProfile(tags));
-		catalogService.getUser().addSharedContentProfile(rice.pastry.Id.makeRandomId(reqIdGenerator), new ContentProfile(tags));
+		catalogService.getUser().addSharedContentProfile(catalogService.getUser().getUID(), "Test 1", new ContentProfile(tags));
+		catalogService.getUser().addSharedContentProfile(rice.pastry.Id.makeRandomId(reqIdGenerator), "Test 2", new ContentProfile(tags));
 
 		return 0;
 	}

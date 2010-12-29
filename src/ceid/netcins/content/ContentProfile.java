@@ -66,6 +66,13 @@ public class ContentProfile implements Serializable, ProfileSet {
 		fields.add(field);
 	}
 
+	public ContentField getField(String fieldname, Class<?> type) {
+		for (ContentField cf : fields)
+			if (cf.getFieldName().equals(fieldname) && cf.getClass().equals(type))
+				return cf;
+		return null;
+	}
+
 	/**
 	 * Removes a ContentField object (any of three types) in the List fields
 	 * 
