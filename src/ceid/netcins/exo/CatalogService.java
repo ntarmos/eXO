@@ -280,8 +280,8 @@ public class CatalogService extends DHTService implements SocService {
 
 		// The public part has changed. We should reindex the user profile in the network
 		if (!oldProfile.equalsPublic(profile)) {
-			ContentProfile additions = profile.getPublicPart().minus(oldProfile.getPublicPart());
-			ContentProfile deletions = oldProfile.getPublicPart().minus(profile.getPublicPart());
+			ContentProfile additions = profile.minus(oldProfile);
+			ContentProfile deletions = oldProfile.minus(profile);
 			indexUser(additions, deletions,
 					(command != null) ? command : new Continuation<Object, Exception>() {
 				@Override
@@ -1143,11 +1143,14 @@ public class CatalogService extends DHTService implements SocService {
 
 		// Our data which will travel through the network!!!
 		UserCatalogEntry uceAdd = null, uceDel = null;
-		ContentProfile cpAdd = null, cpDel = null;
-		if (additions != null && (cpAdd = additions.getPublicPart()).getPublicFields().size() > 0)
-			uceAdd = new UserCatalogEntry(user.getUID(), cpAdd);
-		if (deletions != null && (cpDel = deletions.getPublicPart()).getPublicFields().size() > 0)
-			uceDel = new UserCatalogEntry(user.getUID(), cpDel);
+		ContentProfile cpDel = null;
+		if (additions != null) {
+			uceAdd = new UserCatalogEntry(user.getUID(), additions);
+		}
+		if (deletions != null) {
+			cpDel = deletions.getPublicPart();
+			uceDel = new UserCatalogEntry(user.getUID(), deletions);
+		}
 
 		if (uceAdd != null && uceDel != null)
 			uceAdd.subtract(uceDel);
@@ -1156,10 +1159,12 @@ public class CatalogService extends DHTService implements SocService {
 		uce.add(uceAdd);
 		uce.subtract(uceDel);
 		user.setUserProfile(uce.getUserProfile());
+		uceAdd = new UserCatalogEntry(user.getUID(), uce.getUserProfile().getPublicPart());
+		uceDel = new UserCatalogEntry(user.getUID(), cpDel);
 
 		// Vector of indexing terms (Strings)
 		Vector<String> indexingTerms = new Vector<String>();
-		catalogToTermVector(indexingTerms, uceAdd);
+		catalogToTermVector(indexingTerms, uce);
 		catalogToTermVector(indexingTerms, uceDel);
 
 		// Also add all terms from shared content profiles
@@ -1267,18 +1272,28 @@ public class CatalogService extends DHTService implements SocService {
 		}
 
 		ContentCatalogEntry uceAdd = null, uceDel = null;
-		ContentProfile cpAdd = null, cpDel = null;
-		if (additions != null && (cpAdd = additions.getPublicPart()).getPublicFields().size() > 0)
-			uceAdd = new ContentCatalogEntry(user.getUID(), cpAdd, user.getPublicUserProfile());
-		if (deletions != null && (cpDel = deletions.getPublicPart()).getPublicFields().size() > 0)
-			uceDel = new ContentCatalogEntry(user.getUID(), cpDel, null);
+		ContentProfile cpDel = null;
+		if (additions != null)
+			uceAdd = new ContentCatalogEntry(user.getUID(), additions, user.getPublicUserProfile());
+		if (deletions != null) {
+			cpDel = deletions.getPublicPart();
+			uceDel = new ContentCatalogEntry(user.getUID(), deletions, null);
+		}
 
 		if (uceAdd != null && uceDel != null)
 			uceAdd.subtract(uceDel);
 
+		ContentProfile cp = user.getSharedContentProfile(chsum);
+		ContentCatalogEntry cce = new ContentCatalogEntry(chsum, cp, null);
+		cce.add(uceAdd);
+		cce.subtract(uceDel);
+		user.addSharedContentProfile(chsum, identifier, cce.getContentProfile());
+		uceAdd = new ContentCatalogEntry(chsum, cp.getPublicPart(), user.getPublicUserProfile());
+		uceDel = new ContentCatalogEntry(chsum, cpDel.getPublicPart(), null);
+
 		// Vector of indexing terms (Strings)
 		Vector<String> indexingTerms = new Vector<String>();
-		catalogToTermVector(indexingTerms, uceAdd);
+		catalogToTermVector(indexingTerms, cce);
 		catalogToTermVector(indexingTerms, uceDel);
 
 		int termscount = indexingTerms.size();
@@ -1341,11 +1356,6 @@ public class CatalogService extends DHTService implements SocService {
 			}
 		};
 
-		ContentProfile cp = user.getSharedContentProfile(chsum);
-		ContentCatalogEntry cce = new ContentCatalogEntry(chsum, cp, null);
-		cce.add(uceAdd);
-		cce.subtract(uceDel);
-		user.addSharedContentProfile(chsum, identifier, cce.getContentProfile());
 
 		int index = 0;
 		for (String term : indexingTerms) {
@@ -2486,5 +2496,4 @@ public class CatalogService extends DHTService implements SocService {
 			}
 		}
 	}
-
 }

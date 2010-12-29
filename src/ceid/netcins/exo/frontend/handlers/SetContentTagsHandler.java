@@ -56,7 +56,18 @@ public class SetContentTagsHandler extends AbstractHandler {
 
 		if (uid == null) { // Local resource.
 			// New tag-less content item
-			catalogService.indexPseudoContent(cid, (identifier != null) ? identifier.getFieldData() : null, profile, null,
+			ContentProfile additions = null, deletions = null;
+			ContentProfile oldProfile = catalogService.getUser().getSharedContentProfile(cid);
+			if (oldProfile != null) {
+				additions = profile.minus(oldProfile);
+				deletions = oldProfile.minus(profile);
+			} else {
+				additions = profile;
+			}
+			catalogService.indexPseudoContent(cid,
+					(identifier != null) ? identifier.getFieldData() : null,
+					additions,
+					deletions,
 					new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {

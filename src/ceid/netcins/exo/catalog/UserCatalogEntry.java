@@ -1,7 +1,7 @@
 package ceid.netcins.exo.catalog;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 import rice.p2p.commonapi.Id;
 import ceid.netcins.exo.content.ContentField;
@@ -87,14 +87,16 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		) {
 			return null;
 		}
-		List<ContentField> add = null;
-		if (additions == null ||
-				(add = ((UserCatalogEntry)additions).getUserProfile().getPublicFields()).size() == 0)
+		Set<ContentField> add = null;
+		ContentProfile addcp = null;
+		if (additions == null || (addcp = ((UserCatalogEntry)additions).getUserProfile()) == null ||
+				(add = addcp.getAllFields()).size() == 0)
 			return this;
 		if (userProfile == null)
 			userProfile = new ContentProfile(add);
 		else
-			userProfile.addAll(add);
+			for (ContentField cf : add)
+				userProfile.add(cf);
 		return this;
 	}
 
@@ -106,11 +108,14 @@ public class UserCatalogEntry extends CatalogEntry implements Serializable,
 		) {
 			return null;
 		}
-		List<ContentField> add = null;
-		if (deletions == null ||
-				(add = ((UserCatalogEntry)deletions).getUserProfile().getPublicFields()) == null)
+		Set<ContentField> del = null;
+		ContentProfile delcp = null;
+		if (deletions == null || (delcp = ((UserCatalogEntry)deletions).getUserProfile()) == null ||
+				(del = delcp.getAllFields()) == null)
 			return this;
-		for (ContentField cf : add)
+		if (userProfile == null)
+			return this;
+		for (ContentField cf : del)
 			userProfile.remove(cf);
 		return this;
 	}
