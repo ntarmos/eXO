@@ -39,7 +39,7 @@ public class ScoreBoard  implements Serializable {
 		}
 	}
 
-	private Vector<Score> entries;
+	private Vector<Score> entries = null;
 
 	/**
 	 * rows and scoreValues must be sorted appropriately in Scorer!
@@ -50,14 +50,18 @@ public class ScoreBoard  implements Serializable {
 	 */
 	public ScoreBoard(Vector<CatalogEntry> catalogEntries,
 			Vector<Float> scoreValues) {
-		if (catalogEntries == null || scoreValues == null ||
-				catalogEntries.size() != scoreValues.size())
+		if ((catalogEntries == null && scoreValues != null) ||
+				(catalogEntries != null && scoreValues == null) ||
+				(catalogEntries != null && scoreValues != null &&
+						catalogEntries.size() != scoreValues.size()))
 			throw new RuntimeException("Illegal scoreboard initialization");
-		entries = new Vector<ScoreBoard.Score>();
-		Iterator<CatalogEntry> itce = catalogEntries.iterator();
-		Iterator<Float> itf = scoreValues.iterator();
-		while (itce.hasNext())
-			entries.add(new Score(itce.next(), itf.next()));
+		if (catalogEntries != null && scoreValues != null) {
+			entries = new Vector<ScoreBoard.Score>();
+			Iterator<CatalogEntry> itce = catalogEntries.iterator();
+			Iterator<Float> itf = scoreValues.iterator();
+			while (itce.hasNext())
+				entries.add(new Score(itce.next(), itf.next()));
+		}
 	}
 
 	public Vector<Float> getScores() {
