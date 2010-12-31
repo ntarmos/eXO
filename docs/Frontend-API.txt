@@ -1,0 +1,224 @@
+GUI <=> Frontend API
+====================
+
+All calls:
+----------
+    * Input:
+        - None.
+        - JSON-formatted data under the label 'eXO_data'.
+        - {"eXO::reqID":"<integer>"}: used to probe for the status of a
+          previous operation making use of continuations.
+    * Output:
+        - {"eXO::reqID":"<integer>"}:  the call makes use of
+          continuations, try again later with the given reqID as input.
+        - {"eXO::Status":"Processing"}: the call makes use of
+          continuations and is still processing.
+        - {"eXO::Status":"Failure"}: the call failed.
+        - {"eXO::Status":"Success", "eXO::Data":<JSON-formatted return
+          data>} (below showing output format for eXO::Data only)
+    * All communication with the Frontend web server is via HTTP POST
+
+User profiles:
+--------------
+    * GetUserProfile
+        - Local operation (get local user profile)
+            o Input: none
+        - Remote operation (get public/accessible part of given user)
+            o Input: <UserID>
+        - Both cases
+            o Output: <UserProfile>
+
+    * GetUserTags
+        - Local operation (get tags set on current user by others)
+            o Input: none
+            o Output: <UserTagCloud>
+
+    * SetUserProfile
+        - Local operation (set profile tags on local user)
+            o Input: <UserProfile>
+            o Output: [<boolean>,...] (showing whether the given public
+              field was indexed correctly in the DHT)
+        - Remote operation (set tags on given user)
+            o Input: {<UserID>, <UserProfile>}
+            o Output: <UserCatalogEntry>
+
+Content items:
+--------------
+    * GetContentIDs
+        - Local operation (get IDs/names of items shared by the local
+          user)
+            o Input: none
+        - Remote operation (get IDs/names of items shared by specified
+          user)
+            o Input: <UserID>
+        - Both cases
+            o Output: <SharedContent>
+
+    * GetContentTags
+        - Local operation (get tags on given local item)
+            o Input: <ContentID>
+        - Remote operation (get tags on given item shared by given user)
+            o Input: {<UserID>, <ContentID>}
+        - Both cases
+            o Output: <ContentProfile>
+
+    * GetContent
+        - Local operation (return tags of all local items)
+            o Input: none
+            o Output: <SharedContentProfiles>
+
+    * SetContentTags
+        - Local operation (tag local shared item)
+            o Input: {<ContentID>, <ContentProfile>}
+            o Output: none (just the status tag)
+        - Remote operation (tag item shared by other user)
+            o Input: {<UserID>, <ContentID>, <ContentProfile>}
+            o Output: <ContentCatalogEntry>
+
+    * ShareFile
+        - Local/remote operation (share the given file on the local
+          machine and index it in the network)
+            o Input: <Filename>
+            o Output: none (just the status tag)
+
+Friends:
+--------
+    * SendFriendRequest
+        - Remote operation (send friend request to given user)
+            o Input: <UserID>
+            o Output: none (just the status tag)
+
+    * GetFriendRequests
+        - Local operation (get data for pending incoming friend
+          requests)
+            o Input: none
+            o Output: [<UserID>, ...]
+
+    * GetFriendUIDs
+        - Local operation (get IDs of friends)
+            o Input: none
+            o Output: [<UserID>, ...]
+
+    * {Accept,Reject}FriendRequest
+        - Local/remote operation (mark user as friend and send a
+          response message back to their node)
+            o Input: <UserID>
+            o Output: none (just the status tag)
+
+Searching:
+----------
+    * Search{Users,Content}{DHT,PSN}
+        - Remote operation (search for users/content using given query
+          terms and top-k limit)
+            o Input: <SearchQuery>
+            o Output: <ScoreBoard>
+
+
+JSON data format
+================
+
+* <string>:
+    "..."
+
+* <integer>:
+    123...
+
+* <boolean>:
+    true | false
+
+* TermField:
+    {
+        "eXO::FieldName":<string>,
+        "eXO::FieldData":<string>,
+        "eXO::FieldIsPublic":<boolean>
+    }
+
+* TokenizedField:
+    {
+        "eXO::FieldName":<string>,
+        "eXO::Terms":[<string>,...],
+        "eXO::TFScores":[<integer>,...],
+        "eXO::FieldIsPublic":<boolean>
+    }
+
+* Profile:
+    {
+        "eXO::Profile":[
+            <TermField>,
+            ...
+            <TokenizedField>,
+            ...
+        ]
+    }
+
+* ContentProfile:
+    <Profile>
+
+* UserProfile:
+    <Profile>
+
+* Filename:
+    {
+        "eXO::Filename":<string>
+    }
+
+* UniqueID:
+    "<ID in hex digits>"
+
+* UserID:
+    {
+        "eXO::UID":<UniqueID>
+    }
+
+* ContentID:
+    {
+        "eXO::CID":<UniqueID>
+    }
+
+* UserCatalogEntry:
+    {
+        "eXO::UCE":{<UniqueID>:<UserProfile>}
+    }
+
+* ContentCatalogEntry:
+    {
+        "eXO::CCE":{<UniqueID>:[<ContentProfile>,<UserProfile>]}
+    }
+
+* TagCloud:
+    {
+        <ContentField>:<integer>,
+        ...
+    }
+
+* UserTagCloud:
+    {
+        <UniqueID>:<TagCloud>,
+        ...
+    }
+
+* ItemIdentifier:
+    "<string>"
+
+* SharedContent:
+    {
+        <UniqueID>:<ItemIdentifier>,
+        ...
+    }
+
+* SharedContentProfiles:
+    {
+        <UniqueID>:<ContentProfile>,
+        ...
+    }
+
+* ScoreBoardEntry:
+    {
+        "eXO::Score":<integer>,
+        <ContentCatalogEntry|UserCatalogEntry>
+    }
+* ScoreBoard:
+    {
+        "eXO::ScoreBoard":[<ScoreBoardEntry>,...]
+    }
+
