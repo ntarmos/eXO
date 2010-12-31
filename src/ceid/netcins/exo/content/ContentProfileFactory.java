@@ -1,10 +1,13 @@
 package ceid.netcins.exo.content;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -219,7 +222,40 @@ public class ContentProfileFactory {
 					data = data.substring(0, data.length() - 1);
 				tempcontainer.put(type, data);
 			}
+		tempcontainer.put("Identifier", f.getName());
+		String sha1 = getFileDigest(f, "SHA1");
+		if (sha1 != null)
+			tempcontainer.put("SHA-1", sha1);
 		return tempcontainer;
+	}
+
+	private String getFileDigest(File f, String algorithm) {
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance(algorithm);
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+
+		FileInputStream fis;
+		byte[] dataBytes = new byte[1024];
+		int nread = 0;
+
+		try {
+			fis = new FileInputStream(f);
+			while ((nread = fis.read(dataBytes)) != -1)
+				md.update(dataBytes, 0, nread);
+		} catch (FileNotFoundException e) {
+			return null;
+		} catch (IOException e) {
+			return null;
+		}
+
+		byte[] mdbytes = md.digest();
+		StringBuffer sb = new StringBuffer("");
+		for (int i = 0; i < mdbytes.length; i++)
+			sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+		return sb.toString();
 	}
 
 	/**
