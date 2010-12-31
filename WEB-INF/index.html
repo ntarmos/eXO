@@ -155,8 +155,8 @@
     });
   }
   function polling_callback(polling_data, reqID){
-    if("eXO::Status" in polling_data[0]){
-      if(polling_data[0]["eXO::Status"]=="eXO::Processing"){
+    if("eXO::Status" in polling_data){
+      if(polling_data["eXO::Status"]=="eXO::Processing"){
         // Continue polling after 100ms
         setTimeout(function(){ start_polling(reqID); }, 100);
         return true;
@@ -184,7 +184,7 @@
           // Rerender profiles and rebind events
           if("eXO::reqID" in data){
               start_polling(data["eXO::reqID"]);
-          }else if("eXO::Status" in data[0]){
+          }else if("eXO::Status" in data){
               do_get_profile();
           }
       },
@@ -263,15 +263,16 @@
   function do_get_profile(){
     // Get username and resource
     $.ajax({
+      type: 'POST',
       url: "/servlet/GetUserProfile/",
       dataType: 'json',
       data: "",
       success: function(data){
-        if(data[0]["eXO::Status"]!="eXO::Success"){
+        if(("eXO::Status" in data) && data["eXO::Status"]!="eXO::Success"){
           alert("Failed to access user profile data!");
           return false;
         }
-        profile_dict = data[1]["eXO::Profile"];
+        profile_dict = data["eXO::Data"]["eXO::Profile"];
         // Fill in the data to the corresponding places
         var username="Incognito", resource="Home", public_profile_body = null,
           private_profile_body = null, fieldname;
@@ -597,7 +598,7 @@
               <a href="/search">Search</a>
             </li>
             <li>
-              <a href="#">Share Content</a>
+              <a href="/content">Share Content</a>
             </li>
             <li>
               <a href="#">Friends</a>

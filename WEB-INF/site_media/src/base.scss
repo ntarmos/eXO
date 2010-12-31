@@ -3,6 +3,9 @@
   src: url('../images/rough_typewriter.otf');
 }
 
+$even-row-bgcolor: #FFFFFF;
+$odd-row-bgcolor: #EFEFEF;
+
 $body-bgcolor: #222222;
 $header-bgcolor: #382f24;
 $header-color: #ffffff;
@@ -20,6 +23,19 @@ $footer-title-color: #98A754;
 @import "common_forms";
 
 /*** COMMON CSS ***/
+
+.even-row{
+  background-color: $even-row-bgcolor;
+  &:hover {
+    background-color: darken($even-row-bgcolor, 10%);
+  }
+}
+.odd-row{
+  background-color: $odd-row-bgcolor;
+  &:hover {
+    background-color: darken($odd-row-bgcolor, 5%);
+  }
+}
 
 /* One-line list */
 ul.horizontal {

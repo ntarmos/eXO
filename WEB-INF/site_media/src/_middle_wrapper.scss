@@ -90,6 +90,16 @@
   a {
     color:#2B547D;
   }
+  a.close {
+    background: url("../images/close.gif") repeat scroll 0 0 transparent;
+    font-size: 1px;
+    height: 7px;
+    text-indent: -1000px;
+    width: 7px;
+    &:hover {
+      background-position: center;
+    }
+  }
   #content-main-loading {
     text-align: center;
     vertical-align: middle;
@@ -194,16 +204,6 @@
         }
       }
     }
-    a.close {
-      background: url("../images/close.gif") repeat scroll 0 0 transparent;
-      font-size: 1px;
-      height: 7px;
-      text-indent: -1000px;
-      width: 7px;
-      &:hover {
-        background-position: center;
-      }
-    }
     .new-field, .edit-field {
       background-color: $middle-form-bgcolor;
       margin: 1em 3em;
@@ -255,6 +255,89 @@
       p {
         text-align: center;
       }
+    }
+  }
+  #upload-body {
+    #upload-wrapper {
+      font-size: 1.25em;
+      text-align: center;
+      padding: 0.5em 1em 2em;
+      div {
+        margin:0 0 1em;
+      }
+      label {
+        font-size: 1.2em;
+        margin-right: 1em;
+      }
+      input[type="file"] {
+      }
+    }
+    #file-list-wrapper {
+      border-top: 1px solid #DFDFDF;
+      padding: 1em;
+      margin: 0 2em;
+      h3 {
+        margin-top: 1em;
+        text-align: center;
+      }
+      .file-row{
+        border-bottom: 1px solid #8f8f8f;
+        width:100%;
+      }
+    }
+    .file-id{
+      float: right;
+      display: none;
+    }
+    .file-data{
+      padding: 0.5em;
+      font-size: 1.2em;
+      min-height: 24px;
+      .actions-wrapper{
+        display:none;
+        float:right;
+        position:relative;
+      }
+      div.row-actions {
+        font-size: 10px;
+        height: 24px;
+        line-height: 10px;
+        margin: 0;
+        padding: 7px 5px 0 7px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        div.buttons {
+          padding: 2px 0 0;
+        white-space: nowrap;
+        }
+        span.button-action {
+          padding: 0 2px;
+          a {
+            color: #FF0000;
+            &:hover {
+              color: #FF0000;
+            }
+          }
+        }
+        a.close {
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+    }
+    .tags-wrapper{
+      display: none;
+      padding: 0 0 0 2em;
+      min-height: 24px;
+    }
+    .tag-field-name{
+      float:left;
+      margin-right: 0.25em;
+    }
+    .tag-field-data{
+      float: left;
+      margin-right: 0.5em;
     }
   }
 }

@@ -4,7 +4,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title> Search | eXO - Social freedom</title>
+  <title>eXO - Social freedom</title>
   <!-- Favicon -->
   <link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon" />
 
@@ -18,7 +18,125 @@
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+  <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
   <script type="text/javascript">
+
+  function start_polling(reqID, url){
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
+      success: function(data){
+        polling_callback(data, reqID);
+        return true;
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert("An error occurred : "+textStatus);
+        return false;
+      }
+    });
+  }
+  function polling_callback(polling_data, reqID){
+    if("eXO::Status" in polling_data){
+      if(polling_data["eXO::Status"]=="eXO::Processing"){
+        // Continue polling after 100ms
+        setTimeout(function(){ start_polling(reqID); }, 100);
+        return true;
+      }
+      // TODO: On stop of processing trigger other events
+      return true;
+    }
+  }
+
+  var app = $.sammy('#content-main', function() {
+    // include the plugin and alias mustache() to ms()
+    this.use(Sammy.Mustache, 'ms');
+
+    this.post('#/file_index/create/', function() {
+      // Get username and resource
+      var filepath = $('input[type="file"]').val();
+      $.ajax({
+        type: 'POST',
+        url: "/servlet/ShareFile/",
+        dataType: 'json',
+        data: {eXO_data: JSON.stringify({"eXO::Filename" : filepath })},
+        success: function(data){
+            // Returned data e.g.: {"eXO::reqID":"-65916537"}
+            // Poll till success
+            // Rerender profiles and rebind events
+            if("eXO::reqID" in data){
+                start_polling(data["eXO::reqID"], "/servlet/ShareFile/");
+            }else if("eXO::Status" in data){
+                // TODO: Notify about success or failure and append file in list
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        }
+      });
+    });
+
+    this.post('#/file_index/delete/', function() {
+    });
+    this.get('#/file_list/get/', function() {
+      var context = this;
+      $.ajax({
+        type: 'POST',
+        url: "/servlet/GetContent/",
+        dataType: 'json',
+        data: "",
+        success: function(data){
+          // TODO: Do template rendering
+          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
+            // Refactor the fetched data dictionary
+            var templ = { "profiles": [] };
+            var counter = 0;
+            for(id in data["eXO::Data"]){
+              templ["profiles"][counter] = data["eXO::Data"][id];
+              templ["profiles"][counter]["counter"] = counter;
+              templ["profiles"][counter]["file_id"] = id;
+              templ["profiles"][counter]["zebra"] = function(){
+                return (this.counter%2==0?"even-row":"odd-row");
+              };
+              counter++;
+            }
+            //Sammy.log(templ);
+            context.render("/site_media/templates/file_list.ms", templ,
+             function(content){
+              setTimeout(function(){ 
+                $("#content-main-loading").hide();
+                $('#file-list').html(content);
+              }, 500);
+              // Bind events here
+              $(".show").toggle(function(){
+                $(this).parents(".file-row").find(".tags-wrapper").show();
+                $(this).text("Hide");
+                return false;
+              },function(){
+                $(this).parents(".file-row").find(".tags-wrapper").hide();
+                $(this).text("Show");
+                return false;
+              });
+              $(".file-data ").hover(function(){
+                $(".actions-wrapper", this).show();
+              },function(){
+                $(".actions-wrapper", this).hide();
+              });
+            });
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        }
+      });
+    });
+    this.get('#/file_profile/get/', function() {
+    });
+    this.post('#/file_profile/set/', function() {
+    });
+  });
+
   $(function (){
     // Show/hide the Loading indicator
     $("#loading-indicator").ajaxStart(function(){
@@ -58,6 +176,9 @@
         alert("An error occurred : "+textStatus);
       }
     });
+
+    // Run sammy application
+    app.run('#/file_list/get/');
   });
   </script>
 </head>
@@ -117,10 +238,10 @@
             <li>
               <a href="/">My Profile</a>
             </li>
-            <li class="current">
+            <li>
               <a href="/search">Search</a>
             </li>
-            <li>
+            <li class="current">
               <a href="/content">Share Content</a>
             </li>
             <li>
@@ -132,37 +253,28 @@
       </div>
 
       <div id="content-main" class="span-26">
-        <div id="search-body" class="content-body">
-          <h2> Search Network </h2>
-          <div id="search-wrapper">
-            <div>
-              <span>Search for </span>
-              <span>
-                <select>
-                  <option>Users</option>
-                  <option>Content</option>
-                  <option>Friends</option>
-                  <option>Everything</option>
-                </select>
-              </span>
-              <span> in </span>
-              <span>
-                <select>
-                  <option>Catalogues</option>
-                  <option>Friends Network</option>
-                  <option>Everywhere</option>
-                </select>
-              </span>
-            </div>
-            <table class="search-select" cellspacing="0" cellpadding="0">
-              <tr>
-                <td><input id="search" type="text" name="search" /></td>
-              </tr>
-            </table>
+        <div id="upload-body" class="content-body">
+          <h2>File upload</h2>
+          <div id="upload-wrapper">
+            <form method="post" action="#/file_index/create/">
+              <div>
+                <label>Choose a file to share:</label>
+                <input type="file" />
+              </div>
+              <div>
+                <input type="submit" value="go share this!" />
+              </div>
+            </form>
           </div>
-          <div id="results-wrapper">
-            <h3>Search Results</h3>
-            <p class="quiet"> No results </p>
+          <div id="file-list-wrapper">
+            <div id="file-list"> 
+            </div>
+            <div id="content-main-loading">
+              <p>
+                <img src="/site_media/images/loading.gif" />
+              </p>
+              <p>Loading Content</p>
+            </div>
           </div>
         </div>
       </div>
