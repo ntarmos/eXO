@@ -104,10 +104,7 @@
             //Sammy.log(templ);
             context.render("/site_media/templates/file_list.ms", templ,
              function(content){
-              setTimeout(function(){ 
-                $("#content-main-loading").hide();
-                $('#file-list').html(content);
-              }, 500);
+              $('#file-list').html(content).hide();
               // Bind events here
               $(".show").toggle(function(){
                 $(this).parents(".file-row").find(".tags-wrapper").show();
@@ -123,6 +120,10 @@
               },function(){
                 $(".actions-wrapper", this).hide();
               });
+              setTimeout(function(){ 
+                $("#content-main-loading").hide();
+                $('#file-list').show();
+              }, 500);
             });
           }
         },
