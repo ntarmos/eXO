@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
 import ceid.netcins.exo.CatalogService;
+import ceid.netcins.exo.catalog.ScoreBoard;
 import ceid.netcins.exo.messages.QueryPDU;
 import ceid.netcins.exo.messages.ResponsePDU;
 
@@ -49,11 +50,12 @@ public class SearchContentPNHandler extends AbstractHandler {
 				new Continuation<Object, Exception>() {
 			@Override
 			public void receiveResult(Object arg0) {
-				if (arg0 == null || !(arg0 instanceof ResponsePDU)) {
+				ScoreBoard sb = null;
+				if (arg0 == null || !(arg0 instanceof ResponsePDU) || (sb = ((ResponsePDU)arg0).getScoreBoard()) == null) {
 					queueStatus(reqID, RequestStatus.FAILURE, null);
 					return;
 				}
-				queueStatus(reqID, RequestStatus.SUCCESS, ((ResponsePDU)arg0).getScoreBoard());
+				queueStatus(reqID, RequestStatus.SUCCESS, sb);
 			}
 
 			@Override

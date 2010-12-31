@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -60,13 +59,13 @@ public class GetContentIDsHandler extends AbstractHandler {
 		try {
 			catalogService.retrieveContentIDs(uid,
 					new Continuation<Object, Exception>() {
-				@SuppressWarnings("unchecked")
 				@Override
 				public void receiveResult(Object result) {
-					if (result == null || !(result instanceof Vector))
+					if (result == null || !(result instanceof Map)) {
 						receiveException(new PastException("Result was null or of wrong type"));
-					else
-						queueStatus(reqID, RequestStatus.SUCCESS, ((Vector<Id>)result).toArray());
+						return;
+					}
+					queueStatus(reqID, RequestStatus.SUCCESS, result);
 				}
 
 				@Override

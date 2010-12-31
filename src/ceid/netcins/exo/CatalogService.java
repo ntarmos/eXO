@@ -79,6 +79,7 @@ import ceid.netcins.exo.social.TagCloud;
 import ceid.netcins.exo.social.URLBookMark;
 import ceid.netcins.exo.user.Friend;
 import ceid.netcins.exo.user.FriendRequest;
+import ceid.netcins.exo.user.SharedContentInfo;
 import ceid.netcins.exo.user.User;
 import ceid.netcins.exo.utils.JavaSerializer;
 
@@ -755,7 +756,7 @@ public class CatalogService extends DHTService implements SocService {
 						command) {
 
 					public void receiveResult(Object result) {
-						if (result instanceof Vector) {
+						if (result instanceof Map) {
 							parent.receiveResult(result);
 						} else {
 							parent.receiveException(new PastException("Result was of wrong type"));
@@ -789,11 +790,17 @@ public class CatalogService extends DHTService implements SocService {
 			return;
 		}
 
+		ContentProfile cp = new ContentProfile();
+		for (ContentField cf : tags.getAllFields()) {
+			if (!(cf instanceof StoredField))
+				cp.add(cf);
+		}
+
 		// Fill in the extra arguments (non-standard ones) we want to pass to 
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("contentId", contentId);
-		extra_args.put("PDU", new TagPDU(contentId, tags));
+		extra_args.put("PDU", new TagPDU(contentId, cp));
 
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagContentMessage.TYPE, extra_args,
@@ -810,7 +817,7 @@ public class CatalogService extends DHTService implements SocService {
 					// Tagers inverted list.
 					if (tags != null)
 						for (ContentField cftag : tags.getAllFields()) {
-							String tag = ((TermField)cftag).getFieldName();
+							String tag = cftag.getFieldName();
 							SocialCatalog scat = user.getTagContentList().get(tag);
 							if (scat == null)
 								scat = new SocialCatalog(tag);
@@ -2418,8 +2425,13 @@ public class CatalogService extends DHTService implements SocService {
 				getResponseContinuation(msg).receiveResult(cp);
 			}  else if (msg instanceof RetrieveContIDsMessage) {
 				lookups++;
-
-				Vector<Id> ret = new Vector<Id>(user.getSharedContentIDs());
+				Map<Id, String> ret = new HashMap<Id, String>();
+				Map<Id, SharedContentInfo> map = user.getSharedContent();
+				Iterator<Id> itid = map.keySet().iterator();
+				Iterator<SharedContentInfo> itsci = map.values().iterator();
+				while (itid.hasNext()) {
+					ret.put(itid.next(), itsci.next().getFilename());
+				}
 
 				if (logger.level <= Logger.FINER)
 					logger.log("Returning response for retrieve content ids message from " + endpoint.getId());
