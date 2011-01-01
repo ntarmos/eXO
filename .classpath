@@ -4,6 +4,8 @@
 	<classpathentry kind="lib" path="lib/libextractor-0.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/servlet-api-3.0-20090427.051741-5.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jetty/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.server_7.0.2.SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.servlet_7.0.2.SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.util_7.0.2.SNAPSHOT.jar"/>
@@ -11,7 +13,6 @@
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.io_7.0.2.SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.security_7.0.2.SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/org.eclipse.jetty.continuation_7.0.2.SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/jetty/wicket-1.4.14.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/pastry/pastry.jar"/>
 	<classpathentry kind="lib" path="lib/pastry/bouncycastle.jar"/>
