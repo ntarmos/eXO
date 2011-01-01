@@ -1519,12 +1519,9 @@ public class CatalogService extends DHTService implements SocService {
 		// Elementary Query Parsing
 		// TODO : Examine doing this with JavaCC
 		String query = rawQuery;// .trim();
-		if (query == null || query.equals("")) {
-			System.out.println("I got an empty Query!");
-			command.receiveException(new Exception("I got an empty Query!"));
-			return;
-		}
-		String[] qterms = query.split(ContentProfileFactory.DEFAULT_DELIMITER);
+		String[] qterms = null;
+		if (query != null && !query.equals(""))
+			qterms = query.split(ContentProfileFactory.DEFAULT_DELIMITER);
 
 		searchFriendsNetwork(queryType, qterms, k, command);
 	}
@@ -1597,7 +1594,7 @@ public class CatalogService extends DHTService implements SocService {
 			final Id uid = destId;
 			final QueryPDU qPDU;
 
-			qPDU = new QueryPDU(queryTerms, queryType, topk);
+			qPDU = new QueryPDU(queryTerms, queryType, topk, user.getCompleteUserProfile());
 
 			// Issue a lookup request to the uderline DHT service
 			// Use nodeHandle as first hop hint!
