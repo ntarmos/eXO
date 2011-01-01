@@ -32,7 +32,6 @@ public class SetUserProfileHandler extends AbstractHandler {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
@@ -47,31 +46,8 @@ public class SetUserProfileHandler extends AbstractHandler {
 			if (!oldProfile.equalsPublic(profile)) {
 				final String reqID = getNewReqID(response);
 				// The public part has changed. We should reindex the user profile in the network
-				catalogService.setUserProfile(profile, new Continuation<Object, Exception>() {
-					public void receiveResult(Object result) {
-						// TODO : Check the replicas if are updated correctly!
-						// run replica maintenance
-						// runReplicaMaintence();
-						int indexedNum = 0;
-						Boolean[] results = null;
-						if (result instanceof Boolean[]) {
-							results = (Boolean[]) result;
-							if (results != null)
-								for (Boolean isIndexedTerm : results) {
-									if (isIndexedTerm)
-										indexedNum++;
-								}
-							System.out.println("Total " + indexedNum
-									+ " terms indexed out of " + results.length
-									+ "!");
-						}
-						queueStatus(reqID, RequestStatus.SUCCESS, results);
-					}
-
-					public void receiveException(Exception result) {
-						queueStatus(reqID, RequestStatus.FAILURE, null);
-					}
-				});
+				ContentProfile deletions = oldProfile.minus(profile);
+				doSetUserProfile(profile, deletions, reqID);
 			} else {
 				catalogService.getUser().setUserProfile(profile);
 				sendStatus(response, RequestStatus.SUCCESS, null);
@@ -81,25 +57,63 @@ public class SetUserProfileHandler extends AbstractHandler {
 
 		// Search for the user in the network
 		final String reqID = getNewReqID(response);
-		try {
-			catalogService.tagUser(uid, profile, null, new Continuation<Object, Exception>() {
+		doTagUser(profile, reqID);
+	}
 
-				@Override
-				public void receiveResult(Object result) {
-					HashMap<String, Object> resMap = (HashMap<String, Object>)result;
-					if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
-						receiveException(new RuntimeException());
-					queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
-				}
-
-				@Override
-				public void receiveException(Exception exception) {
+	private void doSetUserProfile(final ContentProfile additions, final ContentProfile deletions, final String reqID) {
+		catalogService.indexUser(additions, deletions, new Continuation<Object, Exception>() {
+			public void receiveResult(Object result) {
+				// TODO : Check the replicas if are updated correctly!
+				// run replica maintenance
+				// runReplicaMaintence();
+				int indexedNum = 0;
+				Boolean[] results = null;
+				if (!(result instanceof Boolean[])) {
 					queueStatus(reqID, RequestStatus.FAILURE, null);
+					return;
 				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-			queueStatus(reqID, RequestStatus.FAILURE, null);
-		}
+				results = (Boolean[]) result;
+				if (results != null)
+					for (Boolean isIndexedTerm : results) {
+						if (isIndexedTerm)
+							indexedNum++;
+					}
+				System.out.println("Total " + indexedNum
+						+ " terms indexed out of " + results.length
+						+ "!");
+				if (indexedNum < results.length)
+					receiveException(new Exception());
+				queueStatus(reqID, RequestStatus.SUCCESS, results);
+			}
+
+			public void receiveException(Exception result) {
+				System.err.println("Received exception while trying to index user. Retrying...");
+				doSetUserProfile(additions, deletions, reqID);
+			}
+		});
+	}
+
+	private void doTagUser(final ContentProfile profile, final String reqID) {
+		catalogService.tagUser(uid, profile, null, new Continuation<Object, Exception>() {
+
+			@Override
+			public void receiveResult(Object result) {
+				if (!(result instanceof HashMap)) {
+					queueStatus(reqID, RequestStatus.FAILURE, null);
+					return;
+				}
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> resMap = (HashMap<String, Object>)result;
+				if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
+					receiveException(new RuntimeException());
+				queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
+			}
+
+			@Override
+			public void receiveException(Exception exception) {
+				System.err.println("Received exception while trying to tag user. Retrying...");
+				doTagUser(profile, reqID);
+			}
+		});
 	}
 }

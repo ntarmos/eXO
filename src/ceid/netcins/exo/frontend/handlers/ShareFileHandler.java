@@ -96,23 +96,7 @@ public class ShareFileHandler extends AbstractHandler {
 
 					item.write(upload);
 					final String reqID = getNewReqID(response);
-					catalogService.indexContent(upload, new Continuation<Object, Exception>() {
-						@Override
-						public void receiveResult(Object result) {
-							if (!(result instanceof Boolean[]))
-								receiveException(null);
-							Boolean[] resBool = (Boolean[])result;
-							boolean didit = false;
-							for (int i = 0; i < resBool.length && !didit; i++)
-								didit = resBool[i];
-							queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
-						}
-
-						@Override
-						public void receiveException(Exception exception) {
-							queueStatus(reqID, RequestStatus.FAILURE, null);
-						}
-					});
+					doIndexContent(upload, reqID);
 					return;
 				}
 			}
@@ -120,5 +104,28 @@ public class ShareFileHandler extends AbstractHandler {
 			// Fall through
 		}
 		sendStatus(response, RequestStatus.FAILURE, null);
+	}
+
+	private void doIndexContent(final File upload, final String reqID) {
+		catalogService.indexContent(upload, new Continuation<Object, Exception>() {
+			@Override
+			public void receiveResult(Object result) {
+				if (!(result instanceof Boolean[])) {
+					queueStatus(reqID, RequestStatus.FAILURE, null);
+					return;
+				}
+				Boolean[] resBool = (Boolean[])result;
+				boolean didit = false;
+				for (int i = 0; i < resBool.length && !didit; i++)
+					didit = resBool[i];
+				queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
+			}
+
+			@Override
+			public void receiveException(Exception exception) {
+				System.err.println("Received exception while trying to index file. Retrying...");
+				doIndexContent(upload, reqID);
+			}
+		});
 	}
 }

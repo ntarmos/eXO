@@ -34,7 +34,6 @@ public class SetContentTagsHandler extends AbstractHandler {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
@@ -64,49 +63,60 @@ public class SetContentTagsHandler extends AbstractHandler {
 			} else {
 				additions = profile;
 			}
-			catalogService.indexPseudoContent(cid,
-					(identifier != null) ? identifier.getFieldData() : null,
-					additions,
-					deletions,
-					new Continuation<Object, Exception>() {
-				@Override
-				public void receiveResult(Object result) {
-					if (!(result instanceof Boolean[]))
-						receiveException(null);
-					Boolean[] resBool = (Boolean[])result;
-					boolean didit = false;
-					for (int i = 0; i < resBool.length && !didit; i++)
-						didit = resBool[i];
-					queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
-				}
-
-				@Override
-				public void receiveException(Exception exception) {
-					queueStatus(reqID, RequestStatus.FAILURE, null);
-				}
-			});
+			doIndexPseudoContent((identifier != null) ? identifier.getFieldData() : null, additions, deletions, reqID);
 			return;
 		}
 
 		// Search for it in the network
-		try {
-			catalogService.tagContent(uid, cid, profile, 
-					new Continuation<Object, Exception>() {
-				@Override
-				public void receiveResult(Object result) {
-					HashMap<String, Object> resMap = (HashMap<String, Object>)result;
-					if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
-						receiveException(new RuntimeException());
-					queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
-				}
+		doTagContent(profile, reqID);
+	}
 
-				@Override
-				public void receiveException(Exception exception) {
+	private void doIndexPseudoContent(final String identifier, final ContentProfile additions, final ContentProfile deletions, final String reqID) {
+		catalogService.indexPseudoContent(cid,
+				identifier, additions, deletions,
+				new Continuation<Object, Exception>() {
+			@Override
+			public void receiveResult(Object result) {
+				if (!(result instanceof Boolean[])) {
 					queueStatus(reqID, RequestStatus.FAILURE, null);
+					return;
 				}
-			});
-		} catch (Exception e) {
-			queueStatus(reqID, RequestStatus.FAILURE, null);
-		}
+				Boolean[] resBool = (Boolean[])result;
+				boolean didit = false;
+				for (int i = 0; i < resBool.length && !didit; i++)
+					didit = resBool[i];
+				queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
+			}
+
+			@Override
+			public void receiveException(Exception exception) {
+				System.err.println("Received exception while trying to index content. Retrying...");
+				queueStatus(reqID, RequestStatus.FAILURE, null);
+			}
+		});
+	}
+
+	private void doTagContent(final ContentProfile profile, final String reqID) {
+		catalogService.tagContent(uid, cid, profile, 
+				new Continuation<Object, Exception>() {
+			@Override
+			public void receiveResult(Object result) {
+				if (!(result instanceof HashMap)) {
+					queueStatus(reqID, RequestStatus.FAILURE, null);
+					return;
+				}
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> resMap = (HashMap<String, Object>)result;
+				if (!((Integer)resMap.get("status")).equals(CatalogService.SUCCESS))
+					receiveException(new RuntimeException());
+				queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
+			}
+
+			@Override
+			public void receiveException(Exception exception) {
+				System.err.println("Received exception while trying to tag content. Retrying...");
+				doTagContent(profile, reqID);
+			}
+		});
 	}
 }
