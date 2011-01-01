@@ -196,21 +196,8 @@ public class ContentProfileFactory {
 		return cprof;
 	}
 
-	/**
-	 * 
-	 * @param f
-	 *            The file to be extracted.
-	 * @return This function returns a Map object with keys corresponding to
-	 *         field names and values to field values
-	 */
-	@SuppressWarnings("unchecked")
-	public Map<String, String> extractFile(File f) throws IOException {
-		if (!f.exists() || f.isDirectory() || !f.canRead()) {
-			return null;
-		}
-		Extractor ex = Extractor.getDefault();
+	private Map<String, String> metadataToMap(ArrayList<MetaData> keywords) {
 		Map<String, String> tempcontainer = new HashMap<String, String>();
-		ArrayList<MetaData> keywords = ex.extract(f);
 		if (keywords != null)
 			for (MetaData md : keywords) {
 				// Chop off the last byte as the curren libextractor has a nasty bug inserting a '\0' byte there
@@ -222,7 +209,16 @@ public class ContentProfileFactory {
 					data = data.substring(0, data.length() - 1);
 				tempcontainer.put(type, data);
 			}
-		tempcontainer.put("Identifier", f.getName());
+		return tempcontainer;
+	}
+
+	public Map<String, String> extractFile(File f) throws IOException {
+		if (!f.exists() || !f.canRead() || f.isDirectory())
+			return null;
+		Extractor ex = Extractor.getDefault();
+		@SuppressWarnings("unchecked")
+        Map<String, String> tempcontainer = metadataToMap(ex.extract(f));
+		tempcontainer.put("filename", f.getName());
 		String sha1 = getFileDigest(f, "SHA1");
 		if (sha1 != null)
 			tempcontainer.put("SHA-1", sha1);
@@ -445,7 +441,7 @@ public class ContentProfileFactory {
 				if (field.equals("SHA-1")) {
 					cprof.add(new StoredField(field, fieldValue));
 
-				} else if (field.equals("Identifier")) {
+				} else if (field.equals("Filename")) {
 					cprof.add(new TermField(field, fieldValue));
 
 				} else {
