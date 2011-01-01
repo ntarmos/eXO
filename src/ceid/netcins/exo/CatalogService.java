@@ -1420,28 +1420,7 @@ public class CatalogService extends DHTService implements SocService {
 		searchQuery(queryType, qterms, k, command);
 	}
 
-	/**
-	 * This method uses a query to search in the overlay network for occurrences
-	 * of the specific query terms. These terms may refer to a Content object
-	 * indexed in the network or some User or even both of these types.
-	 * Respectively, we have three query types : CONTENTQUERY, USERQUERY,
-	 * HYBRIDQUERY. New Feature: URLQUERY type is also offered now
-	 * 
-	 * @param queryType Specify the type of entities we search for.
-	 * @param queryTerns The terms given which will be searched.
-	 * @param k The number of results which are going to be returned as a
-	 *            list.
-	 * @param delimiter The delimiter for query terms
-	 * @param command A callback
-	 */
-	public void searchQuery(int queryType, final String[] queryTerms,
-			final int k, final Continuation<Object, Exception> command) {
-
-		if (this.user == null) {
-			command.receiveException(new RuntimeException("User has not been registered yet!"));
-			return;
-		}
-
+	private String[] termsToArray(int queryType, String[] queryTerms, int k) {
 		Set<String> terms = new HashSet<String>();
 		int nQueries = 0;
 		if (queryTerms != null)
@@ -1464,7 +1443,6 @@ public class CatalogService extends DHTService implements SocService {
 			termsArray = terms.toArray(termsArray);
 		}
 
-		QueryPDU qPDUBase;
 		if (queryType == QueryPDU.CONTENT_ENHANCEDQUERY
 				|| queryType == QueryPDU.USER_ENHANCEDQUERY
 				|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
@@ -1488,19 +1466,40 @@ public class CatalogService extends DHTService implements SocService {
 				} else
 					termsArray = null;
 			}
-			qPDUBase = new QueryPDU(termsArray, queryType, k, this.user.getPublicUserProfile());
-		} else {
-			qPDUBase = new QueryPDU(termsArray, queryType, k);
+		}
+		return termsArray;
+	}
+
+	/**
+	 * This method uses a query to search in the overlay network for occurrences
+	 * of the specific query terms. These terms may refer to a Content object
+	 * indexed in the network or some User or even both of these types.
+	 * Respectively, we have three query types : CONTENTQUERY, USERQUERY,
+	 * HYBRIDQUERY. New Feature: URLQUERY type is also offered now
+	 * 
+	 * @param queryType Specify the type of entities we search for.
+	 * @param queryTerns The terms given which will be searched.
+	 * @param k The number of results which are going to be returned as a
+	 *            list.
+	 * @param delimiter The delimiter for query terms
+	 * @param command A callback
+	 */
+	public void searchQuery(int queryType, final String[] queryTerms,
+			final int k, final Continuation<Object, Exception> command) {
+
+		if (this.user == null) {
+			command.receiveException(new RuntimeException("User has not been registered yet!"));
+			return;
 		}
 
+		String[] termsArray = termsToArray(queryType, queryTerms, k);
 
 		// Iterate to lookup for every term in query!
-		if (nQueries > 0) {
+		if (termsArray != null && termsArray.length > 0) {
+			final QueryPDU qPDU = new QueryPDU(termsArray, queryType, k, this.user.getPublicUserProfile());
 			for (int i = 0; i < termsArray.length; i++) {
 				// Compute each terms TID
 				Id querytid = factory.buildId(termsArray[i]);
-
-				final QueryPDU qPDU = qPDUBase;
 
 				// Issue a lookup request to the uderline DHT service
 				lookup(querytid, false, qPDU,
@@ -1544,6 +1543,8 @@ public class CatalogService extends DHTService implements SocService {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
 			return;
 		}
+
+		final String[] termsArray = termsToArray(queryType, queryTerms, topk);
 
 		Hashtable<Id, Friend> friends = user.getFriends();
 		MultiContinuation multi = new MultiContinuation(command,
@@ -1594,7 +1595,7 @@ public class CatalogService extends DHTService implements SocService {
 			final Id uid = destId;
 			final QueryPDU qPDU;
 
-			qPDU = new QueryPDU(queryTerms, queryType, topk, user.getCompleteUserProfile());
+			qPDU = new QueryPDU(termsArray, queryType, topk, user.getCompleteUserProfile());
 
 			// Issue a lookup request to the uderline DHT service
 			// Use nodeHandle as first hop hint!
@@ -1604,13 +1605,13 @@ public class CatalogService extends DHTService implements SocService {
 
 				public void receiveResult(Object result) {
 					System.out.println("\n\nFriendQuery  : "
-							+ Arrays.toString(queryTerms) + ", #" + num
+							+ Arrays.toString(termsArray) + ", #" + num
 							+ " result (success) for destination ID = " + uid);
 					parent.receiveResult(result);
 				}
 
 				public void receiveException(Exception result) {
-					System.out.println("nFriendQuery : " + Arrays.toString(queryTerms)
+					System.out.println("nFriendQuery : " + Arrays.toString(termsArray)
 							+ ", #" + num + " result (error) "
 							+ result.getMessage());
 					parent.receiveException(result);
