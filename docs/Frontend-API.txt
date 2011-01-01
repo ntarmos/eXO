@@ -7,7 +7,8 @@ All calls:
         - None.
         - JSON-formatted data under the label 'eXO_data'.
         - {"eXO::reqID":"<integer>"}: used to probe for the status of a
-          previous operation making use of continuations.
+          previous operation making use of continuations (i.e., all
+		  remote or local/remote operations).
     * Output:
         - {"eXO::reqID":"<integer>"}:  the call makes use of
           continuations, try again later with the given reqID as input.
@@ -78,7 +79,8 @@ Content items:
     * ShareFile
         - Local/remote operation (share the given file on the local
           machine and index it in the network)
-            o Input: <Filename>
+            o Input: multipart-encoded data through POST under the name
+			'FileData' (i.e. <input type="file" name="FileData"/>)
             o Output: none (just the status tag)
 
 Friends:

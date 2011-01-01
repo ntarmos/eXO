@@ -4,3 +4,5 @@ exo_pastry_bootstrap = localhost:5009
 exo_jetty_port = 8080
 exo_jetty_root = WEB-INF
 exo_sim_num_nodes = 5
+exo_uploads_repository = uploads
+exo_uploads_filesize_limit = 10000000
