@@ -136,35 +136,41 @@ public class CatalogService extends DHTService implements SocService {
 		}, "Scorer");
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void start() {
 		scorerThread.start();
+		doStartIndexUser(user.getPublicUserProfile());
+	}
 
-		indexUser(user.getPublicUserProfile(), null, new Continuation() {
+	private void doStartIndexUser(final ContentProfile profile) {
+		indexUser(profile, null, new Continuation<Object, Exception>() {
 			public void receiveResult(Object result) {
 				System.out.println("User : " + user.getUID()
 						+ ", indexed successfully");
 				// TODO : Check the replicas if are updated correctly!
 				// run replica maintenance
 				// runReplicaMaintence();
-				if (result instanceof Boolean[]) {
-					Boolean[] results = (Boolean[]) result;
-					int indexedNum = 0;
-					if (results != null)
-						for (Boolean isIndexedTerm : results) {
-							if (isIndexedTerm)
-								indexedNum++;
-						}
-					System.out.println("Total " + indexedNum
-							+ " terms indexed out of " + results.length
-							+ "!");
+				if (!(result instanceof Boolean[])) {
+					throw new RuntimeException("Unable to index user!");
 				}
+				Boolean[] results = (Boolean[]) result;
+				int indexedNum = 0;
+				if (results != null)
+					for (Boolean isIndexedTerm : results) {
+						if (isIndexedTerm)
+							indexedNum++;
+					}
+				System.out.println("Total " + indexedNum
+						+ " terms indexed out of " + results.length
+						+ "!");
+				if (indexedNum < results.length)
+					receiveException(new Exception());
 			}
 
 			public void receiveException(Exception result) {
 				System.out.println("User : " + user.getUID()
 						+ ", indexed with errors : "
-						+ result.getMessage());
+						+ result.getMessage() + " Retrying...");
+				doStartIndexUser(profile);
 			}
 		});
 	}
@@ -206,7 +212,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void tagUser(final Id uid, final ContentProfile tags,
-			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) throws Exception {
+			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -765,7 +771,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void tagContent(final Id uid, final Id contentId, final ContentProfile tags,
-			final Continuation command) throws Exception {
+			final Continuation command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1407,11 +1413,9 @@ public class CatalogService extends DHTService implements SocService {
 		// Elementary Query Parsing
 		// TODO : Examine doing this with JavaCC
 		String query = rawQuery;// .trim();
-		if (query == null || query.equals("")) {
-			System.out.println("I got an empty Query!");
-			return;
-		}
-		String[] qterms = query.split(delimiter);
+		String[] qterms = null;
+		if (query != null && !query.equals(""))
+			qterms = query.split(delimiter);
 		
 		searchQuery(queryType, qterms, k, command);
 	}
@@ -1430,34 +1434,82 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param delimiter The delimiter for query terms
 	 * @param command A callback
 	 */
-	public void searchQuery(final int queryType, final String[] queryTerms,
+	public void searchQuery(int queryType, final String[] queryTerms,
 			final int k, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
-			command.receiveException(new RuntimeException("User has not be registered yet!"));
+			command.receiveException(new RuntimeException("User has not been registered yet!"));
 			return;
 		}
 
-		// Iterate to lookup for every term in query!
-		for (int i = 0; i < queryTerms.length; i++) {
-			// Compute each terms TID
-			Id querytid = factory.buildId(queryTerms[i]);
+		Set<String> terms = new HashSet<String>();
+		int nQueries = 0;
+		if (queryTerms != null)
+			for (int i = 0; i < queryTerms.length; i++)
+				if (queryTerms[i] != null && !queryTerms[i].equals("")) {
+					terms.add(queryTerms[i]);
+				}
+		nQueries = terms.size();
+		String[] termsArray = null;
 
-			final QueryPDU qPDU;
-			if (queryType == QueryPDU.CONTENT_ENHANCEDQUERY
-					|| queryType == QueryPDU.USER_ENHANCEDQUERY
-					|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
-				qPDU = new QueryPDU(queryTerms, queryType, k, this.user
-						.getPublicUserProfile());
-			} else {
-				qPDU = new QueryPDU(queryTerms, queryType, k);
+		if (nQueries == 0) {
+			if (queryType == QueryPDU.CONTENTQUERY)
+				queryType = QueryPDU.CONTENT_ENHANCEDQUERY;
+			else if (queryType == QueryPDU.USERQUERY)
+				queryType = QueryPDU.USER_ENHANCEDQUERY;
+			else if (queryType == QueryPDU.HYBRIDQUERY)
+				queryType = QueryPDU.HYBRID_ENHANCEDQUERY;
+		} else {
+			termsArray = new String[terms.size()];
+			termsArray = terms.toArray(termsArray);
+		}
+
+		QueryPDU qPDUBase;
+		if (queryType == QueryPDU.CONTENT_ENHANCEDQUERY
+				|| queryType == QueryPDU.USER_ENHANCEDQUERY
+				|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
+			if (nQueries == 0) {
+				Vector<String> enhanced;
+				if (termsArray != null)
+					enhanced = new Vector<String>(Arrays.asList(termsArray));
+				else
+					enhanced = new Vector<String>();
+				termsArray = new String[1];
+				for (ContentField cf : user.getPublicUserProfile().getPublicFields()) {
+					if (cf instanceof TermField)
+						enhanced.add(((TermField)cf).getFieldData());
+					else if (cf instanceof TokenizedField) {
+						enhanced.addAll(Arrays.asList(((TokenizedField)cf).getTerms()));
+					}
+				}
+				if (enhanced.size() > 0) {
+					termsArray = enhanced.toArray(termsArray);
+					nQueries = termsArray.length;
+				} else
+					termsArray = null;
 			}
+			qPDUBase = new QueryPDU(termsArray, queryType, k, this.user.getPublicUserProfile());
+		} else {
+			qPDUBase = new QueryPDU(termsArray, queryType, k);
+		}
 
-			// Issue a lookup request to the uderline DHT service
-			lookup(querytid, false, qPDU,
-					new NamedContinuation(
-							"QueryMessage (QueryPDU) for " + queryTerms[i] + "(" + querytid + ")",
-							command));
+
+		// Iterate to lookup for every term in query!
+		if (nQueries > 0) {
+			for (int i = 0; i < termsArray.length; i++) {
+				// Compute each terms TID
+				Id querytid = factory.buildId(termsArray[i]);
+
+				final QueryPDU qPDU = qPDUBase;
+
+				// Issue a lookup request to the uderline DHT service
+				lookup(querytid, false, qPDU,
+						new NamedContinuation(
+								"QueryMessage (QueryPDU) for " + termsArray[i] + "(" + querytid + ")",
+								command));
+			}
+		} else {
+			command.receiveException(new Exception("Empty query"));
 		}
 	}
 
@@ -1469,6 +1521,7 @@ public class CatalogService extends DHTService implements SocService {
 		String query = rawQuery;// .trim();
 		if (query == null || query.equals("")) {
 			System.out.println("I got an empty Query!");
+			command.receiveException(new Exception("I got an empty Query!"));
 			return;
 		}
 		String[] qterms = query.split(ContentProfileFactory.DEFAULT_DELIMITER);
