@@ -394,24 +394,6 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * This is used to create a content profile when the terms are given in a
-	 * Map data structure.
-	 * 
-	 * @param m
-	 *            A map with the fields and the corresponding terms
-	 * @throws java.io.IOException
-	 */
-	public ContentProfile createContentProfile(Map<String, String> m,
-			String delimiter) throws IOException {
-		if (m.containsKey("Identifier")) {
-			String checksum = this.factory.buildId(m.get("Identifier"))
-					.toStringFull();
-			m.put("SHA-1", checksum);
-		}
-		return cpf.buildProfile(m, delimiter);
-	}
-
-	/**
 	 * This is used to create the tag tokens and profile. This is used to filter
 	 * the tags within the tokenizer (StopWords etc.)
 	 * 
