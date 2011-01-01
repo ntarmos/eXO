@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -20,7 +19,6 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import rice.Continuation;
 import rice.environment.Environment;
 import rice.environment.logging.Logger;
 import rice.environment.params.Parameters;
@@ -46,9 +44,6 @@ import rice.persistence.LRUCache;
 import rice.persistence.MemoryStorage;
 import rice.persistence.PersistentStorage;
 import rice.persistence.StorageManagerImpl;
-import ceid.netcins.exo.content.ContentField;
-import ceid.netcins.exo.content.ContentProfile;
-import ceid.netcins.exo.content.TermField;
 import ceid.netcins.exo.frontend.handlers.AcceptFriendRequestHandler;
 import ceid.netcins.exo.frontend.handlers.GetContentHandler;
 import ceid.netcins.exo.frontend.handlers.GetContentIDsHandler;
@@ -272,41 +267,8 @@ public class Frontend {
 
 		CatalogService catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
 		catalogService.start();
-		setUserProfile(catalogService, user);
 
 		return catalogService;
-	}
-
-	private void setUserProfile(final CatalogService catalogService, final User user) {
-		ArrayList<ContentField> tags = new ArrayList<ContentField>();
-		tags.add(new TermField("Username", user.getUsername(), true));
-		tags.add(new TermField("Resource", user.getResourceName(), true));
-		catalogService.setUserProfile(new ContentProfile(tags),
-				new Continuation<Object, Exception>() {
-			public void receiveResult(Object result) {
-				// TODO : Check the replicas if are updated correctly!
-				// run replica maintenance
-				// runReplicaMaintence();
-				int indexedNum = 0;
-				Boolean[] results = null;
-				if (result instanceof Boolean[]) {
-					results = (Boolean[]) result;
-					if (results != null)
-						for (Boolean isIndexedTerm : results) {
-							if (isIndexedTerm)
-								indexedNum++;
-						}
-				}
-				if (indexedNum < 2)
-					receiveException(new RuntimeException("Unable to index basic user attributes"));
-				System.err.println("Basic user attributes indexed successfully");
-			}
-
-			public void receiveException(Exception result) {
-				System.err.println("Error indexing user. Retrying...");
-				setUserProfile(catalogService, user);
-			}
-		});
 	}
 
 	private int startCatalogServices() {
@@ -324,12 +286,12 @@ public class Frontend {
 		}
 
 		System.out.print("Queueing profile indexing... ");
-		setUserProfile(apps[0], users[0]);
+
 		System.out.println("done");
 
 		for (int i = 1; i < apps.length; i++) {
 			System.out.print("Queueing profile indexing for user #" + (i + 1) + "/" + apps.length  + "... ");
-			setUserProfile(apps[i], users[i]);
+
 			System.out.println("done");
 		}
 		return 0;
@@ -427,6 +389,7 @@ public class Frontend {
 		 */		
 		handlersList.addHandler(mountFileRoute("/", "index.html"));
 		handlersList.addHandler(mountFileRoute("/search", "search.html"));
+		handlersList.addHandler(mountFileRoute("/content", "content.html"));
 
 		handlersList.addHandler(new DefaultHandler());
 
