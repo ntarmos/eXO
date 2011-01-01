@@ -89,6 +89,8 @@ public abstract class AbstractHandler extends HttpServlet {
 
 	public AbstractHandler(CatalogService catalogService, Hashtable<String, Hashtable<String, Object>> queue) {
 		this(catalogService, queue, DefaultSleepTime);
+		if (catalogService.getEnvironment().getParameters().contains("exo_jetty_longpolling_timeout"))
+			sleepTime = catalogService.getEnvironment().getParameters().getLong("exo_jetty_longpolling_timeout");
 	}
 
 	@Override

@@ -6,3 +6,4 @@ exo_jetty_root = WEB-INF
 exo_sim_num_nodes = 5
 exo_uploads_repository = uploads
 exo_uploads_filesize_limit = 10000000
+exo_jetty_longpolling_timeout = 1500
