@@ -65,6 +65,10 @@ public class QueryPDU implements Serializable {
 		return data;
 	}
 
+	public void setData(String[] data) {
+		this.data = data;
+	}
+
 	public int getType() {
 		return type;
 	}
