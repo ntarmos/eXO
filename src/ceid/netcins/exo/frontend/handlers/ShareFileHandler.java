@@ -1,19 +1,16 @@
 package ceid.netcins.exo.frontend.handlers;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 import rice.Continuation;
 import rice.environment.params.Parameters;
@@ -33,26 +30,24 @@ import ceid.netcins.exo.CatalogService;
  */
 public class ShareFileHandler extends AbstractHandler {
 	private static final long serialVersionUID = 6460386943881811107L;
-	private static final String FileDataTag = "FileData";
+	private static final String FileHeaderTag = "X-File-Name";
 	private static final String UploadRepository = "shared";
-	private static final int FileSizeLimit = 10000000;
 
 	private String uploadRepository = null;
-	private Integer fileSizeLimit = 0;
 
 	public ShareFileHandler(CatalogService catalogService,
 			Hashtable<String, Hashtable<String, Object>> queue) {
 		super(catalogService, queue);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
-		if (!ServletFileUpload.isMultipartContent(request)) {
+		String filename = request.getHeader(FileHeaderTag);
+		if (filename == null || filename.equals("")) {
 			sendStatus(response, RequestStatus.FAILURE, null);
 			return;
 		}
@@ -68,41 +63,25 @@ public class ShareFileHandler extends AbstractHandler {
 					UploadRepository
 			);
 
-		fileSizeLimit = params.contains("exo_uploads_filesize_limit") ?
-				catalogService.getEnvironment().getParameters().getInt("exo_uploads_filesize_limit") :
-				FileSizeLimit;
-
-		DiskFileItemFactory fileFactory = new DiskFileItemFactory();
 		File uploadDir = new File(uploadRepository);
 		if (!uploadDir.mkdirs() && !(uploadDir.exists() && uploadDir.isDirectory())) {
 			sendStatus(response, RequestStatus.FAILURE, null);
 			return;
 		}
-		fileFactory.setSizeThreshold(fileSizeLimit);
-		fileFactory.setRepository(uploadDir);
-		ServletFileUpload sfu = new ServletFileUpload(fileFactory);
+
 		try {
-			List<FileItem> items = sfu.parseRequest(request);
-			Iterator<FileItem> itemsIter = items.iterator();
-			while (itemsIter.hasNext()) {
-				FileItem item = itemsIter.next();
-				if (!item.isFormField() && item.getFieldName().equals(FileDataTag)) {
-					String fileName = item.getName();
+			InputStream is = request.getInputStream();
 
-					File upload = new File(uploadRepository + File.separator + fileName);
-					if (upload == null ||
-							(upload.exists() && !upload.delete() && !upload.createNewFile()) ||
-							(!upload.exists() && !upload.createNewFile()))
-						throw new FileUploadException();
+			File upload = new File(uploadRepository + File.separator + filename);
+			if (upload == null ||
+					(upload.exists() && !upload.delete() && !upload.createNewFile()) ||
+					(!upload.exists() && !upload.createNewFile()))
+				throw new Exception();
 
-					item.write(upload);
-					final String reqID = getNewReqID(response);
-					doIndexContent(upload, reqID);
-					return;
-				}
-			}
-		} catch (FileUploadException e) {
-			// Fall through
+			FileOutputStream fos = new FileOutputStream(upload);
+			IOUtils.copy(is, fos);
+			doIndexContent(upload, getNewReqID(response));
+			return;
 		} catch (IOException e) {
 			// Fall through
 		} catch (Exception e) {
