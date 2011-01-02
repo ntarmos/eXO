@@ -233,7 +233,7 @@ public class ContentProfileFactory {
 			return null;
 		}
 
-		FileInputStream fis;
+		FileInputStream fis = null;
 		byte[] dataBytes = new byte[1024];
 		int nread = 0;
 
@@ -245,6 +245,14 @@ public class ContentProfileFactory {
 			return null;
 		} catch (IOException e) {
 			return null;
+		}
+		finally {
+			try {
+				if (fis != null)
+					fis.close();
+			} catch (IOException e) {
+				return null;
+			}
 		}
 
 		byte[] mdbytes = md.digest();
