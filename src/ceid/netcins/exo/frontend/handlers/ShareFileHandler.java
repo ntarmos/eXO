@@ -48,13 +48,13 @@ public class ShareFileHandler extends AbstractHandler {
 	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
+		if (prepare(request, response) == RequestState.FINISHED)
+			return;
+
 		if (!ServletFileUpload.isMultipartContent(request)) {
 			sendStatus(response, RequestStatus.FAILURE, null);
 			return;
 		}
-
-		if (prepare(request, response) == RequestState.FINISHED)
-			return;
 
 		PersistentStorage ps = (PersistentStorage)catalogService.getStorageManager().getStorage();
 		Parameters params = catalogService.getEnvironment().getParameters();
