@@ -1382,8 +1382,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	public void searchContent(final String rawQuery, final int k,
 			final Continuation<Object, Exception> command) {
-		searchQuery(QueryPDU.CONTENTQUERY, rawQuery, k,
-				ContentProfileFactory.DEFAULT_DELIMITER, command);
+		searchQuery(QueryPDU.CONTENTQUERY, new String[] { rawQuery }, k, command);
 	}
 
 	/**
@@ -1391,8 +1390,7 @@ public class CatalogService extends DHTService implements SocService {
 	 */
 	public void searchUser(final String rawQuery, final int k,
 			final Continuation<Object, Exception> command) {
-		searchQuery(QueryPDU.USERQUERY, rawQuery, k,
-				ContentProfileFactory.DEFAULT_DELIMITER, command);
+		searchQuery(QueryPDU.USERQUERY, new String[] { rawQuery }, k, command);
 	}
 	
 	/**
@@ -1514,15 +1512,7 @@ public class CatalogService extends DHTService implements SocService {
 
 	public void searchFriendsNetwork(final int queryType, final String rawQuery,
 			final int k, final Continuation<Object, Exception> command) {
-
-		// Elementary Query Parsing
-		// TODO : Examine doing this with JavaCC
-		String query = rawQuery;// .trim();
-		String[] qterms = null;
-		if (query != null && !query.equals(""))
-			qterms = query.split(ContentProfileFactory.DEFAULT_DELIMITER);
-
-		searchFriendsNetwork(queryType, qterms, k, command);
+		searchFriendsNetwork(queryType, new String[] { rawQuery }, k, command);
 	}
 
 	/**
