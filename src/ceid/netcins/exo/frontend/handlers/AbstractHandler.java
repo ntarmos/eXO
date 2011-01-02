@@ -93,6 +93,12 @@ public abstract class AbstractHandler extends HttpServlet {
 			sleepTime = catalogService.getEnvironment().getParameters().getLong("exo_jetty_longpolling_timeout");
 	}
 
+	// TODO: We only want POST access; remove this method when RnD is over.
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		doPost(request, response);
+	}
+
+
 	@Override
 	public abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException;
 
