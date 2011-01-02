@@ -106,6 +106,8 @@ public abstract class AbstractHandler extends HttpServlet {
 		if (msg != null)
 			System.err.println(msg);
 		Map<String, Object> ret = makeSendResult(status, data);
+		if (status.equals(RequestStatus.FAILURE))
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		try {
 			response.getWriter().write(Json.toString(ret));
 		} catch (IOException e) {
