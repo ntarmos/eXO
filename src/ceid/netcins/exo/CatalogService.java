@@ -1420,16 +1420,14 @@ public class CatalogService extends DHTService implements SocService {
 
 	private String[] termsToArray(int queryType, String[] queryTerms, int k) {
 		Set<String> terms = new HashSet<String>();
-		int nQueries = 0;
 		if (queryTerms != null)
 			for (int i = 0; i < queryTerms.length; i++)
 				if (queryTerms[i] != null && !queryTerms[i].equals("")) {
 					terms.add(queryTerms[i]);
 				}
-		nQueries = terms.size();
 		String[] termsArray = null;
 
-		if (nQueries == 0) {
+		if (terms.size() == 0) {
 			if (queryType == QueryPDU.CONTENTQUERY)
 				queryType = QueryPDU.CONTENT_ENHANCEDQUERY;
 			else if (queryType == QueryPDU.USERQUERY)
@@ -1444,7 +1442,7 @@ public class CatalogService extends DHTService implements SocService {
 		if (queryType == QueryPDU.CONTENT_ENHANCEDQUERY
 				|| queryType == QueryPDU.USER_ENHANCEDQUERY
 				|| queryType == QueryPDU.HYBRID_ENHANCEDQUERY) {
-			if (nQueries == 0) {
+			if (terms.size() == 0) {
 				Vector<String> enhanced;
 				if (termsArray != null)
 					enhanced = new Vector<String>(Arrays.asList(termsArray));
@@ -1458,11 +1456,7 @@ public class CatalogService extends DHTService implements SocService {
 						enhanced.addAll(Arrays.asList(((TokenizedField)cf).getTerms()));
 					}
 				}
-				if (enhanced.size() > 0) {
-					termsArray = enhanced.toArray(termsArray);
-					nQueries = termsArray.length;
-				} else
-					termsArray = null;
+				termsArray = (enhanced.size() > 0) ? enhanced.toArray(termsArray) : null;
 			}
 		}
 		return termsArray;
