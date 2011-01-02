@@ -1,6 +1,7 @@
 package ceid.netcins.exo.frontend.handlers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -100,6 +101,10 @@ public class ShareFileHandler extends AbstractHandler {
 					return;
 				}
 			}
+		} catch (FileUploadException e) {
+			// Fall through
+		} catch (IOException e) {
+			// Fall through
 		} catch (Exception e) {
 			// Fall through
 		}
