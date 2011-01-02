@@ -34,7 +34,7 @@ import ceid.netcins.exo.CatalogService;
 public class ShareFileHandler extends AbstractHandler {
 	private static final long serialVersionUID = 6460386943881811107L;
 	private static final String FileDataTag = "FileData";
-	private static final String UploadRepository = "uploads";
+	private static final String UploadRepository = "shared";
 	private static final int FileSizeLimit = 10000000;
 
 	private String uploadRepository = null;
