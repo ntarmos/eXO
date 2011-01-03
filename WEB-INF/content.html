@@ -30,7 +30,7 @@
       url: url,
       data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
       success: function(data){
-        polling_callback(data, reqID);
+        polling_callback(data, reqID, url);
         return true;
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -39,11 +39,11 @@
       }
     });
   }
-  function polling_callback(polling_data, reqID){
+  function polling_callback(polling_data, reqID, url){
     if("eXO::Status" in polling_data){
       if(polling_data["eXO::Status"]=="eXO::Processing"){
         // Continue polling after 100ms
-        setTimeout(function(){ start_polling(reqID); }, 100);
+        setTimeout(function(){ start_polling(reqID, url); }, 100);
         return true;
       }
       // TODO: On stop of processing trigger other events
