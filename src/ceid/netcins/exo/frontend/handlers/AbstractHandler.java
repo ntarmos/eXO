@@ -147,6 +147,7 @@ public abstract class AbstractHandler extends HttpServlet {
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setCharacterEncoding("utf-8");
+		response.setHeader("Cache-Control", "no-cache");
 
 		String param = request.getParameter(PostParamTag);
 		if (param != null) {
