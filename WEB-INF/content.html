@@ -194,7 +194,7 @@
         // Poll till success
         // Rerender profiles and rebind events
         if("eXO::reqID" in data){
-          start_polling(response["eXO::reqID"], "/servlet/ShareFile/");
+          start_polling(data["eXO::reqID"], "/servlet/ShareFile/");
         }else if("eXO::Status" in data && data["eXO::Status"]!="eXO::Success"){
           // TODO: Notify about success or failure and append file in list
         }else{
