@@ -67,6 +67,7 @@
   a {
     font-size: 5em;
     font-family: 'RoughTypeWriter';
+    & sup { font-size: 0.25em; font-family: 'Verdana'; color: #ff0000; }
     &:hover { text-decoration:none; }
   }
   span {

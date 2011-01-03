@@ -136,6 +136,12 @@ a:hover {
   font-size: 5em;
   font-family: 'RoughTypeWriter';
 }
+
+#logo a sup {
+  font-size: 0.25em;
+  font-family: 'Verdana';
+  color: #ff0000;
+}
 /* line 70, ../src/_header_wrapper.scss */
 #logo a:hover {
   text-decoration: none;
