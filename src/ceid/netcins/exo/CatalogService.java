@@ -971,7 +971,8 @@ public class CatalogService extends DHTService implements SocService {
 				if (cf.getFieldName().equals("SHA-1")) {
 					checksum = factory.buildIdFromToString(((StoredField) cf)
 							.getFieldData());
-					System.out.print((user.getSharedContent().containsKey(checksum) ? "Rei" : "I") + "ndexing " + file.toString());
+					System.out.println((user.getSharedContent().containsKey(checksum) ? "Rei" : "I") + "ndexing " + file.toString());
+					break;
 				}
 			}
 			if (checksum == null) {
