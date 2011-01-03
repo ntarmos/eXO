@@ -15,6 +15,7 @@ import ceid.netcins.exo.content.StoredField;
 import ceid.netcins.exo.content.TermField;
 import ceid.netcins.exo.content.TokenizedField;
 import ceid.netcins.exo.social.TagCloud;
+import ceid.netcins.exo.user.User.SharedContentItem;
 
 /**
  * 
@@ -43,6 +44,7 @@ public class Json extends JSON {
 		JSON.registerConvertor(rice.pastry.Id.class, new IdJSONConvertor());
 		JSON.registerConvertor(ScoreBoard.class, new ScoreBoardJSONConvertor());
 		JSON.registerConvertor(Score.class, new ScoreJSONConvertor());
+		JSON.registerConvertor(SharedContentItem.class, new SharedContentItemJSONConvertor());
 	}
 
 	public static void init() {

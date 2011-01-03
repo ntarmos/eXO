@@ -33,6 +33,6 @@ public class GetContentHandler extends AbstractHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		sendStatus(response, RequestStatus.SUCCESS, catalogService.getUser().getSharedContentProfiles());
+		sendStatus(response, RequestStatus.SUCCESS, catalogService.getUser().getSharedContentItems());
 	}
 }

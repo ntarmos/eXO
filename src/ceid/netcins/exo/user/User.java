@@ -38,6 +38,19 @@ public class User {
 	public static final String NotAvailableTag = "<N/A>";
 	public static final String ScreennameDelimiter = "/";
 
+	public class SharedContentItem {
+		private String filename;
+		private ContentProfile profile;
+
+		public SharedContentItem(String filename, ContentProfile profile) {
+			this.filename = filename;
+			this.profile = profile;
+		}
+
+		public String getFilename() { return filename; }
+		public ContentProfile getProfile() { return profile; }
+	}
+
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
 
@@ -309,6 +322,17 @@ public class User {
 		Iterator<SharedContentInfo> values = sharedContent.values().iterator();
 		while (keys.hasNext())
 			ret.put(keys.next(), values.next().getProfile());
+		return ret;
+	}
+
+	public Map<Id, SharedContentItem> getSharedContentItems() {
+		Map<Id, SharedContentItem> ret = new Hashtable<Id, User.SharedContentItem>();
+		Iterator<Id> keys = sharedContent.keySet().iterator();
+		Iterator<SharedContentInfo> values = sharedContent.values().iterator();
+		while (keys.hasNext()) {
+			SharedContentInfo cInfo = values.next();
+			ret.put(keys.next(), new SharedContentItem(cInfo.getFilename(), cInfo.getProfile()));
+		}
 		return ret;
 	}
 
