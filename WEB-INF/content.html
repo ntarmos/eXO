@@ -45,6 +45,30 @@
         // Continue polling after 100ms
         setTimeout(function(){ start_polling(reqID, url); }, 100);
         return true;
+      } else {
+        // TODO: This is not right; we should get the status text for the
+        // current file, but this seems infeasible without moving this
+        // function inside qq.FileUploader where we would have access to the
+        // list of pending files and their IDs
+        var spanCol = document.getElementsByTagName("span");
+        var i;
+        for (i = 0; i < spanCol.length; i++) {
+          if (spanCol[i].getAttribute("class") == "qq-upload-failed-text") {
+            break;
+          }
+        }
+        if (polling_data["eXO::Status"]=="eXO::Success"){
+          // TODO: Notify about success or failure and append file in list
+          if (i < spanCol.length)
+            spanCol[i].innerHTML = "Done";
+        } else if (polling_data["eXO::Status"]=="eXO::Unknown"){
+          if (i < spanCol.length)
+            spanCol[i].innerHTML = "Failed";
+        } else {
+          if (i < spanCol.length)
+            spanCol[i].innerHTML = "Failed";
+        }
+        // TODO: Should trigger a refresh of the file-list area
       }
       // TODO: On stop of processing trigger other events
       return true;
@@ -186,18 +210,13 @@
       element: $('#upload-element')[0],
       action: "/servlet/ShareFile/",
       responseType: "json",
-      onSubmit : function(id, file, extension) {
-        // TODO: Show progress indicator 
-      },
       onComplete : function(id, file, data) {
-
         // Poll till success
         // Rerender profiles and rebind events
         if("eXO::reqID" in data){
           start_polling(data["eXO::reqID"], "/servlet/ShareFile/");
-        }else if("eXO::Status" in data && data["eXO::Status"]!="eXO::Success"){
-          // TODO: Notify about success or failure and append file in list
-        }else{
+          return true;
+        } else {
           alert("Failed to upload file!");
           return false;
         }
