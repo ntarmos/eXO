@@ -1,7 +1,7 @@
 {{#profiles}}
 <div id="file-row-{{counter}}" class="file-row {{zebra}} clear">
   <div class="file-data">
-    <span class="filename">Test</span>
+    <span class="filename">{{eXO::Filename}}</span>
     
     <div class="actions-wrapper">
     <div class="row-actions">
