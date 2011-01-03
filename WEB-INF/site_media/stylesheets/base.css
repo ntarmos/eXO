@@ -136,17 +136,17 @@ a:hover {
   font-size: 5em;
   font-family: 'RoughTypeWriter';
 }
-
+/* line 70, ../src/_header_wrapper.scss */
 #logo a sup {
   font-size: 0.25em;
   font-family: 'Verdana';
   color: #ff0000;
 }
-/* line 70, ../src/_header_wrapper.scss */
+/* line 71, ../src/_header_wrapper.scss */
 #logo a:hover {
   text-decoration: none;
 }
-/* line 72, ../src/_header_wrapper.scss */
+/* line 73, ../src/_header_wrapper.scss */
 #logo span {
   font-size: 1.2em;
   color: #8f8f8f;
@@ -467,39 +467,43 @@ a:hover {
   margin-right: 1em;
 }
 /* line 275, ../src/_middle_wrapper.scss */
+#content-main #upload-body #upload-element {
+  display: inline-block;
+}
+/* line 278, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper {
   border-top: 1px solid #DFDFDF;
   padding: 1em;
   margin: 0 2em;
 }
-/* line 279, ../src/_middle_wrapper.scss */
+/* line 282, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 283, ../src/_middle_wrapper.scss */
+/* line 286, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper .file-row {
   border-bottom: 1px solid #8f8f8f;
   width: 100%;
 }
-/* line 288, ../src/_middle_wrapper.scss */
+/* line 291, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-id {
   float: right;
   display: none;
 }
-/* line 292, ../src/_middle_wrapper.scss */
+/* line 295, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data {
   padding: 0.5em;
   font-size: 1.2em;
   min-height: 24px;
 }
-/* line 296, ../src/_middle_wrapper.scss */
+/* line 299, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data .actions-wrapper {
   display: none;
   float: right;
   position: relative;
 }
-/* line 301, ../src/_middle_wrapper.scss */
+/* line 304, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions {
   font-size: 10px;
   height: 24px;
@@ -510,40 +514,40 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 310, ../src/_middle_wrapper.scss */
+/* line 313, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 314, ../src/_middle_wrapper.scss */
+/* line 317, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 316, ../src/_middle_wrapper.scss */
+/* line 319, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 318, ../src/_middle_wrapper.scss */
+/* line 321, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 323, ../src/_middle_wrapper.scss */
+/* line 326, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 329, ../src/_middle_wrapper.scss */
+/* line 332, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tags-wrapper {
   display: none;
   padding: 0 0 0 2em;
   min-height: 24px;
 }
-/* line 334, ../src/_middle_wrapper.scss */
+/* line 337, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-name {
   float: left;
   margin-right: 0.25em;
 }
-/* line 338, ../src/_middle_wrapper.scss */
+/* line 341, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-data {
   float: left;
   margin-right: 0.5em;

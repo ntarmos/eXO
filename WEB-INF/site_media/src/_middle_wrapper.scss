@@ -272,6 +272,9 @@
       input[type="file"] {
       }
     }
+    #upload-element {
+      display:inline-block;
+    }
     #file-list-wrapper {
       border-top: 1px solid #DFDFDF;
       padding: 1em;

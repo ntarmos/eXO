@@ -46,29 +46,13 @@
         setTimeout(function(){ start_polling(reqID, url); }, 100);
         return true;
       } else {
-        // TODO: This is not right; we should get the status text for the
-        // current file, but this seems infeasible without moving this
-        // function inside qq.FileUploader where we would have access to the
-        // list of pending files and their IDs
-        var spanCol = document.getElementsByTagName("span");
-        var i;
-        for (i = 0; i < spanCol.length; i++) {
-          if (spanCol[i].getAttribute("class") == "qq-upload-failed-text") {
-            break;
-          }
-        }
         if (polling_data["eXO::Status"]=="eXO::Success"){
-          // TODO: Notify about success or failure and append file in list
-          if (i < spanCol.length)
-            spanCol[i].innerHTML = "Done";
+          // TODO: Notify about success
         } else if (polling_data["eXO::Status"]=="eXO::Unknown"){
-          if (i < spanCol.length)
-            spanCol[i].innerHTML = "Failed";
+          // TODO: Fill in with general notification message
         } else {
-          if (i < spanCol.length)
-            spanCol[i].innerHTML = "Failed";
+          // TODO: Fill in with general notification message
         }
-        // TODO: Should trigger a refresh of the file-list area
       }
       // TODO: On stop of processing trigger other events
       return true;
@@ -220,8 +204,6 @@
           alert("Failed to upload file!");
           return false;
         }
-
-        // TODO: Hide progress indicator
       }
     });
 
