@@ -54,11 +54,11 @@ public class ContentCatalogEntryJSONConvertor implements Convertor {
 	public Object fromJSON(Map object) {
 		if (object == null || !object.containsKey(CCETag))
 		return null;
-		Map map = (Map) object.get(CCETag);
+		Map map = (Map)object.get(CCETag);
 		if (map.size() > 1)
 			return null;
-		Id id = rice.pastry.Id.build((String)map.keySet().iterator().next());
-		Set set = (Set)map.values().iterator().next();
+		Id id = rice.pastry.Id.build((String)map.get(UIDTag));
+		Set set = (Set)map.get(ProfilesTag);
 		Iterator it = set.iterator();
 		ContentProfile up = (ContentProfile)cpjc.fromJSON(new Object[] { it.next() });
 		ContentProfile cp = (ContentProfile)cpjc.fromJSON(new Object[] { it.next() });
