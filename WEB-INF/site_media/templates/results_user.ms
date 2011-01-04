@@ -29,3 +29,6 @@
     {{/eXO::Entry}}
   </div>
 {{/eXO::ScoreBoard}}
+{{^eXO::ScoreBoard}}
+  <p class="quiet"> No results </p>
+{{/eXO::ScoreBoard}}
