@@ -3,8 +3,8 @@
     <span class="row-number">{{index}}.</span>
     {{#eXO::Entry}}
       {{#eXO::CCE}}
-        <span class="uid">{{uid}}</span>
-        {{#profiles}}
+        <span class="uid">{{eXO::UID}}</span>
+        {{#eXO::Profiles}}
           <div class="tags-wrapper clear">
             {{#eXO::Profile}}
               <div class="tag-row">

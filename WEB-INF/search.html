@@ -81,12 +81,12 @@
       $("#content-main-loading").show();
       $('#results-list').hide();
       $.ajax({
-        type: 'GET', // FIXME: 'POST'
-        url:  "/site_media/data/sample_SearchContentDHT_data.json", // FIXME: "/servlet/SearchContentDHT/",
+        type: 'POST',
+        url:  "/servlet/SearchContentDHT/",
         dataType: 'json',
         data: {eXO_data: JSON.stringify({
                 "eXO::SearchQuery" : context.query,
-                "eXO::Topk" : "20", // FIXME: this should not be hardcoded!
+                "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
               })},
         success: function(data){
           if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){

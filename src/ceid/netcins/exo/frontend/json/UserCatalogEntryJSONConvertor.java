@@ -25,6 +25,8 @@ import ceid.netcins.exo.content.ContentProfile;
  */
 public class UserCatalogEntryJSONConvertor implements Convertor {
 	private static final String UCETag = "eXO::UCE";
+	private static final String UIDTag = "eXO::UID";
+	private static final String ProfilesTag = "eXO::Profiles";
 	ContentProfileJSONConvertor cpjc = new ContentProfileJSONConvertor();
 
 	public UserCatalogEntryJSONConvertor() {
@@ -37,8 +39,9 @@ public class UserCatalogEntryJSONConvertor implements Convertor {
 			return;
 		}
 		UserCatalogEntry uce = (UserCatalogEntry)obj;
-		Map<Id, ContentProfile> ret = new HashMap<Id, ContentProfile>();
-		ret.put(uce.getUID(), uce.getUserProfile());
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret.put(UIDTag, uce.getUID());
+		ret.put(ProfilesTag, uce.getUserProfile());
 		out.add(UCETag, ret);
 	}
 
