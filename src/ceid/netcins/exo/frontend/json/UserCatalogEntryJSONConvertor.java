@@ -1,9 +1,7 @@
 package ceid.netcins.exo.frontend.json;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jetty.util.ajax.JSON.Convertor;
 import org.eclipse.jetty.util.ajax.JSON.Output;
@@ -54,9 +52,7 @@ public class UserCatalogEntryJSONConvertor implements Convertor {
 			if (map.size() > 1)
 				return null;
 			Id id = rice.pastry.Id.build((String)map.get(UIDTag));
-			Set set = (Set)map.get(ProfilesTag);
-			Iterator it = set.iterator();
-			ContentProfile up = (ContentProfile)cpjc.fromJSON(new Object[] { it.next() });
+			ContentProfile up = (ContentProfile)cpjc.fromJSON(new Object[] { map.get(ProfilesTag)});
 			if (id == null || up == null)
 				return null;
 			return new UserCatalogEntry(id, up);

@@ -1,10 +1,9 @@
 package ceid.netcins.exo.frontend.json;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.jetty.util.ajax.JSON.Convertor;
 import org.eclipse.jetty.util.ajax.JSON.Output;
@@ -40,7 +39,7 @@ public class ContentCatalogEntryJSONConvertor implements Convertor {
 			return;
 		}
 		ContentCatalogEntry uce = (ContentCatalogEntry)obj;
-		Set<ContentProfile> set = new HashSet<ContentProfile>();
+		Vector<ContentProfile> set = new Vector<ContentProfile>();
 		set.add(uce.getUserProfile());
 		set.add(uce.getContentProfile());
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -58,7 +57,7 @@ public class ContentCatalogEntryJSONConvertor implements Convertor {
 		if (map.size() > 1)
 			return null;
 		Id id = rice.pastry.Id.build((String)map.get(UIDTag));
-		Set set = (Set)map.get(ProfilesTag);
+		Vector set = (Vector)map.get(ProfilesTag);
 		Iterator it = set.iterator();
 		ContentProfile up = (ContentProfile)cpjc.fromJSON(new Object[] { it.next() });
 		ContentProfile cp = (ContentProfile)cpjc.fromJSON(new Object[] { it.next() });
