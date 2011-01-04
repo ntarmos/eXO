@@ -24,7 +24,7 @@
               </div>
             {{/eXO::Profile}}
           </div>
-        {{/profiles}}
+        {{/eXO::Profiles}}
       {{/eXO::CCE}}
     {{/eXO::Entry}}
   </div>
