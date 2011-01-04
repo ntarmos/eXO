@@ -4,7 +4,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>eXO - Social freedom</title>
+  <title> Friends | eXO - Social freedom</title>
   <!-- Favicon -->
   <link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon" />
 
@@ -15,115 +15,21 @@
       <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
   <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
-  <link media="screen, projection" href="/site_media/stylesheets/fileuploader.css" type="text/css" rel="stylesheet" />
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/fileuploader.js"></script>
   <script type="text/javascript">
-
-  function start_polling(reqID, url, redirect_callback){
-    $.ajax({
-      type: 'POST',
-      url: url,
-      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
-      success: function(data){
-        polling_callback(data, reqID, url, redirect_callback);
-        return true;
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-        return false;
-      }
-    });
-  }
-  function polling_callback(polling_data, reqID, url, redirect_callback){
-    if("eXO::Status" in polling_data){
-      if(polling_data["eXO::Status"]=="eXO::Processing"){
-        // Continue polling after 100ms
-        setTimeout(function(){ start_polling(reqID, url, redirect_callback); }, 100);
-        return true;
-      } else {
-        if (polling_data["eXO::Status"]=="eXO::Success"){
-          // TODO: Notify about success
-          redirect_callback();
-        } else if (polling_data["eXO::Status"]=="eXO::Unknown"){
-          // TODO: Fill in with general notification message
-        } else {
-          // TODO: Fill in with general notification message
-        }
-      }
-      // TODO: On stop of processing trigger other events
-      return true;
-    }
-  }
 
   var app = $.sammy('#content-main', function() {
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
-    this.post('#/file_index/delete/', function() {
-    });
-    this.get('#/file_list/get/', function() {
-      var context = this;
-      $.ajax({
-        type: 'POST',
-        url: "/servlet/GetContent/",
-        dataType: 'json',
-        data: "",
-        success: function(data){
-          // TODO: Do template rendering
-          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
-            // Refactor the fetched data dictionary
-            var templ = { "profiles": [] };
-            var counter = 0;
-            for(id in data["eXO::Data"]){
-              templ["profiles"][counter] = data["eXO::Data"][id];
-              templ["profiles"][counter]["counter"] = counter;
-              templ["profiles"][counter]["file_id"] = id;
-              templ["profiles"][counter]["zebra"] = function(){
-                return (this.counter%2==0?"even-row":"odd-row");
-              };
-              counter++;
-            }
-            //Sammy.log(templ);
-            context.render("/site_media/templates/file_list.ms", templ,
-             function(content){
-              $('#file-list').html(content).hide();
-              // Bind events here
-              $(".show").toggle(function(){
-                $(this).parents(".file-row").find(".tags-wrapper").show();
-                $(this).text("Hide");
-                return false;
-              },function(){
-                $(this).parents(".file-row").find(".tags-wrapper").hide();
-                $(this).text("Show");
-                return false;
-              });
-              $(".file-data ").hover(function(){
-                $(".actions-wrapper", this).show();
-              },function(){
-                $(".actions-wrapper", this).hide();
-              });
-              setTimeout(function(){ 
-                $("#content-main-loading").hide();
-                $('#file-list').show();
-              }, 500);
-            });
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
-    });
-    this.get('#/file_profile/get/', function() {
-    });
-    this.post('#/file_profile/set/', function() {
-    });
+    // TODO: create routes/actions here
+
   });
+
 
   $(function (){
     // Show/hide the Loading indicator
@@ -165,29 +71,7 @@
       }
     });
 
-    /* Bind ajax upload button */
-    var uploader = new qq.FileUploader({
-      element: $('#upload-element')[0],
-      action: "/servlet/ShareFile/",
-      responseType: "json",
-      onComplete : function(id, file, data) {
-        // Poll till success
-        // Rerender profiles and rebind events
-        if("eXO::reqID" in data){
-          start_polling(data["eXO::reqID"], "/servlet/ShareFile/", function(){
-            // Here we define the redirection callback!
-            app.runRoute("get", "#/file_list/get/");
-          });
-          return true;
-        } else {
-          alert("Failed to upload file!");
-          return false;
-        }
-      }
-    });
-
-    // Run sammy application
-    app.run('#/file_list/get/');
+    app.run();
   });
   </script>
 </head>
@@ -250,10 +134,10 @@
             <li>
               <a href="/search">Search</a>
             </li>
-            <li class="current">
+            <li>
               <a href="/content">Share Content</a>
             </li>
-            <li>
+            <li class="current">
               <a href="/friends">Friends</a>
             </li>
           </ul>
@@ -262,23 +146,14 @@
       </div>
 
       <div id="content-main" class="span-26">
-        <div id="upload-body" class="content-body">
-          <h2>File upload</h2>
-          <div id="upload-wrapper">
-            <div id="upload-element"></div>
-            <div class="info quiet">
-              Note: By uploading a file, it is immediately shared all over the network!
-            </div>
+        <div id="friends-body" class="content-body">
+          <h2> Pending Friend Requests </h2>
+          <div id="frequests-list-wrapper" class="clear">
+            <span class="quiet">There are no pending requests.</span>
           </div>
-          <div id="file-list-wrapper" class="clear">
-            <div id="file-list"> 
-            </div>
-            <div id="content-main-loading">
-              <p>
-                <img src="/site_media/images/loading.gif" />
-              </p>
-              <p>Loading Content</p>
-            </div>
+          <h2> Friend List </h2>
+          <div id="friend-list-wrapper" class="clear">
+            <span class="quiet">There are no friends yet.</span>
           </div>
         </div>
       </div>

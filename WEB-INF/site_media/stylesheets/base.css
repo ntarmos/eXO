@@ -585,6 +585,12 @@ a:hover {
   float: left;
   margin-right: 0.5em;
 }
+/* line 374, ../src/_middle_wrapper.scss */
+#content-main #friends-body #frequests-list-wrapper, #content-main #friends-body #friend-list-wrapper {
+  font-size: 1.25em;
+  text-align: center;
+  padding: 0.5em 1em 2em;
+}
 
 /*
   Aggregates all the footer specific style.

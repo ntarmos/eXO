@@ -390,6 +390,7 @@ public class Frontend {
 		handlersList.addHandler(mountFileRoute("/", "index.html"));
 		handlersList.addHandler(mountFileRoute("/search", "search.html"));
 		handlersList.addHandler(mountFileRoute("/content", "content.html"));
+		handlersList.addHandler(mountFileRoute("/friends", "friends.html"));
 
 		handlersList.addHandler(new DefaultHandler());
 
