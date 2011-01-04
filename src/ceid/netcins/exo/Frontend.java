@@ -1,9 +1,12 @@
 package ceid.netcins.exo;
 
+import gnu.getopt.Getopt;
+import gnu.getopt.LongOpt;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -26,7 +29,6 @@ import rice.environment.random.RandomSource;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.IdFactory;
 import rice.p2p.commonapi.rawserialization.RawMessage;
-import rice.pastry.NodeHandle;
 import rice.pastry.PastryNode;
 import rice.pastry.PastryNodeFactory;
 import rice.pastry.commonapi.PastryIdFactory;
@@ -89,8 +91,8 @@ public class Frontend {
 	public static final String SIMULATOR_GT_ITM = "gt-itm";
 
 	private InetSocketAddress bootstrapNodeAddress;
-	private NodeHandle bootstrapNodeHandle = null;
 	private int webServerPort = 8080;
+	private int pastryNodePort;
 	private Logger logger;
 
 	private User[] users = null;
@@ -109,40 +111,49 @@ public class Frontend {
 	private NetworkSimulator<DirectNodeHandle, RawMessage> simulator = null;
 	private volatile static RandomSource reqIdGenerator = null;
 
-	public Frontend(Environment env, String userName, String resourceName, boolean isBootstrap) throws IOException {
-		this(env, userName, resourceName, env.getParameters().getInt("exo_jetty_port"), isBootstrap);
-	}
-
-	public Frontend(Environment env, String userName, String resourceName, int jettyPort) throws IOException {
-		this(env, userName, resourceName, jettyPort, false);
-	}
-
-	public Frontend(Environment env, String userName, String resourceName) throws IOException {
-		this(env, userName, resourceName, env.getParameters().getInt("exo_jetty_port"), false);
-	}
-
-	public Frontend(Environment env, String userName, String resourceName, int jettyPort, boolean isBootstrap) throws IOException {
+	public Frontend(Environment env, String userName, String resourceName, int jettyPort, int pastryPort, String bootstrap) throws Exception {
 		this.logger = env.getLogManager().getLogger(getClass(),null);
 		this.environment = env;
 		if (reqIdGenerator == null)
 			reqIdGenerator = env.getRandomSource();
 		pastryIdFactory = new PastryIdFactory(env);
 
+		Parameters params = env.getParameters();
+
 		this.userName = userName;
 		this.resourceName = resourceName;
-		this.isBootstrap = isBootstrap;
-		this.webServerPort = jettyPort;
+		if (jettyPort > 0 && jettyPort < 65536)
+			this.webServerPort = jettyPort;
+		this.pastryNodePort = pastryPort;
+		if (pastryPort <= 0 || pastryPort > 65535)
+			pastryNodePort = params.getInt("exo_pastry_port");
 		this.queue = new Hashtable<String, Vector<String>>();
-		Parameters params = env.getParameters();
-		int pastryNodePort = params.getInt("exo_pastry_port");
 		String pastryNodeProtocol = params.getString("exo_pastry_protocol");
 		String simulatorType = params.getString("direct_simulator_topology");
 		int numSimulatedNodes = params.getInt("exo_sim_num_nodes");
-		if (numSimulatedNodes == 0)
+		if (numSimulatedNodes == 0 || !pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT))
 			numSimulatedNodes = 1;
 		nodes = new PastryNode[numSimulatedNodes];
 		apps = new CatalogService[numSimulatedNodes];
 		users = new User[numSimulatedNodes];
+
+		try {
+			if (bootstrap == null) {
+				bootstrapNodeAddress = params.getInetSocketAddress("exo_pastry_bootstrap");
+			} else {
+				InetAddress bootstrapHostAddr = InetAddress.getByName(bootstrap.substring(0, bootstrap.indexOf(":")));
+				int bootstrapPort = Integer.parseInt(bootstrap.substring(bootstrap.indexOf(":") + 1));
+				bootstrapNodeAddress = (bootstrap == null) ? params.getInetSocketAddress("exo_pastry_bootstrap") : new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		InetSocketAddress localhost = new InetSocketAddress(InetAddress.getLocalHost(), pastryNodePort);
+		if (localhost.getAddress().getHostAddress().equals(bootstrapNodeAddress.getAddress().getHostAddress()) && pastryNodePort == bootstrapNodeAddress.getPort()) {
+			isBootstrap = true;
+		}
 
 		UserNodeIdFactory nodeIdFactory = new UserNodeIdFactory(userName, resourceName);
 		PastryNodeFactory nodeFactory = null;
@@ -157,25 +168,14 @@ public class Frontend {
 			}
 			nodeFactory = new DirectPastryNodeFactory(nodeIdFactory, simulator, env);
 		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_SOCKET)) {
-			InetSocketAddress address = params.getInetSocketAddress("exo_pastry_bootstrap");
-			nodeFactory = new SocketPastryNodeFactory(nodeIdFactory, address.getAddress(), pastryNodePort, env);
+			nodeFactory = new SocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, env);
 		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_RENDEZVOUS)) {
-			InetSocketAddress address = params.getInetSocketAddress("exo_pastry_bootstrap");
-			nodeFactory = new RendezvousSocketPastryNodeFactory(nodeIdFactory, address.getAddress(), pastryNodePort, env, false);
+			nodeFactory = new RendezvousSocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, env, false);
 		}
 
 		if (nodeFactory == null)
 			nodeFactory = DistPastryNodeFactory.getFactory(new RandomNodeIdFactory(environment),
 					DistPastryNodeFactory.PROTOCOL_SOCKET, pastryNodePort, env);
-
-		if (!isBootstrap && !pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT)) {
-			try {
-				bootstrapNodeAddress = params.getInetSocketAddress("exo_pastry_bootstrap");
-			} catch (UnknownHostException uhe) {
-				throw new RuntimeException(uhe); 
-			}
-			bootstrapNodeHandle =((SocketPastryNodeFactory)nodeFactory).getNodeHandle(bootstrapNodeAddress, pastryNodePort);
-		}
 
 		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
 		users[0] = new User(id, this.userName, this.resourceName);
@@ -231,7 +231,7 @@ public class Frontend {
 			if (isBootstrap) {
 				nodes[0].boot((Object)null);
 			} else
-				nodes[0].boot(bootstrapNodeHandle);
+				nodes[0].boot(bootstrapNodeAddress);
 			waitForNode(nodes[0]);
 			System.out.println("done");
 		} else {
@@ -414,31 +414,64 @@ public class Frontend {
 			return;
 	}
 
+	private static void usage() {
+		System.err.println(
+				"Usage: java ... ceid.netcins.CatalogFrontend\n" +
+				"\t-u|--user <username>\n" +
+				"\t-r|--resource <resourcename>\n" +
+				"\t-w|--webport <web ui port>\n" +
+				"\t-d|--dhtport <pastry node port>\n" +
+				"\t-b|--bootstrap <bootstrap node address:port>\n" +
+				"\t-h|--help (this message)"
+		);
+	}
+
 	public static void main(String[] args) {
-		if (args.length != 3 && args.length != 2) {
-			System.err.println("Usage: java ... ceid.netcins.CatalogFrontend <username> <resource> [port]");
-			return;
-		}
-		String userName = args[0], resourceName = args[1];
-		int jettyPort = 0;
-		if (args.length == 3) {
-			try {
-				jettyPort = Integer.parseInt(args[2]);
-				if (jettyPort < 1 || jettyPort > 65535)
-					throw new NumberFormatException();
-			} catch (NumberFormatException e) {
-				System.err.println("Port should be an integer in [1, 65535]");
-				return;
+		String userName = null, resourceName = null, bootstrap = null;
+		int webPort = 0, pastryPort = 0, c;
+
+		LongOpt[] longopts = new LongOpt[6];
+		longopts[0] = new LongOpt("user", LongOpt.REQUIRED_ARGUMENT, null, 'u');
+		longopts[1] = new LongOpt("resource", LongOpt.REQUIRED_ARGUMENT, null, 'r');
+		longopts[2] = new LongOpt("webport", LongOpt.REQUIRED_ARGUMENT, null, 'w');
+		longopts[3] = new LongOpt("dhtport", LongOpt.REQUIRED_ARGUMENT, null, 'd');
+		longopts[4] = new LongOpt("bootstrap", LongOpt.REQUIRED_ARGUMENT, null, 'b');
+		longopts[5] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
+		Getopt opts = new Getopt("Frontend", args, "u:r:w:d:b:h", longopts);
+
+		while ((c = opts.getopt()) != -1) {
+			switch (c) {
+				case 'u':
+					userName = opts.getOptarg();
+					break;
+				case 'r':
+					resourceName = opts.getOptarg();
+					break;
+				case 'w':
+					webPort = Integer.parseInt(opts.getOptarg());
+					break;
+				case 'd':
+					pastryPort = Integer.parseInt(opts.getOptarg());
+					break;
+				case 'b':
+					bootstrap = opts.getOptarg();
+					break;
+				case 'h':
+				default:
+					usage();
+					return;
 			}
+		}
+		if (userName == null || resourceName == null || webPort < 0 || webPort > 65535 || pastryPort < 0 || pastryPort > 65535) {
+			usage();
+			return;
 		}
 
 		Environment env = new Environment(new String[] { "freepastry", "eXO" }, null);
 		Frontend cf = null;
 		try {
-			cf = (args.length == 3) ?
-					new Frontend(env, userName, resourceName, jettyPort, true) :
-					new Frontend(env, userName, resourceName, true);
-		} catch (IOException e) {
+			cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		}

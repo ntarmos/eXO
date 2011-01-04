@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/java-getopt-1.0.13.jar"/>
 	<classpathentry kind="lib" path="lib/libextractor-0.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/servlet-api-3.0-20090427.051741-5.jar"/>
