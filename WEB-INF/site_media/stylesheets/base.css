@@ -659,33 +659,44 @@ table.search-select input#search {
 }
 
 /*** COMMON CSS ***/
-/* line 27, ../src/base.scss */
+/* line 30, ../src/base.scss */
+.info {
+  background-color: #f5f5f5;
+  padding: 0.5em;
+  border: 1px solid #dcdcdc;
+  font-size: 0.85em;
+  font-style: italic;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
+/* line 40, ../src/base.scss */
 .even-row {
   background-color: white;
 }
-/* line 29, ../src/base.scss */
+/* line 42, ../src/base.scss */
 .even-row:hover {
   background-color: #e6e6e6;
 }
 
-/* line 33, ../src/base.scss */
+/* line 46, ../src/base.scss */
 .odd-row {
   background-color: #efefef;
 }
-/* line 35, ../src/base.scss */
+/* line 48, ../src/base.scss */
 .odd-row:hover {
   background-color: #e2e2e2;
 }
 
 /* One-line list */
-/* line 41, ../src/base.scss */
+/* line 54, ../src/base.scss */
 ul.horizontal {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-/* line 47, ../src/base.scss */
+/* line 60, ../src/base.scss */
 ul.horizontal li {
   display: inline;
   float: left;

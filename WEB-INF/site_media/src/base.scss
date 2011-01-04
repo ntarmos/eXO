@@ -1,3 +1,5 @@
+@import "blueprint/interaction";
+
 @font-face {
   font-family: 'RoughTypeWriter';
   src: url('../images/rough_typewriter.otf');
@@ -14,6 +16,7 @@ $middle-form-bgcolor: #EFEFEF;
 $middle-menucolor: #414E5B;
 $footer-color: #787878;
 $footer-title-color: #98A754;
+$info-color: #F5F5F5;
 
 @import "base_elements";
 @import "loading_indicator";
@@ -23,6 +26,16 @@ $footer-title-color: #98A754;
 @import "common_forms";
 
 /*** COMMON CSS ***/
+
+.info{
+  background-color: $info-color;
+  padding: 0.5em;
+  border: 1px solid darken($info-color, 10%);
+  font-size: 0.85em;
+  font-style: italic;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+}
 
 .even-row{
   background-color: $even-row-bgcolor;
