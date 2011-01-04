@@ -439,7 +439,7 @@ a:hover {
 /* line 247, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper {
   border-top: 1px solid #666;
-  background-color: #DDD;
+  background-color: #e8f1f9;
   padding: 1em;
 }
 /* line 251, ../src/_middle_wrapper.scss */
@@ -451,59 +451,92 @@ a:hover {
 #content-main #search-body #results-wrapper p {
   text-align: center;
 }
-/* line 261, ../src/_middle_wrapper.scss */
+/* line 258, ../src/_middle_wrapper.scss */
+#content-main #search-body #results-wrapper #content-main-loading {
+  display: none;
+}
+/* line 262, ../src/_middle_wrapper.scss */
+#content-main #search-body .tags-wrapper {
+  padding: 0 0 0 2em;
+  min-height: 24px;
+}
+/* line 266, ../src/_middle_wrapper.scss */
+#content-main #search-body .tag-field-name {
+  float: left;
+  margin-right: 0.25em;
+}
+/* line 270, ../src/_middle_wrapper.scss */
+#content-main #search-body .tag-field-data {
+  float: left;
+  margin-right: 0.5em;
+}
+/* line 274, ../src/_middle_wrapper.scss */
+#content-main #search-body .uid {
+  display: none;
+}
+/* line 277, ../src/_middle_wrapper.scss */
+#content-main #search-body .entry {
+  margin: 1em 0;
+}
+/* line 280, ../src/_middle_wrapper.scss */
+#content-main #search-body .row-number {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #AAA;
+}
+/* line 287, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 265, ../src/_middle_wrapper.scss */
+/* line 291, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper div {
   margin: 0 0 1em;
 }
-/* line 268, ../src/_middle_wrapper.scss */
+/* line 294, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper label {
   font-size: 1.2em;
   margin-right: 1em;
 }
-/* line 275, ../src/_middle_wrapper.scss */
+/* line 301, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-element {
   display: inline-block;
 }
-/* line 278, ../src/_middle_wrapper.scss */
+/* line 304, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper {
   border-top: 1px solid #DFDFDF;
   padding: 1em;
   margin: 0 2em;
 }
-/* line 282, ../src/_middle_wrapper.scss */
+/* line 308, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 286, ../src/_middle_wrapper.scss */
+/* line 312, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper .file-row {
-  border-bottom: 1px solid #8f8f8f;
+  border-bottom: 1px solid #CFCFCF;
   width: 100%;
 }
-/* line 291, ../src/_middle_wrapper.scss */
+/* line 317, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-id {
   float: right;
   display: none;
 }
-/* line 295, ../src/_middle_wrapper.scss */
+/* line 321, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data {
   padding: 0.5em;
   font-size: 1.2em;
   min-height: 24px;
 }
-/* line 299, ../src/_middle_wrapper.scss */
+/* line 325, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data .actions-wrapper {
   display: none;
   float: right;
   position: relative;
 }
-/* line 304, ../src/_middle_wrapper.scss */
+/* line 330, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions {
   font-size: 10px;
   height: 24px;
@@ -514,40 +547,40 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 313, ../src/_middle_wrapper.scss */
+/* line 339, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 317, ../src/_middle_wrapper.scss */
+/* line 343, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 319, ../src/_middle_wrapper.scss */
+/* line 345, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 321, ../src/_middle_wrapper.scss */
+/* line 347, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 326, ../src/_middle_wrapper.scss */
+/* line 352, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 332, ../src/_middle_wrapper.scss */
+/* line 358, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tags-wrapper {
   display: none;
   padding: 0 0 0 2em;
   min-height: 24px;
 }
-/* line 337, ../src/_middle_wrapper.scss */
+/* line 363, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-name {
   float: left;
   margin-right: 0.25em;
 }
-/* line 341, ../src/_middle_wrapper.scss */
+/* line 367, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-data {
   float: left;
   margin-right: 0.5em;

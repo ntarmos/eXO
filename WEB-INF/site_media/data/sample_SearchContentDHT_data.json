@@ -1,0 +1,38 @@
+{ 
+    "eXO::Status":"eXO::Success", 
+    "eXO::Data":{ 
+        "eXO::ScoreBoard":[{ 
+            "eXO::Score":1, 
+            "eXO::Entry":{ 
+                "eXO::CCE":{ 
+                    "uid": "736172746170752E646965634073616572646E61",
+                    "profiles":[{
+                         "eXO::Profile":[{
+                             "eXO::FieldName":"Username",
+                             "eXO::FieldData":"andreas@example.com",
+                             "eXO::FieldIsPublic":true 
+                           }, {
+                             "eXO::FieldName":"Resource",
+                             "eXO::FieldData":"laptop", 
+                             "eXO::FieldIsPublic":true 
+                           } 
+                          ] }, {
+                         "eXO::Profile":[{
+                             "eXO::FieldName":"SHA-1",
+                             "eXO::FieldData":"5e10f1930bf78de886f597e22a995aa658fd45cd",
+                             "eXO::FieldIsPublic":true 
+                            }, {
+                             "eXO::FieldName":"modified",
+                             "eXO::FieldData":"201101031417", 
+                             "eXO::FieldIsPublic":true 
+                            }, { 
+                             "eXO::FieldName":"filename", 
+                             "eXO::FieldData":"cidr_2011.1.pdf", 
+                             "eXO::FieldIsPublic":true 
+                        } ] 
+                    }] 
+                } 
+            } 
+        } ] 
+    } 
+}

@@ -246,7 +246,7 @@
     }
     #results-wrapper {
       border-top: 1px solid #666;
-      background-color: #DDD;
+      background-color: $middle-bgcolor;
       padding: 1em;
       h3 {
         margin-top: 1em;
@@ -255,6 +255,32 @@
       p {
         text-align: center;
       }
+      #content-main-loading {
+        display: none;
+      }
+    }
+    .tags-wrapper{
+      padding: 0 0 0 2em;
+      min-height: 24px;
+    }
+    .tag-field-name{
+      float:left;
+      margin-right: 0.25em;
+    }
+    .tag-field-data{
+      float: left;
+      margin-right: 0.5em;
+    }
+    .uid{
+      display:none;
+    }
+    .entry{
+      margin: 1em 0;
+    }
+    .row-number{
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #AAA;
     }
   }
   #upload-body {
@@ -284,7 +310,7 @@
         text-align: center;
       }
       .file-row{
-        border-bottom: 1px solid #8f8f8f;
+        border-bottom: 1px solid #CFCFCF;
         width:100%;
       }
     }

@@ -18,7 +18,118 @@
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+  <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
   <script type="text/javascript">
+  function start_polling(reqID, url){
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
+      success: function(data){
+        polling_callback(data, reqID, url);
+        return true;
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert("An error occurred : "+textStatus);
+        return false;
+      }
+    });
+  }
+  function polling_callback(polling_data, reqID, url){
+    if("eXO::Status" in polling_data){
+      if(polling_data["eXO::Status"]=="eXO::Processing"){
+        // Continue polling after 100ms
+        setTimeout(function(){ start_polling(reqID, url); }, 100);
+        return true;
+      } else {
+        if (polling_data["eXO::Status"]=="eXO::Success"){
+          // TODO: Notify about success
+        } else if (polling_data["eXO::Status"]=="eXO::Unknown"){
+          // TODO: Fill in with general notification message
+        } else {
+          // TODO: Fill in with general notification message
+        }
+      }
+      // TODO: On stop of processing trigger other events
+      return true;
+    }
+  }
+
+  var app = $.sammy('#content-main', function() {
+    // include the plugin and alias mustache() to ms()
+    this.use(Sammy.Mustache, 'ms');
+
+    this.post('#/searching', function() {
+      var obj_type = $('#search-obj-type').val();
+      var net_type = $('#search-net-type').val();
+      this.query = $('input#search').val();
+
+      // UnComment to Debug
+      //Sammy.log("Object type:"+obj_type);
+      //Sammy.log("Network type:"+net_type);
+      //Sammy.log("Raw Query:"+query);
+
+      // Redirect to the appropriate handler
+      this.redirect('#/searching', net_type, obj_type);
+      return false;
+    });
+
+    this.get('#/searching/dht/content', function() {
+      this.query = $('input#search').val();
+      var context = this;
+      $("#content-main-loading").show();
+      $('#results-list').hide();
+      $.ajax({
+        type: 'GET', // FIXME: 'POST'
+        url:  "/site_media/data/sample_SearchContentDHT_data.json", // FIXME: "/servlet/SearchContentDHT/",
+        dataType: 'json',
+        data: {eXO_data: JSON.stringify({
+                "eXO::SearchQuery" : context.query,
+                "eXO::Topk" : "20", // FIXME: this should not be hardcoded!
+              })},
+        success: function(data){
+          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
+            // Interpolate with counters
+            var templ = data["eXO::Data"];
+            for(i in templ["eXO::ScoreBoard"]){
+                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+            }
+            context.render("/site_media/templates/results_content_dht.ms", 
+             templ,
+             function(content){
+              $('#results-list').html(content).hide();
+              // Bind new events here
+            });
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        },
+        complete: function(){
+          setTimeout(function(){
+            $("#content-main-loading").hide();
+            $('#results-list').show();
+          }, 500);
+        }
+      });
+      return false;
+    });
+    this.get('#/searching/dht/user', function() {
+      this.query = $('input#search').val();
+      return false;
+    });
+    this.get('#/searching/psn/content', function() {
+      this.query = $('input#search').val();
+      return false;
+    });
+    this.get('#/searching/psn/user', function() {
+      this.query = $('input#search').val();
+      return false;
+    });
+  });
+
+
   $(function (){
     // Show/hide the Loading indicator
     $("#loading-indicator").ajaxStart(function(){
@@ -58,6 +169,8 @@
         alert("An error occurred : "+textStatus);
       }
     });
+
+    app.run();
   });
   </script>
 </head>
@@ -135,34 +248,45 @@
         <div id="search-body" class="content-body">
           <h2> Search Network </h2>
           <div id="search-wrapper">
+          <form id="search_form" action="#/searching" method="post" name="search_form">
             <div>
               <span>Search for </span>
               <span>
-                <select>
-                  <option>Users</option>
-                  <option>Content</option>
-                  <option>Friends</option>
-                  <option>Everything</option>
+                <select id="search-obj-type" name="object-type">
+                  <option value="user">Users</option>
+                  <option value="content" selected="selected">Content</option>
+                  <option value="friend">Friends</option>
+                  <option value="any">Everything</option>
                 </select>
               </span>
               <span> in </span>
               <span>
-                <select>
-                  <option>Catalogues</option>
-                  <option>Friends Network</option>
-                  <option>Everywhere</option>
+                <select id="search-net-type" name="network-type">
+                  <option value="dht">Global Network</option>
+                  <option value="psn">Friends Network</option>
+                  <option value="any">Everywhere</option>
                 </select>
               </span>
             </div>
             <table class="search-select" cellspacing="0" cellpadding="0">
               <tr>
                 <td><input id="search" type="text" name="search" /></td>
+                <td><input id="submit-search" type="submit" style="display:none"/></td>
               </tr>
             </table>
+          </form>
           </div>
           <div id="results-wrapper">
             <h3>Search Results</h3>
-            <p class="quiet"> No results </p>
+            <div id="results-list">
+              <p class="quiet"> No results </p>
+            </div>
+            <div id="content-main-loading">
+              <p>
+                <img src="/site_media/images/loading2.gif" />
+              </p>
+              <p>Loading Results</p>
+            </div>
           </div>
         </div>
       </div>
