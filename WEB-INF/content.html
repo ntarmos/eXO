@@ -63,31 +63,6 @@
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
-// OLD DEPRECATED VERSION 
-//    this.post('#/file_index/create/', function() {
-//      // Get username and resource
-//      var filepath = $('input[type="file"]').val();
-//      $.ajax({
-//        type: 'POST',
-//        url: "/servlet/ShareFile/",
-//        dataType: 'json',
-//        data: {eXO_data: JSON.stringify({"eXO::Filename" : filepath })},
-//        success: function(data){
-//            // Returned data e.g.: {"eXO::reqID":"-65916537"}
-//            // Poll till success
-//            // Rerender profiles and rebind events
-//            if("eXO::reqID" in data){
-//                start_polling(data["eXO::reqID"], "/servlet/ShareFile/");
-//            }else if("eXO::Status" in data){
-//                // TODO: Notify about success or failure and append file in list
-//            }
-//        },
-//        error: function(XMLHttpRequest, textStatus, errorThrown) {
-//          alert("An error occurred : "+textStatus);
-//        }
-//      });
-//    });
-
     this.post('#/file_index/delete/', function() {
     });
     this.get('#/file_list/get/', function() {
@@ -286,16 +261,7 @@
         <div id="upload-body" class="content-body">
           <h2>File upload</h2>
           <div id="upload-wrapper">
-            <div id="upload-element">
-<!-- OLD Version of upload
-            <form method="post" action="#/file_index/create/">
-              <div>
-                <label>Choose a file to share:</label>
-                <input type="submit" value="UPLOAD"/>
-              </div>
-            </form>
--->
-            </div>
+            <div id="upload-element"></div>
           </div>
           <div id="file-list-wrapper" class="clear">
             <div id="file-list"> 
