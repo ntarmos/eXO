@@ -23,9 +23,9 @@
   </div>
   <div class="tags-wrapper clear">
   {{#eXO::Profile}}
-    <div class="tag-row quiet">
+    <div class="tag-row">
       <div class="tag-field-name">{{eXO::FieldName}}:</div>
-      <div class="tag-field-data">
+      <div class="tag-field-data quiet">
         {{#eXO::FieldData}}
           <span class="single-tag">
             {{eXO::FieldData}}
