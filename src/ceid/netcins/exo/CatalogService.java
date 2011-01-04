@@ -413,18 +413,6 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * Wrapper of friendRequest method.
-	 * @throws Exception 
-	 * @deprecated
-	 */
-	public void friendRequest(final String userUniqueName, final String message,
-			@SuppressWarnings("rawtypes") final Continuation command) throws Exception {
-
-		final Id destuid = factory.buildId(userUniqueName);
-		friendRequest(destuid, message,  command);
-	}
-
-	/**
 	 * Sends a request for friendship to an other user of the network specified 
 	 * by the uid.
 	 * 
