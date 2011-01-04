@@ -106,6 +106,7 @@
            deprecation="yes"
            debuglevel="lines,vars,source"
            debug="true">  
+           <compilerarg value="-Xlint"/>
     </javac>
   </target>
 
