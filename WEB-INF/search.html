@@ -100,7 +100,7 @@
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
               }
               context.render(
-                "/site_media/templates/results_content_dht.ms",
+                "/site_media/templates/results_content.ms",
                 templ,
                 function(content){
                   $('#results-list').html(content).hide();
@@ -129,19 +129,166 @@
           }, 500);
         }
       });
-      return false;
+      return true;
     });
     this.get('#/searching/dht/user', function() {
       this.query = $('input#search').val();
-      return false;
+      var context = this;
+      $("#content-main-loading").show();
+      $('#results-list').hide();
+      $.ajax({
+        type: 'GET',
+        url:  "/servlet/SearchUserDHT/",
+        dataType: 'json',
+        data: {eXO_data: JSON.stringify({
+                "eXO::SearchQuery" : context.query,
+                "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
+              })},
+        success: function(data){
+          if ("eXO::reqID" in data) {
+            start_polling(data["eXO::reqID"], "/servlet/SearchUserDHT/",
+            function(templ) {
+              // Interpolate with counters
+              for(i in templ["eXO::ScoreBoard"]){
+                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+              }
+              context.render(
+                "/site_media/templates/results_user.ms",
+                templ,
+                function(content){
+                  $('#results-list').html(content).hide();
+                  // Bind new events here
+                  // ...
+                  setTimeout(function(){
+                    $('#results-list').show();
+                    }, 500
+                  );
+                }
+              );
+            });
+            return true;
+          } else {
+            alert("Error search the network!");
+            return false;
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        },
+        complete: function(){
+          setTimeout(function(){
+            $("#content-main-loading").hide();
+            $('#results-list').show();
+          }, 500);
+        }
+      });
+      return true;
     });
     this.get('#/searching/psn/content', function() {
       this.query = $('input#search').val();
-      return false;
+      var context = this;
+      $("#content-main-loading").show();
+      $('#results-list').hide();
+      $.ajax({
+        type: 'GET',
+        url:  "/servlet/SearchContentPN/",
+        dataType: 'json',
+        data: {eXO_data: JSON.stringify({
+                "eXO::SearchQuery" : context.query,
+                "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
+              })},
+        success: function(data){
+          if ("eXO::reqID" in data) {
+            start_polling(data["eXO::reqID"], "/servlet/SearchContentPN/",
+            function(templ) {
+              // Interpolate with counters
+              for(i in templ["eXO::ScoreBoard"]){
+                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+              }
+              context.render(
+                "/site_media/templates/results_content.ms",
+                templ,
+                function(content){
+                  $('#results-list').html(content).hide();
+                  // Bind new events here
+                  // ...
+                  setTimeout(function(){
+                    $('#results-list').show();
+                    }, 500
+                  );
+                }
+              );
+            });
+            return true;
+          } else {
+            alert("Error search the network!");
+            return false;
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        },
+        complete: function(){
+          setTimeout(function(){
+            $("#content-main-loading").hide();
+            $('#results-list').show();
+          }, 500);
+        }
+      });
+      return true;
     });
     this.get('#/searching/psn/user', function() {
       this.query = $('input#search').val();
-      return false;
+      var context = this;
+      $("#content-main-loading").show();
+      $('#results-list').hide();
+      $.ajax({
+        type: 'GET',
+        url:  "/servlet/SearchUserPN/",
+        dataType: 'json',
+        data: {eXO_data: JSON.stringify({
+                "eXO::SearchQuery" : context.query,
+                "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
+              })},
+        success: function(data){
+          if ("eXO::reqID" in data) {
+            start_polling(data["eXO::reqID"], "/servlet/SearchUserPN/",
+            function(templ) {
+              // Interpolate with counters
+              for(i in templ["eXO::ScoreBoard"]){
+                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+              }
+              context.render(
+                "/site_media/templates/results_user.ms",
+                templ,
+                function(content){
+                  $('#results-list').html(content).hide();
+                  // Bind new events here
+                  // ...
+                  setTimeout(function(){
+                    $('#results-list').show();
+                    }, 500
+                  );
+                }
+              );
+            });
+            return true;
+          } else {
+            alert("Error search the network!");
+            return false;
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        },
+        complete: function(){
+          setTimeout(function(){
+            $("#content-main-loading").hide();
+            $('#results-list').show();
+          }, 500);
+        }
+      });
+      return true;
     });
   });
 
