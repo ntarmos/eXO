@@ -291,8 +291,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 				if (logger.level <= Logger.FINER)
 					logger.log("Reading from " + socket);
 				try {
-					ByteBuffer[] bb = (ByteBuffer[]) pendingSocketTransactions
-							.get(socket);
+					ByteBuffer[] bb = pendingSocketTransactions.get(socket);
 					if (bb == null) {
 						// this is a new message
 
@@ -422,8 +421,7 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 	 */
 	@SuppressWarnings("rawtypes")
 	public Continuation[] getOutstandingMessages() {
-		return (Continuation[]) outstanding.values().toArray(
-				new Continuation[0]);
+		return outstanding.values().toArray(new Continuation[0]);
 	}
 
 	/**
@@ -588,13 +586,12 @@ public class DHTService implements Past, Application, ReplicationManagerClient {
 		if (logger.level <= Logger.FINER)
 			logger.log("Removing and returning continuation " + uid
 					+ " from pending table");
-		CancellableTask timer = (CancellableTask) timers
-				.remove(Integer.valueOf(uid));
+		CancellableTask timer = timers.remove(Integer.valueOf(uid));
 
 		if (timer != null)
 			timer.cancel();
 
-		return (Continuation) outstanding.remove(Integer.valueOf(uid));
+		return outstanding.remove(Integer.valueOf(uid));
 	}
 
 	/**

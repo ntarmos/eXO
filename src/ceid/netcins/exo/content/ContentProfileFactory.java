@@ -290,7 +290,7 @@ public class ContentProfileFactory {
 				for (;;) {
 					if (ts.incrementToken() == false)
 						break;
-					String str = ((TermAttribute)ts.getAttribute(TermAttribute.class)).term();
+					String str = ts.getAttribute(TermAttribute.class).term();
 
 					if (str != null) {
 
@@ -353,7 +353,7 @@ public class ContentProfileFactory {
 				for (;;) {
 					if (ts.incrementToken() == false)
 						break;
-					String str = ((TermAttribute)ts.getAttribute(TermAttribute.class)).term();
+					String str = ts.getAttribute(TermAttribute.class).term();
 
 					if (str != null) {
 						tv.add(str);
@@ -395,7 +395,7 @@ public class ContentProfileFactory {
 		dir.add(root);
 		while (!dir.isEmpty()) {
 
-			File innerf = (File) dir.removeFirst();
+			File innerf = dir.removeFirst();
 			if (innerf.isDirectory()) {
 				File[] subs = innerf.listFiles();
 				if (subs.length == 0) {
