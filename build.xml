@@ -105,7 +105,8 @@
            includes="**/*.java"
            deprecation="yes"
            debuglevel="lines,vars,source"
-           debug="true">  
+           debug="true"
+           includeantruntime="false">
            <compilerarg value="-Xlint"/>
     </javac>
   </target>
