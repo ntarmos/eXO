@@ -79,7 +79,7 @@ import ceid.netcins.exo.user.UserNodeIdFactory;
  * 
  */
 public class Frontend {
-	public static final int REPLICATION_FACTOR = 1;
+	public static final int REPLICATION_FACTOR = 3;
 	public static final int LEASE_PERIOD = 10000; // 10 seconds
 	public static final int TIME_TO_FIND_FAULTY = 15000; // 15 seconds
 	public static final String INSTANCE = "Frontend";
