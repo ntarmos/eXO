@@ -143,7 +143,7 @@ public class Frontend {
 			} else {
 				InetAddress bootstrapHostAddr = InetAddress.getByName(bootstrap.substring(0, bootstrap.indexOf(":")));
 				int bootstrapPort = Integer.parseInt(bootstrap.substring(bootstrap.indexOf(":") + 1));
-				bootstrapNodeAddress = (bootstrap == null) ? params.getInetSocketAddress("exo_pastry_bootstrap") : new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
+				bootstrapNodeAddress = new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
