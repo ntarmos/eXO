@@ -27,10 +27,14 @@ import rice.p2p.commonapi.IdFactory;
 import rice.p2p.commonapi.Message;
 import rice.p2p.commonapi.Node;
 import rice.p2p.commonapi.NodeHandle;
-import rice.p2p.commonapi.NodeHandleSet;
+import rice.p2p.commonapi.rawserialization.InputBuffer;
+import rice.p2p.commonapi.rawserialization.MessageDeserializer;
 import rice.p2p.past.PastContent;
+import rice.p2p.past.PastContentHandle;
 import rice.p2p.past.PastException;
+import rice.p2p.past.PastImpl;
 import rice.p2p.past.messaging.CacheMessage;
+import rice.p2p.past.messaging.ContinuationMessage;
 import rice.p2p.past.messaging.FetchHandleMessage;
 import rice.p2p.past.messaging.FetchMessage;
 import rice.p2p.past.messaging.InsertMessage;
@@ -59,6 +63,7 @@ import ceid.netcins.exo.messages.FriendReqMessage;
 import ceid.netcins.exo.messages.FriendReqPDU;
 import ceid.netcins.exo.messages.GetUserProfileMessage;
 import ceid.netcins.exo.messages.InsertPDU;
+import ceid.netcins.exo.messages.MessageType;
 import ceid.netcins.exo.messages.QueryMessage;
 import ceid.netcins.exo.messages.QueryPDU;
 import ceid.netcins.exo.messages.ResponsePDU;
@@ -94,7 +99,7 @@ import ceid.netcins.exo.utils.JavaSerializer;
  * January 9-12, 2011, Asilomar, California, USA.
  */
 @SuppressWarnings("unchecked")
-public class CatalogService extends DHTService implements SocService {
+public class CatalogService extends PastImpl implements SocService {
 
 	// Factory which used to obtain the content profile data
 	private ContentProfileFactory cpf;
@@ -112,14 +117,94 @@ public class CatalogService extends DHTService implements SocService {
 	public static final int FAILURE = 1;
 	public static final int EXCEPTION = 2;
 
+	// Our Scorer thread functionality
+	private Scorer scorer;
+	private Thread scorerThread;
+
+	// Load counting variable
+	//private int hits;
+
+	protected class CatalogServiceDeserializer implements MessageDeserializer {
+		public Message deserialize(InputBuffer buf, short type, int priority,
+				NodeHandle sender) throws IOException {
+			try {
+				switch (type) {
+				case MessageType.Cache:
+					return CacheMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.FetchHandle:
+					return FetchHandleMessage.build(buf, endpoint,
+							contentHandleDeserializer);
+				case MessageType.Fetch:
+					return FetchMessage.build(buf, endpoint,
+							contentDeserializer, contentHandleDeserializer);
+				case MessageType.Insert:
+					return InsertMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.LookupHandles:
+					return LookupHandlesMessage.build(buf, endpoint);
+				case MessageType.Lookup:
+					return LookupMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.Query:
+					return QueryMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.FriendRequest:
+					return FriendReqMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.FriendAccept:
+					return FriendAcceptMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.FriendReject:
+					return FriendRejectMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.TagContent:
+					return TagContentMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.TagUser:
+					return TagUserMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.SocialQuery:
+					return SocialQueryMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.RetrieveContent:
+					return RetrieveContMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.RetrieveContentTags:
+					return RetrieveContTagsMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.RetrieveContentIDs:
+					return RetrieveContIDsMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.FriendQuery:
+					return FriendQueryMessage.build(buf, endpoint,
+							contentDeserializer);
+				case MessageType.GetUserProfile:
+					return GetUserProfileMessage.build(buf, endpoint,
+							contentDeserializer);
+				}
+			} catch (IOException e) {
+				if (logger.level <= Logger.SEVERE)
+					logger.log("Exception in deserializer in "
+							+ CatalogService.this.endpoint.toString() + ":"
+							+ instance + " " + e);
+				throw e;
+			}
+			throw new IllegalArgumentException("Unknown type:" + type + " in "
+					+ CatalogService.this.toString());
+		}
+	}
+
 	/**
-	 * Constructor pushes the appropriate arguments to DHTService and
+	 * Constructor pushes the appropriate arguments to PastImpl and
 	 * initializes the Service.
 	 * 
 	 */
 	public CatalogService(Node node, StorageManager manager, int replicas,
 			String instance, User user) {
 		super(node, manager, replicas, instance);
+		this.endpoint.setDeserializer(new CatalogServiceDeserializer());
+
 		cpf = new ContentProfileFactory();
 		this.user = user;
 		scorer = new Scorer();
@@ -206,9 +291,9 @@ public class CatalogService extends DHTService implements SocService {
 	 * Tag a user profile with the given uid.
 	 * 
 	 * @param uid The destination node id.
-	 * @param nodeHandle Hint to use for the first hop routing.  
+	 * @param nodeHandle Hint to use for the first hop routing.
 	 * @return The requested user profile
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
 	public void tagUser(final Id uid, final ContentProfile tags,
@@ -219,12 +304,12 @@ public class CatalogService extends DHTService implements SocService {
 			return;
 		}
 
-		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// Fill in the extra arguments (non-standard ones) we want to pass to
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("taggedId", uid);
 		extra_args.put("PDU", new TagPDU(uid, tags));
-		
+
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagUserMessage.TYPE, extra_args,
 				new StandardContinuation(command) {
@@ -326,18 +411,18 @@ public class CatalogService extends DHTService implements SocService {
 		this.getUserProfile(friend.getUID(), friend.getNodeHandle(),
 				command);
 	}
-	
+
 	public void getUserProfile(Id uid, Continuation<Object, Exception> command) throws Exception {
 		this.getUserProfile(uid, null, command);
 	}
-	
+
 	/**
 	 * Getter for a user profile which belongs to the user with the given uid.
 	 * 
 	 * @param uid The destination node id.
-	 * @param nodeHandle Hint to use for the first hop routing.  
+	 * @param nodeHandle Hint to use for the first hop routing.
 	 * @return The requested user profile
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
 	public void getUserProfile(final Id uid,
@@ -348,11 +433,11 @@ public class CatalogService extends DHTService implements SocService {
 			return;
 		}
 
-		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// Fill in the extra arguments (non-standard ones) we want to pass to
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("nodeHandle", nodeHandle);
-		
+
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, GetUserProfileMessage.TYPE, extra_args,
 				new StandardContinuation(command) {
@@ -377,7 +462,7 @@ public class CatalogService extends DHTService implements SocService {
 			}
 		});
 	}
-	
+
 	/**
 	 * This is a local user profile getter.
 	 * 
@@ -386,7 +471,7 @@ public class CatalogService extends DHTService implements SocService {
 	public ContentProfile getUserProfile() {
 		return user.getCompleteUserProfile();
 	}
-	
+
 	/**
 	 * This is used to create a url profile.
 	 * 
@@ -413,7 +498,7 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * Sends a request for friendship to an other user of the network specified 
+	 * Sends a request for friendship to an other user of the network specified
 	 * by the uid.
 	 * 
 	 * @param uid Destination user UID
@@ -430,7 +515,7 @@ public class CatalogService extends DHTService implements SocService {
 			return;
 		}
 
-		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// Fill in the extra arguments (non-standard ones) we want to pass to
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("PDU", new FriendReqPDU(message, user.getScreenName()));
@@ -470,7 +555,7 @@ public class CatalogService extends DHTService implements SocService {
 			@SuppressWarnings("rawtypes") final Continuation command) {
 		acceptFriend(freq, "", command);
 	}
-	
+
 	/**
 	 * This method sends an approval message for friendship to an other user of
 	 * the network specified by the uid. Message is an empty message formed by
@@ -481,7 +566,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param freq The friend request for approval
 	 * @param message An optional message to send to the dest user.
 	 * @param command The callback that must be executed when we return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
 	public void acceptFriend(final FriendRequest freq, String message,
@@ -493,7 +578,7 @@ public class CatalogService extends DHTService implements SocService {
 		}
 
 		final Id uid = freq.getUID();
-		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// Fill in the extra arguments (non-standard ones) we want to pass to
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("PDU", new FriendReqPDU(message, user.getScreenName()));
@@ -505,7 +590,7 @@ public class CatalogService extends DHTService implements SocService {
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
 					// Now we know that message of approval has been sent
-					// successfully and we can remove the freq and add the 
+					// successfully and we can remove the freq and add the
 					// Friend object to the friend list.
 					user.removePendingIncomingFReq(freq);
 					user.addFriend(new Friend(freq.getUID(), freq
@@ -536,7 +621,7 @@ public class CatalogService extends DHTService implements SocService {
 			@SuppressWarnings("rawtypes") final Continuation command) {
 		rejectFriend(freq, "", command);
 	}
-	
+
 	/**
 	 * This method sends an reject friendship request message to another user of
 	 * the network specified by the uid. Message is an empty message formed by
@@ -547,7 +632,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param freq The friend request for approval
 	 * @param message An optional message to send to the dest user.
 	 * @param command The callback that must be executed when we return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
 	public void rejectFriend(final FriendRequest freq, String message,
@@ -559,7 +644,7 @@ public class CatalogService extends DHTService implements SocService {
 		}
 
 		final Id uid = freq.getUID();
-		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// Fill in the extra arguments (non-standard ones) we want to pass to
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("PDU", new FriendReqPDU(message, user.getScreenName()));
@@ -590,7 +675,7 @@ public class CatalogService extends DHTService implements SocService {
 			}
 		});
 	}
-	
+
 	/**
 	 * This method is used to retrieve the original (or pseudodata for
 	 * simulation) and maybe some tagclouds from a user node. In order to know
@@ -692,7 +777,7 @@ public class CatalogService extends DHTService implements SocService {
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("ContentId", contentId);
 		extra_args.put("PDU", new RetrieveContPDU(contentId));
-		
+
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, RetrieveContTagsMessage.TYPE, extra_args,
 				new NamedContinuation(
@@ -755,7 +840,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param tags An array of the tags which will be applied to the content
 	 * object.
 	 * @param command An asynchronous command which will be executed on return.
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
 	public void tagContent(final Id uid, final Id contentId, final ContentProfile tags,
@@ -772,7 +857,7 @@ public class CatalogService extends DHTService implements SocService {
 				cp.add(cf);
 		}
 
-		// Fill in the extra arguments (non-standard ones) we want to pass to 
+		// Fill in the extra arguments (non-standard ones) we want to pass to
 		// the lookup DHT wrapper.
 		HashMap<String, Object> extra_args = new HashMap<String, Object>();
 		extra_args.put("contentId", contentId);
@@ -781,9 +866,9 @@ public class CatalogService extends DHTService implements SocService {
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagContentMessage.TYPE, extra_args,
 				new StandardContinuation(command) {
-			
+
 			public void receiveResult(Object result) {
-				
+
 				// We expect a ContentCatalogEntry to be returned
 				if (result instanceof ContentCatalogEntry) {
 					ContentCatalogEntry cce = (ContentCatalogEntry) result;
@@ -805,20 +890,20 @@ public class CatalogService extends DHTService implements SocService {
 					// Wrap the result in a HashMap object together with a
 					// notification message
 					parent.receiveResult(wrapToResponse(
-							"Tagged content with checksum " + contentId + 
+							"Tagged content with checksum " + contentId +
 							" of " + uid, SUCCESS, cce));
 				} else {
 					parent.receiveResult(wrapToResponse(
-							"Failed to tag content with checksum " + contentId + 
+							"Failed to tag content with checksum " + contentId +
 							" of " + uid, FAILURE, result));
 				}
 			}
 			public void receiveException(Exception result) {
 				parent.receiveResult(wrapToResponse(
-						"Failed to tag content with checksum " + contentId + 
+						"Failed to tag content with checksum " + contentId +
 						" of " + uid, EXCEPTION, result));
 			}
-		});		
+		});
 	}
 
 	/**
@@ -833,7 +918,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command
 	 *            Asynchronous commands to be executed after return
 	 */
-	@SuppressWarnings("rawtypes") 
+	@SuppressWarnings("rawtypes")
 	public void indexURL(URL url, ContentProfile tags,
 			final Continuation command) {
 
@@ -931,7 +1016,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * 
 	 * @param file
 	 */
-	@SuppressWarnings("rawtypes") 
+	@SuppressWarnings("rawtypes")
 	public void indexContent(final File file, final Continuation command) {
 
 		if (this.user == null) {
@@ -1356,9 +1441,9 @@ public class CatalogService extends DHTService implements SocService {
 	 * Wrapper for searchQuery to help searching for candidate friends.
 	 * 
 	 * The enhanced user query uses the user profile to find similar profiles
-	 * all over the network. This way a user can discover other users with 
+	 * all over the network. This way a user can discover other users with
 	 * similar profiles which could be friend candidates.
-	 * Returns the top k catalog entries. 
+	 * Returns the top k catalog entries.
 	 */
 	public void discoverFriend(final String rawQuery, final int k,
 			@SuppressWarnings("rawtypes") final Continuation command) {
@@ -1367,7 +1452,7 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * Wrapper for searchQuery to help searching only for users. 
+	 * Wrapper for searchQuery to help searching only for users.
 	 */
 	public void searchContent(final String rawQuery, final int k,
 			final Continuation<Object, Exception> command) {
@@ -1375,13 +1460,13 @@ public class CatalogService extends DHTService implements SocService {
 	}
 
 	/**
-	 * Wrapper for searchQuery to help searching only for users. 
+	 * Wrapper for searchQuery to help searching only for users.
 	 */
 	public void searchUser(final String rawQuery, final int k,
 			final Continuation<Object, Exception> command) {
 		searchQuery(QueryPDU.USERQUERY, new String[] { rawQuery }, k, command);
 	}
-	
+
 	/**
 	 * Wrapper for searchQuery
 	 */
@@ -1403,7 +1488,7 @@ public class CatalogService extends DHTService implements SocService {
 		String[] qterms = null;
 		if (query != null && !query.equals(""))
 			qterms = query.split(delimiter);
-		
+
 		searchQuery(queryType, qterms, k, command);
 	}
 
@@ -1509,7 +1594,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param command The callback which will be called on response.
 	 */
 	@SuppressWarnings("rawtypes")
-	public void searchFriendsNetwork(final int queryType, 
+	public void searchFriendsNetwork(final int queryType,
 			final String[] queryTerms, int topk, final Continuation command) {
 
 		if (this.user == null) {
@@ -1528,7 +1613,7 @@ public class CatalogService extends DHTService implements SocService {
 				for (int i = 0; i < haveResult.length; i++)
 					// The check "instanceof" is important!
 					// The result is a ResponsePDU instance
-					if ((haveResult[i]) && (result[i] instanceof ResponsePDU)) 
+					if ((haveResult[i]) && (result[i] instanceof ResponsePDU))
 						numSuccess++;
 
 				if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
@@ -1558,8 +1643,8 @@ public class CatalogService extends DHTService implements SocService {
 
 		// Iterate to lookup for every node we want to visit!
 		for (Friend friend : friends.values()) {
-			
-			// Get the UID of the specific friend 
+
+			// Get the UID of the specific friend
 			destId = friend.getUID();
 			// Get the NodeHandle of destination node
 			nodeHandle = friend.getNodeHandle();
@@ -1592,7 +1677,7 @@ public class CatalogService extends DHTService implements SocService {
 			});
 		}
 	}
-	
+
 	/**
 	 * This method uses a query of terms to search in every visited node. Social
 	 * Tags are the target. Specifically, in the set of nodes we visit (e.g.
@@ -1624,7 +1709,7 @@ public class CatalogService extends DHTService implements SocService {
 				for (int i = 0; i < haveResult.length; i++)
 					// The check "instanceof" is important!
 					// The result is a vector of social catalogs
-					if ((haveResult[i]) && (result[i] instanceof Vector<?>)) 
+					if ((haveResult[i]) && (result[i] instanceof Vector<?>))
 						numSuccess++;
 
 				if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
@@ -1711,7 +1796,7 @@ public class CatalogService extends DHTService implements SocService {
 	 * @param k
 	 *            The number of results to be returned.
 	 * @return
-	 * @throws PastException 
+	 * @throws PastException
 	 */
 	public static String printTopKQueryResults(Object[] result, int type, int k) throws PastException {
 
@@ -2045,7 +2130,7 @@ public class CatalogService extends DHTService implements SocService {
 
 	/**
 	 * Utility method to form a common response HashMap for the next processing
-	 * level. 
+	 * level.
 	 * 
 	 * @param message
 	 * @param status
@@ -2059,7 +2144,7 @@ public class CatalogService extends DHTService implements SocService {
 		response.put("data", data);
 		return response;
 	}
-	
+
 	/**
 	 * This method is called on the application at the destination node for the
 	 * given id.
@@ -2072,69 +2157,30 @@ public class CatalogService extends DHTService implements SocService {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void deliver(Id id, Message message) {
-		final PastMessage msg = (PastMessage) message;
-
-		if (msg.isResponse()) {
-			handleResponse((PastMessage) message);
-		} else {
 			if (logger.level <= Logger.INFO)
 				logger.log("Received message " + message + " with destination "
 						+ id);
 
-			if (msg instanceof InsertMessage) {
-				final InsertMessage imsg = (InsertMessage) msg;
+			if (message instanceof InsertMessage ||
+					message instanceof LookupMessage ||
+					message instanceof LookupHandlesMessage ||
+					message instanceof FetchMessage ||
+					message instanceof FetchHandleMessage ||
+					message instanceof CacheMessage ||
+					((PastMessage)message).isResponse()) {
+				super.deliver(id, message);
+				return;
+			}
 
-				// make sure the policy allows the insert
-				if (policy.allowInsert(imsg.getContent())) {
-					inserts++;
-					final Id msgid = imsg.getContent().getId();
-
-					lockManager.lock(msgid, new StandardContinuation(
-							getResponseContinuation(msg)) {
-
-						public void receiveResult(Object result) {
-							storage.getObject(msgid, new StandardContinuation(
-									parent) {
-								public void receiveResult(Object o) {
-									try {
-										// allow the object to check the insert,
-										// and then insert the data
-										PastContent content = imsg.getContent()
-												.checkInsert(msgid,
-														(PastContent) o);
-										storage
-												.store(
-														msgid,
-														null,
-														content,
-														new StandardContinuation(
-																parent) {
-															public void receiveResult(
-																	Object result) {
-																getResponseContinuation(
-																		msg)
-																		.receiveResult(
-																				result);
-																lockManager
-																		.unlock(msgid);
-															}
-														});
-									} catch (PastException e) {
-										parent.receiveException(e);
-									}
-								}
-							});
-						}
-					});
-				} else {
-					getResponseContinuation(msg).receiveResult(
-							Boolean.valueOf(false));
-				}
-			} else if (msg instanceof QueryMessage) {
+			final PastMessage msg = (PastMessage) message;
+			System.err.println("Node " + this.getUser().getUID() + " (" + getUser().getScreenName() +
+					") got a " + message.getClass().getName() +
+					" destined to " + msg.getDestination());
+			if (msg instanceof QueryMessage) {
 				final QueryMessage qmsg = (QueryMessage) msg;
 				lookups++;
 
-				// if the data is here, we send the reply. 
+				// if the data is here, we send the reply.
 				// TODO: we may want to  push a cached copy back to the previous node
 				storage.getObject(qmsg.getId(), new StandardContinuation(
 						getResponseContinuation(qmsg)) {
@@ -2158,8 +2204,7 @@ public class CatalogService extends DHTService implements SocService {
 							scorer.doNotify();
 						} else {
 							// debugging only
-							System.out
-									.println("Error: o is not Catalog (in deliver)");
+							System.out.println("Error: o is not Catalog (in deliver)");
 							// send result back
 							parent
 									.receiveResult(new ResponsePDU(qmsg
@@ -2174,7 +2219,7 @@ public class CatalogService extends DHTService implements SocService {
 						// if (logger.level <= Logger.FINE)
 						// logger.log("Pushing cached copy of " + ((PastContent)
 						// o).getId() + " to " + handle);
-						//              
+						//
 						// CacheMessage cmsg = new CacheMessage(getUID(),
 						// (PastContent) o, getLocalNodeHandle(),
 						// handle.getId());
@@ -2204,9 +2249,9 @@ public class CatalogService extends DHTService implements SocService {
 				lookups++;
 
 				if (logger.level <= Logger.FINER)
-					logger.log("Returning response for get user profile message "	
+					logger.log("Returning response for get user profile message "
 							+ gupmsg.getId() + " from " + endpoint.getId());
-				
+
 				// Get and return a version of the user profile.
 				getResponseContinuation(msg).receiveResult(
 						user.isFriend(msg.getSource().getId())?
@@ -2403,7 +2448,7 @@ public class CatalogService extends DHTService implements SocService {
 						// indicator Boolean
 						parent.receiveResult(ret);
 					}
-					
+
 					public void receiveException(Exception e) {
 						ret.add(Boolean.FALSE);
 						parent.receiveResult(ret);
@@ -2439,90 +2484,459 @@ public class CatalogService extends DHTService implements SocService {
 					logger.log("Returning response for retrieve content ids message from " + endpoint.getId());
 
 				getResponseContinuation(msg).receiveResult(ret);
-			} else if (msg instanceof LookupMessage) {
-				final LookupMessage lmsg = (LookupMessage) msg;
-				lookups++;
-
-				// if the data is here, we send the reply, as well as push a
-				// cached copy
-				// back to the previous node
-				storage.getObject(lmsg.getId(), new StandardContinuation(
-						getResponseContinuation(lmsg)) {
-					public void receiveResult(Object o) {
-						if (logger.level <= Logger.FINE)
-							logger.log("Received object " + o + " for id "
-									+ lmsg.getId());
-
-						// send result back
-						parent.receiveResult(o);
-
-						// if possible, pushed copy into previous hop cache
-						if ((lmsg.getPreviousNodeHandle() != null)
-								&& (o != null)
-								&& (!((PastContent) o).isMutable())) {
-							NodeHandle handle = lmsg.getPreviousNodeHandle();
-							if (logger.level <= Logger.FINE)
-								logger.log("Pushing cached copy of "
-										+ ((PastContent) o).getId() + " to "
-										+ handle);
-
-							// CacheMessage cmsg = new CacheMessage(getUID(),
-							// (PastContent) o, getLocalNodeHandle(),
-							// handle.getId());
-							// endpoint.route(null, cmsg, handle);
-						}
-					}
-				});
-
-			} else if (msg instanceof LookupHandlesMessage) {
-				LookupHandlesMessage lmsg = (LookupHandlesMessage) msg;
-				NodeHandleSet set = endpoint.replicaSet(lmsg.getId(), lmsg
-						.getMax());
-				if (logger.level <= Logger.FINER)
-					logger.log("Returning replica set " + set
-							+ " for lookup handles of id " + lmsg.getId()
-							+ " max " + lmsg.getMax() + " at "
-							+ endpoint.getId());
-				getResponseContinuation(msg).receiveResult(set);
-			} else if (msg instanceof FetchMessage) {
-				FetchMessage fmsg = (FetchMessage) msg;
-				lookups++;
-
-				Continuation c;
-				// c = getResponseContinuation(msg);
-				c = getFetchResponseContinuation(msg); // has to be special to
-														// determine how to send
-														// the message
-
-				storage.getObject(fmsg.getHandle().getId(), c);
-			} else if (msg instanceof FetchHandleMessage) {
-				final FetchHandleMessage fmsg = (FetchHandleMessage) msg;
-				fetchHandles++;
-
-				storage.getObject(fmsg.getId(), new StandardContinuation(
-						getResponseContinuation(msg)) {
-					public void receiveResult(Object o) {
-						PastContent content = (PastContent) o;
-
-						if (content != null) {
-							if (logger.level <= Logger.FINE)
-								logger
-										.log("Retrieved data for fetch handles of id "
-												+ fmsg.getId());
-							parent.receiveResult(content
-									.getHandle(CatalogService.this));
-						} else {
-							parent.receiveResult(null);
-						}
-					}
-				});
-			} else if (msg instanceof CacheMessage) {
-				cache(((CacheMessage) msg).getContent());
 			} else {
 				if (logger.level <= Logger.SEVERE)
 					logger.log("ERROR - Received message " + msg
 							+ "of unknown type.");
 			}
+	}
+
+	/**
+	 * Wrapper for lookup process.
+	 * Hint: A message can be routed using a NodeHandle as a first hop target!
+	 * 
+	 * @param id The key to be queried.
+	 * @param type The type of message to route.
+	 * @param extra_args A dictionary of extra arguments to be passed.
+	 * @param command Command to be performed when the result is received.
+	 */
+	@SuppressWarnings("rawtypes")
+	public void lookup(final Id id, final short type,
+			final HashMap<String, Object> extra_args,
+			final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		NodeHandle destNodeHandle = extra_args.containsKey("nodeHandle")?
+				((NodeHandle) extra_args.get("nodeHandle")):null;
+		ContinuationMessage message = null;
+		switch (type) {
+			case MessageType.GetUserProfile:
+				message = new GetUserProfileMessage(getUID(), id,
+						getLocalNodeHandle(), id);
+				break;
+			case MessageType.FriendRequest:
+				message = new FriendReqMessage(getUID(), getLocalNodeHandle(),
+						id, (FriendReqPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.FriendReject:
+				message = new FriendRejectMessage(getUID(), id, getLocalNodeHandle(),
+						id, (FriendReqPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.FriendAccept:
+				message = new FriendAcceptMessage(getUID(), id, getLocalNodeHandle(),
+						id, (FriendReqPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.TagContent:
+				message = new TagContentMessage(getUID(), id, getLocalNodeHandle(),
+						id,	(TagPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.TagUser:
+				message = new TagUserMessage(getUID(), id, getLocalNodeHandle(),
+						id,	(TagPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.RetrieveContentTags:
+				message = new RetrieveContTagsMessage(getUID(), (Id)extra_args.get("ContentId"), getLocalNodeHandle(),
+						id,	 (RetrieveContPDU)extra_args.get("PDU"));
+				break;
+			case MessageType.RetrieveContentIDs:
+				message = new RetrieveContIDsMessage(getUID(), getLocalNodeHandle(), id);
+				break;
+			default:
+				logger.log("Unknown message type. Bailing out...");
+				return;
 		}
+
+		// send the request across the wire, and see if the result is null or not
+		sendRequest(id, message, destNodeHandle,
+				new NamedContinuation(message.getClass()
+						.getSimpleName() + " for " + id, command) {
+			public void receiveResult(final Object o) {
+				// if we have an object, we return it
+				// otherwise, we may want to check all replicas in order to make
+				// sure the object doesn't exist anywhere
+				command.receiveResult(o);
+			}
+			public void receiveException(Exception e) {
+				receiveResult(null);
+			}
+		});
+
+	}
+
+	/**
+	 * Method which performs the same as lookup() (routing), but it creates a
+	 * RetrieveConttMessage which contains the checksum to be retrieved.
+	 * 
+	 * @param id
+	 *            the key to be queried
+	 * @param cache
+	 *            Whether or not the data should be cached
+	 * @param command
+	 *            Command to be performed when the result is received
+	 */
+	@SuppressWarnings("rawtypes")
+	public void lookup(final Id id, final boolean cache,
+			RetrieveContPDU retPDU, boolean getContent,
+			final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		// send the request across the wire, and see if the result is null or
+		// not
+		sendRequest(id,
+				getContent ?
+						new RetrieveContMessage(getUID(), retPDU.getContentId(), getLocalNodeHandle(), id, retPDU) :
+							new RetrieveContTagsMessage(getUID(), retPDU.getContentId(), getLocalNodeHandle(), id, retPDU),
+							new NamedContinuation(
+									(getContent ? "RetrieveContMessage" : "RetrieveContTagsMessage") +
+									" for " + id, command) {
+							public void receiveResult(final Object o) {
+								// if we have an object, we return it
+								// otherwise, we must check all replicas in order to make sure
+								// that the object doesn't exist anywhere
+								if (o != null) {
+
+									command.receiveResult(o);
+
+								} else {
+									// TODO : examine if the tager's arrays need to be replicated to the leafset
+									// If so then here we should put the lookupHandles code as above!!!
+									command.receiveResult(null); // o is NULL
+								}
+							}
+
+							public void receiveException(Exception e) {
+								// If the lookup message failed , we then try to fetch all of
+								// the handles, just
+								// in case. This may fail too, but at least we tried.
+								receiveResult(null);
+							}
+						}
+		);
+
+	}
+
+	/**
+	 * Method which performs the same as lookup(), but also transfers a QueryPDU
+	 * to the destination in order to handle the situation appropriately.
+	 * 
+	 * 
+	 * @param id
+	 *            the key to be queried
+	 * @param cache
+	 *            Whether or not the data should be cached
+	 * @param queryPDU
+	 *            the query terms and maybe some more data
+	 * @param command
+	 *            Command to be performed when the result is received
+	 */
+	@SuppressWarnings("rawtypes")
+	public void lookup(final Id id, final boolean cache,
+			final QueryPDU queryPDU, final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		storage.getObject(id, new StandardContinuation(command) {
+			public void receiveResult(Object o) {
+				if (o != null) {
+					// Do the similarity computation and scoring of terms and
+					// return a mini ScoredCatalog (PastContent)
+					if (o instanceof ceid.netcins.exo.catalog.Catalog) {
+						int type = queryPDU.getType();
+						Hashtable entries = ((ceid.netcins.exo.catalog.Catalog) o).getCatalogEntriesForQueryType(type);
+						// Leave the job to be done asynchronously by the
+						// Scorer thread
+						scorer.addRequest(new SimilarityRequest(
+								entries.values(), queryPDU.getData(), type,
+								queryPDU.getK(),
+								queryPDU.getSourceUserProfile(), parent, 0));
+						scorer.doNotify();
+					} else {
+						// debugging only
+						System.out
+								.println("Error: o is not Catalog (in deliver)");
+						// send result back
+						parent.receiveResult(new ResponsePDU(0));
+					}
+				} else {
+					// send the request across the wire, and see if the result
+					// is null or not
+					sendRequest(id, new QueryMessage(getUID(), id,
+							getLocalNodeHandle(), id, queryPDU),
+							new NamedContinuation("QueryMessage for " + id,
+									this) {
+								public void receiveResult(final Object o) {
+									// if we have an object, we return it
+									// otherwise, we must check all replicas in
+									// order to make sure that
+									// the object doesn't exist anywhere
+									if (o != null) {
+										// lastly, try and cache object locally
+										// for future use
+										if (cache) {
+											cache((PastContent) o,
+													new SimpleContinuation() {
+														public void receiveResult(
+																Object object) {
+															command
+																	.receiveResult(o);
+														}
+													});
+										} else {
+											command.receiveResult(o);
+										}
+									} else {
+										lookupHandles(id,
+												replicationFactor + 1,
+												new Continuation() {
+													public void receiveResult(
+															Object o) {
+														PastContentHandle[] handles = (PastContentHandle[]) o;
+
+														for (int i = 0; i < handles.length; i++) {
+															if (handles[i] != null) {
+																fetch(
+																		handles[i],
+																		new StandardContinuation(
+																				parent) {
+																			public void receiveResult(
+																					final Object o) {
+																				// lastly,
+																				// try
+																				// and
+																				// cache
+																				// object
+																				// locally
+																				// for
+																				// future
+																				// use
+																				if (cache) {
+																					cache(
+																							(PastContent) o,
+																							new SimpleContinuation() {
+																								public void receiveResult(
+																										Object object) {
+																									command
+																											.receiveResult(o);
+																								}
+																							});
+																				} else {
+																					command
+																							.receiveResult(o);
+																				}
+																			}
+																		});
+
+																return;
+															}
+														}
+
+														// there were no
+														// replicas of the
+														// object
+														command
+																.receiveResult(null);
+													}
+
+													public void receiveException(
+															Exception e) {
+														command
+																.receiveException(e);
+													}
+												});
+									}
+								}
+
+								public void receiveException(Exception e) {
+									// If the lookup message failed , we then
+									// try to fetch all of the handles, just
+									// in case. This may fail too, but at least
+									// we tried.
+									receiveResult(null);
+								}
+							});
+				}
+			}
+		});
+	}
+
+	/**
+	 * Wrapper for lookup process, which specifically handles a search in the
+	 * unstructured friends network. A FriendQueryMessage is routed using the
+	 * friend's NodeHandle as a first hop hint!
+	 * 
+	 * @param id
+	 *            the key to be queried
+	 * @param destNodeHandle
+	 * 			  the destination node handle used as a hint for routing
+	 * @param cache
+	 *            Whether or not the data should be cached
+	 * @param command
+	 *            Command to be performed when the result is received
+	 */
+	@SuppressWarnings("rawtypes")
+	public void lookup(final Id id, final NodeHandle destNodeHandle,
+			final boolean cache, QueryPDU qPDU,	final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		// send the request across the wire, and see if the result is null or
+		// not
+		sendRequest(id, new FriendQueryMessage(getUID(),
+				getLocalNodeHandle(), id, qPDU), destNodeHandle,
+				new NamedContinuation(
+				"FriendQueryMessage for " + id, command) {
+			public void receiveResult(final Object o) {
+				// if we have an object, we return it
+				// otherwise, we must check all replicas in order to make sure
+				// that
+				// the object doesn't exist anywhere
+				if (o != null) {
+
+					command.receiveResult(o);
+
+				} else {
+					// TODO : examine if the tager's arrays need to be replicated to the leafset
+					// If so then here we should put the lookupHandles code as above!!!
+					command.receiveResult(null); // o is NULL
+				}
+			}
+
+			public void receiveException(Exception e) {
+				// If the lookup message failed , we then try to fetch all of
+				// the handles, just
+				// in case. This may fail too, but at least we tried.
+				receiveResult(null);
+			}
+		});
+	}
+
+	/**
+	 * Method which performs the same as lookup(), but also transfers a
+	 * SocialQueryPDU to the destination in order to handle the situation
+	 * appropriately.
+	 * 
+	 * 
+	 * @param id
+	 *            the key to be queried
+	 * @param cache
+	 *            Whether or not the data should be cached
+	 * @param queryPDU
+	 *            the query terms and maybe some more data
+	 * @param command
+	 *            Command to be performed when the result is received
+	 */
+	@SuppressWarnings("rawtypes")
+	public void lookup(final Id id, final boolean cache,
+			final SocialQueryPDU queryPDU, final Continuation command) {
+		if (logger.level <= Logger.FINER)
+			logger.log(" Performing lookup on " + id.toStringFull());
+
+		storage.getObject(id, new StandardContinuation(command) {
+			public void receiveResult(Object o) {
+				if (o != null) {
+					// TODO : Maybe we want to SCORE this local Catalog
+					command.receiveResult(o); // If we find here then we execute command
+				} else {
+					// send the request across the wire, and see if the result
+					// is null or not
+					sendRequest(id, new SocialQueryMessage(getUID(), id,
+							getLocalNodeHandle(), id, queryPDU),
+							new NamedContinuation("SocialQueryMessage for "
+									+ id, this) {
+								public void receiveResult(final Object o) {
+									// if we have an object, we return it
+									// otherwise, we must check all replicas in
+									// order to make sure that
+									// the object doesn't exist anywhere
+									if (o != null) {
+										// lastly, try and cache object locally
+										// for future use
+										if (cache) {
+											cache((PastContent) o,
+													new SimpleContinuation() {
+														public void receiveResult(
+																Object object) {
+															command
+																	.receiveResult(o);
+														}
+													});
+										} else {
+											command.receiveResult(o);
+										}
+									} else {
+										lookupHandles(id,
+												replicationFactor + 1,
+												new Continuation() {
+													public void receiveResult(
+															Object o) {
+														PastContentHandle[] handles = (PastContentHandle[]) o;
+
+														for (int i = 0; i < handles.length; i++) {
+															if (handles[i] != null) {
+																fetch(
+																		handles[i],
+																		new StandardContinuation(
+																				parent) {
+																			public void receiveResult(
+																					final Object o) {
+																				// lastly,
+																				// try
+																				// and
+																				// cache
+																				// object
+																				// locally
+																				// for
+																				// future
+																				// use
+																				if (cache) {
+																					cache(
+																							(PastContent) o,
+																							new SimpleContinuation() {
+																								public void receiveResult(
+																										Object object) {
+																									command
+																											.receiveResult(o);
+																								}
+																							});
+																				} else {
+																					command
+																							.receiveResult(o);
+																				}
+																			}
+																		});
+
+																return;
+															}
+														}
+
+														// there were no
+														// replicas of the
+														// object
+														command
+																.receiveResult(null);
+													}
+
+													public void receiveException(
+															Exception e) {
+														command
+																.receiveException(e);
+													}
+												});
+									}
+								}
+
+								public void receiveException(Exception e) {
+									// If the lookup message failed , we then
+									// try to fetch all of the handles, just
+									// in case. This may fail too, but at least
+									// we tried.
+									receiveResult(null);
+								}
+							});
+				}
+			}
+		});
 	}
 }
