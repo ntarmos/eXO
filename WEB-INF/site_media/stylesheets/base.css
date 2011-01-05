@@ -158,20 +158,21 @@ a:hover {
 /* line 5, ../src/_middle_wrapper.scss */
 #middle-wrapper {
   background: none repeat scroll 0 0 #e8f1f9;
+  background-image: url("/site_media/images/bg_global.png");
   padding: 0;
   /*  height: 100%;  To preserve the light background */
   overflow: hidden;
   /* To preserve the light background */
 }
 
-/* line 12, ../src/_middle_wrapper.scss */
+/* line 13, ../src/_middle_wrapper.scss */
 #middle-container {
   overflow: visible;
   /* To make actions visible */
   /*  height: 100%;  To preserve the light background */
 }
 
-/* line 17, ../src/_middle_wrapper.scss */
+/* line 18, ../src/_middle_wrapper.scss */
 #content-header-wrapper {
   height: 80px;
   margin: 0 0 2em;
@@ -188,25 +189,25 @@ a:hover {
   overflow: hidden;
 }
 
-/* line 35, ../src/_middle_wrapper.scss */
+/* line 36, ../src/_middle_wrapper.scss */
 #content-header {
   height: 80px;
   position: relative;
   overflow: hidden;
 }
-/* line 40, ../src/_middle_wrapper.scss */
+/* line 41, ../src/_middle_wrapper.scss */
 #content-header h2 {
   padding: 0.5em 1em;
 }
-/* line 42, ../src/_middle_wrapper.scss */
+/* line 43, ../src/_middle_wrapper.scss */
 #content-header h2 img {
   vertical-align: middle;
 }
-/* line 45, ../src/_middle_wrapper.scss */
+/* line 46, ../src/_middle_wrapper.scss */
 #content-header h2 span {
   color: #9D6B00;
 }
-/* line 50, ../src/_middle_wrapper.scss */
+/* line 51, ../src/_middle_wrapper.scss */
 #content-header ul {
   position: absolute;
   bottom: 0px;
@@ -215,11 +216,11 @@ a:hover {
   color: #FFF;
   text-shadow: none;
 }
-/* line 58, ../src/_middle_wrapper.scss */
+/* line 59, ../src/_middle_wrapper.scss */
 #content-header ul li {
   padding: 0 0 0.25em;
 }
-/* line 60, ../src/_middle_wrapper.scss */
+/* line 61, ../src/_middle_wrapper.scss */
 #content-header ul li a {
   padding: 0.5em;
   background-color: #414e5b;
@@ -227,33 +228,33 @@ a:hover {
   -moz-border-radius-topleft: 2px;
   -moz-border-radius-topright: 2px;
 }
-/* line 66, ../src/_middle_wrapper.scss */
+/* line 67, ../src/_middle_wrapper.scss */
 #content-header ul li a:hover {
   text-decoration: none;
   /*          color:#98A754;*/
   background-color: #475664;
 }
-/* line 75, ../src/_middle_wrapper.scss */
+/* line 76, ../src/_middle_wrapper.scss */
 #content-header ul li.current a {
   font-weight: bold;
   padding-top: 0.75em;
   background-color: #6c8196;
 }
 
-/* line 84, ../src/_middle_wrapper.scss */
+/* line 85, ../src/_middle_wrapper.scss */
 #at {
   font-size: 1.2em;
 }
 
-/* line 88, ../src/_middle_wrapper.scss */
+/* line 89, ../src/_middle_wrapper.scss */
 #content-main {
   min-height: 200px;
 }
-/* line 90, ../src/_middle_wrapper.scss */
+/* line 91, ../src/_middle_wrapper.scss */
 #content-main a {
   color: #2B547D;
 }
-/* line 93, ../src/_middle_wrapper.scss */
+/* line 94, ../src/_middle_wrapper.scss */
 #content-main a.close {
   background: url("../images/close.gif") repeat scroll 0 0 transparent;
   font-size: 1px;
@@ -261,55 +262,55 @@ a:hover {
   text-indent: -1000px;
   width: 7px;
 }
-/* line 99, ../src/_middle_wrapper.scss */
+/* line 100, ../src/_middle_wrapper.scss */
 #content-main a.close:hover {
   background-position: center;
 }
-/* line 103, ../src/_middle_wrapper.scss */
+/* line 104, ../src/_middle_wrapper.scss */
 #content-main #content-main-loading {
   text-align: center;
   vertical-align: middle;
 }
-/* line 107, ../src/_middle_wrapper.scss */
+/* line 108, ../src/_middle_wrapper.scss */
 #content-main .content-body {
   margin: 1em 0;
   border: 1px solid #D6D1CA;
   background-color: #FFF;
 }
-/* line 111, ../src/_middle_wrapper.scss */
+/* line 112, ../src/_middle_wrapper.scss */
 #content-main .content-body h2 {
   padding: 1em 1em 0;
   border-bottom: 1px dashed #CCC;
   position: relative;
 }
-/* line 115, ../src/_middle_wrapper.scss */
+/* line 116, ../src/_middle_wrapper.scss */
 #content-main .content-body h2 span {
   position: absolute;
   right: 2em;
   bottom: 2px;
   font-size: 0.5em;
 }
-/* line 120, ../src/_middle_wrapper.scss */
+/* line 121, ../src/_middle_wrapper.scss */
 #content-main .content-body h2 span img {
   vertical-align: text-bottom;
 }
-/* line 126, ../src/_middle_wrapper.scss */
+/* line 127, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body {
   display: none;
 }
-/* line 128, ../src/_middle_wrapper.scss */
+/* line 129, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-fields-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 133, ../src/_middle_wrapper.scss */
+/* line 134, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row {
   padding: 0.5em 1em;
   text-align: left;
   border-bottom: 1px solid #DFDFDF;
 }
-/* line 137, ../src/_middle_wrapper.scss */
+/* line 138, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper {
   display: none;
   height: 0;
@@ -318,7 +319,7 @@ a:hover {
   top: 0;
   width: 0;
 }
-/* line 144, ../src/_middle_wrapper.scss */
+/* line 145, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions {
   border-radius: 12px;
   -moz-border-radius: 12px;
@@ -332,38 +333,38 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 156, ../src/_middle_wrapper.scss */
+/* line 157, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 160, ../src/_middle_wrapper.scss */
+/* line 161, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 162, ../src/_middle_wrapper.scss */
+/* line 163, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 164, ../src/_middle_wrapper.scss */
+/* line 165, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 169, ../src/_middle_wrapper.scss */
+/* line 170, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row div.actions-wrapper div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 175, ../src/_middle_wrapper.scss */
+/* line 176, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-row .tag-field-name {
   color: #333;
   font-size: 1.2em;
 }
-/* line 180, ../src/_middle_wrapper.scss */
+/* line 181, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-field-data {
   font-size: 1.1em;
 }
-/* line 182, ../src/_middle_wrapper.scss */
+/* line 183, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-field-data .single-tag {
   position: relative;
   padding: 3px 15px 3px 8px;
@@ -377,25 +378,25 @@ a:hover {
   font-size: 0.75em;
   font-weight: bold;
 }
-/* line 196, ../src/_middle_wrapper.scss */
+/* line 197, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-field-data .single-tag:hover {
   background-color: #d6e1f6;
 }
-/* line 199, ../src/_middle_wrapper.scss */
+/* line 200, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .tag-field-data .single-tag a.close {
   display: block;
   position: absolute;
   right: 4px;
   top: 7px;
 }
-/* line 207, ../src/_middle_wrapper.scss */
+/* line 208, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .new-field, #content-main #myprofile-body .edit-field {
   background-color: #efefef;
   margin: 1em 3em;
   padding: 2em;
   min-height: 100px;
 }
-/* line 212, ../src/_middle_wrapper.scss */
+/* line 213, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .new-field .single-tag, #content-main #myprofile-body .edit-field .single-tag {
   font-size: 1em;
   /* Resetting the font-size */
@@ -404,139 +405,139 @@ a:hover {
   padding-top: 0;
   padding-bottom: 0;
 }
-/* line 219, ../src/_middle_wrapper.scss */
+/* line 220, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .new-field .button-wrapper, #content-main #myprofile-body .edit-field .button-wrapper {
   margin-top: 1em;
   text-align: center;
 }
-/* line 222, ../src/_middle_wrapper.scss */
+/* line 223, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .new-field .button-wrapper a, #content-main #myprofile-body .edit-field .button-wrapper a {
   color: #FF0000;
 }
-/* line 227, ../src/_middle_wrapper.scss */
+/* line 228, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .new-field {
   display: none;
 }
-/* line 230, ../src/_middle_wrapper.scss */
+/* line 231, ../src/_middle_wrapper.scss */
 #content-main #myprofile-body .edit-field {
   font-size: 0.8em;
   text-align: left;
 }
-/* line 236, ../src/_middle_wrapper.scss */
+/* line 237, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 240, ../src/_middle_wrapper.scss */
+/* line 241, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper span {
   font-size: 1.2em;
 }
-/* line 243, ../src/_middle_wrapper.scss */
+/* line 244, ../src/_middle_wrapper.scss */
 #content-main #search-body #search-wrapper #search {
   width: 500px;
 }
-/* line 247, ../src/_middle_wrapper.scss */
+/* line 248, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper {
   border-top: 1px solid #666;
   background-color: #e8f1f9;
   padding: 1em;
 }
-/* line 251, ../src/_middle_wrapper.scss */
+/* line 252, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 255, ../src/_middle_wrapper.scss */
+/* line 256, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper p {
   text-align: center;
 }
-/* line 258, ../src/_middle_wrapper.scss */
+/* line 259, ../src/_middle_wrapper.scss */
 #content-main #search-body #results-wrapper #content-main-loading {
   display: none;
 }
-/* line 262, ../src/_middle_wrapper.scss */
+/* line 263, ../src/_middle_wrapper.scss */
 #content-main #search-body .tags-wrapper {
   padding: 0 0 0 2em;
   min-height: 24px;
 }
-/* line 266, ../src/_middle_wrapper.scss */
+/* line 267, ../src/_middle_wrapper.scss */
 #content-main #search-body .tag-field-name {
   float: left;
   margin-right: 0.25em;
 }
-/* line 270, ../src/_middle_wrapper.scss */
+/* line 271, ../src/_middle_wrapper.scss */
 #content-main #search-body .tag-field-data {
   float: left;
   margin-right: 0.5em;
 }
-/* line 274, ../src/_middle_wrapper.scss */
+/* line 275, ../src/_middle_wrapper.scss */
 #content-main #search-body .uid {
   display: none;
 }
-/* line 277, ../src/_middle_wrapper.scss */
+/* line 278, ../src/_middle_wrapper.scss */
 #content-main #search-body .entry {
   margin: 1em 0;
 }
-/* line 280, ../src/_middle_wrapper.scss */
+/* line 281, ../src/_middle_wrapper.scss */
 #content-main #search-body .row-number {
   font-size: 1.5em;
   font-weight: bold;
   color: #AAA;
 }
-/* line 287, ../src/_middle_wrapper.scss */
+/* line 288, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 291, ../src/_middle_wrapper.scss */
+/* line 292, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper div {
   margin: 0 0 1em;
 }
-/* line 294, ../src/_middle_wrapper.scss */
+/* line 295, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper label {
   font-size: 1.2em;
   margin-right: 1em;
 }
-/* line 301, ../src/_middle_wrapper.scss */
+/* line 302, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-element {
   display: inline-block;
 }
-/* line 304, ../src/_middle_wrapper.scss */
+/* line 305, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper {
   border-top: 1px solid #DFDFDF;
   padding: 1em;
   margin: 0 2em;
 }
-/* line 308, ../src/_middle_wrapper.scss */
+/* line 309, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 312, ../src/_middle_wrapper.scss */
+/* line 313, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper .file-row {
   border-bottom: 1px solid #CFCFCF;
   width: 100%;
 }
-/* line 317, ../src/_middle_wrapper.scss */
+/* line 318, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-id {
   float: right;
   display: none;
 }
-/* line 321, ../src/_middle_wrapper.scss */
+/* line 322, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data {
   padding: 0.5em;
   font-size: 1.2em;
   min-height: 24px;
 }
-/* line 325, ../src/_middle_wrapper.scss */
+/* line 326, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data .actions-wrapper {
   display: none;
   float: right;
   position: relative;
 }
-/* line 330, ../src/_middle_wrapper.scss */
+/* line 331, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions {
   font-size: 10px;
   height: 24px;
@@ -547,51 +548,51 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 339, ../src/_middle_wrapper.scss */
+/* line 340, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 343, ../src/_middle_wrapper.scss */
+/* line 344, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 345, ../src/_middle_wrapper.scss */
+/* line 346, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 347, ../src/_middle_wrapper.scss */
+/* line 348, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 352, ../src/_middle_wrapper.scss */
+/* line 353, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 358, ../src/_middle_wrapper.scss */
+/* line 359, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tags-wrapper {
   display: none;
   padding: 0 0 0 2em;
   min-height: 24px;
 }
-/* line 363, ../src/_middle_wrapper.scss */
+/* line 364, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-name {
   float: left;
   margin-right: 0.25em;
 }
-/* line 367, ../src/_middle_wrapper.scss */
+/* line 368, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-data {
   float: left;
   margin-right: 0.5em;
 }
-/* line 374, ../src/_middle_wrapper.scss */
+/* line 375, ../src/_middle_wrapper.scss */
 #content-main #friends-body #frequests-list-wrapper, #content-main #friends-body #friend-list-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 379, ../src/_middle_wrapper.scss */
+/* line 380, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-card {
   background-color: #F5F5F5;
   min-height: 170px;
@@ -599,26 +600,26 @@ a:hover {
   -moz-box-shadow: 0px 0px 4px #8f8f8f;
   box-shadow: 0px 0px 4px #8f8f8f;
 }
-/* line 386, ../src/_middle_wrapper.scss */
+/* line 387, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb {
   background-color: #FFF;
   border: 1px solid #DDD;
   padding: 4px;
   margin-top: 0.75em;
 }
-/* line 391, ../src/_middle_wrapper.scss */
+/* line 392, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb:hover {
   border: 1px solid #CCC;
 }
-/* line 395, ../src/_middle_wrapper.scss */
+/* line 396, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friends-row {
   margin: 0.5em 0;
 }
-/* line 398, ../src/_middle_wrapper.scss */
+/* line 399, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-uid {
   display: none;
 }
-/* line 401, ../src/_middle_wrapper.scss */
+/* line 402, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-name {
   padding: 0.5em;
 }
