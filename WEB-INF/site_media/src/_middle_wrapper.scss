@@ -376,5 +376,30 @@
       text-align: center;
       padding: 0.5em 1em 2em;
     }
+    .friend-card {
+      background-color: #F5F5F5;
+      min-height: 170px;
+      -webkit-box-shadow:0px 0px 4px #8f8f8f;
+      -moz-box-shadow:0px 0px 4px #8f8f8f;
+      box-shadow:0px 0px 4px #8f8f8f;
+    }
+    .friend-thumb {
+      background-color: #FFF;
+      border: 1px solid #DDD;
+      padding: 4px;
+      margin-top: 0.75em;
+      &:hover {
+        border: 1px solid #CCC;
+      }
+    }
+    .friends-row {
+      margin: 0.5em 0;
+    }
+    .friend-uid {
+      display:none;
+    }
+    .friend-name {
+      padding: 0.5em;
+    }
   }
 }

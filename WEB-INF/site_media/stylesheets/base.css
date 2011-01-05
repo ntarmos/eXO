@@ -591,6 +591,37 @@ a:hover {
   text-align: center;
   padding: 0.5em 1em 2em;
 }
+/* line 379, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-card {
+  background-color: #F5F5F5;
+  min-height: 170px;
+  -webkit-box-shadow: 0px 0px 4px #8f8f8f;
+  -moz-box-shadow: 0px 0px 4px #8f8f8f;
+  box-shadow: 0px 0px 4px #8f8f8f;
+}
+/* line 386, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-thumb {
+  background-color: #FFF;
+  border: 1px solid #DDD;
+  padding: 4px;
+  margin-top: 0.75em;
+}
+/* line 391, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-thumb:hover {
+  border: 1px solid #CCC;
+}
+/* line 395, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friends-row {
+  margin: 0.5em 0;
+}
+/* line 398, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-uid {
+  display: none;
+}
+/* line 401, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-name {
+  padding: 0.5em;
+}
 
 /*
   Aggregates all the footer specific style.

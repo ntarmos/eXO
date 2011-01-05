@@ -26,7 +26,35 @@
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
-    // TODO: create routes/actions here
+    this.get('#/friends_list/get/', function() {
+      var context = this;
+      $.ajax({
+        type: 'GET',
+        url:  "/site_media/data/sample_friends_data.json", //"/servlet/GetFriendUIDs/",
+        dataType: 'json',
+        data: "",
+        success: function(data){
+          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
+            // Interpolate index
+            var templ = data["eXO::Data"];
+            for(i in templ["eXO::Friends"]){
+              templ["eXO::Friends"][i]["first"] = (i%5==0)?true:false;
+              templ["eXO::Friends"][i]["last"] = (i%5==4)?
+                true:((i==templ["eXO::Friends"].length-1)?true:false);
+            }
+            // Get template and interpolate variables
+            context.render("/site_media/templates/friends_list.ms", templ,
+             function(content){
+              $('#friend-list-wrapper').html(content).show();
+              // Bind events here
+            });
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        }
+      });
+    });
 
   });
 
@@ -71,7 +99,7 @@
       }
     });
 
-    app.run();
+    app.run('#/friends_list/get/');
   });
   </script>
 </head>
@@ -152,7 +180,7 @@
             <span class="quiet">There are no pending requests.</span>
           </div>
           <h2 class="clear"> Friend List </h2>
-          <div id="friend-list-wrapper" class="clear">
+          <div id="friend-list-wrapper" class="clearfix">
             <span class="quiet">There are no friends yet.</span>
           </div>
         </div>
