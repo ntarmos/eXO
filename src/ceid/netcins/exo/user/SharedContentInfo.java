@@ -1,10 +1,12 @@
 package ceid.netcins.exo.user;
 
 import java.io.File;
+import java.io.Serializable;
 
 import ceid.netcins.exo.content.ContentProfile;
 
-public class SharedContentInfo {
+public class SharedContentInfo implements Serializable {
+	private static final long serialVersionUID = -7895565013129977341L;
 	private File file;
 	private String filename;
 	private ContentProfile profile;

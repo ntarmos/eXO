@@ -2,6 +2,7 @@
 
 package ceid.netcins.exo.social;
 
+import java.io.Serializable;
 import java.net.URL;
 
 import ceid.netcins.exo.content.ContentProfile;
@@ -22,7 +23,12 @@ import ceid.netcins.exo.content.ContentProfile;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-public class URLBookMark implements SocialBookMark {
+public class URLBookMark implements SocialBookMark, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9032594102423110316L;
 
 	// The resource URL
 	private URL address;

@@ -1,6 +1,7 @@
 package ceid.netcins.exo.user;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -32,13 +33,15 @@ import ceid.netcins.exo.social.TagCloud;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-public class User {
+public class User implements Serializable {
+	private static final long serialVersionUID = 2795996785244748371L;
 	public static final String UsernameTag = "Username";
 	public static final String ResourceTag = "Resource";
 	public static final String NotAvailableTag = "<N/A>";
 	public static final String ScreennameDelimiter = "/";
 
-	public class SharedContentItem {
+	static public class SharedContentItem implements Serializable {
+		private static final long serialVersionUID = 5355929555863726303L;
 		private String filename;
 		private ContentProfile profile;
 

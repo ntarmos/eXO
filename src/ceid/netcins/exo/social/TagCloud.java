@@ -1,5 +1,6 @@
 package ceid.netcins.exo.social;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -17,8 +18,8 @@ import ceid.netcins.exo.content.ContentField;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-public class TagCloud {
-
+public class TagCloud implements Serializable {
+	private static final long serialVersionUID = -1110912254142511274L;
 	// Term frequency map
 	private Hashtable<ContentField, Integer> tfm;
 

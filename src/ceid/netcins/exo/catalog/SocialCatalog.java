@@ -2,6 +2,7 @@
 
 package ceid.netcins.exo.catalog;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,8 @@ import java.util.Set;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-public class SocialCatalog {
+public class SocialCatalog implements Serializable {
+	private static final long serialVersionUID = -455665545072408167L;
 
 	// The tag of this inverted list
 	private String tag;

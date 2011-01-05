@@ -1,5 +1,7 @@
 package ceid.netcins.exo.user;
 
+import java.io.Serializable;
+
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
 import ceid.netcins.exo.messages.FriendReqPDU;
@@ -14,7 +16,12 @@ import ceid.netcins.exo.messages.FriendReqPDU;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-public class FriendRequest {
+public class FriendRequest implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6311000103670100898L;
 
 	// The pdu from the friend request message
 	private FriendReqPDU freqpdu;

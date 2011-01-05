@@ -3,11 +3,19 @@ package ceid.netcins.exo;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.Random;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServlet;
@@ -25,7 +33,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import rice.environment.Environment;
 import rice.environment.logging.Logger;
 import rice.environment.params.Parameters;
-import rice.environment.random.RandomSource;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.IdFactory;
 import rice.p2p.commonapi.rawserialization.RawMessage;
@@ -78,7 +85,8 @@ import ceid.netcins.exo.user.UserNodeIdFactory;
  * January 9-12, 2011, Asilomar, California, USA.
  * 
  */
-public class Frontend {
+public class Frontend implements Serializable {
+	private static final long serialVersionUID = -7786107116335452480L;
 	public static final int REPLICATION_FACTOR = 3;
 	public static final int LEASE_PERIOD = 10000; // 10 seconds
 	public static final int TIME_TO_FIND_FAULTY = 15000; // 15 seconds
@@ -89,37 +97,32 @@ public class Frontend {
 	public static final String SIMULATOR_SPHERE = "sphere";
 	public static final String SIMULATOR_EUCLIDEAN = "euclidean";
 	public static final String SIMULATOR_GT_ITM = "gt-itm";
+	public static final String StorageRootDir = "eXO_Storage_Root";
 
 	private InetSocketAddress bootstrapNodeAddress;
 	private int webServerPort = 8080;
 	private int pastryNodePort;
-	private Logger logger;
+
+	transient private Logger logger;
+	transient private PastryNode[] nodes = null;
+	transient private CatalogService[] apps = null;
+	transient private Environment environment = null;
+	transient private IdFactory pastryIdFactory = null;
+	transient private NetworkSimulator<DirectNodeHandle, RawMessage> simulator = null;
+	transient private Server server = null;
 
 	private User[] users = null;
-	private PastryNode[] nodes = null;
-	private CatalogService[] apps = null;
 	private boolean isSimulated = false;
-
 	private Hashtable<String, Vector<String>> queue = null;
-
 	private String userName = null;
 	private String resourceName = null;
 	private boolean isBootstrap = false;
-	private Server server = null;
-	private Environment environment = null;
-	private IdFactory pastryIdFactory = null;
-	private NetworkSimulator<DirectNodeHandle, RawMessage> simulator = null;
-	private volatile static RandomSource reqIdGenerator = null;
+
+	private static Random reqIdGenerator = new Random(System.currentTimeMillis());
 
 	public Frontend(Environment env, String userName, String resourceName, int jettyPort, int pastryPort, String bootstrap) throws Exception {
-		this.logger = env.getLogManager().getLogger(getClass(),null);
 		this.environment = env;
-		if (reqIdGenerator == null)
-			reqIdGenerator = env.getRandomSource();
-		pastryIdFactory = new PastryIdFactory(env);
-
-		Parameters params = env.getParameters();
-
+		Parameters params = environment.getParameters();
 		this.userName = userName;
 		this.resourceName = resourceName;
 		if (jettyPort > 0 && jettyPort < 65536)
@@ -129,11 +132,9 @@ public class Frontend {
 			pastryNodePort = params.getInt("exo_pastry_port");
 		this.queue = new Hashtable<String, Vector<String>>();
 		String pastryNodeProtocol = params.getString("exo_pastry_protocol");
-		String simulatorType = params.getString("direct_simulator_topology");
 		int numSimulatedNodes = params.getInt("exo_sim_num_nodes");
 		if (numSimulatedNodes == 0 || !pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT))
 			numSimulatedNodes = 1;
-		nodes = new PastryNode[numSimulatedNodes];
 		apps = new CatalogService[numSimulatedNodes];
 		users = new User[numSimulatedNodes];
 
@@ -150,55 +151,17 @@ public class Frontend {
 			throw e;
 		}
 
-		InetSocketAddress localhost = new InetSocketAddress(InetAddress.getLocalHost(), pastryNodePort);
-		if (localhost.getAddress().getHostAddress().equals(bootstrapNodeAddress.getAddress().getHostAddress()) && pastryNodePort == bootstrapNodeAddress.getPort()) {
-			isBootstrap = true;
-		}
-
-		UserNodeIdFactory nodeIdFactory = new UserNodeIdFactory(userName, resourceName);
-		PastryNodeFactory nodeFactory = null;
-		if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT)) {
-			isSimulated = true;
-			if (simulatorType.equalsIgnoreCase(SIMULATOR_SPHERE)) {
-				simulator = new SphereNetwork<DirectNodeHandle, RawMessage>(env);
-			} else if (simulatorType.equalsIgnoreCase(SIMULATOR_GT_ITM)){
-				simulator = new GenericNetwork<DirectNodeHandle, RawMessage>(env);        
-			} else {
-				simulator = new EuclideanNetwork<DirectNodeHandle, RawMessage>(env);
-			}
-			nodeFactory = new DirectPastryNodeFactory(nodeIdFactory, simulator, env);
-		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_SOCKET)) {
-			nodeFactory = new SocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, env);
-		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_RENDEZVOUS)) {
-			nodeFactory = new RendezvousSocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, env, false);
-		}
-
-		if (nodeFactory == null)
-			nodeFactory = DistPastryNodeFactory.getFactory(new RandomNodeIdFactory(environment),
-					DistPastryNodeFactory.PROTOCOL_SOCKET, pastryNodePort, env);
-
 		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
 		users[0] = new User(id, this.userName, this.resourceName);
-		try {
-			nodes[0] = nodeFactory.newNode((rice.pastry.Id)id);
-		} catch (IOException e) {
-			logger.logException("Unable to create pastry node", e);
-			throw e;
-		}
-		System.err.println("User/Node ID: " + id.toStringFull());
 
 		for (int i = 1; i < numSimulatedNodes; i++) {
 			String uname = Long.toHexString(environment.getRandomSource().nextLong());
 			String rname = Long.toHexString(environment.getRandomSource().nextLong());
 			Id simId = UserNodeIdFactory.generateNodeId(uname, rname);
 			users[i] = new User(simId, uname, rname);
-			try {
-				nodes[i] = nodeFactory.newNode((rice.pastry.Id)simId);
-			} catch (IOException e) {
-				logger.logException("Unable to create pastry node", e);
-				throw e;
-			}
 		}
+
+		initTransientMembers(env);
 	}
 
 	public static int nextReqID() {
@@ -259,7 +222,7 @@ public class Frontend {
 		StorageManagerImpl storage = null;
 		try {
 			storage = new StorageManagerImpl(pastryIdFactory,
-					new PersistentStorage(pastryIdFactory, user.getUsername() + "@" + user.getResourceName(), "eXO_Storage_Root", -1, environment), new LRUCache(new MemoryStorage(pastryIdFactory), 100000, environment));
+					new PersistentStorage(pastryIdFactory, user.getUsername() + "@" + user.getResourceName(), StorageRootDir, -1, environment), new LRUCache(new MemoryStorage(pastryIdFactory), 100000, environment));
 		} catch (IOException e) {
 			logger.logException("Error initializing storage manager", e);
 			return null;
@@ -467,14 +430,122 @@ public class Frontend {
 			return;
 		}
 
+		Frontend cf;
 		Environment env = new Environment(new String[] { "freepastry", "eXO" }, null);
-		Frontend cf = null;
+		final String statefname = StorageRootDir + File.separator + env.getParameters().getString("exo_state_file");
 		try {
-			cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
+			File stateFile = null;
+			if (statefname != null && (stateFile = new File(statefname)) != null && stateFile.exists() && stateFile.isFile() && stateFile.canRead())
+				cf = Frontend.loadStateFromFile(statefname);
+			else
+				cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		}
+		final Frontend cfObj = cf;
+
+		Runtime.getRuntime().addShutdownHook(
+				new Thread() {
+					public void run() {
+						Frontend.saveStateToFile(cfObj, statefname);
+					}
+				}
+		);
+
 		cf.run();
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		initTransientMembers(new Environment(new String[] { "freepastry", "eXO" }, null));
+	}
+
+	private void initTransientMembers(Environment env) throws IOException {
+		environment = env;
+		logger = environment.getLogManager().getLogger(getClass(),null);
+		pastryIdFactory = new PastryIdFactory(environment);
+		Parameters params = environment.getParameters();
+
+		InetSocketAddress localhost = null;
+		try {
+			localhost = new InetSocketAddress(InetAddress.getLocalHost(), pastryNodePort);
+		} catch (UnknownHostException e1) {
+			isBootstrap = true;
+		}
+		if (localhost == null || localhost.getAddress().getHostAddress().equals(bootstrapNodeAddress.getAddress().getHostAddress()) && pastryNodePort == bootstrapNodeAddress.getPort()) {
+			isBootstrap = true;
+		}
+
+		UserNodeIdFactory nodeIdFactory = new UserNodeIdFactory(userName, resourceName);
+		PastryNodeFactory nodeFactory = null;
+		String pastryNodeProtocol = params.getString("exo_pastry_protocol");
+		String simulatorType = params.getString("direct_simulator_topology");
+		int numSimulatedNodes = params.getInt("exo_sim_num_nodes");
+		if (numSimulatedNodes == 0 || !pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT))
+			numSimulatedNodes = 1;
+		nodes = new PastryNode[numSimulatedNodes];
+		apps = new CatalogService[numSimulatedNodes];
+		if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_DIRECT)) {
+			isSimulated = true;
+			if (simulatorType.equalsIgnoreCase(SIMULATOR_SPHERE)) {
+				simulator = new SphereNetwork<DirectNodeHandle, RawMessage>(environment);
+			} else if (simulatorType.equalsIgnoreCase(SIMULATOR_GT_ITM)){
+				simulator = new GenericNetwork<DirectNodeHandle, RawMessage>(environment);
+			} else {
+				simulator = new EuclideanNetwork<DirectNodeHandle, RawMessage>(environment);
+			}
+			nodeFactory = new DirectPastryNodeFactory(nodeIdFactory, simulator, environment);
+		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_SOCKET)) {
+			nodeFactory = new SocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, environment);
+		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_RENDEZVOUS)) {
+			nodeFactory = new RendezvousSocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, environment, false);
+		}
+		if (nodeFactory == null)
+			nodeFactory = DistPastryNodeFactory.getFactory(new RandomNodeIdFactory(environment),
+					DistPastryNodeFactory.PROTOCOL_SOCKET, pastryNodePort, environment);
+
+		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
+		try {
+			nodes[0] = nodeFactory.newNode((rice.pastry.Id)id);
+		} catch (IOException e) {
+			logger.logException("Unable to create pastry node", e);
+			throw e;
+		}
+		System.err.println("User/Node ID: " + id.toStringFull());
+
+		for (int i = 1; i < numSimulatedNodes; i++) {
+			try {
+				nodes[i] = nodeFactory.newNode((rice.pastry.Id)users[i].getUID());
+			} catch (IOException e) {
+				logger.logException("Unable to create pastry node", e);
+				throw e;
+			}
+		}
+	}
+
+	public static void saveStateToFile(Frontend fend, String statefname) {
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try {
+			fos = new FileOutputStream(statefname);
+			out = new ObjectOutputStream(fos);
+			out.writeObject(fend);
+			out.close();
+		} catch(IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static Frontend loadStateFromFile(String statefname) throws IOException, ClassNotFoundException {
+		Frontend ret = null;
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(statefname));
+		ret = (Frontend)in.readObject();
+		in.close();
+		return ret;
 	}
 }

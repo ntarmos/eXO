@@ -1,6 +1,8 @@
 package ceid.netcins.exo.user;
 
 
+import java.io.Serializable;
+
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
 
@@ -19,7 +21,8 @@ import rice.p2p.commonapi.NodeHandle;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-public class Friend {
+public class Friend implements Serializable {
+	private static final long serialVersionUID = -1234346641390328566L;
 
 	// User unique identifier created by SHA-1 hash function
 	private Id uid;
