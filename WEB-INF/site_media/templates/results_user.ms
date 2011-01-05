@@ -1,11 +1,22 @@
 {{#eXO::ScoreBoard}}
-  <div class="entry">
+  <div class="entry clear {{zebra}}">
     <span class="row-number">{{index}}.</span>
     {{#eXO::Entry}}
       {{#eXO::UCE}}
         <span class="uid">{{eXO::UID}}</span>
+
+        <div class="actions-wrapper">
+        <div class="row-actions">
+          <div class="buttons">
+            <span class="button-action">
+              <a class="friend-request" href="#">Send Friend Request</a>
+            </span>
+          </div>
+        </div>
+        </div>
+
         {{#eXO::Profiles}}
-          <div class="tags-wrapper clear">
+          <div class="tags-wrapper append-3">
             {{#eXO::Profile}}
               <div class="tag-row">
                 <div class="tag-field-name">{{eXO::FieldName}}:</div>

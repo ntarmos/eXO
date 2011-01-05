@@ -457,87 +457,127 @@ a:hover {
   display: none;
 }
 /* line 263, ../src/_middle_wrapper.scss */
-#content-main #search-body .tags-wrapper {
-  padding: 0 0 0 2em;
-  min-height: 24px;
-}
-/* line 267, ../src/_middle_wrapper.scss */
-#content-main #search-body .tag-field-name {
-  float: left;
-  margin-right: 0.25em;
-}
-/* line 271, ../src/_middle_wrapper.scss */
-#content-main #search-body .tag-field-data {
-  float: left;
-  margin-right: 0.5em;
-}
-/* line 275, ../src/_middle_wrapper.scss */
-#content-main #search-body .uid {
-  display: none;
-}
-/* line 278, ../src/_middle_wrapper.scss */
 #content-main #search-body .entry {
-  margin: 1em 0;
+  position: relative;
+  margin: 0;
+  padding: 0.5em 0 0.25em 0.5em;
+  border-bottom: 1px solid #8f8f8f;
 }
-/* line 281, ../src/_middle_wrapper.scss */
+/* line 269, ../src/_middle_wrapper.scss */
 #content-main #search-body .row-number {
+  float: left;
   font-size: 1.5em;
   font-weight: bold;
   color: #AAA;
 }
-/* line 288, ../src/_middle_wrapper.scss */
+/* line 275, ../src/_middle_wrapper.scss */
+#content-main #search-body .actions-wrapper {
+  display: none;
+  float: right;
+  position: relative;
+}
+/* line 280, ../src/_middle_wrapper.scss */
+#content-main #search-body div.row-actions {
+  font-size: 10px;
+  height: 24px;
+  line-height: 10px;
+  margin: 0;
+  padding: 7px 5px 0 7px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+/* line 289, ../src/_middle_wrapper.scss */
+#content-main #search-body div.row-actions div.buttons {
+  padding: 2px 0 0;
+  white-space: nowrap;
+}
+/* line 293, ../src/_middle_wrapper.scss */
+#content-main #search-body div.row-actions span.button-action {
+  padding: 0 2px;
+}
+/* line 295, ../src/_middle_wrapper.scss */
+#content-main #search-body div.row-actions span.button-action a {
+  color: #FF0000;
+}
+/* line 297, ../src/_middle_wrapper.scss */
+#content-main #search-body div.row-actions span.button-action a:hover {
+  color: #FF0000;
+}
+/* line 303, ../src/_middle_wrapper.scss */
+#content-main #search-body .tags-wrapper {
+  padding-top: 0.5em;
+  padding-bottom: 0;
+  padding-left: 2em;
+  min-height: 24px;
+}
+/* line 309, ../src/_middle_wrapper.scss */
+#content-main #search-body .tag-field-name {
+  float: left;
+  margin-right: 0.25em;
+}
+/* line 313, ../src/_middle_wrapper.scss */
+#content-main #search-body .tag-field-data {
+  float: left;
+  margin-right: 0.5em;
+}
+/* line 317, ../src/_middle_wrapper.scss */
+#content-main #search-body .uid {
+  display: none;
+}
+/* line 322, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 292, ../src/_middle_wrapper.scss */
+/* line 326, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper div {
   margin: 0 0 1em;
 }
-/* line 295, ../src/_middle_wrapper.scss */
+/* line 329, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper label {
   font-size: 1.2em;
   margin-right: 1em;
 }
-/* line 302, ../src/_middle_wrapper.scss */
+/* line 336, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-element {
   display: inline-block;
 }
-/* line 305, ../src/_middle_wrapper.scss */
+/* line 339, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper {
   border-top: 1px solid #DFDFDF;
   padding: 1em;
   margin: 0 2em;
 }
-/* line 309, ../src/_middle_wrapper.scss */
+/* line 343, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 313, ../src/_middle_wrapper.scss */
+/* line 347, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper .file-row {
   border-bottom: 1px solid #CFCFCF;
   width: 100%;
 }
-/* line 318, ../src/_middle_wrapper.scss */
+/* line 352, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-id {
   float: right;
   display: none;
 }
-/* line 322, ../src/_middle_wrapper.scss */
+/* line 356, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data {
   padding: 0.5em;
   font-size: 1.2em;
   min-height: 24px;
 }
-/* line 326, ../src/_middle_wrapper.scss */
+/* line 360, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data .actions-wrapper {
   display: none;
   float: right;
   position: relative;
 }
-/* line 331, ../src/_middle_wrapper.scss */
+/* line 365, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions {
   font-size: 10px;
   height: 24px;
@@ -548,51 +588,51 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 340, ../src/_middle_wrapper.scss */
+/* line 374, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 344, ../src/_middle_wrapper.scss */
+/* line 378, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 346, ../src/_middle_wrapper.scss */
+/* line 380, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 348, ../src/_middle_wrapper.scss */
+/* line 382, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 353, ../src/_middle_wrapper.scss */
+/* line 387, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 359, ../src/_middle_wrapper.scss */
+/* line 393, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tags-wrapper {
   display: none;
   padding: 0 0 0 2em;
   min-height: 24px;
 }
-/* line 364, ../src/_middle_wrapper.scss */
+/* line 398, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-name {
   float: left;
   margin-right: 0.25em;
 }
-/* line 368, ../src/_middle_wrapper.scss */
+/* line 402, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-data {
   float: left;
   margin-right: 0.5em;
 }
-/* line 375, ../src/_middle_wrapper.scss */
+/* line 409, ../src/_middle_wrapper.scss */
 #content-main #friends-body #frequests-list-wrapper, #content-main #friends-body #friend-list-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 380, ../src/_middle_wrapper.scss */
+/* line 414, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-card {
   background-color: #F5F5F5;
   min-height: 170px;
@@ -600,26 +640,26 @@ a:hover {
   -moz-box-shadow: 0px 0px 4px #8f8f8f;
   box-shadow: 0px 0px 4px #8f8f8f;
 }
-/* line 387, ../src/_middle_wrapper.scss */
+/* line 421, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb {
   background-color: #FFF;
   border: 1px solid #DDD;
   padding: 4px;
   margin-top: 0.75em;
 }
-/* line 392, ../src/_middle_wrapper.scss */
+/* line 426, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb:hover {
   border: 1px solid #CCC;
 }
-/* line 396, ../src/_middle_wrapper.scss */
+/* line 430, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friends-row {
   margin: 0.5em 0;
 }
-/* line 399, ../src/_middle_wrapper.scss */
+/* line 433, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-uid {
   display: none;
 }
-/* line 402, ../src/_middle_wrapper.scss */
+/* line 436, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-name {
   padding: 0.5em;
 }

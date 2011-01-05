@@ -260,8 +260,50 @@
         display: none;
       }
     }
+    .entry{
+      position: relative;
+      margin: 0;
+      padding: 0.5em 0 0.25em 0.5em;
+      border-bottom: 1px solid #8f8f8f;
+    }
+    .row-number{
+      float:left;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #AAA;
+    }
+    .actions-wrapper{
+        display:none;
+        float:right;
+        position:relative;
+    }
+    div.row-actions {
+      font-size: 10px;
+      height: 24px;
+      line-height: 10px;
+      margin: 0;
+      padding: 7px 5px 0 7px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      div.buttons {
+        padding: 2px 0 0;
+        white-space: nowrap;
+      }
+      span.button-action {
+        padding: 0 2px;
+        a {
+          color: #FF0000;
+          &:hover {
+            color: #FF0000;
+          }
+        }
+      }
+    }
     .tags-wrapper{
-      padding: 0 0 0 2em;
+      padding-top: 0.5em;
+      padding-bottom: 0;
+      padding-left: 2em;
       min-height: 24px;
     }
     .tag-field-name{
@@ -274,14 +316,6 @@
     }
     .uid{
       display:none;
-    }
-    .entry{
-      margin: 1em 0;
-    }
-    .row-number{
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #AAA;
     }
   }
   #upload-body {

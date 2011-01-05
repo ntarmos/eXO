@@ -1,11 +1,11 @@
 {{#eXO::ScoreBoard}}
-  <div class="entry">
+  <div class="entry clear {{zebra}}">
     <span class="row-number">{{index}}.</span>
     {{#eXO::Entry}}
       {{#eXO::CCE}}
         <span class="uid">{{eXO::UID}}</span>
         {{#eXO::Profiles}}
-          <div class="tags-wrapper clear">
+          <div class="tags-wrapper">
             {{#eXO::Profile}}
               <div class="tag-row">
                 <div class="tag-field-name">{{eXO::FieldName}}:</div>

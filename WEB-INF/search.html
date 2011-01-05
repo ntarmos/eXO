@@ -78,6 +78,28 @@
       return false;
     });
 
+    this.post('#/friend_request/create', function() {
+      var context = this;
+      if("uid" in context.params && context.params["uid"]!=""){
+        $.ajax({
+          type: 'POST',
+          url:  "/servlet/SendFriendRequest/",
+          dataType: 'json',
+          data: {eXO_data: JSON.stringify({"eXO::UID" : context.params["uid"]})},
+          success: function(data){
+            start_polling(data["eXO::reqID"], "/servlet/SendFriendRequest/",
+              function(){
+                // TODO: Notify for success
+            });
+            return true;
+          },error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : "+textStatus);
+          },
+          complete: function(){}
+        });
+      }
+    });
+
     this.get('#/searching/dht/content', function() {
       this.query = $('input#search').val();
       var context = this;
@@ -98,6 +120,9 @@
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
+                  return (this.index%2==0?"even-row":"odd-row");
+                };
               }
               context.render(
                 "/site_media/templates/results_content.ms",
@@ -105,7 +130,17 @@
                 function(content){
                   $('#results-list').html(content).hide();
                   // Bind new events here
-                  // ...
+                  $('.friend-request').click(function(){
+                    var uid = $(this).parents(".entry").find("span.uid").text();
+                    context.app.runRoute("post", "#/friend_request/create",
+                                         {"uid" : uid });
+                    return false;
+                  });
+                  $(".entry ").hover(function(){
+                    $(".actions-wrapper", this).show();
+                  },function(){
+                    $(".actions-wrapper", this).hide();
+                  });
                   setTimeout(function(){
                     $('#results-list').show();
                     }, 500
@@ -151,6 +186,9 @@
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
+                  return (this.index%2==0?"even-row":"odd-row");
+                };
               }
               context.render(
                 "/site_media/templates/results_user.ms",
@@ -158,7 +196,17 @@
                 function(content){
                   $('#results-list').html(content).hide();
                   // Bind new events here
-                  // ...
+                  $('.friend-request').click(function(){
+                    var uid = $(this).parents(".entry").find("span.uid").text();
+                    context.app.runRoute("post", "#/friend_request/create",
+                                         {"uid" : uid });
+                    return false;
+                  });
+                  $(".entry ").hover(function(){
+                    $(".actions-wrapper", this).show();
+                  },function(){
+                    $(".actions-wrapper", this).hide();
+                  });
                   setTimeout(function(){
                     $('#results-list').show();
                     }, 500
@@ -204,6 +252,9 @@
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
+                  return (this.index%2==0?"even-row":"odd-row");
+                };
               }
               context.render(
                 "/site_media/templates/results_content.ms",
@@ -211,7 +262,17 @@
                 function(content){
                   $('#results-list').html(content).hide();
                   // Bind new events here
-                  // ...
+                  $('.friend-request').click(function(){
+                    var uid = $(this).parents(".entry").find("span.uid").text();
+                    context.app.runRoute("post", "#/friend_request/create",
+                                         {"uid" : uid });
+                    return false;
+                  });
+                  $(".entry ").hover(function(){
+                    $(".actions-wrapper", this).show();
+                  },function(){
+                    $(".actions-wrapper", this).hide();
+                  });
                   setTimeout(function(){
                     $('#results-list').show();
                     }, 500
@@ -257,6 +318,9 @@
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
+                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
+                  return (this.index%2==0?"even-row":"odd-row");
+                };
               }
               context.render(
                 "/site_media/templates/results_user.ms",
@@ -264,7 +328,17 @@
                 function(content){
                   $('#results-list').html(content).hide();
                   // Bind new events here
-                  // ...
+                  $('.friend-request').click(function(){
+                    var uid = $(this).parents(".entry").find("span.uid").text();
+                    context.app.runRoute("post", "#/friend_request/create",
+                                         {"uid" : uid });
+                    return false;
+                  });
+                  $(".entry ").hover(function(){
+                    $(".actions-wrapper", this).show();
+                  },function(){
+                    $(".actions-wrapper", this).hide();
+                  });
                   setTimeout(function(){
                     $('#results-list').show();
                     }, 500
