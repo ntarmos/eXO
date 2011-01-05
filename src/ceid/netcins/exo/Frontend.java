@@ -82,7 +82,7 @@ public class Frontend {
 	public static final int REPLICATION_FACTOR = 1;
 	public static final int LEASE_PERIOD = 10000; // 10 seconds
 	public static final int TIME_TO_FIND_FAULTY = 15000; // 15 seconds
-	public static final String INSTANCE = "CatalogFrontend";
+	public static final String INSTANCE = "Frontend";
 	public static final String PROTOCOL_DIRECT = "direct";
 	public static final String PROTOCOL_SOCKET = "socket";
 	public static final String PROTOCOL_RENDEZVOUS = "rendezvous";
@@ -416,7 +416,7 @@ public class Frontend {
 
 	private static void usage() {
 		System.err.println(
-				"Usage: java ... ceid.netcins.CatalogFrontend\n" +
+				"Usage: java ... ceid.netcins.exo.Frontend\n" +
 				"\t-u|--user <username>\n" +
 				"\t-r|--resource <resourcename>\n" +
 				"\t-w|--webport <web ui port>\n" +
