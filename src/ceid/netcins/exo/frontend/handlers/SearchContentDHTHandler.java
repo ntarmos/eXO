@@ -6,10 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import rice.Continuation;
 import ceid.netcins.exo.CatalogService;
-import ceid.netcins.exo.catalog.ScoreBoard;
-import ceid.netcins.exo.messages.ResponsePDU;
 
 /**
  * 
@@ -22,7 +19,7 @@ import ceid.netcins.exo.messages.ResponsePDU;
  * January 9-12, 2011, Asilomar, California, USA.
  * 
  */
-public class SearchContentDHTHandler extends AbstractHandler {
+public class SearchContentDHTHandler extends SearchRequestBaseHandler {
 	private static final long serialVersionUID = 825367464625718048L;
 
 	public SearchContentDHTHandler(CatalogService catalogService,
@@ -36,27 +33,8 @@ public class SearchContentDHTHandler extends AbstractHandler {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 
-		if (rawQuery == null || queryTopK == null) {
-			sendStatus(response, RequestStatus.FAILURE, null);
-			return;
-		}
-
 		final String reqID = getNewReqID(response);
-		catalogService.searchContent(rawQuery, queryTopK, new Continuation<Object, Exception>() {
-			@Override
-			public void receiveResult(Object arg0) {
-				ScoreBoard sb = null;
-				if (arg0 == null || !(arg0 instanceof ResponsePDU) || (sb = ((ResponsePDU)arg0).getScoreBoard()) == null) {
-					queueStatus(reqID, RequestStatus.FAILURE, null);
-					return;
-				}
-				queueStatus(reqID, RequestStatus.SUCCESS, sb);
-			}
-
-			@Override
-			public void receiveException(Exception arg0) {
-				queueStatus(reqID, RequestStatus.FAILURE, null);
-			}
-		});
+		catalogService.searchContent(rawQuery, queryTopK,
+				new SearchResultContinuation(reqID, this));
 	}
 }
