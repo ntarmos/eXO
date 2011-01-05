@@ -1,6 +1,7 @@
 package ceid.netcins.exo.frontend.handlers;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +43,12 @@ public abstract class FriendRequestBaseHandler extends AbstractHandler {
 		command = new Continuation<Object, Exception>() {
 			@Override
 			public void receiveResult(Object result) {
-				boolean didit = (result instanceof Boolean && (Boolean)result == true);
+				Object res;
+				@SuppressWarnings("rawtypes")
+				boolean didit = (result instanceof Map &&
+						(res = ((Map)result).get("data")) != null &&
+						res instanceof Boolean &&
+						((Boolean)res).booleanValue());
 				queueStatus(reqID, didit ? RequestStatus.SUCCESS : RequestStatus.FAILURE, null);
 			}
 
