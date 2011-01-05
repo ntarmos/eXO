@@ -98,7 +98,6 @@ import ceid.netcins.exo.utils.JavaSerializer;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
-@SuppressWarnings("unchecked")
 public class CatalogService extends PastImpl implements SocService {
 
 	// Factory which used to obtain the content profile data
@@ -295,7 +294,6 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @return The requested user profile
 	 * @throws Exception
 	 */
-	@SuppressWarnings("rawtypes")
 	public void tagUser(final Id uid, final ContentProfile tags,
 			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) {
 
@@ -312,7 +310,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagUserMessage.TYPE, extra_args,
-				new StandardContinuation(command) {
+				new StandardContinuation<Object, Exception>(command) {
 
 			public void receiveResult(Object result) {
 				// We expect a UserCatalogEntry to be returned
@@ -424,9 +422,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @return The requested user profile
 	 * @throws Exception
 	 */
-	@SuppressWarnings("rawtypes")
 	public void getUserProfile(final Id uid,
-			final NodeHandle nodeHandle, final Continuation command) throws Exception {
+			final NodeHandle nodeHandle, final Continuation<Object, Exception> command) throws Exception {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -440,7 +437,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, GetUserProfileMessage.TYPE, extra_args,
-				new StandardContinuation(command) {
+				new StandardContinuation<Object, Exception>(command) {
 
 			public void receiveResult(Object result) {
 				// We expect a ContentProfile object with the user profile data.
@@ -506,9 +503,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command The response callback.
 	 * @throws Exception 
 	 */
-	@SuppressWarnings("rawtypes")
 	public void friendRequest(final Id uid, final String message,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -522,7 +518,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Issue a lookup request to the uderline DHT service
 		lookup(uid, FriendReqMessage.TYPE, extra_args,
-				new StandardContinuation(command) {
+				new StandardContinuation<Object, Exception>(command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
@@ -551,8 +547,7 @@ public class CatalogService extends PastImpl implements SocService {
 	/*
 	 * Wrapper for the generic form of this function.
 	 */
-	public void acceptFriend(final FriendRequest freq,
-			@SuppressWarnings("rawtypes") final Continuation command) {
+	public void acceptFriend(final FriendRequest freq, final Continuation<Object, Exception> command) {
 		acceptFriend(freq, "", command);
 	}
 
@@ -568,9 +563,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command The callback that must be executed when we return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("rawtypes")
 	public void acceptFriend(final FriendRequest freq, String message,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -585,7 +579,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Issue a lookup request to the uderline DHT service
 		lookup(uid, FriendAcceptMessage.TYPE, extra_args,
-			   new StandardContinuation(command) {
+			   new StandardContinuation<Object, Exception>(command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
@@ -617,8 +611,7 @@ public class CatalogService extends PastImpl implements SocService {
 	/*
 	 * Wrapper for the generic form of this function.
 	 */
-	public void rejectFriend(final FriendRequest freq,
-			@SuppressWarnings("rawtypes") final Continuation command) {
+	public void rejectFriend(final FriendRequest freq, final Continuation<Object, Exception> command) {
 		rejectFriend(freq, "", command);
 	}
 
@@ -634,9 +627,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command The callback that must be executed when we return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("rawtypes")
 	public void rejectFriend(final FriendRequest freq, String message,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -651,7 +643,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Issue a lookup request to the uderline DHT service
 		lookup(uid, FriendRejectMessage.TYPE, extra_args,
-			   new StandardContinuation(command) {
+			   new StandardContinuation<Object, Exception>(command) {
 
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean) {
@@ -693,9 +685,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command
 	 *            An asynchronous command which will be executed on return.
 	 */
-	@SuppressWarnings("rawtypes")
 	public void retrieveContent(Id uid, Id contentId, final boolean clouds,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -749,9 +740,9 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command
 	 *            An asynchronous command which will be executed on return.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	public void retrieveContentTags(Id uid, Id contentId,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -784,8 +775,8 @@ public class CatalogService extends PastImpl implements SocService {
 
 	}
 
-	@SuppressWarnings("rawtypes")
-	public void retrieveContentIDs(Id uid, final Continuation command) {
+	@SuppressWarnings("unchecked")
+	public void retrieveContentIDs(Id uid, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -827,9 +818,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command An asynchronous command which will be executed on return.
 	 * @throws Exception
 	 */
-	@SuppressWarnings("rawtypes")
 	public void tagContent(final Id uid, final Id contentId, final ContentProfile tags,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -850,7 +840,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Issue a lookup request to the underline DHT service
 		lookup(uid, TagContentMessage.TYPE, extra_args,
-				new StandardContinuation(command) {
+				new StandardContinuation<Object, Exception>(command) {
 
 			public void receiveResult(Object result) {
 
@@ -903,9 +893,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command
 	 *            Asynchronous commands to be executed after return
 	 */
-	@SuppressWarnings("rawtypes")
 	public void indexURL(URL url, ContentProfile tags,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -971,6 +960,7 @@ public class CatalogService extends PastImpl implements SocService {
 				"InsertMessage (InsertPDU - URLCatalogEntry) for " + tid,
 				command) {
 
+			@SuppressWarnings("unchecked")
 			public void receiveResult(Object result) {
 				if (result instanceof Boolean[]) {
 					System.out
@@ -984,6 +974,7 @@ public class CatalogService extends PastImpl implements SocService {
 				}
 			}
 
+			@SuppressWarnings("unchecked")
 			public void receiveException(Exception result) {
 				System.out
 						.println("\n\nBookmark URL index process, result (exception) code : "
@@ -1002,7 +993,7 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param file
 	 */
 	@SuppressWarnings("rawtypes")
-	public void indexContent(final File file, final Continuation command) {
+	public void indexContent(final File file, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1179,7 +1170,7 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param command
 	 */
 	@SuppressWarnings("rawtypes")
-	public void indexUser(ContentProfile additions, ContentProfile deletions, final Continuation command) {
+	public void indexUser(ContentProfile additions, ContentProfile deletions, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1298,7 +1289,7 @@ public class CatalogService extends PastImpl implements SocService {
 	public void indexPseudoContent(Id cid, String identifier,
 			final ContentProfile additions,
 			final ContentProfile deletions,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1431,7 +1422,7 @@ public class CatalogService extends PastImpl implements SocService {
 	 * Returns the top k catalog entries.
 	 */
 	public void discoverFriend(final String rawQuery, final int k,
-			@SuppressWarnings("rawtypes") final Continuation command) {
+			final Continuation<Object, Exception> command) {
 		searchQuery(QueryPDU.USER_ENHANCEDQUERY, rawQuery, k,
 				ContentProfileFactory.DEFAULT_DELIMITER, command);
 	}
@@ -1587,14 +1578,15 @@ public class CatalogService extends PastImpl implements SocService {
 										command.receiveResult(o);
 									} else {
 										lookupHandles(querytid, replicationFactor + 1,
-												new Continuation() {
+												new Continuation<Object, Exception>() {
+											@SuppressWarnings("unchecked")
 											public void receiveResult(Object o) {
 												PastContentHandle[] handles = (PastContentHandle[]) o;
 
 												for (int i = 0; i < handles.length; i++) {
 													if (handles[i] != null) {
 														fetch(handles[i],
-																new StandardContinuation(parent) {
+																new StandardContinuation<Object, Exception>(parent) {
 															public void receiveResult(final Object o) {
 																command.receiveResult(o);
 															}
@@ -1646,9 +1638,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param queryTerms The set of terms to search for
 	 * @param command The callback which will be called on response.
 	 */
-	@SuppressWarnings("rawtypes")
 	public void searchFriendsNetwork(final int queryType,
-			final String[] queryTerms, int topk, final Continuation command) {
+			final String[] queryTerms, int topk, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1716,9 +1707,8 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param queryOld
 	 * @param command
 	 */
-	@SuppressWarnings("rawtypes")
 	public void searchSocialTagsQuery(final int queryType, final String[] tags,
-			final String[] userIds, final Continuation command) {
+			final String[] userIds, final Continuation<Object, Exception> command) {
 
 		if (this.user == null) {
 			command.receiveException(new RuntimeException("User has not be registered yet!"));
@@ -1742,7 +1732,7 @@ public class CatalogService extends PastImpl implements SocService {
 				sqPDU = new SocialQueryPDU(tags, queryType);
 			}
 
-			storage.getObject(uid, new StandardContinuation(command) {
+			storage.getObject(uid, new StandardContinuation<Object, Exception>(command) {
 				public void receiveResult(Object o) {
 					if (o != null) {
 						// TODO : Maybe we want to SCORE this local Catalog
@@ -1759,13 +1749,14 @@ public class CatalogService extends PastImpl implements SocService {
 									// lastly, try and cache object locally for future use
 									command.receiveResult(o);
 								} else {
-									lookupHandles(uid, replicationFactor + 1, new Continuation() {
+									lookupHandles(uid, replicationFactor + 1, new Continuation<Object, Exception>() {
+										@SuppressWarnings("unchecked")
 										public void receiveResult(Object o) {
 											PastContentHandle[] handles = (PastContentHandle[]) o;
 
 											for (int i = 0; i < handles.length; i++) {
 												if (handles[i] != null) {
-													fetch(handles[i],new StandardContinuation(parent) {
+													fetch(handles[i],new StandardContinuation<Object, Exception>(parent) {
 														public void receiveResult(final Object o) {
 															command.receiveResult(o);
 														}
@@ -2166,7 +2157,7 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param message
 	 *            The message being sent
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void deliver(Id id, Message message) {
 			if (logger.level <= Logger.INFO)
@@ -2194,7 +2185,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 				// if the data is here, we send the reply.
 				// TODO: we may want to  push a cached copy back to the previous node
-				storage.getObject(qmsg.getId(), new StandardContinuation(
+				storage.getObject(qmsg.getId(), new StandardContinuation<Object, Exception>(
 						getResponseContinuation(qmsg)) {
 					public void receiveResult(Object o) {
 						if (logger.level <= Logger.FINE)
@@ -2426,7 +2417,7 @@ public class CatalogService extends PastImpl implements SocService {
 				final Id contentId = rcpdu.getContentId();
 
 				// TODO : Here we must handle the downloading of the content
-				storage.getObject(contentId, new StandardContinuation(
+				storage.getObject(contentId, new StandardContinuation<Object, Exception>(
 						getResponseContinuation(msg)) {
 					public void receiveResult(Object o) {
 						ret.add(Boolean.TRUE);
@@ -2512,10 +2503,9 @@ public class CatalogService extends PastImpl implements SocService {
 	 * @param extra_args A dictionary of extra arguments to be passed.
 	 * @param command Command to be performed when the result is received.
 	 */
-	@SuppressWarnings("rawtypes")
 	public void lookup(final Id id, final short type,
 			final HashMap<String, Object> extra_args,
-			final Continuation command) {
+			final Continuation<Object, Exception> command) {
 		if (logger.level <= Logger.FINER)
 			logger.log(" Performing lookup on " + id.toStringFull());
 
