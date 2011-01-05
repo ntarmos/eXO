@@ -22,7 +22,7 @@ import ceid.netcins.exo.user.Friend;
  * 
  */
 public class GetFriendUIDsHandler extends AbstractHandler {
-
+	private static final String FriendsTag = "eXO::Friends";
 	private static final long serialVersionUID = 5244547683415352126L;
 
 	public GetFriendUIDsHandler(CatalogService catalogService,
@@ -36,6 +36,11 @@ public class GetFriendUIDsHandler extends AbstractHandler {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
 		Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
-		sendStatus(response, RequestStatus.SUCCESS, friends.keySet().toArray());
+		Hashtable<String, Object> ret = new Hashtable<String, Object>();
+		if (friends != null)
+			ret.put(FriendsTag, friends.values().toArray());
+		else
+			ret.put(FriendsTag, new Friend[]{});
+		sendStatus(response, RequestStatus.SUCCESS, ret);
 	}
 }
