@@ -38,6 +38,8 @@ public class ScoreBoardJSONConvertor extends ContentFieldJSONConvertor {
 			return;
 		}
 		Vector<Score> scores = ((ScoreBoard)arg0).getAllEntries();
+		if (scores == null)
+			scores = new Vector<Score>();
 		arg1.add(ScoreDataTag, scores);
 	}
 }
