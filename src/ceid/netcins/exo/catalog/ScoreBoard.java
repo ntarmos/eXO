@@ -21,7 +21,8 @@ public class ScoreBoard  implements Serializable {
 
 	private static final long serialVersionUID = 4381039714176907029L;
 
-	public class Score {
+	public class Score implements Serializable {
+		private static final long serialVersionUID = -822566666197767540L;
 		private CatalogEntry entry;
 		private Float score;
 
