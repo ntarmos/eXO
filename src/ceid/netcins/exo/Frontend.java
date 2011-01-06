@@ -298,7 +298,7 @@ public class Frontend implements Serializable {
 			System.err.print("Jar-in-jar");
 			rootDir = jarRootUrl.toExternalForm();
 		} else
-			System.err.println("Native");
+			System.err.print("Native");
 		System.err.println(" mode detected; loading web resources from " + rootDir);
 
 		server = new Server();
