@@ -14,6 +14,7 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.Random;
@@ -298,10 +299,10 @@ public class Frontend implements Serializable {
 			System.setProperty("jetty.home", rootDir);
 
 		ClassLoader cl = Frontend.class.getClassLoader();
-		URL jarUrl = cl.getResource("eXO.params");
-		if (jarUrl.toExternalForm().startsWith("rsrc:")) {
+		URL jarRootUrl = cl.getResource(rootDir.startsWith("/") ? "." + rootDir : "./" + rootDir);
+		if (jarRootUrl != null) {
 			System.err.println("Jar-in-jar mode detected");
-			rootDir = "jar:file:eXO.jar!/" + rootDir;
+			rootDir = jarRootUrl.toExternalForm();
 		}
 		System.err.println("Loading web resources from " + rootDir);
 
