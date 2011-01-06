@@ -1562,7 +1562,8 @@ public class CatalogService extends PastImpl implements SocService {
 								scorer.doNotify();
 							} else {
 								// debugging only
-								System.out.println("Error: o is not Catalog (in deliver)");
+								if (logger.level <= Logger.INFO)
+									logger.log("Error: o is not Catalog (in deliver)");
 								// send result back
 								parent.receiveResult(new ResponsePDU(0));
 							}
@@ -2177,9 +2178,10 @@ public class CatalogService extends PastImpl implements SocService {
 			}
 
 			final PastMessage msg = (PastMessage) message;
-			System.err.println("Node " + this.getUser().getUID() + " (" + getUser().getScreenName() +
-					") got a " + message.getClass().getName() +
-					" destined to " + msg.getDestination());
+			if (logger.level <= Logger.FINER)
+				logger.log("Node " + this.getUser().getUID() + " (" + getUser().getScreenName() +
+						") got a " + message.getClass().getName() +
+						" destined to " + msg.getDestination());
 			if (msg instanceof QueryMessage) {
 				final QueryMessage qmsg = (QueryMessage) msg;
 				lookups++;
@@ -2208,7 +2210,8 @@ public class CatalogService extends PastImpl implements SocService {
 							scorer.doNotify();
 						} else {
 							// debugging only
-							System.out.println("Error: o is not Catalog (in deliver)");
+							if (logger.level <= Logger.INFO)
+								System.out.println("Error: o is not Catalog (in deliver)");
 							// send result back
 							parent
 									.receiveResult(new ResponsePDU(qmsg

@@ -80,7 +80,7 @@ public class SetUserProfileHandler extends AbstractHandler {
 							indexedNum++;
 					}
 				Logger logger = catalogService.getEnvironment().getLogManager().getLogger(this.getClass(), null);
-				if (logger.level <= Logger.WARNING)
+				if (logger.level <= Logger.INFO)
 					logger.log("Total " + indexedNum + " terms indexed out of " + results.length);
 				if (indexedNum < results.length)
 					receiveException(new Exception());
