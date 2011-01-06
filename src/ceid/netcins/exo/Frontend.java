@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.Random;
@@ -117,6 +118,7 @@ public class Frontend implements Serializable {
 	private String userName = null;
 	private String resourceName = null;
 	private boolean isBootstrap = false;
+	private String rootDir = null;
 
 	private static Random reqIdGenerator = new Random(System.currentTimeMillis());
 
@@ -284,17 +286,23 @@ public class Frontend implements Serializable {
 		ResourceHandler plainFileHandler = new ResourceHandler();
 		plainFileHandler.setDirectoriesListed(false);
 		plainFileHandler.setWelcomeFiles(new String[] { templateName});
-		plainFileHandler.setResourceBase(System.getProperty("jetty.home", "/"));
+		plainFileHandler.setResourceBase(rootDir);
 		plainFileContext.setHandler(plainFileHandler);
 		return plainFileContext;
 	}
 	
 	@SuppressWarnings("rawtypes")
 	private int startWebServer() {
-		String rootDir = environment.getParameters().getString("exo_jetty_root");
+		rootDir = environment.getParameters().getString("exo_jetty_root");
 		if (rootDir != null)
 			System.setProperty("jetty.home", rootDir);
-			
+
+		URL jarUrl = this.getClass().getClassLoader().getResource(rootDir);
+		if (jarUrl != null) {
+			rootDir = jarUrl.toExternalForm();
+			System.err.println("Loading web pages from " + rootDir);
+		}
+
 		server = new Server();
 
 		SelectChannelConnector connector = new SelectChannelConnector();
@@ -339,7 +347,7 @@ public class Frontend implements Serializable {
 		};
 		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletContextHandler.setContextPath("/servlet");
-		servletContextHandler.setResourceBase(System.getProperty("jetty.home", "/"));
+		servletContextHandler.setResourceBase(rootDir);
 		servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
 		servletContextHandler.setAllowNullPathInfo(true);
 		for (Class<ContextHandler> handlerClass : handlerClasses) {
