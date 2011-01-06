@@ -297,11 +297,11 @@ public class Frontend implements Serializable {
 		if (rootDir != null)
 			System.setProperty("jetty.home", rootDir);
 
-		URL jarUrl = this.getClass().getClassLoader().getResource(rootDir);
+		URL jarUrl = Frontend.class.getClassLoader().getResource(rootDir);
 		if (jarUrl != null) {
 			rootDir = jarUrl.toExternalForm();
-			System.err.println("Loading web pages from " + rootDir);
 		}
+		System.err.println("Loading web resources from " + rootDir);
 
 		server = new Server();
 
@@ -348,7 +348,6 @@ public class Frontend implements Serializable {
 		ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		servletContextHandler.setContextPath("/servlet");
 		servletContextHandler.setResourceBase(rootDir);
-		servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
 		servletContextHandler.setAllowNullPathInfo(true);
 		for (Class<ContextHandler> handlerClass : handlerClasses) {
 			addServletToContext(handlerClass, servletContextHandler);
