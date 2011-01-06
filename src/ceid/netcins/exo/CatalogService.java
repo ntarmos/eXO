@@ -1435,7 +1435,7 @@ public class CatalogService extends PastImpl implements SocService {
 	 */
 	public void searchContent(final String rawQuery, final int k,
 			final Continuation<Object, Exception> command) {
-		searchQuery(QueryPDU.CONTENTQUERY, new String[] { rawQuery }, k, command);
+		searchQuery(QueryPDU.CONTENTQUERY, rawQuery, k, command);
 	}
 
 	/**
@@ -1443,7 +1443,7 @@ public class CatalogService extends PastImpl implements SocService {
 	 */
 	public void searchUser(final String rawQuery, final int k,
 			final Continuation<Object, Exception> command) {
-		searchQuery(QueryPDU.USERQUERY, new String[] { rawQuery }, k, command);
+		searchQuery(QueryPDU.USERQUERY, rawQuery, k, command);
 	}
 
 	/**
@@ -1460,15 +1460,46 @@ public class CatalogService extends PastImpl implements SocService {
 	 */
 	public void searchQuery(final int queryType, final String rawQuery,
 			final int k, final String delimiter, final Continuation<Object, Exception> command) {
+		if (rawQuery == null || rawQuery.trim().equals(""))
+			command.receiveException(new Exception("Empty query"));
 
+		searchQuery(queryType, rawQueryTokenizer(rawQuery, delimiter), k, command);
+	}
+
+	private String[] rawQueryTokenizer(String rawQuery, String delimiter) {
 		// Elementary Query Parsing
 		// TODO : Examine doing this with JavaCC
-		String query = rawQuery;// .trim();
-		String[] qterms = null;
-		if (query != null && !query.equals(""))
-			qterms = query.split(delimiter);
+		Vector<String> tempQterms = new Vector<String>();
+		String query = rawQuery.trim();
 
-		searchQuery(queryType, qterms, k, command);
+		boolean inQuotes = false;
+		int nextIndex, lastIndex = 0;
+		while ((nextIndex = query.indexOf('"', lastIndex)) != -1) {
+			String curTerm = query.substring(lastIndex, nextIndex).trim();
+			if (curTerm.length() > 0) {
+				if (inQuotes) {
+					tempQterms.add(curTerm);
+				} else {
+					tempQterms.addAll(Arrays.asList(curTerm.split(delimiter)));
+				}
+			}
+			inQuotes = !inQuotes;
+			lastIndex = nextIndex + 1;
+		}
+		if (lastIndex < query.length()) {
+			String curTerm = query.substring(lastIndex, query.length()).trim();
+			if (curTerm.length() > 0) {
+				if (inQuotes) {
+					tempQterms.add(curTerm);
+				} else {
+					tempQterms.addAll(Arrays.asList(curTerm.split(delimiter)));
+				}
+			}
+		}
+		if (tempQterms.size() > 0) {
+			return tempQterms.toArray(new String[1]);
+		}
+		return null;
 	}
 
 	private String[] termsToArray(int queryType, String[] queryTerms, int k) {
@@ -1629,7 +1660,10 @@ public class CatalogService extends PastImpl implements SocService {
 
 	public void searchFriendsNetwork(final int queryType, final String rawQuery,
 			final int k, final Continuation<Object, Exception> command) {
-		searchFriendsNetwork(queryType, new String[] { rawQuery }, k, command);
+		if (rawQuery == null || rawQuery.trim().equals(""))
+			command.receiveException(new Exception("Empty query"));
+
+		searchFriendsNetwork(queryType, rawQueryTokenizer(rawQuery, ContentProfileFactory.DEFAULT_DELIMITER), k, command);
 	}
 
 	/**
