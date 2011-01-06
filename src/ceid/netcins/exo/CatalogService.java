@@ -24,6 +24,8 @@ import rice.Continuation.StandardContinuation;
 import rice.environment.logging.Logger;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.IdFactory;
+import rice.p2p.commonapi.IdRange;
+import rice.p2p.commonapi.IdSet;
 import rice.p2p.commonapi.Message;
 import rice.p2p.commonapi.Node;
 import rice.p2p.commonapi.NodeHandle;
@@ -2559,5 +2561,44 @@ public class CatalogService extends PastImpl implements SocService {
 				receiveResult(null);
 			}
 		});
+	}
+
+	@Override
+	public void update(NodeHandle handle, boolean joined) {
+		if (!joined)
+			return;
+		IdRange range = endpoint.range(handle, 0, null, true);
+		if (range == null)
+			return;
+		IdSet togo = storage.getStorage().scan(range);
+		if (togo == null || togo.numElements() == 0)
+			return;
+		for (Id next : togo.asArray()) {
+			final Id curId = next;
+			storage.getStorage().getObject(next,
+					new Continuation<Object, Exception>() {
+				@Override
+				public void receiveResult(Object result) {
+					if (result instanceof PastContent) {
+						insert((PastContent)result, new SimpleContinuation(){
+							@Override
+							public void receiveResult(Object result) {
+								storage.getStorage().unstore(curId, new SimpleContinuation() {
+									@Override
+									public void receiveResult(Object result) {
+										logger.log("Moved item " + curId + " to new node");
+									}
+								});
+							}
+						});
+					}
+				}
+
+				@Override
+				public void receiveException(Exception exception) {
+					logger.logException("Error copying data to new node", exception);
+				}
+			});
+		}
 	}
 }
