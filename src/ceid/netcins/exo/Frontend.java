@@ -122,7 +122,7 @@ public class Frontend implements Serializable {
 
 	private static Random reqIdGenerator = new Random(System.currentTimeMillis());
 
-	public Frontend(Environment env, String userName, String resourceName, int jettyPort, int pastryPort, String bootstrap) throws Exception {
+	public Frontend(Environment env, String userName, String resourceName, int jettyPort, int pastryPort, String bootstrap) throws IOException {
 		this.environment = env;
 		Parameters params = environment.getParameters();
 		this.userName = userName;
@@ -140,17 +140,12 @@ public class Frontend implements Serializable {
 		apps = new CatalogService[numSimulatedNodes];
 		users = new User[numSimulatedNodes];
 
-		try {
-			if (bootstrap == null) {
-				bootstrapNodeAddress = params.getInetSocketAddress("exo_pastry_bootstrap");
-			} else {
-				InetAddress bootstrapHostAddr = InetAddress.getByName(bootstrap.substring(0, bootstrap.indexOf(":")));
-				int bootstrapPort = Integer.parseInt(bootstrap.substring(bootstrap.indexOf(":") + 1));
-				bootstrapNodeAddress = new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
+		if (bootstrap == null) {
+			bootstrapNodeAddress = params.getInetSocketAddress("exo_pastry_bootstrap");
+		} else {
+			InetAddress bootstrapHostAddr = InetAddress.getByName(bootstrap.substring(0, bootstrap.indexOf(":")));
+			int bootstrapPort = Integer.parseInt(bootstrap.substring(bootstrap.indexOf(":") + 1));
+			bootstrapNodeAddress = new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
 		}
 
 		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
@@ -300,10 +295,11 @@ public class Frontend implements Serializable {
 		ClassLoader cl = Frontend.class.getClassLoader();
 		URL jarRootUrl = cl.getResource(rootDir.startsWith("/") ? "." + rootDir : "./" + rootDir);
 		if (jarRootUrl != null) {
-			System.err.println("Jar-in-jar mode detected");
+			System.err.print("Jar-in-jar");
 			rootDir = jarRootUrl.toExternalForm();
-		}
-		System.err.println("Loading web resources from " + rootDir);
+		} else
+			System.err.println("Native");
+		System.err.println(" mode detected; loading web resources from " + rootDir);
 
 		server = new Server();
 
@@ -367,6 +363,7 @@ public class Frontend implements Serializable {
 
 	public void run() {
 		Thread.currentThread().setName("eXO main thread");
+		System.err.println("User/Node ID: " + users[0].getUID().toStringFull());
 
 		if (startPastryNodes() == -1 || startCatalogServices() == -1 || startWebServer() == -1)
 			return;
@@ -425,25 +422,38 @@ public class Frontend implements Serializable {
 			return;
 		}
 
-		Frontend cf;
+		Frontend cf = null;
 		Environment env = new Environment(new String[] { "freepastry", "eXO" }, null);
 		final String statefname = StorageRootDir + File.separator + env.getParameters().getString("exo_state_file");
-		try {
-			File stateFile = null;
-			if (statefname != null && (stateFile = new File(statefname)) != null && stateFile.exists() && stateFile.isFile() && stateFile.canRead())
+		File stateFile = null;
+		if (statefname != null && (stateFile = new File(statefname)) != null && stateFile.exists() && stateFile.isFile() && stateFile.canRead()) {
+			System.err.print("Loading saved state... ");
+			try {
 				cf = Frontend.loadStateFromFile(statefname);
-			else
-				cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
+			} catch (Exception e) {
+				System.err.println("error");
+				e.printStackTrace();
+			}
 		}
-		final Frontend cfObj = cf;
+		if (cf == null) {
+			System.err.print("Starting new instance... ");
+			try {
+				cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
+			} catch (IOException e) {
+				System.err.println("error");
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+		System.err.println("done");
 
+		final Frontend cfObj = cf;
 		Runtime.getRuntime().addShutdownHook(
 				new Thread() {
 					public void run() {
+						System.err.print("Saving state... ");
 						Frontend.saveStateToFile(cfObj, statefname);
+						System.err.println("done");
 					}
 				}
 		);
@@ -511,7 +521,6 @@ public class Frontend implements Serializable {
 			logger.logException("Unable to create pastry node", e);
 			throw e;
 		}
-		System.err.println("User/Node ID: " + id.toStringFull());
 
 		for (int i = 1; i < numSimulatedNodes; i++) {
 			try {

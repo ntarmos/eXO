@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rice.Continuation;
+import rice.environment.logging.Logger;
 import ceid.netcins.exo.CatalogService;
 import ceid.netcins.exo.content.ContentProfile;
 import ceid.netcins.exo.frontend.json.ContentProfileJSONConvertor;
@@ -78,9 +79,9 @@ public class SetUserProfileHandler extends AbstractHandler {
 						if (isIndexedTerm)
 							indexedNum++;
 					}
-				System.out.println("Total " + indexedNum
-						+ " terms indexed out of " + results.length
-						+ "!");
+				Logger logger = catalogService.getEnvironment().getLogManager().getLogger(this.getClass(), null);
+				if (logger.level <= Logger.WARNING)
+					logger.log("Total " + indexedNum + " terms indexed out of " + results.length);
 				if (indexedNum < results.length)
 					receiveException(new Exception());
 				queueStatus(reqID, RequestStatus.SUCCESS, results);

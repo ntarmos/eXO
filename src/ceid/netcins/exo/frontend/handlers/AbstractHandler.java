@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import rice.environment.logging.Logger;
 import rice.p2p.commonapi.Id;
 import ceid.netcins.exo.CatalogService;
 import ceid.netcins.exo.Frontend;
@@ -108,7 +109,9 @@ public abstract class AbstractHandler extends HttpServlet {
 		if (status.equals(RequestStatus.FAILURE))
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		try {
-			System.err.println("JSON response: " + Json.toString(ret));
+			Logger logger = catalogService.getEnvironment().getLogManager().getLogger(this.getClass(), null);
+			if (logger.level <= Logger.INFO)
+				logger.log("JSON response: " + Json.toString(ret));
 			response.getWriter().write(Json.toString(ret));
 		} catch (IOException e) {
 			System.err.println("Error sending response to client");
@@ -126,7 +129,9 @@ public abstract class AbstractHandler extends HttpServlet {
 		Map<String, String> ret = new Hashtable<String, String>();
 		ret.put(ReqIDTag, reqID);
 		try {
-			System.err.println("JSON response: " + Json.toString(ret));
+			Logger logger = catalogService.getEnvironment().getLogManager().getLogger(this.getClass(), null);
+			if (logger.level <= Logger.INFO)
+				logger.log("JSON response: " + Json.toString(ret));
 			response.getWriter().write(Json.toString(ret));
 		} catch (IOException e) {
 			System.err.println("Error sending response to client");

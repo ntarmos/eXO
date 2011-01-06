@@ -228,8 +228,9 @@ public class CatalogService extends PastImpl implements SocService {
 	private void doStartIndexUser(final ContentProfile profile) {
 		indexUser(profile, null, new Continuation<Object, Exception>() {
 			public void receiveResult(Object result) {
-				System.out.println("User : " + user.getUID()
-						+ ", indexed successfully");
+				if (logger.level <= Logger.INFO)
+					logger.log("User : " + user.getUID()
+							+ " indexed successfully");
 				// TODO : Check the replicas if are updated correctly!
 				// run replica maintenance
 				// runReplicaMaintence();
@@ -243,9 +244,8 @@ public class CatalogService extends PastImpl implements SocService {
 						if (isIndexedTerm)
 							indexedNum++;
 					}
-				System.out.println("Total " + indexedNum
-						+ " terms indexed out of " + results.length
-						+ "!");
+				if (logger.level <= Logger.INFO)
+					logger.log("Total " + indexedNum + " terms indexed out of " + results.length);
 				if (indexedNum < results.length)
 					receiveException(new Exception());
 			}
@@ -376,9 +376,10 @@ public class CatalogService extends PastImpl implements SocService {
 					(command != null) ? command : new Continuation<Object, Exception>() {
 				@Override
 				public void receiveResult(Object result) {
+					if (logger.level <= Logger.INFO)
+						logger.log("User : " + user.getUID()
+								+ " indexed successfully");
 
-					System.out.println("User : " + user.getUID()
-							+ ", indexed successfully");
 					// TODO : Check the replicas if are updated correctly!
 					// run replica maintenance
 					// runReplicaMaintence();
@@ -390,8 +391,8 @@ public class CatalogService extends PastImpl implements SocService {
 								if (isIndexedTerm)
 									indexedNum++;
 							}
-						System.out.println("Total " + indexedNum
-								+ " terms indexed out of " + results.length);
+						if (logger.level <= Logger.INFO)
+							logger.log("Total " + indexedNum + " terms indexed out of " + results.length);
 					}
 				}
 
