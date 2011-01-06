@@ -313,20 +313,6 @@ public class Frontend implements Serializable {
 
 		ContextHandlerCollection handlersList = new ContextHandlerCollection();
 
-		/*
-		 * Placeholder for Wicket integration
-		 */
-		/*
-		// Needs slf4j jars
-		ServletContextHandler root = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS);
-		FilterHolder filterHolder = new FilterHolder(WicketFilter.class);
-		filterHolder.setInitParameter(ContextParamWebApplicationFactory.APP_CLASS_PARAM,
-				WICKET_WEBAPP_CLASS_NAME);
-		root.addFilter(filterHolder, "/*", 1);
-		root.addServlet(DefaultServlet.class, "/*");
-		handlersList.addHandler(root);
-		*/
-
 		// XXX: Watch out! Handlers are scanned in-order until baseRequest.handled = true, and matched on a String.startsWith() basis
 		Class[] handlerClasses = new Class[] {
 				ShareFileHandler.class,
