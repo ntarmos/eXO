@@ -297,9 +297,11 @@ public class Frontend implements Serializable {
 		if (rootDir != null)
 			System.setProperty("jetty.home", rootDir);
 
-		URL jarUrl = Frontend.class.getClassLoader().getResource(rootDir);
-		if (jarUrl != null) {
-			rootDir = jarUrl.toExternalForm();
+		ClassLoader cl = Frontend.class.getClassLoader();
+		URL jarUrl = cl.getResource("eXO.params");
+		if (jarUrl.toExternalForm().startsWith("rsrc:")) {
+			System.err.println("Jar-in-jar mode detected");
+			rootDir = "jar:file:eXO.jar!/" + rootDir;
 		}
 		System.err.println("Loading web resources from " + rootDir);
 
