@@ -140,13 +140,8 @@ public class Frontend implements Serializable {
 		apps = new CatalogService[numSimulatedNodes];
 		users = new User[numSimulatedNodes];
 
-		if (bootstrap == null) {
-			bootstrapNodeAddress = params.getInetSocketAddress("exo_pastry_bootstrap");
-		} else {
-			InetAddress bootstrapHostAddr = InetAddress.getByName(bootstrap.substring(0, bootstrap.indexOf(":")));
-			int bootstrapPort = Integer.parseInt(bootstrap.substring(bootstrap.indexOf(":") + 1));
-			bootstrapNodeAddress = new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
-		}
+		bootstrapNodeAddress = stringToSocketAddress(bootstrap);
+		isBootstrap = (bootstrapNodeAddress != null) ? checkIsBootstrap(bootstrapNodeAddress) : true;
 
 		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
 		users[0] = new User(id, this.userName, this.resourceName);
@@ -159,6 +154,31 @@ public class Frontend implements Serializable {
 		}
 
 		initTransientMembers(env);
+	}
+
+	private InetSocketAddress stringToSocketAddress(String bootstrap) throws UnknownHostException {
+		InetSocketAddress ret = null;
+		if (bootstrap == null) {
+			ret = environment.getParameters().getInetSocketAddress("exo_pastry_bootstrap");
+		} else {
+			InetAddress bootstrapHostAddr = InetAddress.getByName(bootstrap.substring(0, bootstrap.indexOf(":")));
+			int bootstrapPort = Integer.parseInt(bootstrap.substring(bootstrap.indexOf(":") + 1));
+			ret = new InetSocketAddress(bootstrapHostAddr, bootstrapPort);
+		}
+		return ret;
+	}
+
+	private boolean checkIsBootstrap(InetSocketAddress mine) {
+		InetSocketAddress localhost = null;
+		try {
+			localhost = new InetSocketAddress(InetAddress.getLocalHost(), pastryNodePort);
+		} catch (UnknownHostException e1) {
+			return true;
+		}
+		if (localhost == null || (localhost.getAddress().getHostAddress().equals(mine.getAddress().getHostAddress()) && pastryNodePort == mine.getPort())) {
+			return true;
+		}
+		return false;
 	}
 
 	public static int nextReqID() {
@@ -182,16 +202,18 @@ public class Frontend implements Serializable {
 		return 0;
 	}
 
-	private int startPastryNodes() {
+	private int startPastryNodes(InetSocketAddress bootstrapAddress) {
 		if (nodes == null)
 			return -1;
 
 		if (!isSimulated) {
+			isBootstrap = (bootstrapAddress == null);
+
 			System.out.print("Starting node... ");
-			if (isBootstrap) {
+			if (isBootstrap)
 				nodes[0].boot((Object)null);
-			} else
-				nodes[0].boot(bootstrapNodeAddress);
+			else
+				nodes[0].boot(bootstrapAddress);
 			waitForNode(nodes[0]);
 			System.out.println("done");
 		} else {
@@ -361,11 +383,11 @@ public class Frontend implements Serializable {
 		return 0;
 	}
 
-	public void run() {
+	public void run(InetSocketAddress bootstrapAddress) {
 		Thread.currentThread().setName("eXO main thread");
 		System.err.println("User/Node ID: " + users[0].getUID().toStringFull());
 
-		if (startPastryNodes() == -1 || startCatalogServices() == -1 || startWebServer() == -1)
+		if (startPastryNodes(bootstrapAddress) == -1 || startCatalogServices() == -1 || startWebServer() == -1)
 			return;
 	}
 
@@ -417,11 +439,8 @@ public class Frontend implements Serializable {
 					return;
 			}
 		}
-		if (userName == null || resourceName == null || webPort < 0 || webPort > 65535 || pastryPort < 0 || pastryPort > 65535) {
-			usage();
-			return;
-		}
 
+		InetSocketAddress bootstrapAddress = null;
 		Frontend cf = null;
 		Environment env = new Environment(new String[] { "freepastry", "eXO" }, null);
 		final String statefname = StorageRootDir + File.separator + env.getParameters().getString("exo_state_file");
@@ -437,6 +456,10 @@ public class Frontend implements Serializable {
 		}
 		if (cf == null) {
 			System.err.print("Starting new instance... ");
+			if (userName == null || resourceName == null || webPort < 0 || webPort > 65535 || pastryPort < 0 || pastryPort > 65535) {
+				usage();
+				return;
+			}
 			try {
 				cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
 			} catch (IOException e) {
@@ -446,6 +469,17 @@ public class Frontend implements Serializable {
 			}
 		}
 		System.err.println("done");
+
+		if (bootstrap != null) {
+			try {
+				bootstrapAddress = cf.stringToSocketAddress(bootstrap);
+				if (bootstrapAddress != null && cf.checkIsBootstrap(bootstrapAddress))
+					bootstrapAddress = null;
+			} catch (UnknownHostException e) {
+				System.err.println("Unknown bootstrap host. Bailing out...");
+				System.exit(1);
+			}
+		}
 
 		final Frontend cfObj = cf;
 		Runtime.getRuntime().addShutdownHook(
@@ -458,7 +492,7 @@ public class Frontend implements Serializable {
 				}
 		);
 
-		cf.run();
+		cf.run(bootstrapAddress);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -482,7 +516,7 @@ public class Frontend implements Serializable {
 		} catch (UnknownHostException e1) {
 			isBootstrap = true;
 		}
-		if (localhost == null || localhost.getAddress().getHostAddress().equals(bootstrapNodeAddress.getAddress().getHostAddress()) && pastryNodePort == bootstrapNodeAddress.getPort()) {
+		if (localhost == null || bootstrapNodeAddress == null || (localhost.getAddress().getHostAddress().equals(bootstrapNodeAddress.getAddress().getHostAddress()) && pastryNodePort == bootstrapNodeAddress.getPort())) {
 			isBootstrap = true;
 		}
 
