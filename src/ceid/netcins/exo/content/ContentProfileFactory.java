@@ -212,12 +212,19 @@ public class ContentProfileFactory {
 		return tempcontainer;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, String> extractFile(File f) throws IOException {
 		if (!f.exists() || !f.canRead() || f.isDirectory())
 			return null;
-		Extractor ex = Extractor.getDefault();
-		@SuppressWarnings("unchecked")
-        Map<String, String> tempcontainer = metadataToMap(ex.extract(f));
+		Extractor ex = null;
+		try {
+			ex = Extractor.getDefault();
+		} catch (Exception e) {
+			System.out.println("No libextractor bindings. Disabling...");
+		}
+		Map<String, String> tempcontainer = new HashMap<String, String>();
+		if (ex != null)
+			tempcontainer.putAll(metadataToMap(ex.extract(f)));
 		tempcontainer.put("filename", f.getName());
 		String sha1 = getFileDigest(f, "SHA1");
 		if (sha1 != null)
