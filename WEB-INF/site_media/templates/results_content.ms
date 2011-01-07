@@ -1,5 +1,5 @@
 {{#eXO::ScoreBoard}}
-  <div class="entry clear {{zebra}}">
+  <div class="entry clear {{zebra}}" id="entry-{{index}}">
     <span class="row-number">{{index}}.</span>
     {{#eXO::Entry}}
       {{#eXO::CCE}}

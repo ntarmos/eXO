@@ -43,16 +43,8 @@
         setTimeout(function(){ start_polling(reqID, url, redirect_callback); }, 100);
         return true;
       } else {
-        if (polling_data["eXO::Status"]=="eXO::Success"){
-          // TODO: Notify about success
-          redirect_callback(polling_data["eXO::Data"]);
-        } else if (polling_data["eXO::Status"]=="eXO::Unknown"){
-          // TODO: Fill in with general notification message
-          alert("Search failed!");
-        } else {
-          // TODO: Fill in with general notification message
-          alert("Search failed!");
-        }
+        // Let the callback handle the notifications.
+        redirect_callback(polling_data);
       }
       // TODO: On stop of processing trigger other events
       return true;
@@ -88,8 +80,17 @@
           data: {eXO_data: JSON.stringify({"eXO::UID" : context.params["uid"]})},
           success: function(data){
             start_polling(data["eXO::reqID"], "/servlet/SendFriendRequest/",
-              function(){
-                // TODO: Notify for success
+              function(response_data){
+                if (response_data["eXO::Status"]=="eXO::Success"){
+                  // TODO: Notify about success
+                  $("#"+context.params["entry_id"]).find('.friend-request').
+                    parent().html("<img src=\"/site_media/images/accept.png\">");
+                } else if (response_data["eXO::Status"]=="eXO::Unknown"){
+                  alert("Friend request failed!");
+                } else {
+                  alert("Friend request failed!");
+                }
+                return true;
             });
             return true;
           },error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -116,7 +117,17 @@
         success: function(data){
           if ("eXO::reqID" in data) {
             start_polling(data["eXO::reqID"], "/servlet/SearchContentDHT/",
-            function(templ) {
+            function(response_data) {
+              if (response_data["eXO::Status"]=="eXO::Success"){
+                // TODO: Notify about success
+              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
+                alert("Search failed!");
+                return false;
+              } else {
+                alert("Search failed!");
+                return false;
+              }
+              templ = response_data["eXO::Data"];
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
@@ -132,8 +143,9 @@
                   // Bind new events here
                   $('.friend-request').click(function(){
                     var uid = $(this).parents(".entry").find("span.uid").text();
+                    var entry_id = $(this).parents(".entry").attr('id');
                     context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid });
+                                         {"uid" : uid, "entry_id" : entry_id });
                     return false;
                   });
                   $(".entry ").hover(function(){
@@ -182,7 +194,17 @@
         success: function(data){
           if ("eXO::reqID" in data) {
             start_polling(data["eXO::reqID"], "/servlet/SearchUserDHT/",
-            function(templ) {
+            function(response_data) {
+              if (response_data["eXO::Status"]=="eXO::Success"){
+                // TODO: Notify about success
+              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
+                alert("Search failed!");
+                return false;
+              } else {
+                alert("Search failed!");
+                return false;
+              }
+              templ = response_data["eXO::Data"];
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
@@ -198,8 +220,9 @@
                   // Bind new events here
                   $('.friend-request').click(function(){
                     var uid = $(this).parents(".entry").find("span.uid").text();
+                    var entry_id = $(this).parents(".entry").attr('id');
                     context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid });
+                                         {"uid" : uid, "entry_id" : entry_id });
                     return false;
                   });
                   $(".entry ").hover(function(){
@@ -248,7 +271,17 @@
         success: function(data){
           if ("eXO::reqID" in data) {
             start_polling(data["eXO::reqID"], "/servlet/SearchContentPN/",
-            function(templ) {
+            function(response_data) {
+              if (response_data["eXO::Status"]=="eXO::Success"){
+                // TODO: Notify about success
+              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
+                alert("Search failed!");
+                return false;
+              } else {
+                alert("Search failed!");
+                return false;
+              }
+              templ = response_data["eXO::Data"];
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
@@ -264,8 +297,9 @@
                   // Bind new events here
                   $('.friend-request').click(function(){
                     var uid = $(this).parents(".entry").find("span.uid").text();
+                    var entry_id = $(this).parents(".entry").attr('id');
                     context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid });
+                                         {"uid" : uid, "entry_id" : entry_id });
                     return false;
                   });
                   $(".entry ").hover(function(){
@@ -314,7 +348,17 @@
         success: function(data){
           if ("eXO::reqID" in data) {
             start_polling(data["eXO::reqID"], "/servlet/SearchUserPN/",
-            function(templ) {
+            function(response_data) {
+              if (response_data["eXO::Status"]=="eXO::Success"){
+                // TODO: Notify about success
+              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
+                alert("Search failed!");
+                return false;
+              } else {
+                alert("Search failed!");
+                return false;
+              }
+              templ = response_data["eXO::Data"];
               // Interpolate with counters
               for(i in templ["eXO::ScoreBoard"]){
                 templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
@@ -330,8 +374,9 @@
                   // Bind new events here
                   $('.friend-request').click(function(){
                     var uid = $(this).parents(".entry").find("span.uid").text();
+                    var entry_id = $(this).parents(".entry").attr('id');
                     context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid });
+                                         {"uid" : uid, "entry_id" : entry_id });
                     return false;
                   });
                   $(".entry ").hover(function(){
