@@ -315,7 +315,7 @@ public class Frontend implements Serializable {
 			System.setProperty("jetty.home", rootDir);
 
 		ClassLoader cl = Frontend.class.getClassLoader();
-		URL jarRootUrl = cl.getResource(rootDir.startsWith("/") ? "." + rootDir : "./" + rootDir);
+		URL jarRootUrl = cl.getResource((rootDir.startsWith("/") ? rootDir.substring(1) : rootDir) + "/");
 		if (jarRootUrl != null) {
 			System.err.print("Jar-in-jar");
 			rootDir = jarRootUrl.toExternalForm();
@@ -425,10 +425,20 @@ public class Frontend implements Serializable {
 					resourceName = opts.getOptarg();
 					break;
 				case 'w':
-					webPort = Integer.parseInt(opts.getOptarg());
+					try {
+						webPort = Integer.parseInt(opts.getOptarg());
+					} catch (NumberFormatException e) {
+						System.err.println("Invalid port number " + opts.getOptarg());
+						System.exit(1);
+					}
 					break;
 				case 'd':
-					pastryPort = Integer.parseInt(opts.getOptarg());
+					try {
+						pastryPort = Integer.parseInt(opts.getOptarg());
+					} catch (NumberFormatException e) {
+						System.err.println("Invalid port number " + opts.getOptarg());
+						System.exit(1);
+					}
 					break;
 				case 'b':
 					bootstrap = opts.getOptarg();
