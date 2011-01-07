@@ -1,0 +1,15 @@
+{ 
+    "eXO::Status":"eXO::Success", 
+    "eXO::Data":{ 
+        "eXO::Friend_Requests":[
+           { 
+            "UID": "ABC172746170752E646965634073616572646E61", 
+            "ScreenName": "Amelie"
+           },
+           { 
+            "UID": "478212746170752A64AA6563AAA3616572646A61", 
+            "ScreenName": "Peter"
+           }
+       ]
+    }
+}

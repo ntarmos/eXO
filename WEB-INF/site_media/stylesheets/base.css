@@ -663,6 +663,27 @@ a:hover {
 #content-main #friends-body .friend-name {
   padding: 0.5em;
 }
+/* line 439, ../src/_middle_wrapper.scss */
+#content-main #friends-body img.friend-request-thumb {
+  float: left;
+  vertical-align: text-top;
+}
+/* line 443, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-request-row {
+  padding: 1em;
+  border-bottom: 1px solid #ddd;
+}
+/* line 446, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-request-row .friend-name {
+  float: left;
+  padding-top: 1em;
+}
+/* line 450, ../src/_middle_wrapper.scss */
+#content-main #friends-body .friend-request-row .button-action {
+  display: inline-block;
+  padding-top: 1em;
+  margin: 0.5em 0.1em;
+}
 
 /*
   Aggregates all the footer specific style.

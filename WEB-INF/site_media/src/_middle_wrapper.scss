@@ -436,5 +436,22 @@
     .friend-name {
       padding: 0.5em;
     }
+    img.friend-request-thumb {
+      float:left;
+      vertical-align: text-top;
+    }
+    .friend-request-row {
+      padding:1em;
+      border-bottom: 1px solid #ddd;
+      .friend-name {
+        float: left;
+        padding-top:1em;
+      }
+      .button-action {
+        display: inline-block;
+        padding-top:1em;
+        margin:0.5em 0.1em;
+      }
+    }
   }
 }
