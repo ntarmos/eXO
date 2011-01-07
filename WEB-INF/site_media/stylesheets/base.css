@@ -718,6 +718,11 @@ a:hover {
 }
 
 /* line 2, ../src/_common_forms.scss */
+input, button {
+  cursor: pointer;
+}
+
+/* line 6, ../src/_common_forms.scss */
 input[type="text"] {
   font-size: 1.1em;
   border-radius: 2px;
@@ -728,7 +733,7 @@ input[type="text"] {
   min-width: 280px;
 }
 
-/* line 12, ../src/_common_forms.scss */
+/* line 16, ../src/_common_forms.scss */
 select {
   border-radius: 2px;
   -moz-border-radius: 2px;
@@ -737,7 +742,7 @@ select {
   min-width: 180px;
 }
 
-/* line 20, ../src/_common_forms.scss */
+/* line 24, ../src/_common_forms.scss */
 table.search-select {
   border-bottom: 1px solid #E7E7E7;
   margin: 0.5em 0;
@@ -747,12 +752,12 @@ table.search-select {
   display: inline-block;
   width: auto;
 }
-/* line 28, ../src/_common_forms.scss */
+/* line 32, ../src/_common_forms.scss */
 table.search-select td {
   height: 26px;
   padding: 0;
 }
-/* line 32, ../src/_common_forms.scss */
+/* line 36, ../src/_common_forms.scss */
 table.search-select input#search {
   margin: 0;
 }
