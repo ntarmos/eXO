@@ -37,6 +37,7 @@ public class RejectFriendRequestHandler extends FriendRequestBaseHandler {
 		final Hashtable<Id, FriendRequest> fr = catalogService.getUser().getPendingIncomingFReq();
 		if (!fr.containsKey(uid)) {
 			sendStatus(response, RequestStatus.FAILURE, null);
+			return;
 		}
 		catalogService.rejectFriend(fr.get(uid), frMsg, command);
 	}
