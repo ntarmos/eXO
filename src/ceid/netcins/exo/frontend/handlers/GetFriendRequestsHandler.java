@@ -2,6 +2,7 @@ package ceid.netcins.exo.frontend.handlers;
 
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -23,7 +24,7 @@ import ceid.netcins.exo.user.FriendRequest;
  * 
  */
 public class GetFriendRequestsHandler extends AbstractHandler {
-
+	private static final String FriendRequestsTag = "eXO::FriendRequests";
 	private static final long serialVersionUID = -7350932922284839640L;
 
 	public GetFriendRequestsHandler(CatalogService catalogService,
@@ -36,8 +37,10 @@ public class GetFriendRequestsHandler extends AbstractHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
+		Map<String, FriendRequest[]> ret = new Hashtable<String, FriendRequest[]>();
 		Set<FriendRequest> frReqs = new HashSet<FriendRequest>();
 		frReqs.addAll(catalogService.getUser().getPendingIncomingFReq().values());
-		sendStatus(response, RequestStatus.SUCCESS, frReqs);
+		ret.put(FriendRequestsTag, frReqs.toArray(new FriendRequest[1]));
+		sendStatus(response, RequestStatus.SUCCESS, ret);
 	}
 }
