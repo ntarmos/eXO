@@ -387,7 +387,7 @@ public class Frontend implements Serializable {
 		Thread.currentThread().setName("eXO main thread");
 		System.err.println("User/Node ID: " + users[0].getUID().toStringFull());
 
-		if (startPastryNodes(bootstrapAddress) == -1 || startCatalogServices() == -1 || startWebServer() == -1)
+		if (startCatalogServices() == -1 || startPastryNodes(bootstrapAddress) == -1 || startWebServer() == -1)
 			return;
 	}
 
