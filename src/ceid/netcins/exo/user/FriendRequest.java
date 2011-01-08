@@ -38,6 +38,12 @@ public class FriendRequest implements Serializable {
 		this.sourceHandle = source;
 	}
 
+	public String getScreenName() {
+		if (freqpdu == null)
+			return null;
+		return freqpdu.getScreenName();
+	}
+
 	public FriendReqPDU getFriendReqPDU() {
 		return freqpdu;
 	}
