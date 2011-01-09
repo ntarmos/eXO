@@ -29,6 +29,7 @@ import rice.p2p.commonapi.IdSet;
 import rice.p2p.commonapi.Message;
 import rice.p2p.commonapi.Node;
 import rice.p2p.commonapi.NodeHandle;
+import rice.p2p.commonapi.NodeHandleSet;
 import rice.p2p.commonapi.rawserialization.InputBuffer;
 import rice.p2p.commonapi.rawserialization.MessageDeserializer;
 import rice.p2p.past.PastContent;
@@ -1693,15 +1694,20 @@ public class CatalogService extends PastImpl implements SocService {
 		Hashtable<Id, Friend> friends = user.getFriends();
 		Id destId = null;
 		NodeHandle nodeHandle = null;
+		int nQueriesSent = 0;
 
 		// Iterate to lookup for every node we want to visit!
 		for (Friend friend : friends.values()) {
 
 			// Get the UID of the specific friend
 			destId = friend.getUID();
-			// Get the NodeHandle of destination node
-			nodeHandle = friend.getNodeHandle();
-
+			NodeHandleSet nhset = this.getEndpoint().localLookup(friend.getUID(), 1, true);
+			if (nhset == null || nhset.size() < 1)
+				continue;
+			NodeHandle nh = nhset.getHandle(0);
+			if (nh == null || nh.checkLiveness() == false)
+			continue;
+			nodeHandle = nh;
 			final Id uid = destId;
 			final QueryPDU qPDU;
 
@@ -1734,7 +1740,10 @@ public class CatalogService extends PastImpl implements SocService {
 					receiveResult(null);
 				}
 			});
+			nQueriesSent++;
 		}
+		if (nQueriesSent == 0)
+			command.receiveException(new Exception("No friends alive"));
 	}
 
 	/**
