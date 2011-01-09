@@ -24,7 +24,7 @@ import ceid.netcins.exo.user.FriendRequest;
  * 
  */
 public class GetFriendRequestsHandler extends AbstractHandler {
-	private static final String FriendRequestsTag = "eXO::FriendRequests";
+	private static final String FriendRequestsTag = "eXO::Friend_Requests";
 	private static final long serialVersionUID = -7350932922284839640L;
 
 	public GetFriendRequestsHandler(CatalogService catalogService,

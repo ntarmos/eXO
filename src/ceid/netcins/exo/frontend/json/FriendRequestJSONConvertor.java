@@ -19,8 +19,8 @@ import ceid.netcins.exo.user.FriendRequest;
  * 
  */
 public class FriendRequestJSONConvertor extends ContentFieldJSONConvertor {
-	private static final String UIDTag = "eXO::UID";
-	private static final String ScreenameTag = "eXO::ScreenName";
+	private static final String UIDTag = "UID";
+	private static final String ScreenameTag = "ScreenName";
 
 	public FriendRequestJSONConvertor() {
 	}
