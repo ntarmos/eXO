@@ -579,6 +579,10 @@ public class Frontend implements Serializable {
 	public static void saveStateToFile(Frontend fend, String statefname) {
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
+		for (int i = 0; i < fend.nodes.length; i++) {
+			fend.nodes[i].destroy();
+		}
+		fend.environment.destroy();
 		try {
 			fos = new FileOutputStream(statefname);
 			out = new ObjectOutputStream(fos);
