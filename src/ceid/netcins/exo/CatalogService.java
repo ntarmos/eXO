@@ -1572,7 +1572,11 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Iterate to lookup for every term in query!
 		if (termsArray != null && termsArray.length > 0) {
-			final QueryPDU qPDU = new QueryPDU(termsArray, queryType, k, this.user.getPublicUserProfile());
+			final QueryPDU qPDU = new QueryPDU(termsArray, queryType, k,
+					(queryType == QueryPDU.CONTENT_ENHANCEDQUERY ||
+							queryType == QueryPDU.USER_ENHANCEDQUERY ||
+							queryType == QueryPDU.HYBRID_ENHANCEDQUERY) ?
+					this.user.getPublicUserProfile() : null);
 			for (int i = 0; i < termsArray.length; i++) {
 				// Compute each terms TID
 				final Id querytid = factory.buildId(termsArray[i]);
@@ -1701,7 +1705,10 @@ public class CatalogService extends PastImpl implements SocService {
 			final Id uid = destId;
 			final QueryPDU qPDU;
 
-			qPDU = new QueryPDU(termsArray, queryType, topk, user.getCompleteUserProfile());
+			qPDU = new QueryPDU(termsArray, queryType, topk, 
+					(queryType == QueryPDU.CONTENT_ENHANCEDQUERY ||
+							queryType == QueryPDU.USER_ENHANCEDQUERY ||
+							queryType == QueryPDU.HYBRID_ENHANCEDQUERY) ? user.getCompleteUserProfile() : null);
 
 			// send the request across the wire, and see if the result is null or not
 			// Use nodeHandle as first hop hint!
