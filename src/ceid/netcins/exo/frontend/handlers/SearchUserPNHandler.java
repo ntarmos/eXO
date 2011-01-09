@@ -36,7 +36,7 @@ public class SearchUserPNHandler extends SearchRequestBaseHandler {
 
 		final String reqID = getNewReqID(response);
 		catalogService.searchFriendsNetwork(
-				QueryPDU.USER_ENHANCEDQUERY,
+				QueryPDU.USERQUERY,
 				rawQuery, queryTopK,
 				new SearchResultContinuation(reqID, this));
 	}

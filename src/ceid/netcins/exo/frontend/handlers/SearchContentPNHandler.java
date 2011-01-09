@@ -36,7 +36,7 @@ public class SearchContentPNHandler extends SearchRequestBaseHandler {
 
 		final String reqID = getNewReqID(response);
 		catalogService.searchFriendsNetwork(
-				QueryPDU.CONTENT_ENHANCEDQUERY,
+				QueryPDU.CONTENTQUERY,
 				rawQuery, queryTopK,
 				new SearchResultContinuation(reqID, this));
 	}
