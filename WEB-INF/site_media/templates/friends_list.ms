@@ -4,9 +4,9 @@
   {{/first}}
     <div class="span-4 friend-card {{#last}}last{{/last}}">
       <img class="friend-thumb" height="100" width="100" alt="" src="/site_media/images/generic.jpg">
-      <span class="friend-uid">{{UID}}</span>
+      <span class="friend-uid">{{eXO::UID}}</span>
       <div class="friend-name">
-        <a href="#">{{ScreenName}}</a>
+        <a href="#">{{eXO::ScreenName}}</a>
       </div>
     </div>
   {{#last}}
