@@ -1214,11 +1214,8 @@ public class CatalogService extends PastImpl implements SocService {
 
 		// Also add all terms from shared content profiles
 		Iterator<ContentProfile> itv = user.getSharedContentProfiles().values().iterator();
-		Iterator<Id> itk = user.getSharedContentProfiles().keySet().iterator();
 		while (itv.hasNext()) {
-			Id key = itk.next();
 			ContentProfile cp = itv.next().getPublicPart();
-			cp.add(new StoredField("SHA-1", key.toStringFull()));
 			catalogToTermVector(indexingTerms, new ContentCatalogEntry(user.getUID(), cp, null));
 		}
 
