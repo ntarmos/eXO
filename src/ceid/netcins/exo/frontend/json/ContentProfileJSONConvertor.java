@@ -28,6 +28,7 @@ public class ContentProfileJSONConvertor implements Convertor {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object fromJSON(Map arg0) {
+		if (arg0 == null) return null;
 		Object[] content = (Object[])arg0.get(ProfileTag);
 		ContentProfile ret = new ContentProfile();
 		if (content != null)
