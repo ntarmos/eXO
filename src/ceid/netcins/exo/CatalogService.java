@@ -1743,7 +1743,7 @@ public class CatalogService extends PastImpl implements SocService {
 			nQueriesSent++;
 		}
 		if (nQueriesSent == 0)
-			command.receiveException(new Exception("No friends alive"));
+			command.receiveResult(null);
 	}
 
 	/**
