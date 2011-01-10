@@ -13,7 +13,7 @@
         <a class="pub-add-field add-field" href="#">Add New Field</a>
         </span>
     </h2>
-    <div class="clear new-field pub-new-field">
+    <div id="pub-new-field" class="clear new-field">
         <div class="span-8">Field Name</div>
         <div class="span-10">Add Tags</div>
         <div class="span-8 clear">
@@ -67,7 +67,7 @@
       </div>
     {{/eXO::PublicProfile}}
     {{^eXO::PublicProfile}}
-      <span class="quiet">There are no public tags yet. Why don\'t you add some now?</span>
+      <span class="quiet">There are no public tags yet. Why don't you add some now?</span>
     {{/eXO::PublicProfile}}
     </div>
     </div>
@@ -79,7 +79,7 @@
         <a class="pri-add-field add-field" href="#">Add New Field</a>
         </span>
     </h2>
-    <div class="pri-new-field clear new-field">
+    <div id="pri-new-field" class="clear new-field">
         <div class="span-8">Field Name</div>
         <div class="span-10">Add Tags</div>
         <div class="span-8 clear">
@@ -133,7 +133,7 @@
       </div>
     {{/eXO::PrivateProfile}}
     {{^eXO::PrivateProfile}}
-      <span class="quiet">There are no public tags yet. Why don\'t you add some now?</span>
+      <span class="quiet">There are no private tags yet. Why don't you add some now?</span>
     {{/eXO::PrivateProfile}}
     </div>
     </div>

@@ -179,6 +179,72 @@
     }
   }
 
+  function edit_field_template(field_name, row_number){
+    var template = '';
+    var row_dict = null;
+    for(row_num in profile_dict){
+      row_dict = profile_dict[row_num];
+      if(row_dict["eXO::FieldName"]==field_name)
+        break;
+    }
+    if(profile_dict!=null && row_dict!=null){
+      var label = '', prefix = '';
+      if(row_dict["eXO::FieldIsPublic"]){
+        label = "Make this field private?";
+        prefix = "pub";
+      }else{
+        label ="Make this field public?";
+        prefix = "pri";
+      }
+
+      template = '<div id="'+ prefix +'-edit-field-'+ row_number +'" class="clear edit-field">'
+        +'  <div class="span-8">Field Name</div>'
+        +'  <div class="span-10">Add Tags</div>'
+        +'  <div class="span-8 clear">'
+        +'    <input class="field-name" type="text" name="fieldname" value="'+ field_name +'">'
+        +'  </div>'
+        +'  <div class="span-10">'
+        +'  <form class="add-tag-form" action="#/add_tag" method="post">'
+        +'    <input type="text" name="tag" class="tag-input">'
+        +'    <input type="submit" class="add-tag" value="Add">'
+        +'  </form>'
+        +'  </div>'
+        +'  <div class="clear">Currently Added Tags :</div>'
+        +'  <div class="clear tag-field-data" style="margin-top:1em">';
+
+      if(row_dict["eXO::FieldData"]=== undefined){
+        for(tag in row_dict["eXO::Terms"]){
+          var tag_html = '<span class="single-tag">'
+                     + '  <span class="value">'
+                     + row_dict["eXO::Terms"][tag]
+                     + '  </span>'
+                     + '  <a class="close" href="#">1</a>'
+                     + '</span>';
+          template += tag_html;
+        }
+      } else {
+        var tag_html = '<span class="single-tag">'
+                   + '  <span class="value">'
+                   + row_dict["eXO::FieldData"]
+                   + '  </span>'
+                   + '  <a class="close" href="#">1</a>'
+                   + '</span>';
+        template += tag_html;
+      }
+
+      template += '  </div>'
+        +'  <div class="clear">'
+        +'    <label>'+ label +'</label><input class="change_privacy" type="checkbox">'
+        +'  </div>'
+        +'  <div class="button-wrapper" class="clear">'
+        +'    <button class="update-action">update</button>'
+        +'    <span>or <a class="form-cancel" href="#">cancel</a>'
+        +'  </div>'
+        +'</div>';
+    }
+    return template;
+  }
+
   var app = $.sammy('#content-main', function() {
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
@@ -226,8 +292,10 @@
           // Show all hidden file rows
           $('.file-row').show();
 
-          // Set current instance in profile dictionary
-          profile_dict = data["eXO::Data"]["eXO::Profile"];
+          // Deep copy profile dictionary to preserve needed fields
+          profile_dict = [];
+          for(j in data["eXO::Data"]["eXO::Profile"])
+            profile_dict[j] = jQuery.extend(true, {}, data["eXO::Data"]["eXO::Profile"][j]);
 
           // Interpolate counter and separate public/private profiles
           var templ = {"eXO::PublicProfile": [], "eXO::PrivateProfile": []};
@@ -300,6 +368,69 @@
               var instance = $(this).parents('.new-field');
               if(update_profile_instance(null, instance))
                 context.app.runRoute('post', '#/file/set/'+cid);
+            });
+            // Bind delete action
+            $(".button-action a.delete").click(function(){
+              // Delete entry from profile_dict
+              var array = $(this).attr('id').split("-");
+              var id = array[array.length - 1];
+              var prefix = array[0];
+              var field_row_instance = $("#"+prefix+"-tag-row-"+id);
+              var field_name = $(".tag-field-name", field_row_instance).html();
+              if(delete_profile_entry(field_name))
+                context.app.runRoute('post', '#/file/set/'+cid);
+              return false;
+            });
+            // Bind edit action
+            $(".button-action a.edit").click(function(){
+              var array = $(this).attr('id').split("-");
+              var id = array[array.length - 1];
+              var prefix = array[0];
+              var field_row_instance = $("#"+prefix+"-tag-row-"+id);
+              var field_name = $(".tag-field-name", field_row_instance).html();
+              field_row_instance.after(edit_field_template(field_name, id)).hide();
+              
+              var edit_intance = $("#"+prefix+"-edit-field-"+id);
+              // Bind edit form cancel event
+              $("a.form-cancel", edit_intance).click(function(){
+                field_row_instance.show();
+                edit_intance.remove();
+                return false;
+              });
+
+              // Bind add tag event
+              $(".add-tag-form", edit_intance).submit(function(){
+                 var str = $('.tag-input', edit_intance).val().trim();
+                 if(str!=''){
+                   var tag_html = '<span class="single-tag">'
+                                + '  <span class="value">'
+                                + str
+                                + '  </span>'
+                                + '  <a class="close" href="#">1</a>'
+                                + '</span>';
+                   $('div.tag-field-data', edit_intance).append(tag_html);
+
+                   // Bind remove event for new tag
+                   $('.single-tag a.close', edit_intance).click(function(){
+                     $(this).parent().remove();
+                     return false;
+                   });
+                   $('.tag-input', edit_intance).val('');
+                }
+                return false;
+              });
+
+              // Bind update click
+              $(".update-action", edit_intance).click(function(){
+                if(update_profile_instance(field_name, edit_intance)!=false)
+                  context.app.runRoute('post', '#/file/set/'+cid);
+              });
+              // Bind remove event for new tag
+              $('.single-tag a.close', edit_intance).click(function(){
+                $(this).parent().remove();
+                return false;
+              });
+              return false;
             });
           });
         },
@@ -398,14 +529,14 @@
           alert("Failed to access user profile data!");
           return false;
         }
-        profile_dict = data["eXO::Data"]["eXO::Profile"];
+        user_profile_dict = data["eXO::Data"]["eXO::Profile"];
         // Fill in the data to the corresponding places
         var username="Incognito", resource="Home";
-        for(dict in profile_dict){
-          if(profile_dict[dict]["eXO::FieldName"]=="Username"){
-            username = profile_dict[dict]["eXO::FieldData"];
-          }else if(profile_dict[dict]["eXO::FieldName"]=="Resource"){
-            resource = profile_dict[dict]["eXO::FieldData"];
+        for(dict in user_profile_dict){
+          if(user_profile_dict[dict]["eXO::FieldName"]=="Username"){
+            username = user_profile_dict[dict]["eXO::FieldData"];
+          }else if(user_profile_dict[dict]["eXO::FieldName"]=="Resource"){
+            resource = user_profile_dict[dict]["eXO::FieldData"];
           }
         }
         if(username!=null)

@@ -314,6 +314,9 @@
       float: left;
       margin-right: 0.5em;
     }
+    .tag-row {
+      display: inline-block;
+    }
     .uid{
       display:none;
     }
@@ -347,6 +350,9 @@
       .file-row{
         border-bottom: 1px solid #CFCFCF;
         width:100%;
+        .tag-row {
+          display: inline-block;
+        }
       }
     }
     .file-id{
@@ -477,6 +483,7 @@
       }
     .tag-field-data {
       .single-tag {
+          margin: 0.2em;
           line-height: 22px; /* FIXME: This is a WORKAROUND */
           position: relative;
           padding: 3px 15px 3px 8px;
@@ -534,8 +541,15 @@
         }
       }
       .edit-field {
-        font-size: 0.8em;
         text-align: left;
+        .tag-field-data {
+          .single-tag {
+            a.close {
+              right: 4px; /* FIXME: make it compatible */
+              top: 7px; /* FIXME: make it compatible */
+            }
+          }
+        }
       }
     }
   }

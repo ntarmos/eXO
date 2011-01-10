@@ -522,62 +522,70 @@ a:hover {
   margin-right: 0.5em;
 }
 /* line 317, ../src/_middle_wrapper.scss */
+#content-main #search-body .tag-row {
+  display: inline-block;
+}
+/* line 320, ../src/_middle_wrapper.scss */
 #content-main #search-body .uid {
   display: none;
 }
-/* line 322, ../src/_middle_wrapper.scss */
+/* line 325, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 326, ../src/_middle_wrapper.scss */
+/* line 329, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper div {
   margin: 0 0 1em;
 }
-/* line 329, ../src/_middle_wrapper.scss */
+/* line 332, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-wrapper label {
   font-size: 1.2em;
   margin-right: 1em;
 }
-/* line 336, ../src/_middle_wrapper.scss */
+/* line 339, ../src/_middle_wrapper.scss */
 #content-main #upload-body #upload-element {
   display: inline-block;
 }
-/* line 339, ../src/_middle_wrapper.scss */
+/* line 342, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper {
   border-top: 1px solid #DFDFDF;
   padding: 1em;
   margin: 0 2em;
 }
-/* line 343, ../src/_middle_wrapper.scss */
+/* line 346, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper h3 {
   margin-top: 1em;
   text-align: center;
 }
-/* line 347, ../src/_middle_wrapper.scss */
+/* line 350, ../src/_middle_wrapper.scss */
 #content-main #upload-body #file-list-wrapper .file-row {
   border-bottom: 1px solid #CFCFCF;
   width: 100%;
 }
-/* line 352, ../src/_middle_wrapper.scss */
+/* line 353, ../src/_middle_wrapper.scss */
+#content-main #upload-body #file-list-wrapper .file-row .tag-row {
+  display: inline-block;
+}
+/* line 358, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-id {
   float: right;
   display: none;
 }
-/* line 356, ../src/_middle_wrapper.scss */
+/* line 362, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data {
   padding: 0.5em;
   font-size: 1.2em;
   min-height: 24px;
 }
-/* line 360, ../src/_middle_wrapper.scss */
+/* line 366, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data .actions-wrapper {
   display: none;
   float: right;
   position: relative;
 }
-/* line 365, ../src/_middle_wrapper.scss */
+/* line 371, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions {
   font-size: 10px;
   height: 24px;
@@ -588,78 +596,78 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 374, ../src/_middle_wrapper.scss */
+/* line 380, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 378, ../src/_middle_wrapper.scss */
+/* line 384, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 380, ../src/_middle_wrapper.scss */
+/* line 386, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 382, ../src/_middle_wrapper.scss */
+/* line 388, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 387, ../src/_middle_wrapper.scss */
+/* line 393, ../src/_middle_wrapper.scss */
 #content-main #upload-body .file-data div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 393, ../src/_middle_wrapper.scss */
+/* line 399, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tags-wrapper {
   display: none;
   padding: 0 0 0 2em;
   min-height: 24px;
 }
-/* line 398, ../src/_middle_wrapper.scss */
+/* line 404, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-name {
   float: left;
   margin-right: 0.25em;
 }
-/* line 402, ../src/_middle_wrapper.scss */
+/* line 408, ../src/_middle_wrapper.scss */
 #content-main #upload-body .tag-field-data {
   float: left;
   margin-right: 0.5em;
 }
-/* line 406, ../src/_middle_wrapper.scss */
+/* line 412, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit {
   padding: 1em;
   margin-top: 1em;
   margin-bottom: 1em;
   border: 1px solid #DDD;
 }
-/* line 412, ../src/_middle_wrapper.scss */
+/* line 418, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit h3 span {
   margin-left: 1em;
   font-size: 0.85em;
 }
-/* line 416, ../src/_middle_wrapper.scss */
+/* line 422, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit h3 a.done-editing {
   color: #FF0000;
 }
-/* line 420, ../src/_middle_wrapper.scss */
+/* line 426, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit h2 {
   font-size: 1.2em;
 }
-/* line 422, ../src/_middle_wrapper.scss */
+/* line 428, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit h2 .add-field {
   font-size: 1.4em;
 }
-/* line 426, ../src/_middle_wrapper.scss */
+/* line 432, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row {
   padding: 0.5em 4em;
   text-align: left;
 }
-/* line 429, ../src/_middle_wrapper.scss */
+/* line 435, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.tag-row-border-wrapper {
   border-bottom: 1px solid #DFDFDF;
 }
-/* line 432, ../src/_middle_wrapper.scss */
+/* line 438, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper {
   display: none;
   height: 0;
@@ -668,7 +676,7 @@ a:hover {
   top: 0;
   width: 0;
 }
-/* line 439, ../src/_middle_wrapper.scss */
+/* line 445, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions {
   border-radius: 12px;
   -moz-border-radius: 12px;
@@ -682,39 +690,40 @@ a:hover {
   right: 0;
   top: 0;
 }
-/* line 451, ../src/_middle_wrapper.scss */
+/* line 457, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions div.buttons {
   padding: 2px 0 0;
   white-space: nowrap;
 }
-/* line 455, ../src/_middle_wrapper.scss */
+/* line 461, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions span.button-action {
   padding: 0 2px;
 }
-/* line 457, ../src/_middle_wrapper.scss */
+/* line 463, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions span.button-action a {
   color: #FF0000;
 }
-/* line 459, ../src/_middle_wrapper.scss */
+/* line 465, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions span.button-action a:hover {
   color: #FF0000;
 }
-/* line 464, ../src/_middle_wrapper.scss */
+/* line 470, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions a.close {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 470, ../src/_middle_wrapper.scss */
+/* line 476, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row .tag-field-name {
   color: #333;
   margin-top: 0.5em;
 }
-/* line 474, ../src/_middle_wrapper.scss */
+/* line 480, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-row .tag-field-data {
   margin-top: 0.25em;
 }
-/* line 479, ../src/_middle_wrapper.scss */
+/* line 485, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-field-data .single-tag {
+  margin: 0.2em;
   line-height: 22px;
   /* FIXME: This is a WORKAROUND */
   position: relative;
@@ -729,11 +738,11 @@ a:hover {
   font-size: 0.75em;
   font-weight: bold;
 }
-/* line 494, ../src/_middle_wrapper.scss */
+/* line 501, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-field-data .single-tag:hover {
   background-color: #d6e1f6;
 }
-/* line 497, ../src/_middle_wrapper.scss */
+/* line 504, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .tag-field-data .single-tag a.close {
   display: block;
   position: absolute;
@@ -742,14 +751,14 @@ a:hover {
   top: 5px;
   /* FIXME: make it compatible */
 }
-/* line 505, ../src/_middle_wrapper.scss */
+/* line 512, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .new-field, #content-main #upload-body .content-profile-edit .edit-field {
   background-color: #efefef;
   margin: 1em 3em;
   padding: 2em;
   min-height: 100px;
 }
-/* line 510, ../src/_middle_wrapper.scss */
+/* line 517, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .new-field .single-tag, #content-main #upload-body .content-profile-edit .edit-field .single-tag {
   font-size: 1em;
   /* Resetting the font-size */
@@ -758,38 +767,44 @@ a:hover {
   padding-top: 0;
   padding-bottom: 0;
 }
-/* line 517, ../src/_middle_wrapper.scss */
+/* line 524, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .new-field .button-wrapper, #content-main #upload-body .content-profile-edit .edit-field .button-wrapper {
   margin-top: 1em;
   text-align: center;
 }
-/* line 520, ../src/_middle_wrapper.scss */
+/* line 527, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .new-field .button-wrapper a, #content-main #upload-body .content-profile-edit .edit-field .button-wrapper a {
   color: #FF0000;
 }
-/* line 525, ../src/_middle_wrapper.scss */
+/* line 532, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .new-field {
   display: none;
 }
-/* line 529, ../src/_middle_wrapper.scss */
+/* line 536, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .new-field .tag-field-data .single-tag a.close {
   right: 4px;
   /* FIXME: make it compatible */
   top: 7px;
   /* FIXME: make it compatible */
 }
-/* line 536, ../src/_middle_wrapper.scss */
+/* line 543, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .edit-field {
-  font-size: 0.8em;
   text-align: left;
 }
-/* line 544, ../src/_middle_wrapper.scss */
+/* line 547, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .edit-field .tag-field-data .single-tag a.close {
+  right: 4px;
+  /* FIXME: make it compatible */
+  top: 7px;
+  /* FIXME: make it compatible */
+}
+/* line 558, ../src/_middle_wrapper.scss */
 #content-main #friends-body #frequests-list-wrapper, #content-main #friends-body #friend-list-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 549, ../src/_middle_wrapper.scss */
+/* line 563, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-card {
   background-color: #F5F5F5;
   min-height: 170px;
@@ -797,45 +812,45 @@ a:hover {
   -moz-box-shadow: 0px 0px 4px #8f8f8f;
   box-shadow: 0px 0px 4px #8f8f8f;
 }
-/* line 556, ../src/_middle_wrapper.scss */
+/* line 570, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb {
   background-color: #FFF;
   border: 1px solid #DDD;
   padding: 4px;
   margin-top: 0.75em;
 }
-/* line 561, ../src/_middle_wrapper.scss */
+/* line 575, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb:hover {
   border: 1px solid #CCC;
 }
-/* line 565, ../src/_middle_wrapper.scss */
+/* line 579, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friends-row {
   margin: 0.5em 0;
 }
-/* line 568, ../src/_middle_wrapper.scss */
+/* line 582, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-uid {
   display: none;
 }
-/* line 571, ../src/_middle_wrapper.scss */
+/* line 585, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-name {
   padding: 0.5em;
 }
-/* line 574, ../src/_middle_wrapper.scss */
+/* line 588, ../src/_middle_wrapper.scss */
 #content-main #friends-body img.friend-request-thumb {
   float: left;
   vertical-align: text-top;
 }
-/* line 578, ../src/_middle_wrapper.scss */
+/* line 592, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row {
   padding: 1em;
   border-bottom: 1px solid #ddd;
 }
-/* line 581, ../src/_middle_wrapper.scss */
+/* line 595, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row .friend-name {
   float: left;
   padding-top: 1em;
 }
-/* line 585, ../src/_middle_wrapper.scss */
+/* line 599, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row .button-action {
   display: inline-block;
   padding-top: 1em;
