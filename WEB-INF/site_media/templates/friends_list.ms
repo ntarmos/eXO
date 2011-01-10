@@ -13,3 +13,6 @@
   </div>
   {{/last}}
 {{/eXO::Friends}}
+{{^eXO::Friends}}
+  <span class="quiet">There are no friends yet.</span>
+{{/eXO::Friends}}

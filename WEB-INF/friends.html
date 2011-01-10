@@ -69,7 +69,7 @@
               if (response_data["eXO::Status"]=="eXO::Success"){
                 // Notify about success
                 var html = "<img src=\"/site_media/images/accept.png\">"
-                  + "<span class=\"quiet\">Successfully accepted!</span>";
+                  + "<span class=\"notification-message quiet\">Successfully accepted!</span>";
                 $('#'+elem_id+' .row-actions').html(html);
               } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                 alert("Accept friend request failed!");

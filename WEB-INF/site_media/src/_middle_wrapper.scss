@@ -584,6 +584,7 @@
     }
     .friend-name {
       padding: 0.5em;
+      word-wrap: break-word;
     }
     img.friend-request-thumb {
       float:left;
@@ -595,6 +596,11 @@
       .friend-name {
         float: left;
         padding-top:1em;
+      }
+      .notification-message {
+        margin-left: 0.5em;
+        display: inline-block;
+        padding-top: 1em;
       }
       .button-action {
         display: inline-block;

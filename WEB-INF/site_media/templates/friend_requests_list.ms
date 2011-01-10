@@ -24,3 +24,6 @@
     </div>
   </div>
 {{/eXO::Friend_Requests}}
+{{^eXO::Friend_Requests}}
+  <span class="quiet">There are no pending requests.</span>
+{{/eXO::Friend_Requests}}
