@@ -50,7 +50,8 @@ public class SetContentTagsHandler extends AbstractHandler {
 
 		final String reqID = getNewReqID(response);
 
-		profile.add(new StoredField("SHA-1", cid.toStringFull()));
+		if (profile.getField("SHA-1", TermField.class) == null && profile.getField("SHA-1", StoredField.class) == null)
+			profile.add(new StoredField("SHA-1", cid.toStringFull()));
 		TermField identifier = (TermField)profile.getField("Filename", TermField.class);
 
 		if (uid == null) { // Local resource.
