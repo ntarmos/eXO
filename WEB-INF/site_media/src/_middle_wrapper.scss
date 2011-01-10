@@ -524,6 +524,14 @@
       }
       .new-field {
         display: none;
+        .tag-field-data {
+          .single-tag {
+            a.close {
+              right: 4px; /* FIXME: make it compatible */
+              top: 7px; /* FIXME: make it compatible */
+            }
+          }
+        }
       }
       .edit-field {
         font-size: 0.8em;

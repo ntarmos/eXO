@@ -771,18 +771,25 @@ a:hover {
 #content-main #upload-body .content-profile-edit .new-field {
   display: none;
 }
-/* line 528, ../src/_middle_wrapper.scss */
+/* line 529, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .new-field .tag-field-data .single-tag a.close {
+  right: 4px;
+  /* FIXME: make it compatible */
+  top: 7px;
+  /* FIXME: make it compatible */
+}
+/* line 536, ../src/_middle_wrapper.scss */
 #content-main #upload-body .content-profile-edit .edit-field {
   font-size: 0.8em;
   text-align: left;
 }
-/* line 536, ../src/_middle_wrapper.scss */
+/* line 544, ../src/_middle_wrapper.scss */
 #content-main #friends-body #frequests-list-wrapper, #content-main #friends-body #friend-list-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 541, ../src/_middle_wrapper.scss */
+/* line 549, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-card {
   background-color: #F5F5F5;
   min-height: 170px;
@@ -790,45 +797,45 @@ a:hover {
   -moz-box-shadow: 0px 0px 4px #8f8f8f;
   box-shadow: 0px 0px 4px #8f8f8f;
 }
-/* line 548, ../src/_middle_wrapper.scss */
+/* line 556, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb {
   background-color: #FFF;
   border: 1px solid #DDD;
   padding: 4px;
   margin-top: 0.75em;
 }
-/* line 553, ../src/_middle_wrapper.scss */
+/* line 561, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb:hover {
   border: 1px solid #CCC;
 }
-/* line 557, ../src/_middle_wrapper.scss */
+/* line 565, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friends-row {
   margin: 0.5em 0;
 }
-/* line 560, ../src/_middle_wrapper.scss */
+/* line 568, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-uid {
   display: none;
 }
-/* line 563, ../src/_middle_wrapper.scss */
+/* line 571, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-name {
   padding: 0.5em;
 }
-/* line 566, ../src/_middle_wrapper.scss */
+/* line 574, ../src/_middle_wrapper.scss */
 #content-main #friends-body img.friend-request-thumb {
   float: left;
   vertical-align: text-top;
 }
-/* line 570, ../src/_middle_wrapper.scss */
+/* line 578, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row {
   padding: 1em;
   border-bottom: 1px solid #ddd;
 }
-/* line 573, ../src/_middle_wrapper.scss */
+/* line 581, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row .friend-name {
   float: left;
   padding-top: 1em;
 }
-/* line 577, ../src/_middle_wrapper.scss */
+/* line 585, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row .button-action {
   display: inline-block;
   padding-top: 1em;
