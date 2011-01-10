@@ -175,7 +175,10 @@ public class Frontend implements Serializable {
 		} catch (UnknownHostException e1) {
 			return true;
 		}
-		if (localhost == null || (localhost.getAddress().getHostAddress().equals(mine.getAddress().getHostAddress()) && pastryNodePort == mine.getPort())) {
+		if (localhost == null || (pastryNodePort == mine.getPort() &&
+				(localhost.getAddress().getHostAddress().equals(mine.getAddress().getHostAddress()) ||
+						mine.getAddress().getHostAddress().equals("127.0.0.1") ||
+						mine.getAddress().getHostAddress().equals("::1")))) {
 			return true;
 		}
 		return false;
