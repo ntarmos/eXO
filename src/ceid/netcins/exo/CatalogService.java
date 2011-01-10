@@ -1218,7 +1218,8 @@ public class CatalogService extends PastImpl implements SocService {
 		while (itv.hasNext()) {
 			Id key = itk.next();
 			ContentProfile cp = itv.next().getPublicPart();
-			catalogToTermVector(indexingTerms, new ContentCatalogEntry(key, cp, null));
+			cp.add(new StoredField("SHA-1", key.toStringFull()));
+			catalogToTermVector(indexingTerms, new ContentCatalogEntry(user.getUID(), cp, null));
 		}
 
 		if (indexingTerms.size() == 0) {
@@ -1331,12 +1332,12 @@ public class CatalogService extends PastImpl implements SocService {
 		ContentProfile cp = user.getSharedContentProfile(chsum);
 		if (cp == null)
 			cp = new ContentProfile(uceAdd.getContentProfile());
-		ContentCatalogEntry cce = new ContentCatalogEntry(chsum, cp, null);
+		ContentCatalogEntry cce = new ContentCatalogEntry(user.getUID(), cp, null);
 		cce.add(uceAdd);
 		cce.subtract(uceDel);
 		user.addSharedContentProfile(chsum, identifier, cce.getContentProfile());
-		uceAdd = new ContentCatalogEntry(chsum, cp.getPublicPart(), user.getPublicUserProfile());
-		uceDel = (cpDel != null) ? new ContentCatalogEntry(chsum, cpDel.getPublicPart(), null) : null;
+		uceAdd = new ContentCatalogEntry(user.getUID(), cp.getPublicPart(), user.getPublicUserProfile());
+		uceDel = (cpDel != null) ? new ContentCatalogEntry(user.getUID(), cpDel.getPublicPart(), null) : null;
 
 		// Vector of indexing terms (Strings)
 		Vector<String> indexingTerms = new Vector<String>();
