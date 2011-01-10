@@ -550,9 +550,9 @@ public class Frontend implements Serializable {
 			}
 			nodeFactory = new DirectPastryNodeFactory(nodeIdFactory, simulator, environment);
 		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_SOCKET)) {
-			nodeFactory = new SocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, environment);
+			nodeFactory = new SocketPastryNodeFactory(nodeIdFactory, (new InetSocketAddress(pastryNodePort)).getAddress(), pastryNodePort, environment);
 		} else if (pastryNodeProtocol.equalsIgnoreCase(PROTOCOL_RENDEZVOUS)) {
-			nodeFactory = new RendezvousSocketPastryNodeFactory(nodeIdFactory, bootstrapNodeAddress.getAddress(), pastryNodePort, environment, false);
+			nodeFactory = new RendezvousSocketPastryNodeFactory(nodeIdFactory, (new InetSocketAddress(pastryNodePort)).getAddress(), pastryNodePort, environment, false);
 		}
 		if (nodeFactory == null)
 			nodeFactory = DistPastryNodeFactory.getFactory(new RandomNodeIdFactory(environment),
