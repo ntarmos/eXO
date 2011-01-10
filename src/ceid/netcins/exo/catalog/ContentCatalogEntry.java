@@ -2,7 +2,6 @@ package ceid.netcins.exo.catalog;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import rice.p2p.commonapi.Id;
@@ -150,10 +149,10 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 			return this;
 
 		ContentCatalogEntry addCE = ((ContentCatalogEntry)additions);
-		List<ContentField> add = null;
+		Set<ContentField> add = null;
 		super.add(new UserCatalogEntry(getUID(), addCE.getUserProfile()));
 		if (addCE.contentProfile == null ||
-				(add = addCE.contentProfile.getPublicFields()).size() == 0)
+				(add = addCE.contentProfile.getAllFields()).size() == 0)
 			return this;
 
 		for (ContentField cf : add)
@@ -173,10 +172,10 @@ public class ContentCatalogEntry extends UserCatalogEntry implements
 			return this;
 
 		ContentCatalogEntry delCE = ((ContentCatalogEntry)deletions);
-		List<ContentField> del = null;
+		Set<ContentField> del = null;
 		super.subtract(new UserCatalogEntry(getUID(), delCE.getUserProfile()));
 		if (delCE.contentProfile == null ||
-				(del = delCE.contentProfile.getPublicFields()).size() == 0)
+				(del = delCE.contentProfile.getAllFields()).size() == 0)
 			return this;
 
 		for (ContentField cf : del)
