@@ -626,13 +626,163 @@ a:hover {
   float: left;
   margin-right: 0.5em;
 }
-/* line 409, ../src/_middle_wrapper.scss */
+/* line 406, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit {
+  padding: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border: 1px solid #DDD;
+}
+/* line 412, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit h3 span {
+  margin-left: 1em;
+  font-size: 0.85em;
+}
+/* line 416, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit h3 a.done-editing {
+  color: #FF0000;
+}
+/* line 420, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit h2 {
+  font-size: 1.2em;
+}
+/* line 422, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit h2 .add-field {
+  font-size: 1.4em;
+}
+/* line 426, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row {
+  padding: 0.5em 4em;
+  text-align: left;
+}
+/* line 429, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.tag-row-border-wrapper {
+  border-bottom: 1px solid #DFDFDF;
+}
+/* line 432, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper {
+  display: none;
+  height: 0;
+  left: 0;
+  position: relative;
+  top: 0;
+  width: 0;
+}
+/* line 439, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions {
+  border-radius: 12px;
+  -moz-border-radius: 12px;
+  background-color: #FFFFFF;
+  font-size: 10px;
+  height: 24px;
+  line-height: 10px;
+  margin: 0;
+  padding: 7px 5px 0 7px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+/* line 451, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions div.buttons {
+  padding: 2px 0 0;
+  white-space: nowrap;
+}
+/* line 455, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions span.button-action {
+  padding: 0 2px;
+}
+/* line 457, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions span.button-action a {
+  color: #FF0000;
+}
+/* line 459, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions span.button-action a:hover {
+  color: #FF0000;
+}
+/* line 464, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row div.actions-wrapper div.row-actions a.close {
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 470, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row .tag-field-name {
+  color: #333;
+  margin-top: 0.5em;
+}
+/* line 474, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-row .tag-field-data {
+  margin-top: 0.25em;
+}
+/* line 479, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-field-data .single-tag {
+  line-height: 22px;
+  /* FIXME: This is a WORKAROUND */
+  position: relative;
+  padding: 3px 15px 3px 8px;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  -webkit-box-shadow: 0px 0px 2px #A8B6D1;
+  -moz-box-shadow: 0px 0px 2px #A8B6D1;
+  background-color: #CAD8F3;
+  border: 1px solid #A8B6D1;
+  color: #333333;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+/* line 494, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-field-data .single-tag:hover {
+  background-color: #d6e1f6;
+}
+/* line 497, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .tag-field-data .single-tag a.close {
+  display: block;
+  position: absolute;
+  right: 6px;
+  /* FIXME: make it compatible */
+  top: 5px;
+  /* FIXME: make it compatible */
+}
+/* line 505, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .new-field, #content-main #upload-body .content-profile-edit .edit-field {
+  background-color: #efefef;
+  margin: 1em 3em;
+  padding: 2em;
+  min-height: 100px;
+}
+/* line 510, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .new-field .single-tag, #content-main #upload-body .content-profile-edit .edit-field .single-tag {
+  font-size: 1em;
+  /* Resetting the font-size */
+  display: inline-block;
+  margin: 0.2em;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+/* line 517, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .new-field .button-wrapper, #content-main #upload-body .content-profile-edit .edit-field .button-wrapper {
+  margin-top: 1em;
+  text-align: center;
+}
+/* line 520, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .new-field .button-wrapper a, #content-main #upload-body .content-profile-edit .edit-field .button-wrapper a {
+  color: #FF0000;
+}
+/* line 525, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .new-field {
+  display: none;
+}
+/* line 528, ../src/_middle_wrapper.scss */
+#content-main #upload-body .content-profile-edit .edit-field {
+  font-size: 0.8em;
+  text-align: left;
+}
+/* line 536, ../src/_middle_wrapper.scss */
 #content-main #friends-body #frequests-list-wrapper, #content-main #friends-body #friend-list-wrapper {
   font-size: 1.25em;
   text-align: center;
   padding: 0.5em 1em 2em;
 }
-/* line 414, ../src/_middle_wrapper.scss */
+/* line 541, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-card {
   background-color: #F5F5F5;
   min-height: 170px;
@@ -640,45 +790,45 @@ a:hover {
   -moz-box-shadow: 0px 0px 4px #8f8f8f;
   box-shadow: 0px 0px 4px #8f8f8f;
 }
-/* line 421, ../src/_middle_wrapper.scss */
+/* line 548, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb {
   background-color: #FFF;
   border: 1px solid #DDD;
   padding: 4px;
   margin-top: 0.75em;
 }
-/* line 426, ../src/_middle_wrapper.scss */
+/* line 553, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-thumb:hover {
   border: 1px solid #CCC;
 }
-/* line 430, ../src/_middle_wrapper.scss */
+/* line 557, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friends-row {
   margin: 0.5em 0;
 }
-/* line 433, ../src/_middle_wrapper.scss */
+/* line 560, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-uid {
   display: none;
 }
-/* line 436, ../src/_middle_wrapper.scss */
+/* line 563, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-name {
   padding: 0.5em;
 }
-/* line 439, ../src/_middle_wrapper.scss */
+/* line 566, ../src/_middle_wrapper.scss */
 #content-main #friends-body img.friend-request-thumb {
   float: left;
   vertical-align: text-top;
 }
-/* line 443, ../src/_middle_wrapper.scss */
+/* line 570, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row {
   padding: 1em;
   border-bottom: 1px solid #ddd;
 }
-/* line 446, ../src/_middle_wrapper.scss */
+/* line 573, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row .friend-name {
   float: left;
   padding-top: 1em;
 }
-/* line 450, ../src/_middle_wrapper.scss */
+/* line 577, ../src/_middle_wrapper.scss */
 #content-main #friends-body .friend-request-row .button-action {
   display: inline-block;
   padding-top: 1em;

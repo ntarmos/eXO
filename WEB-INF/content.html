@@ -74,8 +74,74 @@
         dataType: 'json',
         data: {eXO_data: JSON.stringify({"eXO::CID" : cid})},
         success: function(data){
-          // TODO: Do template rendering here
-          Sammy.log('Content Profile:'+ data["eXO::Data"]);
+          // Interpolate counter and separate public/private profiles
+          var templ = {"eXO::PublicProfile": [], "eXO::PrivateProfile": []};
+          var counter1=0, counter2=0;
+          for(i in data["eXO::Data"]["eXO::Profile"]){
+            if(data["eXO::Data"]["eXO::Profile"][i]["eXO::FieldIsPublic"]==true){
+              templ["eXO::PublicProfile"][counter1] = data["eXO::Data"]["eXO::Profile"][i];
+              templ["eXO::PublicProfile"][counter1]["counter"] = counter1;
+              counter1++;
+            }else{
+              templ["eXO::PrivateProfile"][counter2] = data["eXO::Data"]["eXO::Profile"][i];
+              templ["eXO::PrivateProfile"][counter2]["counter"] = counter2;
+              counter2++;
+            }
+          }
+          Sammy.log(templ);
+          // Do template rendering here
+          context.render("/site_media/templates/file_profile_edit.ms", templ,
+           function(content){
+            // Find row and hide/show templates
+            var row = $('span#'+cid).parents(".file-row");
+            row.after(content).hide();
+            // Bind events here
+            $('.add-field').click(function(){
+              var instance = $(this).parents(".profile-wrapper");
+              $('.new-field', instance).toggle();
+              return false;
+            });
+            $('.new-field .button-wrapper a.form-cancel').click(function(){
+              $(this).parents('.new-field').hide();
+              return false;
+            });
+            $('.done-editing').click(function(){
+              var edit_row = $(this).parents('.content-profile-edit');
+              row.show();
+              edit_row.remove();
+              return false;
+            });
+            $('.new-field .add-tag-form').submit(function(){
+              var instance = $(this);
+              var new_field_instance = $(this).parents(".new-field");
+              var str = $('.tag-input', instance).val().trim();
+              if(str!=''){
+                var tag_html = '<span class="single-tag">'
+                             + '  <span class="value">'
+                             + str
+                             + '  </span>'
+                             + '  <a class="close" href="#">1</a>'
+                             + '</span>';
+                $('div.tag-field-data', new_field_instance).append(tag_html);
+
+                // Bind remove event for new tag
+                $('.single-tag a.close', new_field_instance).click(function(){
+                  $(this).parent().remove();
+                  return false;
+                });
+                $('.tag-input', new_field_instance).val('');
+              }
+              return false;
+            });
+            // Bind hover row events
+            $(".tag-row").hover(function(){
+                var row = $(this);
+                $(".actions-wrapper", row).show();
+            },function(){
+                var row = $(this);
+                $(".actions-wrapper", row).hide();
+            });
+          });
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
           alert("An error occurred : "+textStatus);

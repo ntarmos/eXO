@@ -19,7 +19,7 @@
     </div>
     </div>
     
-    <span class="file-id append-2">{{file_id}}</span>
+    <span id="{{file_id}}" class="file-id append-2">{{file_id}}</span>
   </div>
   <div class="tags-wrapper clear">
   {{#eXO::Profile}}
