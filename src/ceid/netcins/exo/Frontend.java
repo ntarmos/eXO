@@ -453,7 +453,8 @@ public class Frontend implements Serializable {
 		InetSocketAddress bootstrapAddress = null;
 		Frontend cf = null;
 		Environment env = new Environment(new String[] { "freepastry", "eXO" }, null);
-		final String statefname = StorageRootDir + File.separator + env.getParameters().getString("exo_state_file");
+		final String statefname = StorageRootDir + File.separator + env.getParameters().getString("exo_state_file") +
+		((userName != null) ? ("-" + userName) : "") + ((resourceName != null) ? ("-" + resourceName) : "");
 		File stateFile = null;
 		if (statefname != null && (stateFile = new File(statefname)) != null && stateFile.exists() && stateFile.isFile() && stateFile.canRead()) {
 			System.err.print("Loading saved state... ");
