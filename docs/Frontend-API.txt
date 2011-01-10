@@ -8,7 +8,7 @@ All calls:
         - JSON-formatted data under the label 'eXO_data'.
         - {"eXO::reqID":"<integer>"}: used to probe for the status of a
           previous operation making use of continuations (i.e., all
-		  remote or local/remote operations).
+          remote or local/remote operations).
     * Output:
         - {"eXO::reqID":"<integer>"}:  the call makes use of
           continuations, try again later with the given reqID as input.
@@ -80,7 +80,7 @@ Content items:
         - Local/remote operation (share the given file on the local
           machine and index it in the network)
             o Input: multipart-encoded data through POST under the name
-			'FileData' (i.e. <input type="file" name="FileData"/>)
+              'FileData' (i.e. <input type="file" name="FileData"/>)
             o Output: none (just the status tag)
 
 Friends:
@@ -94,12 +94,12 @@ Friends:
         - Local operation (get data for pending incoming friend
           requests)
             o Input: none
-            o Output: [<UserID>, ...]
+            o Output: <FriendRequestsList>
 
     * GetFriendUIDs
         - Local operation (get IDs of friends)
             o Input: none
-            o Output: [<UserID>, ...]
+            o Output: <FriendsList>
 
     * {Accept,Reject}FriendRequest
         - Local/remote operation (mark user as friend and send a
@@ -127,6 +127,10 @@ JSON data format
 
 * <boolean>:
     true | false
+
+* ScreenName:
+    <string>
+    (<username>/<resource>, e.g., "ntarmos@cs.uoi.gr/Home")
 
 * TermField:
     {
@@ -179,12 +183,34 @@ JSON data format
 
 * UserCatalogEntry:
     {
-        "eXO::UCE":{<UniqueID>:<UserProfile>}
+        "eXO::UCE":{
+            "eXO::UID":<UniqueID>,
+            "eXO::Profiles":<UserProfile>
+        }
     }
 
 * ContentCatalogEntry:
     {
-        "eXO::CCE":{<UniqueID>:[<ContentProfile>,<UserProfile>]}
+        "eXO::CCE":{
+            "eXO::UID":<UniqueID>,
+            "eXO::Profiles":[<ContentProfile>,<UserProfile>]
+        }
+    }
+
+* Friend:
+    {
+        "UID":<UniqueID>,
+        "ScreenName":<ScreenName>
+    }
+
+* FriendRequestsList:
+    {
+        "eXO::Friend_Requests":[<Friend>,...]
+    }
+
+* FriendsList:
+    {
+        "eXO::Friends":[<Friend>,...]
     }
 
 * TagCloud:
@@ -200,7 +226,7 @@ JSON data format
     }
 
 * ItemIdentifier:
-    "<string>"
+    <string>
 
 * SharedContent:
     {
