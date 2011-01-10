@@ -64,8 +64,29 @@
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
-    this.post('#/file_index/delete/', function() {
+    this.get('#/file/get/:cid', function() {
+      // TODO: Get and present the profile in edit mode!
+      var context = this;
+      var cid =  this.params['cid'];
+      $.ajax({
+        type: 'POST',
+        url: "/servlet/GetContentTags/",
+        dataType: 'json',
+        data: {eXO_data: JSON.stringify({"eXO::CID" : cid})},
+        success: function(data){
+          // TODO: Do template rendering here
+          Sammy.log('Content Profile:'+ data["eXO::Data"]);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("An error occurred : "+textStatus);
+        }
+      });
     });
+
+    this.post('#/file_index/delete/', function() {
+      // TODO: Implement this!
+    });
+
     this.get('#/file_list/get/', function() {
       var context = this;
       $.ajax({
@@ -100,6 +121,12 @@
               },function(){
                 $(this).parents(".file-row").find(".tags-wrapper").hide();
                 $(this).text("Show");
+                return false;
+              });
+              $(".edit").click(function(){
+                // Trigger GetContentTags and go to profile edit mode
+                var cid = $(this).parents(".file-row").find(".file-id").text();
+                context.app.runRoute('get', '#/file/get/'+cid);
                 return false;
               });
               $(".file-data ").hover(function(){
