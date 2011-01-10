@@ -2636,7 +2636,8 @@ public class CatalogService extends PastImpl implements SocService {
 								storage.getStorage().unstore(curId, new SimpleContinuation() {
 									@Override
 									public void receiveResult(Object result) {
-										logger.log("Moved item " + curId + " to new node");
+										if (logger.level <= Logger.INFO)
+											logger.log("Moved item " + curId + " to new node");
 									}
 								});
 							}
