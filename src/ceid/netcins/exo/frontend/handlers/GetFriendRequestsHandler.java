@@ -39,11 +39,13 @@ public class GetFriendRequestsHandler extends AbstractHandler {
 			return;
 		Map<String, FriendRequest[]> ret = new Hashtable<String, FriendRequest[]>();
 		Set<FriendRequest> frReqs = new HashSet<FriendRequest>();
-		if (catalogService.getUser().getPendingIncomingFReq().size() > 0) {
-			frReqs.addAll(catalogService.getUser().getPendingIncomingFReq().values());
-			ret.put(FriendRequestsTag, frReqs.toArray(new FriendRequest[1]));
-		} else
-			ret.put(FriendRequestsTag, new FriendRequest[]{});
+		synchronized (catalogService) {
+			if (catalogService.getUser().getPendingIncomingFReq().size() > 0) {
+				frReqs.addAll(catalogService.getUser().getPendingIncomingFReq().values());
+				ret.put(FriendRequestsTag, frReqs.toArray(new FriendRequest[1]));
+			} else
+				ret.put(FriendRequestsTag, new FriendRequest[]{});
+		}
 		sendStatus(response, RequestStatus.SUCCESS, ret);
 	}
 }

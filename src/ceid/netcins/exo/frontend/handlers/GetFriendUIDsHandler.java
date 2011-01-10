@@ -35,12 +35,14 @@ public class GetFriendUIDsHandler extends AbstractHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
 		Hashtable<String, Object> ret = new Hashtable<String, Object>();
-		if (friends != null)
-			ret.put(FriendsTag, friends.values().toArray());
-		else
-			ret.put(FriendsTag, new Friend[]{});
+		synchronized (catalogService) {
+			Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
+			if (friends != null)
+				ret.put(FriendsTag, friends.values().toArray());
+			else
+				ret.put(FriendsTag, new Friend[]{});
+		}
 		sendStatus(response, RequestStatus.SUCCESS, ret);
 	}
 }

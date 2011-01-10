@@ -1,12 +1,16 @@
 package ceid.netcins.exo.frontend.handlers;
 
 import java.util.Hashtable;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import rice.p2p.commonapi.Id;
 import ceid.netcins.exo.CatalogService;
+import ceid.netcins.exo.user.Friend;
+import ceid.netcins.exo.user.FriendRequest;
 
 /**
  * 
@@ -32,6 +36,21 @@ public class SendFriendRequestHandler extends FriendRequestBaseHandler {
 			HttpServletResponse response) throws ServletException {
 		if (prepare(request, response) == RequestState.FINISHED)
 			return;
-		catalogService.friendRequest(uid, frMsg, command);
+
+		synchronized (catalogService) {
+			Hashtable<Id, Friend> friends = catalogService.getUser().getFriends();
+			Set<Id> freqsOut = catalogService.getUser().getPendingOutgoingFReq();
+			Hashtable<Id, FriendRequest> freqsIn = catalogService.getUser().getPendingIncomingFReq();
+
+			if (friends.containsKey(uid) || freqsOut.contains(uid)) {
+				queueStatus(reqID, RequestStatus.SUCCESS, null);
+				return;
+			}
+			if (freqsIn.containsKey(uid)) {
+				catalogService.acceptFriend(freqsIn.get(uid), command);
+				return;
+			}
+			catalogService.friendRequest(uid, frMsg, command);
+		}
 	}
 }
