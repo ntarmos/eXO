@@ -100,7 +100,7 @@
               if (response_data["eXO::Status"]=="eXO::Success"){
                 // Notify about success
                 var html = "<img src=\"/site_media/images/accept.png\">"
-                  + "<span class=\"quiet\">Successfully rejected!</span>";
+                  + "<span class=\"notification-message quiet\">Successfully rejected!</span>";
                 $('#'+elem_id+' .row-actions').html(html);
               } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                 alert("Reject friend request failed!");
@@ -128,8 +128,8 @@
           if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
             // Interpolate index
             var templ = data["eXO::Data"];
-            for(i in templ["eXO::FriendRequests"]){
-              templ["eXO::FriendRequests"][i]["index"]= i;
+            for(i in templ["eXO::Friend_Requests"]){
+              templ["eXO::Friend_Requests"][i]["index"]= i;
             }
             // Get template and interpolate variables
             context.render("/site_media/templates/friend_requests_list.ms", templ,
