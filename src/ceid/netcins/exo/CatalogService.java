@@ -2618,46 +2618,48 @@ public class CatalogService extends PastImpl implements SocService {
 		IdRange range = endpoint.range(handle, 0, null, true);
 		if (range == null)
 			return;
-		IdSet togo = storage.getStorage().scan(range);
-		if (togo == null || togo.numElements() == 0)
-			return;
-		for (Id next : togo.asArray()) {
-			final Id curId = next;
-			lockManager.lock(curId, new Continuation<Object, Exception>(){
-				public void receiveResult(Object result) {
+		synchronized (storage) {
+			IdSet togo = storage.getStorage().scan(range);
+			if (togo == null || togo.numElements() == 0)
+				return;
+			for (Id next : togo.asArray()) {
+				final Id curId = next;
+				lockManager.lock(curId, new Continuation<Object, Exception>(){
+					public void receiveResult(Object result) {
 
-					storage.getStorage().getObject(curId,
-							new Continuation<Object, Exception>() {
-						@Override
-						public void receiveResult(Object result) {
-							if (result instanceof PastContent) {
-								insert((PastContent)result, new SimpleContinuation(){
-									@Override
-									public void receiveResult(Object result) {
-										storage.getStorage().unstore(curId, new SimpleContinuation() {
-											@Override
-											public void receiveResult(Object result) {
-												if (logger.level <= Logger.INFO)
-													logger.log("Moved item " + curId + " to new node");
-											}
-										});
-									}
-								});
+						storage.getStorage().getObject(curId,
+								new Continuation<Object, Exception>() {
+							@Override
+							public void receiveResult(Object result) {
+								if (result instanceof PastContent) {
+									insert((PastContent)result, new SimpleContinuation(){
+										@Override
+										public void receiveResult(Object result) {
+											storage.getStorage().unstore(curId, new SimpleContinuation() {
+												@Override
+												public void receiveResult(Object result) {
+													if (logger.level <= Logger.INFO)
+														logger.log("Moved item " + curId + " to new node");
+												}
+											});
+										}
+									});
+								}
 							}
-						}
 
-						@Override
-						public void receiveException(Exception exception) {
-							logger.logException("Error copying data to new node", exception);
-						}
-					});
-				}
+							@Override
+							public void receiveException(Exception exception) {
+								logger.logException("Error copying data to new node", exception);
+							}
+						});
+					}
 
-				@Override
-				public void receiveException(Exception exception) {
-					logger.logException("Error copying data to new node", exception);
-				}
-			});
+					@Override
+					public void receiveException(Exception exception) {
+						logger.logException("Error copying data to new node", exception);
+					}
+				});
+			}
 		}
 	}
 }
