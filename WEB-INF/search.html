@@ -15,12 +15,18 @@
       <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
   <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
+  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
   <script type="text/javascript">
+  function message_notification(msg) {
+    $.jGrowl(msg, { position: "bottom-right"});
+  }
+
   function start_polling(reqID, url, redirect_callback){
     $.ajax({
       type: 'POST',
@@ -85,6 +91,7 @@
                   // TODO: Notify about success
                   $("#"+context.params["entry_id"]).find('.friend-request').
                     parent().html("<img src=\"/site_media/images/accept.png\">");
+                  message_notification("Friend request was successfully sent!")
                 } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                   alert("Friend request failed!");
                 } else {

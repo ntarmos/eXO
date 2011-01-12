@@ -15,12 +15,18 @@
       <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
   <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
+  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
   <script type="text/javascript">
+  function message_notification(msg) {
+    $.jGrowl(msg, { position: "bottom-right"});
+  }
+
   function start_polling(reqID, url, redirect_callback){
     $.ajax({
       type: 'POST',
@@ -71,6 +77,7 @@
                 var html = "<img src=\"/site_media/images/accept.png\">"
                   + "<span class=\"notification-message quiet\">Successfully accepted!</span>";
                 $('#'+elem_id+' .row-actions').html(html);
+                message_notification("Successfully accepted!");
               } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                 alert("Accept friend request failed!");
               } else {
@@ -102,6 +109,7 @@
                 var html = "<img src=\"/site_media/images/accept.png\">"
                   + "<span class=\"notification-message quiet\">Successfully rejected!</span>";
                 $('#'+elem_id+' .row-actions').html(html);
+                message_notification("Successfully rejected!");
               } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                 alert("Reject friend request failed!");
               } else {
@@ -188,7 +196,7 @@
       var indicator = $(this);
       setTimeout(function(){ indicator.fadeOut() }, 500);
     });
-    
+
     // Get username and resource
     $.ajax({
       type: 'POST',

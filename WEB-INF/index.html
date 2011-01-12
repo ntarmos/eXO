@@ -15,9 +15,11 @@
       <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
   <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
+  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
   <script type="text/javascript">
   /* Global Vars */
   var profile_dict = null;
@@ -139,6 +141,10 @@
     return true;
   }
 
+  function message_notification(msg) {
+    $.jGrowl(msg, { position: "bottom-right"});
+  }
+
   function start_polling(reqID){
     $.ajax({
       type: 'POST',
@@ -161,6 +167,8 @@
         setTimeout(function(){ start_polling(reqID); }, 100);
         return true;
       }
+      if(polling_data["eXO::Status"]=="eXO::Success")
+          message_notification("Your request has been processed successfully!");
       // On stop of processing issue a new get profile request.
       do_get_profile();
       return true;

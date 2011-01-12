@@ -15,12 +15,14 @@
       <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
   <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
+  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
   <link media="screen, projection" href="/site_media/stylesheets/fileuploader.css" type="text/css" rel="stylesheet" />
 
   <!-- Javascripts -->
   <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
   <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
   <script type="text/javascript" src="/site_media/javascripts/fileuploader.js"></script>
   <script type="text/javascript">
   /* Global Vars */
@@ -141,6 +143,10 @@
                             'eXO::FieldIsPublic' : new_privacy };
     }
     return true;
+  }
+
+  function message_notification(msg) {
+    $.jGrowl(msg, { position: "bottom-right"});
   }
 
   function start_polling(reqID, url, redirect_callback){
@@ -265,7 +271,7 @@
             start_polling(data["eXO::reqID"], "/servlet/SetContentTags/",
               function(){
                 // TODO: Inform of success, Rerender profile/row and rebind events
-                Sammy.log("Successfully re-indexed");
+                message_notification("File profile successfully updated!");
               });
           }else{
             alert("An error occurred : "+textStatus);
@@ -559,6 +565,7 @@
         // Rerender profiles and rebind events
         if("eXO::reqID" in data){
           start_polling(data["eXO::reqID"], "/servlet/ShareFile/", function(){
+            message_notification("File successfully indexed!");
             // Here we define the redirection callback!
             app.runRoute("get", "#/file_list/get/");
           });
