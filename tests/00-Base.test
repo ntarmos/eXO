@@ -1,0 +1,13 @@
+#!/bin/sh
+
+DIRNAME=`dirname $0`
+TESTNAME=`basename $0`
+BASENAME="${TESTNAME%%.test}"
+OUTFILE=$(mktemp ) || exit 1
+${DIRNAME}/../bin/post.sh ${BASENAME} "eXO_data=`cat "${DIRNAME}/${BASENAME}.json"`" > "$OUTFILE" 2>&1
+if [ -f "${BASENAME}.out" ]; then
+	diff -u "${BASENAME}.out" "$OUTFILE"
+else
+	cat "$OUTFILE"
+fi;
+rm "$OUTFILE"
