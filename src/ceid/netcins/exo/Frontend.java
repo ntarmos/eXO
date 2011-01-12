@@ -259,7 +259,6 @@ public class Frontend implements Serializable {
 					if (((Boolean)arg).booleanValue()) {
 						//success!
 						node.deleteObserver(this);
-						logger.log("Node is ready. Starting eXO application...");
 						catalogService.start();
 					} else {
 						// (not called until after boot returns true, but we delete the observer first)
@@ -289,15 +288,6 @@ public class Frontend implements Serializable {
 			System.out.println("done");
 		}
 
-		System.out.print("Queueing profile indexing... ");
-
-		System.out.println("done");
-
-		for (int i = 1; i < apps.length; i++) {
-			System.out.print("Queueing profile indexing for user #" + (i + 1) + "/" + apps.length  + "... ");
-
-			System.out.println("done");
-		}
 		return 0;
 	}
 
