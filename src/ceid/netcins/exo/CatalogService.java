@@ -2631,19 +2631,80 @@ public class CatalogService extends PastImpl implements SocService {
 								new Continuation<Object, Exception>() {
 							@Override
 							public void receiveResult(Object result) {
-								if (result instanceof PastContent) {
-									insert((PastContent)result, new SimpleContinuation(){
+								if (result instanceof Catalog) {
+									Catalog cat = (Catalog)result;
+									Hashtable<Id, ContentCatalogEntry> contentEntries = cat.getContentCatalogEntries();
+									Hashtable<Id, UserCatalogEntry> userEntries = cat.getUserCatalogEntries();
+									Hashtable<Id, URLCatalogEntry> urlEntries = cat.getURLCatalogEntries();
+									Hashtable<Id, CatalogEntry> allEntries = new Hashtable<Id, CatalogEntry>();
+									if (contentEntries != null)
+										allEntries.putAll(contentEntries);
+									if (userEntries != null)
+										allEntries.putAll(userEntries);
+									if (urlEntries != null)
+										allEntries.putAll(urlEntries);
+									if (allEntries.isEmpty())
+										return;
+
+									MultiContinuation multi = new MultiContinuation(new SimpleContinuation() {
 										@Override
 										public void receiveResult(Object result) {
 											storage.getStorage().unstore(curId, new SimpleContinuation() {
 												@Override
 												public void receiveResult(Object result) {
-													if (logger.level <= Logger.INFO)
-														logger.log("Moved item " + curId + " to new node");
+													//if (logger.level <= Logger.INFO)
+													logger.log("Moved item " + curId + " to new node");
 												}
 											});
 										}
-									});
+									}, allEntries.size()) {
+
+										public boolean isDone() throws Exception {
+											int numSuccess = 0;
+											for (int i = 0; i < haveResult.length; i++)
+												if ((haveResult[i])
+														&& (result[i] instanceof Boolean[]))
+													numSuccess++;
+
+											if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
+												return true;
+
+											if (super.isDone()) {
+												for (int i = 0; i < result.length; i++)
+													if (result[i] instanceof Exception)
+														if (logger.level <= Logger.WARNING)
+															logger.logException("result[" + i
+																	+ "]:", (Exception) result[i]);
+												throw new PastException("Had only " + numSuccess
+														+ " successful inserted indices out of "
+														+ result.length + " - aborting.");
+											}
+
+											return false;
+										}
+
+										// This is called once we have sent all the messages
+										// (signaling Success).
+										public Object getResult() {
+											Boolean[] b = new Boolean[result.length];
+											for (int i = 0; i < b.length; i++)
+												b[i] = Boolean.valueOf((result[i] == null)
+														|| result[i] instanceof Boolean[]);
+											return b;
+										}
+									};
+
+									Iterator<Id> keys = allEntries.keySet().iterator();
+									Iterator<CatalogEntry> entries = allEntries.values().iterator();
+									for (int iter = 0; iter < allEntries.size(); iter++) {
+										Id nextKey = keys.next();
+										CatalogEntry nextEntry = entries.next();
+										PastContent pdu = new InsertPDU(nextKey, nextEntry, null);
+
+										insert(pdu, multi.getSubContinuation(iter));
+									}
+								} else {
+									receiveException(new Exception("Not a PastContent instance"));
 								}
 							}
 
