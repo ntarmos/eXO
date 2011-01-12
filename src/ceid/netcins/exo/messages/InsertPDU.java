@@ -106,9 +106,12 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 		if (existingContent == null) {
 			// There is no Catalog for this TID! Let's create one :-)
 			Catalog c = new Catalog(id);
-			CatalogEntry finalEntry = additions;
-			finalEntry.subtract(deletions);
-			c.addCatalogEntry(finalEntry);
+			CatalogEntry finalEntry = null;
+			if (additions != null) {
+				finalEntry = additions;
+				finalEntry.subtract(deletions);
+				c.addCatalogEntry(finalEntry);
+			}
 			return c;
 		}
 
