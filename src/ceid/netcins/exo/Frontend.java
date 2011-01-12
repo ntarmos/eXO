@@ -16,6 +16,8 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 import java.util.Vector;
 
@@ -240,7 +242,7 @@ public class Frontend implements Serializable {
 		return 0;
 	}
 
-	private CatalogService startCatalogService(PastryNode node, User user) {
+	private CatalogService startCatalogService(final PastryNode node, User user) {
 		StorageManagerImpl storage = null;
 		try {
 			storage = new StorageManagerImpl(pastryIdFactory,
@@ -250,8 +252,25 @@ public class Frontend implements Serializable {
 			return null;
 		}
 
-		CatalogService catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
-		catalogService.start();
+		final CatalogService catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
+		node.addObserver(new Observer() {
+			public void update(Observable o, Object arg) {
+				if (arg instanceof Boolean) {
+					if (((Boolean)arg).booleanValue()) {
+						//success!
+						node.deleteObserver(this);
+						logger.log("Node is ready. Starting eXO application...");
+						catalogService.start();
+					} else {
+						// (not called until after boot returns true, but we delete the observer first)
+					}
+					return;
+				}
+				if (arg instanceof Exception) {
+					logger.logException("Error starting application", (Exception)arg);
+				}
+			}
+		});
 
 		return catalogService;
 	}
