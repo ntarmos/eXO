@@ -91,6 +91,8 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 	@Override
 	public PastContent checkInsert(Id id, PastContent existingContent)
 			throws PastException {
+		if (additions == null && deletions == null)
+			return existingContent;
 
 		// only allow correct content hash key
 		if (!id.equals(getId())) {
