@@ -9,6 +9,7 @@
 
 # project specific files
 load.list
+eXO.jar
 
 # project specific folders
 eXO_Storage_Root
