@@ -2623,24 +2623,34 @@ public class CatalogService extends PastImpl implements SocService {
 			return;
 		for (Id next : togo.asArray()) {
 			final Id curId = next;
-			storage.getStorage().getObject(next,
-					new Continuation<Object, Exception>() {
-				@Override
+			lockManager.lock(curId, new Continuation<Object, Exception>(){
 				public void receiveResult(Object result) {
-					if (result instanceof PastContent) {
-						insert((PastContent)result, new SimpleContinuation(){
-							@Override
-							public void receiveResult(Object result) {
-								storage.getStorage().unstore(curId, new SimpleContinuation() {
+
+					storage.getStorage().getObject(curId,
+							new Continuation<Object, Exception>() {
+						@Override
+						public void receiveResult(Object result) {
+							if (result instanceof PastContent) {
+								insert((PastContent)result, new SimpleContinuation(){
 									@Override
 									public void receiveResult(Object result) {
-										if (logger.level <= Logger.INFO)
-											logger.log("Moved item " + curId + " to new node");
+										storage.getStorage().unstore(curId, new SimpleContinuation() {
+											@Override
+											public void receiveResult(Object result) {
+												if (logger.level <= Logger.INFO)
+													logger.log("Moved item " + curId + " to new node");
+											}
+										});
 									}
 								});
 							}
-						});
-					}
+						}
+
+						@Override
+						public void receiveException(Exception exception) {
+							logger.logException("Error copying data to new node", exception);
+						}
+					});
 				}
 
 				@Override
