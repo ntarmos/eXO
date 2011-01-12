@@ -64,6 +64,7 @@
     this.post('#/friend_requests/accept/', function(){
       var accept_uid = this.params['accept_uid'];
       var elem_id = this.params['elem_id'];
+      var context = this;
       $.ajax({
         type: 'POST',
         url:  "/servlet/AcceptFriendRequest/",
@@ -78,6 +79,8 @@
                   + "<span class=\"notification-message quiet\">Successfully accepted!</span>";
                 $('#'+elem_id+' .row-actions').html(html);
                 message_notification("Successfully accepted!");
+                // Rerender friend list after 100ms
+                setTimeout(function(){ context.redirect('#/friends_list/get/'); }, 100);
               } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                 alert("Accept friend request failed!");
               } else {
@@ -96,6 +99,7 @@
     this.post('#/friend_requests/reject/', function(){
       var reject_uid = this.params['reject_uid'];
       var elem_id = this.params['elem_id'];
+      var context = this;
       $.ajax({
         type: 'POST',
         url:  "/servlet/RejectFriendRequest/",
@@ -110,6 +114,8 @@
                   + "<span class=\"notification-message quiet\">Successfully rejected!</span>";
                 $('#'+elem_id+' .row-actions').html(html);
                 message_notification("Successfully rejected!");
+                // Rerender friend list after 100ms
+                setTimeout(function(){ context.redirect('#/friends_list/get/'); }, 100);
               } else if (response_data["eXO::Status"]=="eXO::Unknown"){
                 alert("Reject friend request failed!");
               } else {
