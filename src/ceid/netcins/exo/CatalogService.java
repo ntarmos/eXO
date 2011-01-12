@@ -2618,36 +2618,109 @@ public class CatalogService extends PastImpl implements SocService {
 		IdRange range = endpoint.range(handle, 0, null, true);
 		if (range == null)
 			return;
-		IdSet togo = storage.getStorage().scan(range);
-		if (togo == null || togo.numElements() == 0)
-			return;
-		for (Id next : togo.asArray()) {
-			final Id curId = next;
-			storage.getStorage().getObject(next,
-					new Continuation<Object, Exception>() {
-				@Override
-				public void receiveResult(Object result) {
-					if (result instanceof PastContent) {
-						insert((PastContent)result, new SimpleContinuation(){
+		synchronized (storage) {
+			IdSet togo = storage.getStorage().scan(range);
+			if (togo == null || togo.numElements() == 0)
+				return;
+			for (Id next : togo.asArray()) {
+				final Id curId = next;
+				lockManager.lock(curId, new Continuation<Object, Exception>(){
+					public void receiveResult(Object result) {
+
+						storage.getStorage().getObject(curId,
+								new Continuation<Object, Exception>() {
 							@Override
 							public void receiveResult(Object result) {
-								storage.getStorage().unstore(curId, new SimpleContinuation() {
-									@Override
-									public void receiveResult(Object result) {
-										if (logger.level <= Logger.INFO)
-											logger.log("Moved item " + curId + " to new node");
+								if (result instanceof Catalog) {
+									Catalog cat = (Catalog)result;
+									Hashtable<Id, ContentCatalogEntry> contentEntries = cat.getContentCatalogEntries();
+									Hashtable<Id, UserCatalogEntry> userEntries = cat.getUserCatalogEntries();
+									Hashtable<Id, URLCatalogEntry> urlEntries = cat.getURLCatalogEntries();
+									Hashtable<Id, CatalogEntry> allEntries = new Hashtable<Id, CatalogEntry>();
+									if (contentEntries != null)
+										allEntries.putAll(contentEntries);
+									if (userEntries != null)
+										allEntries.putAll(userEntries);
+									if (urlEntries != null)
+										allEntries.putAll(urlEntries);
+									if (allEntries.isEmpty())
+										return;
+
+									MultiContinuation multi = new MultiContinuation(new SimpleContinuation() {
+										@Override
+										public void receiveResult(Object result) {
+											storage.getStorage().unstore(curId, new SimpleContinuation() {
+												@Override
+												public void receiveResult(Object result) {
+													//if (logger.level <= Logger.INFO)
+													logger.log("Moved item " + curId + " to new node");
+												}
+											});
+										}
+									}, allEntries.size()) {
+
+										public boolean isDone() throws Exception {
+											int numSuccess = 0;
+											for (int i = 0; i < haveResult.length; i++)
+												if ((haveResult[i])
+														&& (result[i] instanceof Boolean[]))
+													numSuccess++;
+
+											if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
+												return true;
+
+											if (super.isDone()) {
+												for (int i = 0; i < result.length; i++)
+													if (result[i] instanceof Exception)
+														if (logger.level <= Logger.WARNING)
+															logger.logException("result[" + i
+																	+ "]:", (Exception) result[i]);
+												throw new PastException("Had only " + numSuccess
+														+ " successful inserted indices out of "
+														+ result.length + " - aborting.");
+											}
+
+											return false;
+										}
+
+										// This is called once we have sent all the messages
+										// (signaling Success).
+										public Object getResult() {
+											Boolean[] b = new Boolean[result.length];
+											for (int i = 0; i < b.length; i++)
+												b[i] = Boolean.valueOf((result[i] == null)
+														|| result[i] instanceof Boolean[]);
+											return b;
+										}
+									};
+
+									Iterator<Id> keys = allEntries.keySet().iterator();
+									Iterator<CatalogEntry> entries = allEntries.values().iterator();
+									for (int iter = 0; iter < allEntries.size(); iter++) {
+										Id nextKey = keys.next();
+										CatalogEntry nextEntry = entries.next();
+										PastContent pdu = new InsertPDU(nextKey, nextEntry, null);
+
+										insert(pdu, multi.getSubContinuation(iter));
 									}
-								});
+								} else {
+									receiveException(new Exception("Not a PastContent instance"));
+								}
+							}
+
+							@Override
+							public void receiveException(Exception exception) {
+								logger.logException("Error copying data to new node", exception);
 							}
 						});
 					}
-				}
 
-				@Override
-				public void receiveException(Exception exception) {
-					logger.logException("Error copying data to new node", exception);
-				}
-			});
+					@Override
+					public void receiveException(Exception exception) {
+						logger.logException("Error copying data to new node", exception);
+					}
+				});
+			}
 		}
 	}
 }

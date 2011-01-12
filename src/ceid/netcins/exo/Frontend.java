@@ -16,6 +16,8 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 import java.util.Vector;
 
@@ -143,13 +145,13 @@ public class Frontend implements Serializable {
 		bootstrapNodeAddress = stringToSocketAddress(bootstrap);
 		isBootstrap = (bootstrapNodeAddress != null) ? checkIsBootstrap(bootstrapNodeAddress) : true;
 
-		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
+		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName, environment);
 		users[0] = new User(id, this.userName, this.resourceName);
 
 		for (int i = 1; i < numSimulatedNodes; i++) {
 			String uname = Long.toHexString(environment.getRandomSource().nextLong());
 			String rname = Long.toHexString(environment.getRandomSource().nextLong());
-			Id simId = UserNodeIdFactory.generateNodeId(uname, rname);
+			Id simId = UserNodeIdFactory.generateNodeId(uname, rname, environment);
 			users[i] = new User(simId, uname, rname);
 		}
 
@@ -240,7 +242,7 @@ public class Frontend implements Serializable {
 		return 0;
 	}
 
-	private CatalogService startCatalogService(PastryNode node, User user) {
+	private CatalogService startCatalogService(final PastryNode node, User user) {
 		StorageManagerImpl storage = null;
 		try {
 			storage = new StorageManagerImpl(pastryIdFactory,
@@ -250,8 +252,24 @@ public class Frontend implements Serializable {
 			return null;
 		}
 
-		CatalogService catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
-		catalogService.start();
+		final CatalogService catalogService = new CatalogService(node, storage, REPLICATION_FACTOR, INSTANCE, user);
+		node.addObserver(new Observer() {
+			public void update(Observable o, Object arg) {
+				if (arg instanceof Boolean) {
+					if (((Boolean)arg).booleanValue()) {
+						//success!
+						node.deleteObserver(this);
+						catalogService.start();
+					} else {
+						// (not called until after boot returns true, but we delete the observer first)
+					}
+					return;
+				}
+				if (arg instanceof Exception) {
+					logger.logException("Error starting application", (Exception)arg);
+				}
+			}
+		});
 
 		return catalogService;
 	}
@@ -270,15 +288,6 @@ public class Frontend implements Serializable {
 			System.out.println("done");
 		}
 
-		System.out.print("Queueing profile indexing... ");
-
-		System.out.println("done");
-
-		for (int i = 1; i < apps.length; i++) {
-			System.out.print("Queueing profile indexing for user #" + (i + 1) + "/" + apps.length  + "... ");
-
-			System.out.println("done");
-		}
 		return 0;
 	}
 
@@ -533,7 +542,7 @@ public class Frontend implements Serializable {
 			isBootstrap = true;
 		}
 
-		UserNodeIdFactory nodeIdFactory = new UserNodeIdFactory(userName, resourceName);
+		UserNodeIdFactory nodeIdFactory = new UserNodeIdFactory(userName, resourceName, environment);
 		PastryNodeFactory nodeFactory = null;
 		String pastryNodeProtocol = params.getString("exo_pastry_protocol");
 		String simulatorType = params.getString("direct_simulator_topology");
@@ -561,7 +570,7 @@ public class Frontend implements Serializable {
 			nodeFactory = DistPastryNodeFactory.getFactory(new RandomNodeIdFactory(environment),
 					DistPastryNodeFactory.PROTOCOL_SOCKET, pastryNodePort, environment);
 
-		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName);
+		Id id = UserNodeIdFactory.generateNodeId(this.userName, this.resourceName, environment);
 		try {
 			nodes[0] = nodeFactory.newNode((rice.pastry.Id)id);
 		} catch (IOException e) {

@@ -1,7 +1,10 @@
 package ceid.netcins.exo.user;
 
+import rice.environment.Environment;
+import rice.p2p.commonapi.IdFactory;
 import rice.pastry.Id;
 import rice.pastry.NodeIdFactory;
+import rice.pastry.commonapi.PastryIdFactory;
 import rice.pastry.standard.IPNodeIdFactory;
 import rice.pastry.standard.RandomNodeIdFactory;
 
@@ -33,6 +36,7 @@ import rice.pastry.standard.RandomNodeIdFactory;
 public class UserNodeIdFactory implements NodeIdFactory {
 	private String username;
 	private String resource;
+	private Environment env;
 
 	/**
 	 * Construct a new UserNodeIdFactory
@@ -40,9 +44,10 @@ public class UserNodeIdFactory implements NodeIdFactory {
 	 * @param username the selected username
 	 * @param resource a Jabber-style resource descriptor (e.g., "Home", "Work", etc.)
 	 */
-	public UserNodeIdFactory(String username, String resource) {
+	public UserNodeIdFactory(String username, String resource, Environment env) {
 		this.username = username;
 		this.resource = resource;
+		this.env = env;
 	}
 
 	/* (non-Javadoc)
@@ -55,10 +60,10 @@ public class UserNodeIdFactory implements NodeIdFactory {
 	 * @return a new ID
 	 */
 	public Id generateNodeId() {
-		return generateNodeId(username, resource);
+		return generateNodeId(username, resource, env);
 	}
 
-	public static Id generateNodeId(String username, String resource) {
+	public static Id generateNodeId(String username, String resource, Environment env) {
 		if (username == null || username.contains(User.ScreennameDelimiter) ||
 			resource == null || resource.contains(User.ScreennameDelimiter))
 			throw new RuntimeException(
@@ -68,7 +73,7 @@ public class UserNodeIdFactory implements NodeIdFactory {
 		buf.append(username);
 		buf.append(User.ScreennameDelimiter);
 		buf.append(resource);
-		byte bytes[] = buf.toString().getBytes();
-		return rice.pastry.Id.build(bytes);
+		IdFactory factory = new PastryIdFactory(env);
+		return (Id)factory.buildId(buf.toString());
 	}
 }
