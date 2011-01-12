@@ -404,6 +404,7 @@ public class Frontend implements Serializable {
 				"\t-b|--bootstrap <bootstrap node address:port>\n" +
 				"\t-h|--help (this message)"
 		);
+		System.exit(1);
 	}
 
 	public static void main(String[] args) {
@@ -449,7 +450,6 @@ public class Frontend implements Serializable {
 				case 'h':
 				default:
 					usage();
-					return;
 			}
 		}
 
@@ -472,7 +472,6 @@ public class Frontend implements Serializable {
 			System.err.print("Starting new instance... ");
 			if (userName == null || resourceName == null || webPort < 0 || webPort > 65535 || pastryPort < 0 || pastryPort > 65535) {
 				usage();
-				return;
 			}
 			try {
 				cf = new Frontend(env, userName, resourceName, webPort, pastryPort, bootstrap);
