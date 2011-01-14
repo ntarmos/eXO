@@ -33,6 +33,29 @@ public class InsertPDU extends ContentHashPastContent implements Serializable {
 	private CatalogEntry additions, deletions; // The packet data
 	private CatalogType type;
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("{ InsertPDU: ");
+		switch (type) {
+			case CONTENT:
+				builder.append("[CONTENT]");
+				break;
+			case URL:
+				builder.append("[URL]");
+				break;
+			case USER:
+				builder.append("[USER]");
+				break;
+		}
+		builder.append(" +");
+		builder.append(additions);
+		builder.append(" -");
+		builder.append(deletions);
+		builder.append(" }");
+		return builder.toString();
+	}
+
 	public InsertPDU(Id tid, CatalogEntry add, CatalogEntry del) {
 		super(tid);
 		if ((add != null && del != null) && 
