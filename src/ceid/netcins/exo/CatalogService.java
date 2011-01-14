@@ -46,6 +46,7 @@ import rice.p2p.past.messaging.LookupMessage;
 import rice.p2p.past.messaging.PastMessage;
 import rice.p2p.util.rawserialization.SimpleOutputBuffer;
 import rice.persistence.StorageManager;
+import rice.selector.TimerTask;
 import ceid.netcins.exo.catalog.Catalog;
 import ceid.netcins.exo.catalog.CatalogEntry;
 import ceid.netcins.exo.catalog.ContentCatalogEntry;
@@ -225,7 +226,215 @@ public class CatalogService extends PastImpl implements SocService {
 
 	public void start() {
 		scorerThread.start();
+
+		doReindexAll();
+		NodeHandle myHandle = endpoint.getLocalNodeHandle();
+		IdRange range = endpoint.range(myHandle, 0, myHandle.getId()).getComplementRange();
+		doMigrateStoredItems(range);
+
+		// Schedule a reindex with the same frequency as the RouteSet
+		int longReindexFreq = environment.getParameters().getInt("pastry_routeSetMaintFreq");
+		environment.getSelectorManager().getTimer().scheduleAtFixedRate(
+				new TimerTask() {
+					@Override
+					public void run() {
+						doReindexAll();
+						NodeHandle myHandle = endpoint.getLocalNodeHandle();
+						IdRange range = endpoint.range(myHandle, 0, myHandle.getId()).getComplementRange();
+						doMigrateStoredItems(range);
+					}
+				}, longReindexFreq * 1000, longReindexFreq * 1000);
+	}
+
+	private void doReindexAll() {
 		doStartIndexUser(user.getPublicUserProfile());
+
+		Map<Id, SharedContentInfo> items = user.getSharedContent();
+		if (items == null || items.size() == 0)
+			return;
+		Iterator<Id> itemKeys = items.keySet().iterator();
+		Iterator<SharedContentInfo> itemValues = items.values().iterator();
+		while (itemKeys.hasNext()) {
+			Id key = itemKeys.next();
+			SharedContentInfo value = itemValues.next();
+			doStartIndexItem(key, value);
+		}
+	}
+
+	private void doMigrateStoredItems(IdRange range) {
+		if (range == null || range.isEmpty()) {
+			if (logger.level <= Logger.INFO)
+				logger.log("Nothing to migrate. Sleeping...");
+			return;
+		}
+
+		if (logger.level <= Logger.INFO) {
+			logger.log("Migrating items in range " + range);
+			IdSet myItems = storage.scan();
+			logger.log("In storage: "
+					+ ((myItems == null) ? "nothing" : Arrays.toString(myItems.asArray())));
+		}
+		synchronized (storage) {
+			IdSet togo = storage.getStorage().scan(range);
+			if (togo == null || togo.numElements() == 0)
+				return;
+			for (Id next : togo.asArray()) {
+				final Id curId = next;
+				lockManager.lock(curId, new Continuation<Object, Exception>(){
+					public void receiveResult(Object result) {
+
+						storage.getStorage().getObject(curId,
+								new Continuation<Object, Exception>() {
+							@Override
+							public void receiveResult(Object result) {
+								if (result instanceof Catalog) {
+									Catalog cat = (Catalog)result;
+									Hashtable<Id, ContentCatalogEntry> contentEntries = cat.getContentCatalogEntries();
+									Hashtable<Id, UserCatalogEntry> userEntries = cat.getUserCatalogEntries();
+									Hashtable<Id, URLCatalogEntry> urlEntries = cat.getURLCatalogEntries();
+									Hashtable<Id, CatalogEntry> allEntries = new Hashtable<Id, CatalogEntry>();
+									if (contentEntries != null)
+										allEntries.putAll(contentEntries);
+									if (userEntries != null)
+										allEntries.putAll(userEntries);
+									if (urlEntries != null)
+										allEntries.putAll(urlEntries);
+									if (allEntries.isEmpty())
+										return;
+
+									MultiContinuation multi = new MultiContinuation(new SimpleContinuation() {
+										@Override
+										public void receiveResult(Object result) {
+											storage.getStorage().unstore(curId, new Continuation<Object, Exception>() {
+												@Override
+												public void receiveResult(Object result) {
+													if (!(result instanceof Boolean))
+														receiveException(new Exception("Unstore result not a Boolean: " + result.getClass().getName()));
+													if (!((Boolean)result))
+														receiveException(new Exception("Unable to unstore item " + curId));
+													//if (logger.level <= Logger.INFO)
+													logger.log("Moved item " + curId + " to new node");
+							                        lockManager.unlock(curId);
+												}
+
+												@Override
+												public void receiveException(Exception exception) {
+													//if (logger.level <= Logger.INFO)
+													logger.log("Error moving item " + curId + " to new node: " + exception.getMessage());
+							                        lockManager.unlock(curId);
+												}
+											});
+										}
+									}, allEntries.size()) {
+
+										@SuppressWarnings("unchecked")
+										public boolean isDone() throws Exception {
+											int numSuccess = 0;
+											for (int i = 0; i < haveResult.length; i++)
+												if ((haveResult[i])
+														&& (result[i] instanceof Boolean[]))
+													numSuccess++;
+
+											if (numSuccess == haveResult.length)
+												return true;
+
+											if (super.isDone()) {
+												for (int i = 0; i < result.length; i++)
+													if (result[i] instanceof Exception)
+														if (logger.level <= Logger.WARNING)
+															logger.logException("result[" + i
+																	+ "]:", (Exception) result[i]);
+												parent.receiveException(
+														new Exception("Had only " + numSuccess
+																+ " successful inserted indices out of "
+																+ result.length + " - aborting."));
+											}
+
+											return false;
+										}
+
+										// This is called once we have sent all the messages
+										// (signaling Success).
+										public Object getResult() {
+											if (logger.level <= Logger.INFO) {
+												IdSet myItems = storage.scan();
+												logger.log("In storage: "
+														+ ((myItems == null) ? "nothing" : Arrays.toString(myItems.asArray())));
+											}
+											Boolean[] b = new Boolean[result.length];
+											for (int i = 0; i < b.length; i++)
+												b[i] = Boolean.valueOf((result[i] == null)
+														|| result[i] instanceof Boolean[]);
+											return b;
+										}
+									};
+
+									Iterator<Id> keys = allEntries.keySet().iterator();
+									Iterator<CatalogEntry> entries = allEntries.values().iterator();
+									for (int iter = 0; iter < allEntries.size(); iter++) {
+										Id nextKey = keys.next();
+										CatalogEntry nextEntry = entries.next();
+										PastContent pdu = new InsertPDU(nextKey, nextEntry, null);
+
+										insert(pdu, multi.getSubContinuation(iter));
+									}
+								} else if (result != null) {
+									receiveException(new Exception("Not a PastContent instance (" + ((result != null) ? result.getClass().getName() : null) + ")"));
+								} else
+			                        lockManager.unlock(curId);
+							}
+
+							@Override
+							public void receiveException(Exception exception) {
+								logger.logException("Error copying data to new node", exception);
+		                        lockManager.unlock(curId);
+							}
+						});
+					}
+
+					@Override
+					public void receiveException(Exception exception) {
+						logger.logException("Error copying data to new node", exception);
+					}
+				});
+			}
+		}
+	}
+
+	private void doStartIndexItem(final Id key, final SharedContentInfo value) {
+		indexPseudoContent(key, value.getFilename(), value.getProfile(), null, new Continuation<Object, Exception>() {
+			@Override
+			public void receiveResult(Object result) {
+				if (logger.level <= Logger.INFO)
+					logger.log("Item : " + key + " (" + value.getFilename() + ")"
+							+ " indexed successfully");
+				// TODO : Check the replicas if are updated correctly!
+				// run replica maintenance
+				// runReplicaMaintence();
+				if (!(result instanceof Boolean[])) {
+					throw new RuntimeException("Unable to index item!");
+				}
+				Boolean[] results = (Boolean[]) result;
+				int indexedNum = 0;
+				if (results != null)
+					for (Boolean isIndexedTerm : results) {
+						if (isIndexedTerm)
+							indexedNum++;
+					}
+				if (logger.level <= Logger.INFO)
+					logger.log("Total " + indexedNum + " terms indexed out of " + results.length);
+				if (indexedNum < results.length)
+					receiveException(new Exception());
+			}
+
+			@Override
+			public void receiveException(Exception result) {
+				System.out.println("Item : " + key
+						+ " (" + value.getFilename() + "), indexed with errors : "
+						+ result.getMessage() + " Retrying...");
+				doStartIndexItem(key, value);
+			}
+		});
 	}
 
 	private void doStartIndexUser(final ContentProfile profile) {
@@ -1072,6 +1281,7 @@ public class CatalogService extends PastImpl implements SocService {
 				MultiContinuation multi = new MultiContinuation(command,
 						termscount) {
 
+					@SuppressWarnings("unchecked")
 					public boolean isDone() throws Exception {
 						int numSuccess = 0;
 						for (int i = 0; i < haveResult.length; i++)
@@ -1088,9 +1298,11 @@ public class CatalogService extends PastImpl implements SocService {
 									if (logger.level <= Logger.WARNING)
 										logger.logException("result[" + i
 												+ "]:", (Exception) result[i]);
-							throw new PastException("Had only " + numSuccess
-									+ " successful inserted indices out of "
-									+ result.length + " - aborting.");
+				
+							parent.receiveException(
+									new Exception("Had only " + numSuccess
+											+ " successful inserted indices out of "
+											+ result.length + " - aborting."));
 						}
 
 						return false;
@@ -1225,6 +1437,7 @@ public class CatalogService extends PastImpl implements SocService {
 		}
 
 		MultiContinuation multi = new MultiContinuation(command, indexingTerms.size()) {
+			@SuppressWarnings("unchecked")
 			public boolean isDone() throws Exception {
 				int numSuccess = 0;
 				for (int i = 0; i < haveResult.length; i++)
@@ -1240,9 +1453,10 @@ public class CatalogService extends PastImpl implements SocService {
 							if (logger.level <= Logger.WARNING)
 								logger.logException("result[" + i + "]:",
 										(Exception) result[i]);
-					throw new PastException("Had only " + numSuccess
-							+ " successful inserted indices out of "
-							+ result.length + " - aborting.");
+					parent.receiveException(
+							new Exception("Had only " + numSuccess
+									+ " successful inserted indices out of "
+									+ result.length + " - aborting."));
 				}
 
 				return false;
@@ -1349,6 +1563,7 @@ public class CatalogService extends PastImpl implements SocService {
 
 		MultiContinuation multi = new MultiContinuation(command, termscount) {
 
+			@SuppressWarnings("unchecked")
 			public boolean isDone() throws Exception {
 				int numSuccess = 0;
 				for (int i = 0; i < haveResult.length; i++)
@@ -1364,9 +1579,10 @@ public class CatalogService extends PastImpl implements SocService {
 							if (logger.level <= Logger.WARNING)
 								logger.logException("result[" + i + "]:",
 										(Exception) result[i]);
-					throw new PastException("Had only " + numSuccess
-							+ " successful inserted indices out of "
-							+ result.length + " - aborting.");
+					parent.receiveException(
+							new Exception("Had only " + numSuccess
+									+ " successful inserted indices out of "
+									+ result.length + " - aborting."));
 				}
 
 				return false;
@@ -2615,113 +2831,19 @@ public class CatalogService extends PastImpl implements SocService {
 	public void update(NodeHandle handle, boolean joined) {
 		if (!joined)
 			return;
-		IdRange range = endpoint.range(handle, 0, null, true);
-		if (range == null)
-			return;
-		synchronized (storage) {
-			IdSet togo = storage.getStorage().scan(range);
-			if (togo == null || togo.numElements() == 0)
-				return;
-			for (Id next : togo.asArray()) {
-				final Id curId = next;
-				lockManager.lock(curId, new Continuation<Object, Exception>(){
-					public void receiveResult(Object result) {
-
-						storage.getStorage().getObject(curId,
-								new Continuation<Object, Exception>() {
-							@Override
-							public void receiveResult(Object result) {
-								if (result instanceof Catalog) {
-									Catalog cat = (Catalog)result;
-									Hashtable<Id, ContentCatalogEntry> contentEntries = cat.getContentCatalogEntries();
-									Hashtable<Id, UserCatalogEntry> userEntries = cat.getUserCatalogEntries();
-									Hashtable<Id, URLCatalogEntry> urlEntries = cat.getURLCatalogEntries();
-									Hashtable<Id, CatalogEntry> allEntries = new Hashtable<Id, CatalogEntry>();
-									if (contentEntries != null)
-										allEntries.putAll(contentEntries);
-									if (userEntries != null)
-										allEntries.putAll(userEntries);
-									if (urlEntries != null)
-										allEntries.putAll(urlEntries);
-									if (allEntries.isEmpty())
-										return;
-
-									MultiContinuation multi = new MultiContinuation(new SimpleContinuation() {
-										@Override
-										public void receiveResult(Object result) {
-											storage.getStorage().unstore(curId, new SimpleContinuation() {
-												@Override
-												public void receiveResult(Object result) {
-													//if (logger.level <= Logger.INFO)
-													logger.log("Moved item " + curId + " to new node");
-							                        lockManager.unlock(curId);
-												}
-											});
-										}
-									}, allEntries.size()) {
-
-										public boolean isDone() throws Exception {
-											int numSuccess = 0;
-											for (int i = 0; i < haveResult.length; i++)
-												if ((haveResult[i])
-														&& (result[i] instanceof Boolean[]))
-													numSuccess++;
-
-											if (numSuccess >= (SUCCESSFUL_INSERT_THRESHOLD * haveResult.length))
-												return true;
-
-											if (super.isDone()) {
-												for (int i = 0; i < result.length; i++)
-													if (result[i] instanceof Exception)
-														if (logger.level <= Logger.WARNING)
-															logger.logException("result[" + i
-																	+ "]:", (Exception) result[i]);
-												throw new PastException("Had only " + numSuccess
-														+ " successful inserted indices out of "
-														+ result.length + " - aborting.");
-											}
-
-											return false;
-										}
-
-										// This is called once we have sent all the messages
-										// (signaling Success).
-										public Object getResult() {
-											Boolean[] b = new Boolean[result.length];
-											for (int i = 0; i < b.length; i++)
-												b[i] = Boolean.valueOf((result[i] == null)
-														|| result[i] instanceof Boolean[]);
-											return b;
-										}
-									};
-
-									Iterator<Id> keys = allEntries.keySet().iterator();
-									Iterator<CatalogEntry> entries = allEntries.values().iterator();
-									for (int iter = 0; iter < allEntries.size(); iter++) {
-										Id nextKey = keys.next();
-										CatalogEntry nextEntry = entries.next();
-										PastContent pdu = new InsertPDU(nextKey, nextEntry, null);
-
-										insert(pdu, multi.getSubContinuation(iter));
-									}
-								} else {
-									receiveException(new Exception("Not a PastContent instance"));
-								}
-							}
-
-							@Override
-							public void receiveException(Exception exception) {
-								logger.logException("Error copying data to new node", exception);
-							}
-						});
-					}
-
-					@Override
-					public void receiveException(Exception exception) {
-						logger.logException("Error copying data to new node", exception);
-					}
-				});
-			}
+		IdRange otherRange = endpoint.range(handle, 0, handle.getId());
+		if (logger.level <= Logger.INFO) {
+			NodeHandle myHandle = endpoint.getLocalNodeHandle();
+			IdRange myRange = endpoint.range(myHandle, 0, myHandle.getId());
+			StringBuilder report = new StringBuilder("New node ");
+			report.append(handle.getId());
+			report.append(" taking over range ");
+			report.append(otherRange);
+			report.append(" (my range: ");
+			report.append(myRange);
+			report.append(")");
+			logger.log(report.toString());
 		}
+		doMigrateStoredItems(otherRange);
 	}
 }
