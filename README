@@ -1,0 +1,58 @@
+For an overview of the command-line arguments, type:
+
+  java -jar /path/to/eXO.jar --help
+
+A basic eXO invocation looks like this:
+
+  java -jar /path/to/eXO.jar --username 'My Name' --resource 'Office' --webport 8080 --dhtport 5009 --bootstrap 1.2.3.4:6000
+
+This command line starts a pastry node listening on port 5009, plus a web
+server listening on port 8080, on all local interfaces. eXO will then join
+the network overlay through the node running on host 1.2.3.4 port 6000.
+If no other node exists in the network or this is the first node in your
+overlay, please specify the ip/port of your local node. You can then point
+your favorite web browser to http://localhost:8080/ to access eXO's web
+interface. To gracefully shutdown eXO, hit Ctrl+C in the terminal or send the
+Java process a SIGTERM.
+
+eXO makes use of a XMPP-like <username>/<resource> naming scheme, where each
+user is identified by her username, and multiple nodes belonging to the same
+user can coexist in the network if they have a different resource name.
+
+On execution, eXO creates a directory named 'eXO_Storage_Root/' under the
+current working directory. Pastry-related data are stored under
+'eXO_Storage_Root/FreePastry_Storage_Root/', while files shared by the user
+are stored under 'eXO_Storage_Root/shared/'. eXO further stores profile data
+and other settings in the file '.eXO.conf-XXX@YYY' under 'eXO_Storage_Root/',
+where XXX is the username and YYY the resource name.
+
+Furthermore, if libextractor is available on your system, eXO can make use of
+its Java bindings to automatically extract a set of tags from files you share
+with others in the overlay.
+
+eXO makes use of, and comes bundled with, the following software packages:
+* Commons-FileUpload
+* Commons-IO
+* FreePastry (svn version 4698)
+* Getopt Java port
+* Jetty web server/servlet container
+* LibExtractor Java bindings (libextractor-java-dev)
+* Lucene Core
+
+FreePastry further depends on:
+* Bouncycastle
+* Commons-JXPath
+* Commons-Logging
+* JUnit
+* SBBI-UPnPb
+* XMLPull
+* XPP3
+
+Please redirect any questions, comments, bug reports, or other inquiries to
+Nikos Ntarmos <ntarmos@cs.uoi.gr>
+
+
+(C) 2007-2011, The eXO Team
+    A. Loupasakis <loupasak@ceid.upatras.gr>
+    N. Ntarmos <ntarmos@cs.uoi.gr>
+    P. Triantafillou <peter@ceid.upatras.gr>
