@@ -8,7 +8,7 @@ import java.util.Date;
  */
 
 public class Status extends ContentField implements Serializable{
-    public final  static String STATUS_ID = "::status";
+    public final  static String STATUS_ID = "exO::status";
 
 	/**
 	 *
@@ -26,6 +26,12 @@ public class Status extends ContentField implements Serializable{
 		super("STATUS_ID");
 		this.statusText = fieldData;
 	    this.date=new Date(System.currentTimeMillis());
+    }
+
+  	public Status(String statusText, long dateLong, boolean isPublic) {
+		super(STATUS_ID, isPublic);
+		this.statusText= statusText;
+	    this.date=new Date(dateLong);
     }
 
 	public String getStatusText() {
