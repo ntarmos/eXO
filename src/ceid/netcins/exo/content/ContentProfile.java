@@ -22,6 +22,10 @@ import java.util.Set;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
+
+/**
+ * TODO: UserStatus to String and UserStatus from String.
+ */
 public class ContentProfile implements Serializable, ProfileSet {
 
 	private static final long serialVersionUID = -3971044346421201440L;
@@ -125,6 +129,8 @@ public class ContentProfile implements Serializable, ProfileSet {
 					buffer.append(((TermField)obj).toString());
 				else if (obj instanceof StoredField)
 					buffer.append(((StoredField)obj).toString());
+                else if (obj instanceof Status)
+					buffer.append(((Status)obj).toString());
 			}
 		return buffer.toString();
 	}

@@ -1,12 +1,11 @@
 package ceid.netcins.exo.frontend.handlers;
 
-import java.util.Hashtable;
+import ceid.netcins.exo.CatalogService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import ceid.netcins.exo.CatalogService;
+import java.util.Hashtable;
 
 /**
  * 

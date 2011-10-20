@@ -35,10 +35,14 @@ public class ContentProfileJSONConvertor implements Convertor {
 			for (Object cf : content) {
 				if (cf instanceof Map) {
 					ContentFieldJSONConvertor tc = null;
-					if (((Map)cf).containsKey(TermFieldJSONConvertor.FieldDataTag))
+					if (((Map)cf).containsKey(TermFieldJSONConvertor.FieldDataTag)){
 						tc = new TermFieldJSONConvertor();
-					else
+                    }else if(((Map)cf).containsKey(StatusJSONConvertor.StatusTag)){
+                        tc = new StatusJSONConvertor();
+                    }
+					else{
 						tc = new TokenizedFieldJSONConvertor();
+                    }
 					ret.add((ContentField)tc.fromJSON((Map)cf));
 				}
 			}
