@@ -19,6 +19,7 @@ import java.io.Serializable;
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
  */
+
 public abstract class ContentField implements Serializable {
 
 	/**

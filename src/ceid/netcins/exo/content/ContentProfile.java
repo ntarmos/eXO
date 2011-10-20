@@ -13,11 +13,11 @@ import java.util.Set;
  * This Class holds the Content Profile of a content object. Such an object is
  * stored in a Catalog Entry. When an indexing process is in progress this
  * object is "serialized" and send to the corresponding Catalog nodes.
- * 
+ *
  * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
  * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
  * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
- * 
+ *
  * "eXO: Decentralized Autonomous Scalable Social Networking"
  * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
  * January 9-12, 2011, Asilomar, California, USA.
@@ -49,7 +49,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 
 	/**
 	 * Copy constructor, initializing its fields by copying all of the elements of c
-	 * @param c a {@link Collection} of {@link ContentField}s to make up the new {@link ContentProfile} 
+	 * @param c a {@link Collection} of {@link ContentField}s to make up the new {@link ContentProfile}
 	 */
 	public ContentProfile(Collection<ContentField> c) {
 		this();
@@ -59,7 +59,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 
 	/**
 	 * Adds a ContentField object (any of three types) in the List fields
-	 * 
+	 *
 	 * @param field
 	 */
 	public final void add(ContentField field) {
@@ -75,7 +75,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 
 	/**
 	 * Removes a ContentField object (any of three types) in the List fields
-	 * 
+	 *
 	 * @param field
 	 */
 	public final void remove(ContentField field) {
@@ -83,7 +83,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return a list with all public ContentFields
 	 */
 	public List<ContentField> getPublicFields() {
@@ -111,7 +111,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return A full representation of the ContentProfile data
 	 */
 	@Override
@@ -132,7 +132,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	/**
 	 * This is a convenient method to present the profile terms without the
 	 * corresponding term frequencies.
-	 * 
+	 *
 	 * @return A full representation of the ContentProfile data
 	 */
 	public String toStringWithoutTF() {
@@ -150,7 +150,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return A sum of the ContentProfile data in bytes
 	 */
 	public double computeTotalBytes() {
@@ -170,7 +170,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return A random term of the content profile
 	 */
 	public String randomTerm() {
@@ -193,13 +193,13 @@ public class ContentProfile implements Serializable, ProfileSet {
 	public int hashCode() {
 		return fields.hashCode();
 	}
-	
+
 	public boolean equals(Object o) {
 		if (!(o instanceof ContentProfile))
 			return false;
 		return equals((ContentProfile)o);
 	}
-	
+
 	public boolean equals(ContentProfile cp) {
 		HashSet<ContentField> our = new HashSet<ContentField>(fields);
 		HashSet<ContentField> theirs = new HashSet<ContentField>(cp.fields);
@@ -233,7 +233,7 @@ public class ContentProfile implements Serializable, ProfileSet {
 	@Override
 	public Set<String> getTermSet(Set<String> reusableContainer) {
 		Set<ContentField> contentFields = this.getAllFields();
-		// Ensure container is empty 
+		// Ensure container is empty
 		reusableContainer.clear();
 		// Put all the terms in the Set object to "discard" duplicates
 		for(ContentField cf : contentFields) {
