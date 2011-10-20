@@ -3,6 +3,7 @@ package ceid.netcins.exo.frontend.json;
 import java.util.Iterator;
 import java.util.Map;
 
+import ceid.netcins.exo.content.*;
 import org.eclipse.jetty.util.ajax.JSON;
 
 import ceid.netcins.exo.catalog.CatalogEntry;
@@ -10,10 +11,6 @@ import ceid.netcins.exo.catalog.ContentCatalogEntry;
 import ceid.netcins.exo.catalog.ScoreBoard;
 import ceid.netcins.exo.catalog.ScoreBoard.Score;
 import ceid.netcins.exo.catalog.UserCatalogEntry;
-import ceid.netcins.exo.content.ContentProfile;
-import ceid.netcins.exo.content.StoredField;
-import ceid.netcins.exo.content.TermField;
-import ceid.netcins.exo.content.TokenizedField;
 import ceid.netcins.exo.social.TagCloud;
 import ceid.netcins.exo.user.Friend;
 import ceid.netcins.exo.user.FriendRequest;
@@ -49,6 +46,7 @@ public class Json extends JSON {
 		JSON.registerConvertor(SharedContentItem.class, new SharedContentItemJSONConvertor());
 		JSON.registerConvertor(Friend.class, new FriendJSONConvertor());
 		JSON.registerConvertor(FriendRequest.class, new FriendRequestJSONConvertor());
+        JSON.registerConvertor(Status.class, new StatusJSONConvertor());
 	}
 
 	public static void init() {
