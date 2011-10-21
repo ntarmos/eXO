@@ -286,14 +286,14 @@ function do_get_profile() {
             // Fill in the data to the corresponding places
             var username = "Incognito", resource = "Home", public_profile_body = null,
                     private_profile_body = null, fieldname;
-            console.log(profile_dict);
+
             for (dict in profile_dict) {
                 if (profile_dict[dict]["eXO::FieldName"] == "Username") {
                     username = profile_dict[dict]["eXO::FieldData"];
                 } else if (profile_dict[dict]["eXO::FieldName"] == "Resource") {
                     resource = profile_dict[dict]["eXO::FieldData"];
                 } else if (profile_dict[dict]["eXO::UserStatus"] != null) {
-                    console.log("To perasame kai auto totese")
+
 
                 } else {
                     var tags;
@@ -487,6 +487,7 @@ function do_get_profile() {
             $(".new-field .field-name").val("");
             $(".new-field .tag-input").val("");
 
+
             // Hide/show content divs
             setTimeout(function() {
                 $("#content-main-loading").hide();
@@ -514,7 +515,6 @@ $(function () {
     $('.add-field').click(function() {
         var instance = $(this).parents(".profile-wrapper");
         $('.new-field', instance).toggle();
-        profile_dict[profile_dict.length] = { 'eXO::UserStatus' : "Ti wraia mera einai simera???",        'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : false};
 
         /*
 
@@ -558,6 +558,7 @@ $(function () {
 
     $(".new-field .create-action").click(function() {
         var instance = $(this).parents('.new-field');
+        instance.hide();
         if (update_profile_instance(null, instance))
             do_post_profile();
     });
@@ -566,12 +567,22 @@ $(function () {
     $(".new-field .updateStatus-action").click(function() {
 
         var instance = $(this).parents('.new-field');
+        instance.hide();
          console.log(instance.get);
         var str = $('.field-name', instance).val();
+
         console.log("I'm too old for this shit " + str);
-/*
-        if (update_profile_instance(null, instance))
-            do_post_profile();*/
+
+
+        if(str.length == 0){
+            alert("Blank status? I don't think so...");
+            return;
+        }
+        profile_dict[profile_dict.length] = { 'eXO::UserStatus' : str,        'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : $("input.change_privacy", instance).is(":checked")};
+
+       $("input.change_privacy", instance).removeAttr('checked')
+
+        do_post_profile();
     });
 
     do_get_profile();
@@ -667,6 +678,7 @@ $(function () {
                         <div class="span-9">What's your new status?</div>
                         <div class="span-9 clear">
                             <input class="field-name" type="text" name="statusText"/>
+                            <label>Private Status</label><input class="change_privacy" type="checkbox"/>
                         </div>
                         <!-- <div class="span-10">
                             <form class="add-tag-form" action="#/add_tag/public" method="post">
