@@ -22,7 +22,7 @@ public class StatusJSONConvertor extends ContentFieldJSONConvertor {
     @SuppressWarnings("rawtypes")
     public Object fromJSON(final Map arg0) {
 
-        return new Status((String) arg0.get(StatusTag), Long.parseLong((String)arg0.get(StatusDateTag)) , (Boolean) arg0.get(FieldIsPublicTag));
+        return new Status((String) arg0.get(StatusTag), ((Long)arg0.get(StatusDateTag)) , (Boolean) arg0.get(FieldIsPublicTag));
     }
 
     @Override

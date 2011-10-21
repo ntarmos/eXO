@@ -295,7 +295,7 @@ function do_get_profile() {
                 } else if (profile_dict[dict]["eXO::UserStatus"] != null) {
                     console.log("To perasame kai auto totese")
 
-                }else {
+                } else {
                     var tags;
                     if (profile_dict[dict]["eXO::FieldData"] === undefined) {
                         tags = profile_dict[dict]["eXO::Terms"];
@@ -514,16 +514,16 @@ $(function () {
     $('.add-field').click(function() {
         var instance = $(this).parents(".profile-wrapper");
         $('.new-field', instance).toggle();
-          profile_dict[profile_dict.length] = { 'eXO::UserStatus' : "Ti wraia mera einai simera???",        'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : false};
+        profile_dict[profile_dict.length] = { 'eXO::UserStatus' : "Ti wraia mera einai simera???",        'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : false};
 
-/*
+        /*
 
-    profile_dict[profile_dict.length + 1] = { 'eXO::UserStatus' : new_field_name,'eXO::FieldData' : field_data, 'eXO::FieldIsPublic' : new_privacy };
-    profile_dict["eXO::Data"]["eXO::Profile"]["eXO::Status"]["Status::Data"] = "pipes";
-    profile_dict["eXO::Data"]["eXO::Profile"]["eXO::Status"]["Status::Date"] = "0";
-*/
+         profile_dict[profile_dict.length + 1] = { 'eXO::UserStatus' : new_field_name,'eXO::FieldData' : field_data, 'eXO::FieldIsPublic' : new_privacy };
+         profile_dict["eXO::Data"]["eXO::Profile"]["eXO::Status"]["Status::Data"] = "pipes";
+         profile_dict["eXO::Data"]["eXO::Profile"]["eXO::Status"]["Status::Date"] = "0";
+         */
 
-    console.log(profile_dict);
+        console.log(profile_dict);
 
         return false;
     });
@@ -560,6 +560,18 @@ $(function () {
         var instance = $(this).parents('.new-field');
         if (update_profile_instance(null, instance))
             do_post_profile();
+    });
+
+
+    $(".new-field .updateStatus-action").click(function() {
+
+        var instance = $(this).parents('.new-field');
+         console.log(instance.get);
+        var str = $('.field-name', instance).val();
+        console.log("I'm too old for this shit " + str);
+/*
+        if (update_profile_instance(null, instance))
+            do_post_profile();*/
     });
 
     do_get_profile();
@@ -641,6 +653,35 @@ $(function () {
 
         <div id="content-main" class="span-24">
             <div id="myprofile-body" class="content-body">
+                <!--Status-->
+                <div id="status-wrapper" class="profile-wrapper">
+                    <h2>
+                        Status
+              <span>
+                <img src="/site_media/images/add.png"/>
+                <a id="add-status" class="add-field" href="#">Update Status</a>
+              </span>
+                    </h2>
+
+                    <div id="new-status" class="clear new-field">
+                        <div class="span-9">What's your new status?</div>
+                        <div class="span-9 clear">
+                            <input class="field-name" type="text" name="statusText"/>
+                        </div>
+                        <!-- <div class="span-10">
+                            <form class="add-tag-form" action="#/add_tag/public" method="post">
+                                <input type="text" name="tag" class="tag-input"/>
+                                <input type="submit" class="add-tag" value="Add"/>
+                            </form>
+                        </div>-->
+                        <div class="clear tag-field-data" style="margin-top:1em"></div>
+                        <div class="button-wrapper" class="clear">
+                            <button class="updateStatus-action">Update</button>
+                        </div>
+                    </div>
+                    <!--<div id="pub-fields-wrapper" class="tag-fields-wrapper"></div>-->
+                </div>
+                <!--Status-->
                 <div id="pub-profile-wrapper" class="profile-wrapper">
                     <h2>
                         Public Profile
