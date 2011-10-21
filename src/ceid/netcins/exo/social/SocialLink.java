@@ -1,5 +1,3 @@
-
-
 package ceid.netcins.exo.social;
 
 /**
@@ -9,15 +7,14 @@ package ceid.netcins.exo.social;
  * together mapped with some content profile or with his user profile. Moreover,
  * the "address" of the referrer is stored to the referree side to indicate that
  * he or his content has been "tagged"/"pointed".
- * 
- * 
+ *
  * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
  * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
  * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
- * 
- * "eXO: Decentralized Autonomous Scalable Social Networking"
- * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
- * January 9-12, 2011, Asilomar, California, USA.
+ *         <p/>
+ *         "eXO: Decentralized Autonomous Scalable Social Networking"
+ *         Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ *         January 9-12, 2011, Asilomar, California, USA.
  */
 public class SocialLink {
 

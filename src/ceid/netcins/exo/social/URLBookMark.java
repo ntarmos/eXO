@@ -1,11 +1,9 @@
-
-
 package ceid.netcins.exo.social;
+
+import ceid.netcins.exo.content.ContentProfile;
 
 import java.io.Serializable;
 import java.net.URL;
-
-import ceid.netcins.exo.content.ContentProfile;
 
 /**
  * URL bookmarks are stored "addresses" of interest to the user content.
@@ -14,52 +12,52 @@ import ceid.netcins.exo.content.ContentProfile;
  * accessed through web servers using http/ftp protocol. These addresses are
  * stored together with some user defined set of keywords or description text
  * called tags to describe the bookmark.
- * 
+ *
  * @author <a href="mailto:loupasak@ceid.upatras.gr">Andreas Loupasakis</a>
  * @author <a href="mailto:ntarmos@cs.uoi.gr">Nikos Ntarmos</a>
  * @author <a href="mailto:peter@ceid.upatras.gr">Peter Triantafillou</a>
- * 
- * "eXO: Decentralized Autonomous Scalable Social Networking"
- * Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
- * January 9-12, 2011, Asilomar, California, USA.
+ *         <p/>
+ *         "eXO: Decentralized Autonomous Scalable Social Networking"
+ *         Proc. 5th Biennial Conf. on Innovative Data Systems Research (CIDR),
+ *         January 9-12, 2011, Asilomar, California, USA.
  */
 public class URLBookMark implements SocialBookMark, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 9032594102423110316L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 9032594102423110316L;
 
-	// The resource URL
-	private URL address;
+    // The resource URL
+    private URL address;
 
-	// the set of tags describing the URL
-	private ContentProfile tags;
+    // the set of tags describing the URL
+    private ContentProfile tags;
 
-	/**
-	 * Constructor
-	 */
-	public URLBookMark(URL url, ContentProfile tags) {
+    /**
+     * Constructor
+     */
+    public URLBookMark(URL url, ContentProfile tags) {
 
-		address = url;
-		this.tags = tags;
-	}
+        address = url;
+        this.tags = tags;
+    }
 
-	/**
-	 * Getter for the set of tags
-	 * 
-	 * @return
-	 */
-	public ContentProfile getTags() {
-		return tags;
-	}
+    /**
+     * Getter for the set of tags
+     *
+     * @return
+     */
+    public ContentProfile getTags() {
+        return tags;
+    }
 
-	/**
-	 * Getter for the URL address
-	 * 
-	 * @return
-	 */
-	public URL getAddress() {
-		return address;
-	}
+    /**
+     * Getter for the URL address
+     *
+     * @return
+     */
+    public URL getAddress() {
+        return address;
+    }
 }
