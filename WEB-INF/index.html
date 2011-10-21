@@ -514,7 +514,7 @@ $(function () {
     $('.add-field').click(function() {
         var instance = $(this).parents(".profile-wrapper");
         $('.new-field', instance).toggle();
-          profile_dict[profile_dict.length] = { 'eXO::UserStatus' : "Ti wraia mera einai simera???",        'eXO::StatusDate' : "0",    'eXO::FieldIsPublic' : false};
+          profile_dict[profile_dict.length] = { 'eXO::UserStatus' : "Ti wraia mera einai simera???",        'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : false};
 
 /*
 
