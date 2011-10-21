@@ -285,7 +285,7 @@ function do_get_profile() {
             profile_dict = data["eXO::Data"]["eXO::Profile"];
             // Fill in the data to the corresponding places
             var username = "Incognito", resource = "Home", public_profile_body = null,
-                    private_profile_body = null, fieldname;
+                    private_profile_body = null, fieldname, public_statuses = null, private_statuses = null;
 
             for (dict in profile_dict) {
                 if (profile_dict[dict]["eXO::FieldName"] == "Username") {
@@ -294,8 +294,19 @@ function do_get_profile() {
                     resource = profile_dict[dict]["eXO::FieldData"];
                 } else if (profile_dict[dict]["eXO::UserStatus"] != null) {
 
-
-                } else {
+                    if (profile_dict[dict]["eXO::FieldIsPublic"]) {
+                        if (public_statuses == null) {
+                            public_statuses = {};
+                        }
+                        public_statuses[profile_dict[dict]["eXO::StatusDate"]] = profile_dict[dict];
+                    } else {
+                        if (private_statuses == null) {
+                            private_statuses = {};
+                        }
+                        private_statuses[profile_dict[dict]["eXO::StatusDate"]] = profile_dict[dict];
+                    }
+                }
+                else {
                     var tags;
                     if (profile_dict[dict]["eXO::FieldData"] === undefined) {
                         tags = profile_dict[dict]["eXO::Terms"];
@@ -407,6 +418,32 @@ function do_get_profile() {
             } else {
                 tag_rows = '<span class="quiet">There is no data yet. Why don\'t you add some now?</span>';
             }
+
+
+            if (public_statuses != null) {
+                var sortedStatus = new Array();
+                sortedStatus.push()
+                console.log("Public Statuses");
+                for (status in public_statuses) {
+                    sortedStatus.push(status);
+                }
+                sortedStatus = sortedStatus.sort(sortNumber);
+                for (var i = 0; i < sortedStatus.length ; i++) {
+                    console.log(public_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']));
+                }
+            }
+            if (private_statuses != null) {
+                var sortedStatus = new Array();
+                console.log("Private Statuses");
+                for (status in private_statuses) {
+                    sortedStatus.push(status);
+                }
+                sortedStatus = sortedStatus.sort(sortNumber);
+                for (var i = 0; i < sortedStatus.length ; i++) {
+                    console.log(private_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']));
+                }
+
+            }
             $("#pri-fields-wrapper").html(tag_rows);
 
             // Bind hover row events
@@ -493,11 +530,15 @@ function do_get_profile() {
                 $("#content-main-loading").hide();
                 $("#myprofile-body").show();
             }, 500);
-        },
+        }
+        ,
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert("An error occurred : " + textStatus);
         }
     });
+}
+function sortNumber(a, b) {
+    return b - a;
 }
 
 $(function () {
@@ -515,16 +556,6 @@ $(function () {
     $('.add-field').click(function() {
         var instance = $(this).parents(".profile-wrapper");
         $('.new-field', instance).toggle();
-
-        /*
-
-         profile_dict[profile_dict.length + 1] = { 'eXO::UserStatus' : new_field_name,'eXO::FieldData' : field_data, 'eXO::FieldIsPublic' : new_privacy };
-         profile_dict["eXO::Data"]["eXO::Profile"]["eXO::Status"]["Status::Data"] = "pipes";
-         profile_dict["eXO::Data"]["eXO::Profile"]["eXO::Status"]["Status::Date"] = "0";
-         */
-
-        console.log(profile_dict);
-
         return false;
     });
 
@@ -568,19 +599,15 @@ $(function () {
 
         var instance = $(this).parents('.new-field');
         instance.hide();
-         console.log(instance.get);
         var str = $('.field-name', instance).val();
 
-        console.log("I'm too old for this shit " + str);
-
-
-        if(str.length == 0){
+        if (str.length == 0) {
             alert("Blank status? I don't think so...");
             return;
         }
-        profile_dict[profile_dict.length] = { 'eXO::UserStatus' : str,        'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : $("input.change_privacy", instance).is(":checked")};
+        profile_dict[profile_dict.length] = { 'eXO::UserStatus' : str, 'eXO::StatusDate' : (new Date()).getTime(),    'eXO::FieldIsPublic' : $("input.change_privacy", instance).is(":checked")};
 
-       $("input.change_privacy", instance).removeAttr('checked')
+        $("input.change_privacy", instance).removeAttr('checked')
 
         do_post_profile();
     });
@@ -678,7 +705,7 @@ $(function () {
                         <div class="span-9">What's your new status?</div>
                         <div class="span-9 clear">
                             <input class="field-name" type="text" name="statusText"/>
-                            <label>Private Status</label><input class="change_privacy" type="checkbox"/>
+                            <label>Public Status</label><input class="change_privacy" type="checkbox"/>
                         </div>
                         <!-- <div class="span-10">
                             <form class="add-tag-form" action="#/add_tag/public" method="post">
