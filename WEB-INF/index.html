@@ -428,7 +428,7 @@ function do_get_profile() {
                     sortedStatus.push(status);
                 }
                 sortedStatus = sortedStatus.sort(sortNumber);
-                for (var i = 0; i < sortedStatus.length ; i++) {
+                for (var i = 0; i < sortedStatus.length; i++) {
                     console.log(public_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']));
                 }
             }
@@ -439,7 +439,7 @@ function do_get_profile() {
                     sortedStatus.push(status);
                 }
                 sortedStatus = sortedStatus.sort(sortNumber);
-                for (var i = 0; i < sortedStatus.length ; i++) {
+                for (var i = 0; i < sortedStatus.length; i++) {
                     console.log(private_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']));
                 }
 
@@ -547,11 +547,11 @@ $(function () {
             function() {
                 $(this).show();
             }).ajaxStop(function() {
-        var indicator = $(this);
-        setTimeout(function() {
-            indicator.fadeOut()
-        }, 500);
-    });
+                var indicator = $(this);
+                setTimeout(function() {
+                    indicator.fadeOut()
+                }, 500);
+            });
 
     $('.add-field').click(function() {
         var instance = $(this).parents(".profile-wrapper");
@@ -779,51 +779,73 @@ $(function () {
                             <span>or <a class="form-cancel" href="#">I'm done adding fields</a></span>
                         </div>
                     </div>
-                    <div id="pri-fields-wrapper" class="tag-fields-wrapper"></div>
+                    <!--BEGIN STATUS-->
+                    <div id="pri-status-wrapper" class="tag-fields-wrapper">
+
+                        <div id="pri-status-row-11" class="tag-row status-row">
+                            <div class="actions-wrapper" style="display: block; ">
+                                <div class="row-actions">
+                                    <div class="buttons">
+                                        <span class="button-action">
+                                        <a class="delete close"
+                                           id="pri-status-delete-action-0"
+                                           href="#">1</a>
+                                    </span>
+                                        <span class="button-action">  </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span-3"><span class="status-date">10/10/10</span> </div>
+                            <div class="tag-field-data"><span class="status-message">Status message<a class="close" href="#">1</a></span>&nbsp;
+                            </div>
+                        </div>
+                         </div>
+                    <!--END STATUS-->
+                        <div id="pri-fields-wrapper" class="tag-fields-wrapper"></div>
+                    </div>
+                </div>
+                <div id="content-main-loading">
+                    <p>
+                        <img src="/site_media/images/loading2.gif"/>
+                    </p>
+
+                    <p>Loading Content</p>
                 </div>
             </div>
-            <div id="content-main-loading">
-                <p>
-                    <img src="/site_media/images/loading2.gif"/>
-                </p>
 
-                <p>Loading Content</p>
+            <div id="content_footer" class="span-24"></div>
+
+        </div>
+        <!-- END MIDDLE-CONTAINER -->
+    </div>
+    <!-- END MIDDLE-WRAPPER -->
+
+    <div id="footer-wrapper">
+        <div id="footer-container" class="container">
+            <div class="span-6">
+                <ul>
+                    <li class="title">Service</li>
+                    <li>Privacy Policy</li>
+                    <li>Terms of Service</li>
+                </ul>
+            </div>
+            <div class="span-6">
+                <ul>
+                    <li class="title">Resources</li>
+                    <li>FAQ</li>
+                    <li>API Documentation</li>
+                </ul>
+            </div>
+            <div class="span-6 last">
+                <ul>
+                    <li class="title">About</li>
+                    <li>Team</li>
+                    <li>Follow us on Twitter</li>
+                    <li>Blog</li>
+                </ul>
             </div>
         </div>
-
-        <div id="content_footer" class="span-24"></div>
-
     </div>
-    <!-- END MIDDLE-CONTAINER -->
-</div>
-<!-- END MIDDLE-WRAPPER -->
-
-<div id="footer-wrapper">
-    <div id="footer-container" class="container">
-        <div class="span-6">
-            <ul>
-                <li class="title">Service</li>
-                <li>Privacy Policy</li>
-                <li>Terms of Service</li>
-            </ul>
-        </div>
-        <div class="span-6">
-            <ul>
-                <li class="title">Resources</li>
-                <li>FAQ</li>
-                <li>API Documentation</li>
-            </ul>
-        </div>
-        <div class="span-6 last">
-            <ul>
-                <li class="title">About</li>
-                <li>Team</li>
-                <li>Follow us on Twitter</li>
-                <li>Blog</li>
-            </ul>
-        </div>
-    </div>
-</div>
 
 </body>
 </html>
