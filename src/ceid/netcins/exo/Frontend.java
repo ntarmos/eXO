@@ -325,7 +325,8 @@ public class Frontend implements Serializable {
                 SearchUserDHTHandler.class,
                 SearchUserPNHandler.class,
                 SearchContentDHTHandler.class,
-                SearchContentPNHandler.class
+                SearchContentPNHandler.class,
+                GetFriendStatusHandler.class
         };
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContextHandler.setContextPath("/servlet");

@@ -244,6 +244,7 @@ public abstract class AbstractHandler extends HttpServlet {
             System.err.println("Bogus response format: No status supplied!");
         if (data != null)
             res.put(ResponseDataTag, data);
+        System.out.println(res.get(ResponseDataTag));
         return res;
     }
 }

@@ -1,357 +1,394 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title> Friends | eXO - Social freedom</title>
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title> Friends | eXO - Social freedom</title>
+<!-- Favicon -->
+<link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon"/>
 
-  <!-- Stylesheets -->
-  <link href="/site_media/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <link href="/site_media/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
-  <!--[if lt IE 8]>
-      <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <![endif]-->
-  <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
-  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
+<!-- Stylesheets -->
+<link href="/site_media/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<link href="/site_media/stylesheets/print.css" media="print" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 8]>
+<link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<![endif]-->
+<link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet"/>
+<link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet"/>
 
-  <!-- Javascripts -->
-  <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
-  <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
-  <script type="text/javascript">
-  function message_notification(msg) {
-    $.jGrowl(msg, { position: "bottom-right"});
-  }
+<!-- Javascripts -->
+<script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
+<script type="text/javascript">
+/* Global Vars */
+var profile_dict = null;
 
-  function start_polling(reqID, url, redirect_callback){
+function do_get_profile() {
+    // Get username and resource
+    console.log("do_get_profile");
     $.ajax({
-      type: 'POST',
-      url: url,
-      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
-      success: function(data){
-        polling_callback(data, reqID, url, redirect_callback);
-        return true;
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-        return false;
-      }
-    });
-  }
-  function polling_callback(polling_data, reqID, url, redirect_callback){
-    if("eXO::Status" in polling_data){
-      if(polling_data["eXO::Status"]=="eXO::Processing"){
-        // Continue polling after 100ms
-        setTimeout(function(){ start_polling(reqID, url, redirect_callback); }, 100);
-        return true;
-      } else {
-        // Let the callback handle the notifications.
-        redirect_callback(polling_data);
-      }
-      // TODO: On stop of processing trigger other events
-      return true;
-    }
-  }
+        type: 'POST',
+        url: "/servlet/GetFriendStatus/",
+        dataType: 'json',
+        data:  {eXO_data: JSON.stringify({"eXO::Profile" :profile_dict })},
+        success: function(data) {
+            console.log(data);
 
-  var app = $.sammy('#content-main', function() {
+
+        }
+    });
+}
+function message_notification(msg) {
+    $.jGrowl(msg, { position: "bottom-right"});
+}
+
+function start_polling(reqID, url, redirect_callback) {
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
+        success: function(data) {
+            polling_callback(data, reqID, url, redirect_callback);
+            return true;
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
+            return false;
+        }
+    });
+}
+function polling_callback(polling_data, reqID, url, redirect_callback) {
+    if ("eXO::Status" in polling_data) {
+        if (polling_data["eXO::Status"] == "eXO::Processing") {
+            // Continue polling after 100ms
+            setTimeout(function() {
+                start_polling(reqID, url, redirect_callback);
+            }, 100);
+            return true;
+        } else {
+            // Let the callback handle the notifications.
+            redirect_callback(polling_data);
+        }
+        // TODO: On stop of processing trigger other events
+        return true;
+    }
+}
+
+var app = $.sammy('#content-main', function() {
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
-    this.post('#/friend_requests/accept/', function(){
-      var accept_uid = this.params['accept_uid'];
-      var elem_id = this.params['elem_id'];
-      var context = this;
-      $.ajax({
-        type: 'POST',
-        url:  "/servlet/AcceptFriendRequest/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({"eXO::UID" : accept_uid})},
-        success: function(data){
-          start_polling(data["eXO::reqID"], "/servlet/AcceptFriendRequest/",
-            function(response_data){
-              if (response_data["eXO::Status"]=="eXO::Success"){
-                // Notify about success
-                var html = "<img src=\"/site_media/images/accept.png\">"
-                  + "<span class=\"notification-message quiet\">Successfully accepted!</span>";
-                $('#'+elem_id+' .row-actions').html(html);
-                message_notification("Successfully accepted!");
-                // Rerender friend list after 100ms
-                setTimeout(function(){ context.redirect('#/friends_list/get/'); }, 100);
-              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                alert("Accept friend request failed!");
-              } else {
-                alert("Accept friend request failed!");
-              }
-              return true;
-          });
-          return true;
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
+    this.post('#/friend_requests/accept/', function() {
+        var accept_uid = this.params['accept_uid'];
+        var elem_id = this.params['elem_id'];
+        var context = this;
+        $.ajax({
+            type: 'POST',
+            url:  "/servlet/AcceptFriendRequest/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({"eXO::UID" : accept_uid})},
+            success: function(data) {
+                start_polling(data["eXO::reqID"], "/servlet/AcceptFriendRequest/",
+                        function(response_data) {
+                            if (response_data["eXO::Status"] == "eXO::Success") {
+                                // Notify about success
+                                var html = "<img src=\"/site_media/images/accept.png\">"
+                                        + "<span class=\"notification-message quiet\">Successfully accepted!</span>";
+                                $('#' + elem_id + ' .row-actions').html(html);
+                                message_notification("Successfully accepted!");
+                                // Rerender friend list after 100ms
+                                setTimeout(function() {
+                                    context.redirect('#/friends_list/get/');
+                                }, 100);
+                            } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                alert("Accept friend request failed!");
+                            } else {
+                                alert("Accept friend request failed!");
+                            }
+                            return true;
+                        });
+                return true;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            }
+        });
     });
 
-    this.post('#/friend_requests/reject/', function(){
-      var reject_uid = this.params['reject_uid'];
-      var elem_id = this.params['elem_id'];
-      var context = this;
-      $.ajax({
-        type: 'POST',
-        url:  "/servlet/RejectFriendRequest/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({"eXO::UID" : reject_uid})},
-        success: function(data){
-          start_polling(data["eXO::reqID"], "/servlet/RejectFriendRequest/",
-            function(response_data){
-              if (response_data["eXO::Status"]=="eXO::Success"){
-                // Notify about success
-                var html = "<img src=\"/site_media/images/accept.png\">"
-                  + "<span class=\"notification-message quiet\">Successfully rejected!</span>";
-                $('#'+elem_id+' .row-actions').html(html);
-                message_notification("Successfully rejected!");
-                // Rerender friend list after 100ms
-                setTimeout(function(){ context.redirect('#/friends_list/get/'); }, 100);
-              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                alert("Reject friend request failed!");
-              } else {
-                alert("Reject friend request failed!");
-              }
-              return true;
-          });
-          return true;
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
+    this.post('#/friend_requests/reject/', function() {
+        var reject_uid = this.params['reject_uid'];
+        var elem_id = this.params['elem_id'];
+        var context = this;
+        $.ajax({
+            type: 'POST',
+            url:  "/servlet/RejectFriendRequest/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({"eXO::UID" : reject_uid})},
+            success: function(data) {
+                start_polling(data["eXO::reqID"], "/servlet/RejectFriendRequest/",
+                        function(response_data) {
+                            if (response_data["eXO::Status"] == "eXO::Success") {
+                                // Notify about success
+                                var html = "<img src=\"/site_media/images/accept.png\">"
+                                        + "<span class=\"notification-message quiet\">Successfully rejected!</span>";
+                                $('#' + elem_id + ' .row-actions').html(html);
+                                message_notification("Successfully rejected!");
+                                // Rerender friend list after 100ms
+                                setTimeout(function() {
+                                    context.redirect('#/friends_list/get/');
+                                }, 100);
+                            } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                alert("Reject friend request failed!");
+                            } else {
+                                alert("Reject friend request failed!");
+                            }
+                            return true;
+                        });
+                return true;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            }
+        });
     });
 
     this.get('#/friend_requests/get/', function() {
-      var context = this;
-      $.ajax({
-        type: 'GET',
-        url:  "/servlet/GetFriendRequests/",
-        dataType: 'json',
-        data: "",
-        success: function(data){
-          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
-            // Interpolate index
-            var templ = data["eXO::Data"];
-            for(i in templ["eXO::Friend_Requests"]){
-              templ["eXO::Friend_Requests"][i]["index"]= i;
+        var context = this;
+        $.ajax({
+            type: 'GET',
+            url:  "/servlet/GetFriendRequests/",
+            dataType: 'json',
+            data: "",
+            success: function(data) {
+                if ("eXO::Status" in data && data["eXO::Status"] == "eXO::Success") {
+                    // Interpolate index
+                    var templ = data["eXO::Data"];
+                    for (i in templ["eXO::Friend_Requests"]) {
+                        templ["eXO::Friend_Requests"][i]["index"] = i;
+                    }
+                    // Get template and interpolate variables
+                    context.render("/site_media/templates/friend_requests_list.ms", templ,
+                            function(content) {
+                                $('#frequests-list-wrapper').html(content).show();
+                                // Bind events here
+                            });
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
             }
-            // Get template and interpolate variables
-            context.render("/site_media/templates/friend_requests_list.ms", templ,
-             function(content){
-              $('#frequests-list-wrapper').html(content).show();
-              // Bind events here
-            });
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
+        });
     });
 
     this.get('#/friends_list/get/', function() {
-      var context = this;
-      $.ajax({
-        type: 'GET',
-        url:  "/servlet/GetFriendUIDs/",
-        dataType: 'json',
-        data: "",
-        success: function(data){
-          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
-            // Interpolate index
-            var templ = data["eXO::Data"];
-            for(i in templ["eXO::Friends"]){
-              templ["eXO::Friends"][i]["first"] = (i%5==0)?true:false;
-              templ["eXO::Friends"][i]["last"] = (i%5==4)?
-                true:((i==templ["eXO::Friends"].length-1)?true:false);
+        var context = this;
+        $.ajax({
+            type: 'GET',
+            url:  "/servlet/GetFriendUIDs/",
+            dataType: 'json',
+            data: "",
+            success: function(data) {
+                if ("eXO::Status" in data && data["eXO::Status"] == "eXO::Success") {
+                    // Interpolate index
+                    var templ = data["eXO::Data"];
+                    for (i in templ["eXO::Friends"]) {
+                        templ["eXO::Friends"][i]["first"] = (i % 5 == 0) ? true : false;
+                        templ["eXO::Friends"][i]["last"] = (i % 5 == 4) ?
+                                true : ((i == templ["eXO::Friends"].length - 1) ? true : false);
+                    }
+                    // Get template and interpolate variables
+                    context.render("/site_media/templates/friends_list.ms", templ,
+                            function(content) {
+                                $('#friend-list-wrapper').html(content).show();
+                                // Bind events here
+                            });
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
             }
-            // Get template and interpolate variables
-            context.render("/site_media/templates/friends_list.ms", templ,
-             function(content){
-              $('#friend-list-wrapper').html(content).show();
-              // Bind events here
-            });
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
-      // Redirect to the next initial request!
-      context.redirect('#/friend_requests/get/');
+        });
+        do_get_profile();
+        // Redirect to the next initial request!
+        context.redirect('#/friend_requests/get/');
     });
 
-  });
+});
 
 
-  $(function (){
+$(function () {
     // Show/hide the Loading indicator
-    $("#loading-indicator").ajaxStart(function(){
-       $(this).show();
-    }).ajaxStop(function(){
-      var indicator = $(this);
-      setTimeout(function(){ indicator.fadeOut() }, 500);
-    });
+    $("#loading-indicator").ajaxStart(
+            function() {
+                $(this).show();
+            }).ajaxStop(function() {
+                var indicator = $(this);
+                setTimeout(function() {
+                    indicator.fadeOut()
+                }, 500);
+            });
 
     // Get username and resource
     $.ajax({
-      type: 'POST',
-      url: "/servlet/GetUserProfile/",
-      dataType: 'json',
-      data: "",
-      success: function(data){
-        if("eXO::Status" in data && data["eXO::Status"]!="eXO::Success"){
-          alert("Failed to access user profile data!");
-          return false;
+        type: 'POST',
+        url: "/servlet/GetUserProfile/",
+        dataType: 'json',
+        data: "",
+        success: function(data) {
+            if ("eXO::Status" in data && data["eXO::Status"] != "eXO::Success") {
+                alert("Failed to access user profile data!");
+                return false;
+            }
+            profile_dict = data["eXO::Data"]["eXO::Profile"];
+            // Fill in the data to the corresponding places
+            var username = "Incognito", resource = "Home";
+            for (dict in profile_dict) {
+                if (profile_dict[dict]["eXO::FieldName"] == "Username") {
+                    username = profile_dict[dict]["eXO::FieldData"];
+                } else if (profile_dict[dict]["eXO::FieldName"] == "Resource") {
+                    resource = profile_dict[dict]["eXO::FieldData"];
+                }
+            }
+            if (username != null)
+                $("#username").html(username);
+            if (resource != null)
+                $("#resource").html(resource);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
         }
-        profile_dict = data["eXO::Data"]["eXO::Profile"];
-        // Fill in the data to the corresponding places
-        var username="Incognito", resource="Home";
-        for(dict in profile_dict){
-          if(profile_dict[dict]["eXO::FieldName"]=="Username"){
-            username = profile_dict[dict]["eXO::FieldData"];
-          }else if(profile_dict[dict]["eXO::FieldName"]=="Resource"){
-            resource = profile_dict[dict]["eXO::FieldData"];
-          }
-        }
-        if(username!=null)
-          $("#username").html(username);
-        if(resource!=null)
-          $("#resource").html(resource);
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-      }
+
     });
 
     app.run('#/friends_list/get/');
-  });
-  </script>
+
+});
+
+</script>
 </head>
 
 <body>
 
-  <div id="loading-indicator">
+<div id="loading-indicator">
     <div class="i16 waiting" onClick="$('#loading-indicator').slideUp()">
-    loading ...
+        loading ...
     </div>
-  </div>
+</div>
 
-  <div id="header-wrapper" >
+<div id="header-wrapper">
     <div id="header-container" class="container">
 
-      <div id="userbox">
-        <!--
-        <div id="avatar-wrapper">
-        <img height="20" width="20" alt="" src="/site_media/images/generic.jpg">
+        <div id="userbox">
+            <!--
+            <div id="avatar-wrapper">
+            <img height="20" width="20" alt="" src="/site_media/images/generic.jpg">
+            </div>
+            -->
+            <ul class="horizontal">
+                <li>Account Settings</li>
+                <li>Logout</li>
+            </ul>
         </div>
-        -->
-        <ul class="horizontal">
-          <li>Account Settings</li>
-          <li>Logout</li>
-        </ul>
-      </div>
-      <div id="logo" class="span-10">
-        <a href="/">eXO<sup>beta</sup></a>
-        <span> The Decentralized Social Network</span>
-      </div>
-      <div id="global-menu" class="span-14 last">
-        <ul class="horizontal">
-          <li><a href="#">Network Status</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Help</a></li>
-        </ul>
-      </div>
-    </div><!-- END HEADER-CONTAINER -->
-  </div><!-- END HEADER-WRAPPER -->
-
-  <div id="middle-wrapper">
-    <div id="middle-container" class="container">
-      <div id="breadcrumb" class="span-24"></div>
-
-      <div id="content-header-wrapper" class="container">
-      <div id="content-header">
-        <div id="content_title" class="span-14">
-          <h2>
-            <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
-            <span id="username">Incognito</span>
-            <span id="at">/</span>
-            <span id="resource">Home</span>
-          </h2>
+        <div id="logo" class="span-10">
+            <a href="/">eXO<sup>beta</sup></a>
+            <span> The Decentralized Social Network</span>
         </div>
-        <div id="content_nav" class="span-10 last">
-          <ul class="horizontal">
-            <li>
-              <a href="/">My Profile</a>
-            </li>
-            <li>
-              <a href="/search">Search</a>
-            </li>
-            <li>
-              <a href="/content">Share Content</a>
-            </li>
-            <li class="current">
-              <a href="/friends">Friends</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      </div>
-
-      <div id="content-main" class="span-24">
-        <div id="friends-body" class="content-body">
-          <h2> Pending Friend Requests </h2>
-          <div id="frequests-list-wrapper" class="clearfix">
-            <span class="quiet">There are no pending requests.</span>
-          </div>
-          <h2 class="clear"> Friend List </h2>
-          <div id="friend-list-wrapper" class="clearfix">
-            <span class="quiet">There are no friends yet.</span>
-          </div>
-        </div>
-      </div>
-
-      <div id="content_footer" class="span-24"></div>
-
-    </div><!-- END MIDDLE-CONTAINER -->
-  </div><!-- END MIDDLE-WRAPPER -->
-
-  <div id="footer-wrapper">
-    <div id="footer-container" class="container">
-        <div class="span-6">
-          <ul>
-            <li class="title">Service</li>
-            <li>Privacy Policy</li>
-            <li>Terms of Service</li>
-          </ul>
-        </div>
-        <div class="span-6">
-          <ul>
-            <li class="title">Resources</li>
-            <li>FAQ</li>
-            <li>API Documentation</li>
-          </ul>
-        </div>
-        <div class="span-6 last">
-          <ul>
-            <li class="title">About</li>
-            <li>Team</li>
-            <li>Follow us on Twitter</li>
-            <li>Blog</li>
-          </ul>
+        <div id="global-menu" class="span-14 last">
+            <ul class="horizontal">
+                <li><a href="#">Network Status</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Help</a></li>
+            </ul>
         </div>
     </div>
-  </div>
+    <!-- END HEADER-CONTAINER -->
+</div>
+<!-- END HEADER-WRAPPER -->
+
+<div id="middle-wrapper">
+    <div id="middle-container" class="container">
+        <div id="breadcrumb" class="span-24"></div>
+
+        <div id="content-header-wrapper" class="container">
+            <div id="content-header">
+                <div id="content_title" class="span-14">
+                    <h2>
+                        <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
+                        <span id="username">Incognito</span>
+                        <span id="at">/</span>
+                        <span id="resource">Home</span>
+                    </h2>
+                </div>
+                <div id="content_nav" class="span-10 last">
+                    <ul class="horizontal">
+                        <li>
+                            <a href="/">My Profile</a>
+                        </li>
+                        <li>
+                            <a href="/search">Search</a>
+                        </li>
+                        <li>
+                            <a href="/content">Share Content</a>
+                        </li>
+                        <li class="current">
+                            <a href="/friends">Friends</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-main" class="span-24">
+            <div id="friends-body" class="content-body">
+                <h2> Pending Friend Requests </h2>
+
+                <div id="frequests-list-wrapper" class="clearfix">
+                    <span class="quiet">There are no pending requests.</span>
+                </div>
+                <h2 class="clear"> Friend List </h2>
+
+                <div id="friend-list-wrapper" class="clearfix">
+                    <span class="quiet">There are no friends yet.</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="content_footer" class="span-24"></div>
+
+    </div>
+    <!-- END MIDDLE-CONTAINER -->
+</div>
+<!-- END MIDDLE-WRAPPER -->
+
+<div id="footer-wrapper">
+    <div id="footer-container" class="container">
+        <div class="span-6">
+            <ul>
+                <li class="title">Service</li>
+                <li>Privacy Policy</li>
+                <li>Terms of Service</li>
+            </ul>
+        </div>
+        <div class="span-6">
+            <ul>
+                <li class="title">Resources</li>
+                <li>FAQ</li>
+                <li>API Documentation</li>
+            </ul>
+        </div>
+        <div class="span-6 last">
+            <ul>
+                <li class="title">About</li>
+                <li>Team</li>
+                <li>Follow us on Twitter</li>
+                <li>Blog</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
