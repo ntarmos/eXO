@@ -25,9 +25,9 @@
      <!-- KILLERLOOP ***PROSOXH*** TREXEI MONO APO TO pastry.jar me jar="pastry.jar"--> <!--classname="rice.p2p.past.testing.PastRegrTest"-->
   <target name="run" depends="jar">
     <java classname="ceid.netcins.exo.Frontend" classpathref="project.classpath" fork="true">
-      <!--<arg line="-u exo@netcins.ceid.upatras.gr -r Demo -w 8080 -d 5009 -b localhost:5009"/>-->
+      <arg line="-u exo@netcins.ceid.upatras.gr -r Demo -w 8080 -d 5009 -b localhost:5009"/>
         <!--<arg line="-u 'akribopo' -r 'On the road' -w 8081 -d 5009 -b localhost:5009"/>-->
-        <arg line="-u 'logaras' -r 'Home' -w 8082 -d 5010 -b localhost:5009"/>
+        <!--<arg line="-u 'logaras' -r 'Home' -w 8082 -d 5010 -b localhost:5009"/>-->
 
 
       <jvmarg line="-Xmx128m"/>

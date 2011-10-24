@@ -487,6 +487,12 @@ function do_get_profile() {
                                     + '  <a class="close" href="#">1</a>'
                                     + '</span>&nbsp;';
 
+                     var date = new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']);
+                     //niceDate= niceDate.format("dd/mm/yy");
+                     var niceDate = "" + date.getDate() + "/"
+                             +date.getMonth().toString()+"/"
+                             + date.getFullYear().toString();
+
                       pri_statuses += '<div id="pri-tag-row-' + private_statuses[sortedStatus[i]]['eXO::StatusDate'] + '" class="tag-row">'
                             + '  <div class="actions-wrapper">'
                             + '    <div class="row-actions">'
@@ -497,7 +503,7 @@ function do_get_profile() {
                             + '      </div>'
                             + '    </div>'
                             + '  </div>'
-                            + '  <div class="tag-field-name span-3">' + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']) + '</div>'
+                            + '  <div class="status-date tag-field-name span-3">' + niceDate + '</div>'
                             + '  <div class="tag-field-data">'
                             + tags_template
                             + '  </div>'
