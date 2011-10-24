@@ -41,6 +41,22 @@ function delete_profile_entry(key) {
     return false;
 }
 
+function delete_profile_status_entry(key){
+     if (profile_dict == null)
+        return false;
+    if (key == null) {
+        return false;
+    }
+
+    for (i in profile_dict) {
+        if (profile_dict[i]["eXO::StatusDate"] == key) {
+            delete profile_dict[i];
+            return true;
+        }
+    }
+    return false;
+}
+
 // If the field_name is null, a new field is about to be created!
 function update_profile_instance(old_field_name, form_obj) {
     if (profile_dict == null)
@@ -332,6 +348,8 @@ function do_get_profile() {
                 $("#resource").html(resource);
 
             var tag_rows = '';
+            var pri_statuses = '';
+            var pub_statuses = '';
             // Fill the body with the retrieved data
             if (public_profile_body != null) {
                 var tags_template;
@@ -375,6 +393,8 @@ function do_get_profile() {
                 tag_rows = '<span class="quiet">There is no data yet. Why don\'t you add some now?</span>';
             }
             $("#pub-fields-wrapper").html(tag_rows);
+
+
 
             tag_rows = '';
             if (private_profile_body != null) {
@@ -422,7 +442,6 @@ function do_get_profile() {
 
             if (public_statuses != null) {
                 var sortedStatus = new Array();
-                sortedStatus.push()
                 console.log("Public Statuses");
                 for (status in public_statuses) {
                     sortedStatus.push(status);
@@ -430,6 +449,27 @@ function do_get_profile() {
                 sortedStatus = sortedStatus.sort(sortNumber);
                 for (var i = 0; i < sortedStatus.length; i++) {
                     console.log(public_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']));
+                     tags_template = '<span class="status-message">'
+                                    + public_statuses[sortedStatus[i]]['eXO::UserStatus']
+                                    + '  <a class="close" href="#">1</a>'
+                                    + '</span>&nbsp;';
+
+                      pub_statuses += '<div id="pub-tag-row-' + public_statuses[sortedStatus[i]]['eXO::StatusDate'] + '" class="tag-row">'
+                            + '  <div class="actions-wrapper">'
+                            + '    <div class="row-actions">'
+                            + '      <div class="buttons">'
+                            + '        <span class="button-action">'
+                            + '          <a class="delete-status close" id="pub-delete-action-' + public_statuses[sortedStatus[i]]['eXO::StatusDate'] + '" href="#">1</a>'
+                            + '        </span>'
+                            + '      </div>'
+                            + '    </div>'
+                            + '  </div>'
+                            + '  <div class="tag-field-name status-date span-3">' + new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']) + '</div>'
+                            + '  <div class="tag-field-data">'
+                            + tags_template
+                            + '  </div>'
+                            + '</div>';
+                    console.log(pub_statuses);
                 }
             }
             if (private_statuses != null) {
@@ -439,12 +479,37 @@ function do_get_profile() {
                     sortedStatus.push(status);
                 }
                 sortedStatus = sortedStatus.sort(sortNumber);
+                console.log(sortedStatus.toString());
                 for (var i = 0; i < sortedStatus.length; i++) {
                     console.log(private_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']));
+                       tags_template = '<span class="status-message">'
+                                    + private_statuses[sortedStatus[i]]['eXO::UserStatus']
+                                    + '  <a class="close" href="#">1</a>'
+                                    + '</span>&nbsp;';
+
+                      pri_statuses += '<div id="pri-tag-row-' + private_statuses[sortedStatus[i]]['eXO::StatusDate'] + '" class="tag-row">'
+                            + '  <div class="actions-wrapper">'
+                            + '    <div class="row-actions">'
+                            + '      <div class="buttons">'
+                            + '        <span class="button-action">'
+                            + '          <a class="delete-status close" id="pri-delete-action-' + private_statuses[sortedStatus[i]]['eXO::StatusDate'] + '" href="#">1</a>'
+                            + '        </span>'
+                            + '      </div>'
+                            + '    </div>'
+                            + '  </div>'
+                            + '  <div class="tag-field-name span-3">' + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']) + '</div>'
+                            + '  <div class="tag-field-data">'
+                            + tags_template
+                            + '  </div>'
+                            + '</div>';
                 }
 
             }
+            $("#pub-status-wrapper").html(pub_statuses);
             $("#pri-fields-wrapper").html(tag_rows);
+            $("#pri-status-wrapper").html(pri_statuses);
+
+
 
             // Bind hover row events
             $(".tag-row").hover(function() {
@@ -464,6 +529,15 @@ function do_get_profile() {
                 var field_row_instance = $("#" + prefix + "-tag-row-" + id);
                 var field_name = $(".tag-field-name", field_row_instance).html();
                 if (delete_profile_entry(field_name))
+                    do_post_profile();
+            });
+
+            // Bind delete action
+            $(".button-action a.delete-status").click(function() {
+                // Delete entry from profile_dict
+                var array = $(this).attr('id').split("-");
+                var id = array[array.length - 1];
+                if (delete_profile_status_entry(id))
                     do_post_profile();
             });
 
@@ -705,7 +779,7 @@ $(function () {
                         <div class="span-9">What's your new status?</div>
                         <div class="span-9 clear">
                             <input class="field-name" type="text" name="statusText"/>
-                            <label>Public Status</label><input class="change_privacy" type="checkbox"/>
+                            <label><br>Public Status</label><input class="change_privacy" type="checkbox"/>
                         </div>
                         <!-- <div class="span-10">
                             <form class="add-tag-form" action="#/add_tag/public" method="post">
@@ -750,6 +824,8 @@ $(function () {
                         </div>
                     </div>
                     <div id="pub-fields-wrapper" class="tag-fields-wrapper"></div>
+                    <div id="pub-status-wrapper" class="tag-fields-wrapper"></div>
+
                 </div>
                 <div id="pri-profile-wrapper" class="clear profile-wrapper">
                     <h2>
@@ -780,7 +856,7 @@ $(function () {
                         </div>
                     </div>
                     <!--BEGIN STATUS-->
-                    <div id="pri-status-wrapper" class="tag-fields-wrapper">
+                 <!--   <div id="pri-status-wrapper" class="tag-fields-wrapper">
 
                         <div id="pri-status-row-11" class="tag-row status-row">
                             <div class="actions-wrapper" style="display: block; ">
@@ -799,9 +875,10 @@ $(function () {
                             <div class="tag-field-data"><span class="status-message">Status message<a class="close" href="#">1</a></span>&nbsp;
                             </div>
                         </div>
-                         </div>
+                         </div>-->
                     <!--END STATUS-->
                         <div id="pri-fields-wrapper" class="tag-fields-wrapper"></div>
+                        <div id="pri-status-wrapper" class="tag-fields-wrapper"></div>
                     </div>
                 </div>
                 <div id="content-main-loading">
