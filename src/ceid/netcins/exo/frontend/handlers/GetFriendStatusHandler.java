@@ -51,25 +51,30 @@ public class GetFriendStatusHandler extends AbstractHandler {
 
                         final ContentProfile thisContentProfile = new ContentProfile((ContentProfile) resMap.get("data"));
                         final ContentProfile thisStatusProfile = new ContentProfile();
-                        final List<ContentField> statusList = new ArrayList<ContentField>();
+                        final List<Status> statusList = new ArrayList<Status>();
                         for (final ContentField contentField : thisContentProfile.getAllFields()) {
                             if (contentField instanceof Status) {
-                                statusList.add(contentField);
+                                statusList.add((Status) contentField);
                             } else if (contentField.getFieldName().equals("Username")) {
                                 thisStatusProfile.add(contentField);
                             }
                         }
-                        Collections.sort((List<? extends Status>) statusList);
+
+                        Collections.sort(statusList);
 
                         if (statusList.size() > 0) {
                             if (statusList.size() >= 5) {
-                                thisStatusProfile.addAll(statusList.subList(0, 4));
+                                for (int i = 0; i < 4; i++) {
+                                    thisStatusProfile.add(statusList.get(i));
+                                }
                             } else {
-                                thisStatusProfile.addAll(statusList);
+                                for (ContentField contentField : statusList) {
+                                    thisStatusProfile.add(contentField);
+                                }
                             }
 
                         }
-                        thisContentProfile.add(new TermField("eXO:UID", friend.getUID().toStringFull()));
+                        thisStatusProfile.add(new TermField("eXO:UID", friend.getUID().toStringFull()));
 
                         contentProfiles.add(thisStatusProfile);
                     }
