@@ -9,7 +9,7 @@ import java.util.Date;
  *
  */
 
-public class Status extends ContentField implements Serializable {
+public class Status extends ContentField implements Serializable, Comparable<Status> {
     public final static String STATUS_ID = StatusJSONConvertor.StatusTag;
 
     /**
@@ -64,5 +64,10 @@ public class Status extends ContentField implements Serializable {
     @Override
     public int hashCode() {
         return super.hashCode() + statusText.hashCode() + date.hashCode();
+    }
+
+    @Override
+    public int compareTo(final Status thatStatus) {
+        return (int) (this.date.getTime() - thatStatus.getDate().getTime());
     }
 }

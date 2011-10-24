@@ -11,10 +11,7 @@ import rice.Continuation;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -54,13 +51,23 @@ public class GetFriendStatusHandler extends AbstractHandler {
 
                         final ContentProfile thisContentProfile = new ContentProfile((ContentProfile) resMap.get("data"));
                         final ContentProfile thisStatusProfile = new ContentProfile();
-
+                        final List<ContentField> statusList = new ArrayList<ContentField>();
                         for (final ContentField contentField : thisContentProfile.getAllFields()) {
                             if (contentField instanceof Status) {
-                                thisStatusProfile.add(contentField);
+                                statusList.add(contentField);
                             } else if (contentField.getFieldName().equals("Username")) {
                                 thisStatusProfile.add(contentField);
                             }
+                        }
+                        Collections.sort((List<? extends Status>) statusList);
+
+                        if (statusList.size() > 0) {
+                            if (statusList.size() >= 5) {
+                                thisStatusProfile.addAll(statusList.subList(0, 4));
+                            } else {
+                                thisStatusProfile.addAll(statusList);
+                            }
+
                         }
                         thisContentProfile.add(new TermField("eXO:UID", friend.getUID().toStringFull()));
 
