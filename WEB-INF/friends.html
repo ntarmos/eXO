@@ -29,15 +29,32 @@ var profile_dict = null;
 function do_get_profile() {
     // Get username and resource
     console.log("do_get_profile");
+    var accept_uid;
     $.ajax({
         type: 'POST',
         url: "/servlet/GetFriendStatus/",
         dataType: 'json',
-        data:  {eXO_data: JSON.stringify({"eXO::Profile" :profile_dict })},
+        data: {eXO_data: JSON.stringify({"eXO::UID" : accept_uid})},
         success: function(data) {
-            console.log(data);
+            start_polling(data["eXO::reqID"], "/servlet/GetFriendStatus/",
+                    function(response_data) {
+                        if (response_data["eXO::Status"] == "eXO::Success") {
+                            // Notify about success
+                            console.log(response_data);
+                            alert("Successfully accepted!");
+                            // Rerender friend list after 100ms
 
-
+                        } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                            alert("Accept friend request failed!");
+                        } else {
+                            alert("Accept friend request failed!");
+                        }
+                        return true;
+                    });
+            return true;
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
         }
     });
 }

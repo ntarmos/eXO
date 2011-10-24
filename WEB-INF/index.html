@@ -294,6 +294,9 @@ function do_get_profile() {
         dataType: 'json',
         data: "",
         success: function(data) {
+            console.log(data);
+
+
             if (("eXO::Status" in data) && data["eXO::Status"] != "eXO::Success") {
                 alert("Failed to access user profile data!");
                 return false;
@@ -453,7 +456,7 @@ function do_get_profile() {
                             + '  <a class="close" href="#">1</a>'
                             + '</span>&nbsp;';
 
-                    var date = new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']);
+                    var date = new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']);
                     var niceDate = "" + date.getDate() + "/"
                             + date.getMonth().toString() + "/"
                             + date.getFullYear().toString();

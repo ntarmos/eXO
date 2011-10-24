@@ -4,17 +4,17 @@ import ceid.netcins.exo.CatalogService;
 import ceid.netcins.exo.content.ContentField;
 import ceid.netcins.exo.content.ContentProfile;
 import ceid.netcins.exo.content.Status;
-import ceid.netcins.exo.frontend.json.Json;
-import ceid.netcins.exo.frontend.json.StatusJSONConvertor;
+import ceid.netcins.exo.content.TermField;
+import ceid.netcins.exo.user.Friend;
 import rice.Continuation;
-import rice.p2p.commonapi.Id;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,56 +39,45 @@ public class GetFriendStatusHandler extends AbstractHandler {
             return;
 
 
+        final String reqID = getNewReqID(response);
 
-        /*if (uid == null) { // Local operation. Return immediately.
-            ContentProfile userProfile = catalogService.getUserProfile();
-            if (userProfile != null)
-
-            else
-                sendStatus(response, RequestStatus.FAILURE, null);
-            return;
-        }*/
-        System.out.println("GetFriendStatusHandler");
-        //final String reqID = getNewReqID(response);
-        for (final Id id : catalogService.getUser().getFriends().keySet()) {
+        final List<ContentProfile> contentProfiles = new ArrayList<ContentProfile>();
+        for (final Friend friend : catalogService.getUser().getFriends().values()) {
             try {
-                catalogService.getUserProfile(id, catalogService.getUser().getFriends().get(id).getNodeHandle(), new Continuation<Object, Exception>() {
-
+                catalogService.getUserProfile(friend.getUID(), friend.getNodeHandle(), new Continuation<Object, Exception>() {
                     @SuppressWarnings("unchecked")
                     @Override
                     public void receiveResult(Object result) {
                         final HashMap<String, Object> resMap = (HashMap<String, Object>) result;
                         if (!((Integer) resMap.get("status")).equals(CatalogService.SUCCESS))
                             receiveException(new RuntimeException());
-                        System.out.println("iterator");
-                        System.out.println("------------------------------");
-                        ContentProfile contentProfile = new ContentProfile((ContentProfile) resMap.get("data"));
 
-                        for (ContentField contentField : contentProfile.getAllFields()) {
-                            if (contentField.getFieldName().equals(StatusJSONConvertor.StatusTag)) {
-                                System.out.println(((Status) contentField).toString());
+                        final ContentProfile thisContentProfile = new ContentProfile((ContentProfile) resMap.get("data"));
+                        final ContentProfile thisStatusProfile = new ContentProfile();
+
+                        for (final ContentField contentField : thisContentProfile.getAllFields()) {
+                            if (contentField instanceof Status) {
+                                thisStatusProfile.add(contentField);
+                            } else if (contentField.getFieldName().equals("Username")) {
+                                thisStatusProfile.add(contentField);
                             }
                         }
+                        thisContentProfile.add(new TermField("eXO:UID", friend.getUID().toStringFull()));
 
-
-                        System.out.println("------------------------------");
-
-                        sendStatus(response, RequestStatus.SUCCESS, contentProfile);
-                        //queueStatus(reqID, RequestStatus.SUCCESS, resMap.get("data"));
+                        contentProfiles.add(thisStatusProfile);
                     }
 
                     @Override
                     public void receiveException(Exception exception) {
                         exception.printStackTrace();
-                        //queueStatus(reqID, RequestStatus.FAILURE, null);
+                        queueStatus(reqID, RequestStatus.FAILURE, null);
                     }
                 });
-            } catch (Exception e) {
-                e.printStackTrace();
-                //queueStatus(reqID, RequestStatus.FAILURE, null);
+            } catch (final Exception e) {
+                queueStatus(reqID, RequestStatus.FAILURE, null);
             }
         }
 
-
+        queueStatus(reqID, RequestStatus.SUCCESS, contentProfiles);
     }
 }
