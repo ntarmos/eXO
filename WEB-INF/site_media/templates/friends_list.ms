@@ -6,7 +6,7 @@
       <img class="friend-thumb" height="100" width="100" alt="" src="/site_media/images/generic.jpg">
       <span class="friend-uid">{{UID}}</span>
       <div class="friend-name">
-        <a href="#">{{ScreenName}}</a>
+        <a class="show-status" href="#">{{ScreenName}}</a>
       </div>
     </div>
   {{#last}}
