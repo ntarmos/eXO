@@ -73,6 +73,14 @@ div.jGrowl.center {
     left: 25%;
 }
 
+.pri-status-jgrowl{
+    background-color: #ff9900; !important;
+}
+
+.pub-status-jgrowl{
+   background-color: #6699ff; !important;
+}
+
 /** Cross Browser Styling **/
 div.center div.jGrowl-notification, div.center div.jGrowl-closer {
     margin-left: auto;

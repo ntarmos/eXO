@@ -94,6 +94,14 @@ function message_notification(msg) {
     $.jGrowl(msg, { position: "bottom-right"});
 }
 
+function pub_message_notification(msg) {
+    $.jGrowl(msg, { theme: 'pub-status-jgrowl', position: "bottom-right", header:"Public Status", life:10000});
+}
+
+function pri_message_notification(msg) {
+    $.jGrowl(msg, { theme: 'pri-status-jgrowl', position: "bottom-right", header:"Private Status", life:10000});
+}
+
 function start_polling(reqID, url, redirect_callback) {
     $.ajax({
         type: 'POST',
@@ -257,10 +265,21 @@ var app = $.sammy('#content-main', function() {
                                     var uid = $(this).parents(".friends-row").find("span.friend-uid").text();
                                     console.log(uid);
                                     if (friends_statuses[uid] != null) {
-                                        console.log("Public Statuses");
+                                        console.log("Statuses:");
+                                        console.log(friends_statuses[uid][statusDate]);
                                         for (var statusDate in friends_statuses[uid]) {
                                             console.log(new Date(friends_statuses[uid][statusDate]["eXO::StatusDate"]) + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
-                                            message_notification(new Date(friends_statuses[uid][statusDate]["eXO::StatusDate"]) + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
+                                            var date = new Date(friends_statuses[uid][statusDate]["eXO::StatusDate"]);
+                                            var niceDate = "" + date.getDate() + "/"
+                                            + date.getMonth().toString() + "/"
+                                            + date.getFullYear().toString();
+
+                                            if(friends_statuses[uid][statusDate]["eXO::FieldIsPublic"] == true){
+                                            pub_message_notification( niceDate
+                                                    + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
+                                            } else {
+                                            pri_message_notification( niceDate
+                                                    + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);}
                                         }
 
                                     }
