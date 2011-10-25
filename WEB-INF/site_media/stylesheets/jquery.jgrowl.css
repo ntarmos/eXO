@@ -74,11 +74,11 @@ div.jGrowl.center {
 }
 
 .pri-status-jgrowl{
-    background-color: #ff9900; !important;
+    background-color: #ff9900 !important;
 }
 
 .pub-status-jgrowl{
-   background-color: #6699ff; !important;
+   background-color: #99ccff !important;
 }
 
 /** Cross Browser Styling **/
