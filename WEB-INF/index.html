@@ -451,7 +451,7 @@ function do_get_profile() {
                 sortedStatus = sortedStatus.sort(sortNumber);
                 for (var i = 0; i < sortedStatus.length; i++) {
                     console.log(public_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']));
-                    tags_template = '<span class="status-message">'
+                    tags_template = '<span class="pub-status-message">'
                             + public_statuses[sortedStatus[i]]['eXO::UserStatus']
                             + '  <a class="close" href="#">1</a>'
                             + '</span>&nbsp;';
@@ -489,7 +489,7 @@ function do_get_profile() {
                 console.log(sortedStatus.toString());
                 for (var i = 0; i < sortedStatus.length; i++) {
                     console.log(private_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']));
-                    tags_template = '<span class="status-message">'
+                    tags_template = '<span class="pri-status-message">'
                             + private_statuses[sortedStatus[i]]['eXO::UserStatus']
                             + '  <a class="close" href="#">1</a>'
                             + '</span>&nbsp;';
