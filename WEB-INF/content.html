@@ -1,710 +1,721 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>eXO - Social freedom</title>
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>eXO - Social freedom</title>
+<!-- Favicon -->
+<link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon"/>
 
-  <!-- Stylesheets -->
-  <link href="/site_media/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <link href="/site_media/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
-  <!--[if lt IE 8]>
-      <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <![endif]-->
-  <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
-  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
-  <link media="screen, projection" href="/site_media/stylesheets/fileuploader.css" type="text/css" rel="stylesheet" />
+<!-- Stylesheets -->
+<link href="/site_media/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<link href="/site_media/stylesheets/print.css" media="print" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 8]>
+<link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<![endif]-->
+<link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet"/>
+<link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet"/>
+<link media="screen, projection" href="/site_media/stylesheets/fileuploader.css" type="text/css" rel="stylesheet"/>
 
-  <!-- Javascripts -->
-  <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
-  <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/fileuploader.js"></script>
-  <script type="text/javascript">
-  /* Global Vars */
-  var profile_dict = null;
+<!-- Javascripts -->
+<script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/fileuploader.js"></script>
+<script type="text/javascript">
+/* Global Vars */
+var profile_dict = null;
 
-  // Helper to delete a user profile entry
-  function delete_profile_entry(key){
-    if(profile_dict==null)
-      return false;
-    if(key==null){
-      return false;
+// Helper to delete a user profile entry
+function delete_profile_entry(key) {
+    if (profile_dict == null)
+        return false;
+    if (key == null) {
+        return false;
     }
-    var i=0;
-    for(i in profile_dict){
-      if(profile_dict[i]["eXO::FieldName"]==key){
-        delete profile_dict[i];
-        return true;
-      }
+    var i = 0;
+    for (i in profile_dict) {
+        if (profile_dict[i]["eXO::FieldName"] == key) {
+            delete profile_dict[i];
+            return true;
+        }
     }
     return false;
-  }
+}
 
-   // If the field_name is null, a new field is about to be created!
-  function update_profile_instance(old_field_name, form_obj){
-    if(profile_dict==null)
-      return false;
-    var i=0;
-    if(old_field_name!=null){
-      for(i in profile_dict){
-        if(profile_dict[i]["eXO::FieldName"]==old_field_name)
-          break;
-      }
+// If the field_name is null, a new field is about to be created!
+function update_profile_instance(old_field_name, form_obj) {
+    if (profile_dict == null)
+        return false;
+    var i = 0;
+    if (old_field_name != null) {
+        for (i in profile_dict) {
+            if (profile_dict[i]["eXO::FieldName"] == old_field_name)
+                break;
+        }
     }
-    
+
     // Get new field name
     var new_field_name = $(".field-name", form_obj).val();
-    if(new_field_name == ''){
-      alert("Field name should not be empty!");
-      return false;
+    if (new_field_name == '') {
+        alert("Field name should not be empty!");
+        return false;
     }
     // For new fields only
-    if(old_field_name==null){
-      for(j in profile_dict){
-        if(profile_dict[j]["eXO::FieldName"]==new_field_name){
-          alert("The field name "+ new_field_name +" already exists. Please insert"
-               +" a non-existent field name!");
-          return false;
+    if (old_field_name == null) {
+        for (j in profile_dict) {
+            if (profile_dict[j]["eXO::FieldName"] == new_field_name) {
+                alert("The field name " + new_field_name + " already exists. Please insert"
+                        + " a non-existent field name!");
+                return false;
+            }
         }
-      }
     }
 
     // Get priv/public
     var new_privacy = false;
-    if(old_field_name==null){
-      var prefix = form_obj.attr('id').split("-")[0];
-      if(prefix=='pri')
-        new_privacy = false;
-      else
-        new_privacy = true;
-    }else{
-      if($("input.change_privacy", form_obj).is(":checked")){
-        if(profile_dict[i]["eXO::FieldIsPublic"] == false){
-          new_privacy = true;
-        }else{
-          new_privacy = false;
+    if (old_field_name == null) {
+        var prefix = form_obj.attr('id').split("-")[0];
+        if (prefix == 'pri')
+            new_privacy = false;
+        else
+            new_privacy = true;
+    } else {
+        if ($("input.change_privacy", form_obj).is(":checked")) {
+            if (profile_dict[i]["eXO::FieldIsPublic"] == false) {
+                new_privacy = true;
+            } else {
+                new_privacy = false;
+            }
+        } else {
+            if (profile_dict[i]["eXO::FieldIsPublic"] == false) {
+                new_privacy = false;
+            } else {
+                new_privacy = true;
+            }
         }
-      }else{
-        if(profile_dict[i]["eXO::FieldIsPublic"] == false){
-          new_privacy = false;
-        }else{
-          new_privacy = true;
-        }
-      }
     }
 
     // Get new field data/terms
     var tags = $(".single-tag .value", form_obj);
-    
-    if(tags.length == 0){
-      alert("Fields should contain at least one tag!");
-      return false;
-    }else if(tags.length>1){
-      var terms = [], tf = [] ;
-      tags.each(function(index){
-        terms[index] = $(this).text().trim();
-        tf[index] = 0;
-        if(terms[index] == ""){
-          alert("Fields should not contain empty tags!");
-          return false;
-        }
-      });
-      if(old_field_name==null)
-        profile_dict[profile_dict.length] = { 'eXO::FieldName' : new_field_name,
-                                              'eXO::Terms' : terms,
-                                              'eXO::TFScores' : tf,
-                                              'eXO::FieldIsPublic' : new_privacy };
-      else
-        profile_dict[i] = { 'eXO::FieldName' : new_field_name,
-                            'eXO::Terms' : terms,
-                            'eXO::TFScores' : tf,
-                            'eXO::FieldIsPublic' : new_privacy };
+
+    if (tags.length == 0) {
+        alert("Fields should contain at least one tag!");
+        return false;
+    } else if (tags.length > 1) {
+        var terms = [], tf = [];
+        tags.each(function(index) {
+            terms[index] = $(this).text().trim();
+            tf[index] = 0;
+            if (terms[index] == "") {
+                alert("Fields should not contain empty tags!");
+                return false;
+            }
+        });
+        if (old_field_name == null)
+            profile_dict[profile_dict.length] = { 'eXO::FieldName' : new_field_name,
+                'eXO::Terms' : terms,
+                'eXO::TFScores' : tf,
+                'eXO::FieldIsPublic' : new_privacy };
+        else
+            profile_dict[i] = { 'eXO::FieldName' : new_field_name,
+                'eXO::Terms' : terms,
+                'eXO::TFScores' : tf,
+                'eXO::FieldIsPublic' : new_privacy };
     } else {
-      var field_data = ''
-      tags.each(function(index){
-        field_data = $(this).text().trim();
-        if(field_data == ""){
-          alert("Fields should not contain empty tags!");
-          return false;
-        }
-      });
-      if(old_field_name==null)
-        profile_dict[profile_dict.length] = { 'eXO::FieldName' : new_field_name,
-                                              'eXO::FieldData' : field_data,
-                                              'eXO::FieldIsPublic' : new_privacy };
-      else
-        profile_dict[i] = { 'eXO::FieldName' : new_field_name,
-                            'eXO::FieldData' : field_data,
-                            'eXO::FieldIsPublic' : new_privacy };
+        var field_data = ''
+        tags.each(function(index) {
+            field_data = $(this).text().trim();
+            if (field_data == "") {
+                alert("Fields should not contain empty tags!");
+                return false;
+            }
+        });
+        if (old_field_name == null)
+            profile_dict[profile_dict.length] = { 'eXO::FieldName' : new_field_name,
+                'eXO::FieldData' : field_data,
+                'eXO::FieldIsPublic' : new_privacy };
+        else
+            profile_dict[i] = { 'eXO::FieldName' : new_field_name,
+                'eXO::FieldData' : field_data,
+                'eXO::FieldIsPublic' : new_privacy };
     }
     return true;
-  }
+}
 
-  function message_notification(msg) {
+function message_notification(msg) {
     $.jGrowl(msg, { position: "bottom-right"});
-  }
+}
 
-  function start_polling(reqID, url, redirect_callback){
+function start_polling(reqID, url, redirect_callback) {
     $.ajax({
-      type: 'POST',
-      url: url,
-      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
-      success: function(data){
-        polling_callback(data, reqID, url, redirect_callback);
-        return true;
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-        return false;
-      }
-    });
-  }
-  function polling_callback(polling_data, reqID, url, redirect_callback){
-    if("eXO::Status" in polling_data){
-      if(polling_data["eXO::Status"]=="eXO::Processing"){
-        // Continue polling after 100ms
-        setTimeout(function(){ start_polling(reqID, url, redirect_callback); }, 100);
-        return true;
-      } else {
-        if (polling_data["eXO::Status"]=="eXO::Success"){
-          // TODO: Notify about success
-          redirect_callback();
-        } else if (polling_data["eXO::Status"]=="eXO::Unknown"){
-          // TODO: Fill in with general notification message
-        } else {
-          // TODO: Fill in with general notification message
+        type: 'POST',
+        url: url,
+        data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
+        success: function(data) {
+            polling_callback(data, reqID, url, redirect_callback);
+            return true;
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
+            return false;
         }
-      }
-      // TODO: On stop of processing trigger other events
-      return true;
+    });
+}
+function polling_callback(polling_data, reqID, url, redirect_callback) {
+    if ("eXO::Status" in polling_data) {
+        if (polling_data["eXO::Status"] == "eXO::Processing") {
+            // Continue polling after 100ms
+            setTimeout(function() {
+                start_polling(reqID, url, redirect_callback);
+            }, 100);
+            return true;
+        } else {
+            if (polling_data["eXO::Status"] == "eXO::Success") {
+                // TODO: Notify about success
+                redirect_callback();
+            } else if (polling_data["eXO::Status"] == "eXO::Unknown") {
+                // TODO: Fill in with general notification message
+            } else {
+                // TODO: Fill in with general notification message
+            }
+        }
+        // TODO: On stop of processing trigger other events
+        return true;
     }
-  }
+}
 
-  function edit_field_template(field_name, row_number){
+function edit_field_template(field_name, row_number) {
     var template = '';
     var row_dict = null;
-    for(row_num in profile_dict){
-      row_dict = profile_dict[row_num];
-      if(row_dict["eXO::FieldName"]==field_name)
-        break;
+    for (row_num in profile_dict) {
+        row_dict = profile_dict[row_num];
+        if (row_dict["eXO::FieldName"] == field_name)
+            break;
     }
-    if(profile_dict!=null && row_dict!=null){
-      var label = '', prefix = '';
-      if(row_dict["eXO::FieldIsPublic"]){
-        label = "Make this field private?";
-        prefix = "pub";
-      }else{
-        label ="Make this field public?";
-        prefix = "pri";
-      }
-
-      template = '<div id="'+ prefix +'-edit-field-'+ row_number +'" class="clear edit-field">'
-        +'  <div class="span-8">Field Name</div>'
-        +'  <div class="span-10">Add Tags</div>'
-        +'  <div class="span-8 clear">'
-        +'    <input class="field-name" type="text" name="fieldname" value="'+ field_name +'">'
-        +'  </div>'
-        +'  <div class="span-10">'
-        +'  <form class="add-tag-form" action="#/add_tag" method="post">'
-        +'    <input type="text" name="tag" class="tag-input">'
-        +'    <input type="submit" class="add-tag" value="Add">'
-        +'  </form>'
-        +'  </div>'
-        +'  <div class="clear">Currently Added Tags :</div>'
-        +'  <div class="clear tag-field-data" style="margin-top:1em">';
-
-      if(row_dict["eXO::FieldData"]=== undefined){
-        for(tag in row_dict["eXO::Terms"]){
-          var tag_html = '<span class="single-tag">'
-                     + '  <span class="value">'
-                     + row_dict["eXO::Terms"][tag]
-                     + '  </span>'
-                     + '  <a class="close" href="#">1</a>'
-                     + '</span>';
-          template += tag_html;
+    if (profile_dict != null && row_dict != null) {
+        var label = '', prefix = '';
+        if (row_dict["eXO::FieldIsPublic"]) {
+            label = "Make this field private?";
+            prefix = "pub";
+        } else {
+            label = "Make this field public?";
+            prefix = "pri";
         }
-      } else {
-        var tag_html = '<span class="single-tag">'
-                   + '  <span class="value">'
-                   + row_dict["eXO::FieldData"]
-                   + '  </span>'
-                   + '  <a class="close" href="#">1</a>'
-                   + '</span>';
-        template += tag_html;
-      }
 
-      template += '  </div>'
-        +'  <div class="clear">'
-        +'    <label>'+ label +'</label><input class="change_privacy" type="checkbox">'
-        +'  </div>'
-        +'  <div class="button-wrapper" class="clear">'
-        +'    <button class="update-action">update</button>'
-        +'    <span>or <a class="form-cancel" href="#">cancel</a>'
-        +'  </div>'
-        +'</div>';
+        template = '<div id="' + prefix + '-edit-field-' + row_number + '" class="clear edit-field">'
+                + '  <div class="span-8">Field Name</div>'
+                + '  <div class="span-10">Add Tags</div>'
+                + '  <div class="span-8 clear">'
+                + '    <input class="field-name" type="text" name="fieldname" value="' + field_name + '">'
+                + '  </div>'
+                + '  <div class="span-10">'
+                + '  <form class="add-tag-form" action="#/add_tag" method="post">'
+                + '    <input type="text" name="tag" class="tag-input">'
+                + '    <input type="submit" class="add-tag" value="Add">'
+                + '  </form>'
+                + '  </div>'
+                + '  <div class="clear">Currently Added Tags :</div>'
+                + '  <div class="clear tag-field-data" style="margin-top:1em">';
+
+        if (row_dict["eXO::FieldData"] === undefined) {
+            for (tag in row_dict["eXO::Terms"]) {
+                var tag_html = '<span class="single-tag">'
+                        + '  <span class="value">'
+                        + row_dict["eXO::Terms"][tag]
+                        + '  </span>'
+                        + '  <a class="close" href="#">1</a>'
+                        + '</span>';
+                template += tag_html;
+            }
+        } else {
+            var tag_html = '<span class="single-tag">'
+                    + '  <span class="value">'
+                    + row_dict["eXO::FieldData"]
+                    + '  </span>'
+                    + '  <a class="close" href="#">1</a>'
+                    + '</span>';
+            template += tag_html;
+        }
+
+        template += '  </div>'
+                + '  <div class="clear">'
+                + '    <label>' + label + '</label><input class="change_privacy" type="checkbox">'
+                + '  </div>'
+                + '  <div class="button-wrapper" class="clear">'
+                + '    <button class="update-action">update</button>'
+                + '    <span>or <a class="form-cancel" href="#">cancel</a>'
+                + '  </div>'
+                + '</div>';
     }
     return template;
-  }
+}
 
-  var app = $.sammy('#content-main', function() {
+var app = $.sammy('#content-main', function() {
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
     this.post('#/file/set/:cid', function() {
-      var context = this;
-      var cid =  this.params['cid'];
-      $.ajax({
-        type: 'POST',
-        url: "/servlet/SetContentTags/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({"eXO::CID" : cid,
-                                         "eXO::Profile" :profile_dict})
-        },
-        success: function(data){
-          // Poll till success
-          if("eXO::reqID" in data){
-            start_polling(data["eXO::reqID"], "/servlet/SetContentTags/",
-              function(){
-                // TODO: Inform of success, Rerender profile/row and rebind events
-                message_notification("File profile successfully updated!");
-              });
-          }else{
-            alert("An error occurred : "+textStatus);
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
+        var context = this;
+        var cid = this.params['cid'];
+        $.ajax({
+            type: 'POST',
+            url: "/servlet/SetContentTags/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({"eXO::CID" : cid,
+                "eXO::Profile" :profile_dict})
+            },
+            success: function(data) {
+                // Poll till success
+                if ("eXO::reqID" in data) {
+                    start_polling(data["eXO::reqID"], "/servlet/SetContentTags/",
+                            function() {
+                                // TODO: Inform of success, Rerender profile/row and rebind events
+                                message_notification("File profile successfully updated!");
+                            });
+                } else {
+                    alert("An error occurred : " + textStatus);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            }
+        });
     });
 
     this.get('#/file/get/:cid', function() {
-      // TODO: Get and present the profile in edit mode!
-      var context = this;
-      var cid =  this.params['cid'];
-      $.ajax({
-        type: 'POST',
-        url: "/servlet/GetContentTags/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({"eXO::CID" : cid})},
-        success: function(data){
-          // Remove any previously opened edit mode rows
-          $('.content-profile-edit').remove();
-          // Show all hidden file rows
-          $('.file-row').show();
+        // TODO: Get and present the profile in edit mode!
+        var context = this;
+        var cid = this.params['cid'];
+        $.ajax({
+            type: 'POST',
+            url: "/servlet/GetContentTags/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({"eXO::CID" : cid})},
+            success: function(data) {
+                // Remove any previously opened edit mode rows
+                $('.content-profile-edit').remove();
+                // Show all hidden file rows
+                $('.file-row').show();
 
-          // Deep copy profile dictionary to preserve needed fields
-          profile_dict = [];
-          for(j in data["eXO::Data"]["eXO::Profile"])
-            profile_dict[j] = jQuery.extend(true, {}, data["eXO::Data"]["eXO::Profile"][j]);
+                // Deep copy profile dictionary to preserve needed fields
+                profile_dict = [];
+                for (j in data["eXO::Data"]["eXO::Profile"])
+                    profile_dict[j] = jQuery.extend(true, {}, data["eXO::Data"]["eXO::Profile"][j]);
 
-          // Interpolate counter and separate public/private profiles
-          var templ = {"eXO::PublicProfile": [], "eXO::PrivateProfile": []};
-          var counter1=0, counter2=0;
-          for(i in data["eXO::Data"]["eXO::Profile"]){
-            if(data["eXO::Data"]["eXO::Profile"][i]["eXO::FieldIsPublic"]==true){
-              templ["eXO::PublicProfile"][counter1] = data["eXO::Data"]["eXO::Profile"][i];
-              templ["eXO::PublicProfile"][counter1]["counter"] = counter1;
-              counter1++;
-            }else{
-              templ["eXO::PrivateProfile"][counter2] = data["eXO::Data"]["eXO::Profile"][i];
-              templ["eXO::PrivateProfile"][counter2]["counter"] = counter2;
-              counter2++;
-            }
-          }
-          // Do template rendering here
-          context.render("/site_media/templates/file_profile_edit.ms", templ,
-           function(content){
-            // Find row and hide/show templates
-            var row = $('span#'+cid).parents(".file-row");
-            row.after(content).hide();
-            // Bind events here
-            $('.add-field').click(function(){
-              var instance = $(this).parents(".profile-wrapper");
-              $('.new-field', instance).toggle();
-              return false;
-            });
-            $('.new-field .button-wrapper a.form-cancel').click(function(){
-              $(this).parents('.new-field').hide();
-              return false;
-            });
-            $('.done-editing').click(function(){
-              var edit_row = $(this).parents('.content-profile-edit');
-              row.show();
-              edit_row.remove();
-              return false;
-            });
-            $('.new-field .add-tag-form').submit(function(){
-              var instance = $(this);
-              var new_field_instance = $(this).parents(".new-field");
-              var str = $('.tag-input', instance).val().trim();
-              if(str!=''){
-                var tag_html = '<span class="single-tag">'
-                             + '  <span class="value">'
-                             + str
-                             + '  </span>'
-                             + '  <a class="close" href="#">1</a>'
-                             + '</span>';
-                $('div.tag-field-data', new_field_instance).append(tag_html);
-
-                // Bind remove event for new tag
-                $('.single-tag a.close', new_field_instance).click(function(){
-                  $(this).parent().remove();
-                  return false;
-                });
-                $('.tag-input', new_field_instance).val('');
-              }
-              return false;
-            });
-            // Bind hover row events
-            $(".tag-row").hover(function(){
-                var row = $(this);
-                $(".actions-wrapper", row).show();
-            },function(){
-                var row = $(this);
-                $(".actions-wrapper", row).hide();
-            });
-            // Bind create new content profile field event
-            $(".new-field .create-action").click(function(){
-              var instance = $(this).parents('.new-field');
-              if(update_profile_instance(null, instance))
-                context.app.runRoute('post', '#/file/set/'+cid);
-            });
-            // Bind delete action
-            $(".button-action a.delete").click(function(){
-              // Delete entry from profile_dict
-              var array = $(this).attr('id').split("-");
-              var id = array[array.length - 1];
-              var prefix = array[0];
-              var field_row_instance = $("#"+prefix+"-tag-row-"+id);
-              var field_name = $(".tag-field-name", field_row_instance).html();
-              if(delete_profile_entry(field_name))
-                context.app.runRoute('post', '#/file/set/'+cid);
-              return false;
-            });
-            // Bind edit action
-            $(".button-action a.edit").click(function(){
-              var array = $(this).attr('id').split("-");
-              var id = array[array.length - 1];
-              var prefix = array[0];
-              var field_row_instance = $("#"+prefix+"-tag-row-"+id);
-              var field_name = $(".tag-field-name", field_row_instance).html();
-              field_row_instance.after(edit_field_template(field_name, id)).hide();
-              
-              var edit_intance = $("#"+prefix+"-edit-field-"+id);
-              // Bind edit form cancel event
-              $("a.form-cancel", edit_intance).click(function(){
-                field_row_instance.show();
-                edit_intance.remove();
-                return false;
-              });
-
-              // Bind add tag event
-              $(".add-tag-form", edit_intance).submit(function(){
-                 var str = $('.tag-input', edit_intance).val().trim();
-                 if(str!=''){
-                   var tag_html = '<span class="single-tag">'
-                                + '  <span class="value">'
-                                + str
-                                + '  </span>'
-                                + '  <a class="close" href="#">1</a>'
-                                + '</span>';
-                   $('div.tag-field-data', edit_intance).append(tag_html);
-
-                   // Bind remove event for new tag
-                   $('.single-tag a.close', edit_intance).click(function(){
-                     $(this).parent().remove();
-                     return false;
-                   });
-                   $('.tag-input', edit_intance).val('');
+                // Interpolate counter and separate public/private profiles
+                var templ = {"eXO::PublicProfile": [], "eXO::PrivateProfile": []};
+                var counter1 = 0, counter2 = 0;
+                for (i in data["eXO::Data"]["eXO::Profile"]) {
+                    if (data["eXO::Data"]["eXO::Profile"][i]["eXO::FieldIsPublic"] == true) {
+                        templ["eXO::PublicProfile"][counter1] = data["eXO::Data"]["eXO::Profile"][i];
+                        templ["eXO::PublicProfile"][counter1]["counter"] = counter1;
+                        counter1++;
+                    } else {
+                        templ["eXO::PrivateProfile"][counter2] = data["eXO::Data"]["eXO::Profile"][i];
+                        templ["eXO::PrivateProfile"][counter2]["counter"] = counter2;
+                        counter2++;
+                    }
                 }
-                return false;
-              });
+                // Do template rendering here
+                context.render("/site_media/templates/file_profile_edit.ms", templ,
+                        function(content) {
+                            // Find row and hide/show templates
+                            var row = $('span#' + cid).parents(".file-row");
+                            row.after(content).hide();
+                            // Bind events here
+                            $('.add-field').click(function() {
+                                var instance = $(this).parents(".profile-wrapper");
+                                $('.new-field', instance).toggle();
+                                return false;
+                            });
+                            $('.new-field .button-wrapper a.form-cancel').click(function() {
+                                $(this).parents('.new-field').hide();
+                                return false;
+                            });
+                            $('.done-editing').click(function() {
+                                var edit_row = $(this).parents('.content-profile-edit');
+                                row.show();
+                                edit_row.remove();
+                                return false;
+                            });
+                            $('.new-field .add-tag-form').submit(function() {
+                                var instance = $(this);
+                                var new_field_instance = $(this).parents(".new-field");
+                                var str = $('.tag-input', instance).val().trim();
+                                if (str != '') {
+                                    var tag_html = '<span class="single-tag">'
+                                            + '  <span class="value">'
+                                            + str
+                                            + '  </span>'
+                                            + '  <a class="close" href="#">1</a>'
+                                            + '</span>';
+                                    $('div.tag-field-data', new_field_instance).append(tag_html);
 
-              // Bind update click
-              $(".update-action", edit_intance).click(function(){
-                if(update_profile_instance(field_name, edit_intance)!=false)
-                  context.app.runRoute('post', '#/file/set/'+cid);
-              });
-              // Bind remove event for new tag
-              $('.single-tag a.close', edit_intance).click(function(){
-                $(this).parent().remove();
-                return false;
-              });
-              return false;
-            });
-          });
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
+                                    // Bind remove event for new tag
+                                    $('.single-tag a.close', new_field_instance).click(function() {
+                                        $(this).parent().remove();
+                                        return false;
+                                    });
+                                    $('.tag-input', new_field_instance).val('');
+                                }
+                                return false;
+                            });
+                            // Bind hover row events
+                            $(".tag-row").hover(function() {
+                                var row = $(this);
+                                $(".actions-wrapper", row).show();
+                            }, function() {
+                                var row = $(this);
+                                $(".actions-wrapper", row).hide();
+                            });
+                            // Bind create new content profile field event
+                            $(".new-field .create-action").click(function() {
+                                var instance = $(this).parents('.new-field');
+                                if (update_profile_instance(null, instance))
+                                    context.app.runRoute('post', '#/file/set/' + cid);
+                            });
+                            // Bind delete action
+                            $(".button-action a.delete").click(function() {
+                                // Delete entry from profile_dict
+                                var array = $(this).attr('id').split("-");
+                                var id = array[array.length - 1];
+                                var prefix = array[0];
+                                var field_row_instance = $("#" + prefix + "-tag-row-" + id);
+                                var field_name = $(".tag-field-name", field_row_instance).html();
+                                if (delete_profile_entry(field_name))
+                                    context.app.runRoute('post', '#/file/set/' + cid);
+                                return false;
+                            });
+                            // Bind edit action
+                            $(".button-action a.edit").click(function() {
+                                var array = $(this).attr('id').split("-");
+                                var id = array[array.length - 1];
+                                var prefix = array[0];
+                                var field_row_instance = $("#" + prefix + "-tag-row-" + id);
+                                var field_name = $(".tag-field-name", field_row_instance).html();
+                                field_row_instance.after(edit_field_template(field_name, id)).hide();
+
+                                var edit_intance = $("#" + prefix + "-edit-field-" + id);
+                                // Bind edit form cancel event
+                                $("a.form-cancel", edit_intance).click(function() {
+                                    field_row_instance.show();
+                                    edit_intance.remove();
+                                    return false;
+                                });
+
+                                // Bind add tag event
+                                $(".add-tag-form", edit_intance).submit(function() {
+                                    var str = $('.tag-input', edit_intance).val().trim();
+                                    if (str != '') {
+                                        var tag_html = '<span class="single-tag">'
+                                                + '  <span class="value">'
+                                                + str
+                                                + '  </span>'
+                                                + '  <a class="close" href="#">1</a>'
+                                                + '</span>';
+                                        $('div.tag-field-data', edit_intance).append(tag_html);
+
+                                        // Bind remove event for new tag
+                                        $('.single-tag a.close', edit_intance).click(function() {
+                                            $(this).parent().remove();
+                                            return false;
+                                        });
+                                        $('.tag-input', edit_intance).val('');
+                                    }
+                                    return false;
+                                });
+
+                                // Bind update click
+                                $(".update-action", edit_intance).click(function() {
+                                    if (update_profile_instance(field_name, edit_intance) != false)
+                                        context.app.runRoute('post', '#/file/set/' + cid);
+                                });
+                                // Bind remove event for new tag
+                                $('.single-tag a.close', edit_intance).click(function() {
+                                    $(this).parent().remove();
+                                    return false;
+                                });
+                                return false;
+                            });
+                        });
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            }
+        });
     });
 
     this.post('#/file_index/delete/', function() {
-      // TODO: Implement this!
+        // TODO: Implement this!
     });
 
     this.get('#/file_list/get/', function() {
-      var context = this;
-      $.ajax({
-        type: 'POST',
-        url: "/servlet/GetContent/",
-        dataType: 'json',
-        data: "",
-        success: function(data){
-          // TODO: Do template rendering
-          if("eXO::Status" in data && data["eXO::Status"]=="eXO::Success"){
-            // Refactor the fetched data dictionary
-            var templ = { "profiles": [] };
-            var counter = 0;
-            for(id in data["eXO::Data"]){
-              templ["profiles"][counter] = data["eXO::Data"][id];
-              templ["profiles"][counter]["counter"] = counter;
-              templ["profiles"][counter]["file_id"] = id;
-              templ["profiles"][counter]["zebra"] = function(){
-                return (this.counter%2==0?"even-row":"odd-row");
-              };
-              counter++;
+        var context = this;
+        $.ajax({
+            type: 'POST',
+            url: "/servlet/GetContent/",
+            dataType: 'json',
+            data: "",
+            success: function(data) {
+                // TODO: Do template rendering
+                if ("eXO::Status" in data && data["eXO::Status"] == "eXO::Success") {
+                    // Refactor the fetched data dictionary
+                    var templ = { "profiles": [] };
+                    var counter = 0;
+                    for (id in data["eXO::Data"]) {
+                        templ["profiles"][counter] = data["eXO::Data"][id];
+                        templ["profiles"][counter]["counter"] = counter;
+                        templ["profiles"][counter]["file_id"] = id;
+                        templ["profiles"][counter]["zebra"] = function() {
+                            return (this.counter % 2 == 0 ? "even-row" : "odd-row");
+                        };
+                        counter++;
+                    }
+                    //Sammy.log(templ);
+                    context.render("/site_media/templates/file_list.ms", templ,
+                            function(content) {
+                                $('#file-list').html(content).hide();
+                                // Bind events here
+                                $(".show").toggle(function() {
+                                    $(this).parents(".file-row").find(".tags-wrapper").show();
+                                    $(this).text("Hide");
+                                    return false;
+                                }, function() {
+                                    $(this).parents(".file-row").find(".tags-wrapper").hide();
+                                    $(this).text("Show");
+                                    return false;
+                                });
+                                $(".edit").click(function() {
+                                    // Trigger GetContentTags and go to profile edit mode
+                                    var cid = $(this).parents(".file-row").find(".file-id").text();
+                                    context.app.runRoute('get', '#/file/get/' + cid);
+                                    return false;
+                                });
+                                $(".file-data ").hover(function() {
+                                    $(".actions-wrapper", this).show();
+                                }, function() {
+                                    $(".actions-wrapper", this).hide();
+                                });
+                                setTimeout(function() {
+                                    $("#content-main-loading").hide();
+                                    $('#file-list').show();
+                                }, 500);
+                            });
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
             }
-            //Sammy.log(templ);
-            context.render("/site_media/templates/file_list.ms", templ,
-             function(content){
-              $('#file-list').html(content).hide();
-              // Bind events here
-              $(".show").toggle(function(){
-                $(this).parents(".file-row").find(".tags-wrapper").show();
-                $(this).text("Hide");
-                return false;
-              },function(){
-                $(this).parents(".file-row").find(".tags-wrapper").hide();
-                $(this).text("Show");
-                return false;
-              });
-              $(".edit").click(function(){
-                // Trigger GetContentTags and go to profile edit mode
-                var cid = $(this).parents(".file-row").find(".file-id").text();
-                context.app.runRoute('get', '#/file/get/'+cid);
-                return false;
-              });
-              $(".file-data ").hover(function(){
-                $(".actions-wrapper", this).show();
-              },function(){
-                $(".actions-wrapper", this).hide();
-              });
-              setTimeout(function(){ 
-                $("#content-main-loading").hide();
-                $('#file-list').show();
-              }, 500);
-            });
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        }
-      });
+        });
     });
     this.get('#/file_profile/get/', function() {
     });
     this.post('#/file_profile/set/', function() {
     });
-  });
+});
 
-  $(function (){
+$(function () {
     // Show/hide the Loading indicator
-    $("#loading-indicator").ajaxStart(function(){
-       $(this).show();
-    }).ajaxStop(function(){
-      var indicator = $(this);
-      setTimeout(function(){ indicator.fadeOut() }, 500);
-    });
-    
+    $("#loading-indicator").ajaxStart(
+            function() {
+                $(this).show();
+            }).ajaxStop(function() {
+                var indicator = $(this);
+                setTimeout(function() {
+                    indicator.fadeOut()
+                }, 500);
+            });
+
     // Get username and resource
     $.ajax({
-      type: 'POST',
-      url: "/servlet/GetUserProfile/",
-      dataType: 'json',
-      data: "",
-      success: function(data){
-        if("eXO::Status" in data && data["eXO::Status"]!="eXO::Success"){
-          alert("Failed to access user profile data!");
-          return false;
+        type: 'POST',
+        url: "/servlet/GetUserProfile/",
+        dataType: 'json',
+        data: "",
+        success: function(data) {
+            if ("eXO::Status" in data && data["eXO::Status"] != "eXO::Success") {
+                alert("Failed to access user profile data!");
+                return false;
+            }
+            user_profile_dict = data["eXO::Data"]["eXO::Profile"];
+            // Fill in the data to the corresponding places
+            var username = "Incognito", resource = "Home";
+            for (dict in user_profile_dict) {
+                if (user_profile_dict[dict]["eXO::FieldName"] == "Username") {
+                    username = user_profile_dict[dict]["eXO::FieldData"];
+                } else if (user_profile_dict[dict]["eXO::FieldName"] == "Resource") {
+                    resource = user_profile_dict[dict]["eXO::FieldData"];
+                }
+            }
+            if (username != null)
+                $("#username").html(username);
+            if (resource != null)
+                $("#resource").html(resource);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
         }
-        user_profile_dict = data["eXO::Data"]["eXO::Profile"];
-        // Fill in the data to the corresponding places
-        var username="Incognito", resource="Home";
-        for(dict in user_profile_dict){
-          if(user_profile_dict[dict]["eXO::FieldName"]=="Username"){
-            username = user_profile_dict[dict]["eXO::FieldData"];
-          }else if(user_profile_dict[dict]["eXO::FieldName"]=="Resource"){
-            resource = user_profile_dict[dict]["eXO::FieldData"];
-          }
-        }
-        if(username!=null)
-          $("#username").html(username);
-        if(resource!=null)
-          $("#resource").html(resource);
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-      }
     });
 
     /* Bind ajax upload button */
     var uploader = new qq.FileUploader({
-      element: $('#upload-element')[0],
-      action: "/servlet/ShareFile/",
-      responseType: "json",
-      onComplete : function(id, file, data) {
-        // Poll till success
-        // Rerender profiles and rebind events
-        if("eXO::reqID" in data){
-          start_polling(data["eXO::reqID"], "/servlet/ShareFile/", function(){
-            message_notification("File successfully indexed!");
-            // Here we define the redirection callback!
-            app.runRoute("get", "#/file_list/get/");
-          });
-          return true;
-        } else {
-          alert("Failed to upload file!");
-          return false;
+        element: $('#upload-element')[0],
+        action: "/servlet/ShareFile/",
+        responseType: "json",
+        onComplete : function(id, file, data) {
+            // Poll till success
+            // Rerender profiles and rebind events
+            if ("eXO::reqID" in data) {
+                start_polling(data["eXO::reqID"], "/servlet/ShareFile/", function() {
+                    message_notification("File successfully indexed!");
+                    // Here we define the redirection callback!
+                    app.runRoute("get", "#/file_list/get/");
+                });
+                return true;
+            } else {
+                alert("Failed to upload file!");
+                return false;
+            }
         }
-      }
     });
 
     // Run sammy application
     app.run('#/file_list/get/');
-  });
-  </script>
+});
+</script>
 </head>
 
 <body>
 
-  <div id="loading-indicator">
+<div id="loading-indicator">
     <div class="i16 waiting" onClick="$('#loading-indicator').slideUp()">
-    loading ...
+        loading ...
     </div>
-  </div>
+</div>
 
-  <div id="header-wrapper" >
+<div id="header-wrapper">
     <div id="header-container" class="container">
 
-      <div id="userbox">
-        <!--
-        <div id="avatar-wrapper">
-        <img height="20" width="20" alt="" src="/site_media/images/generic.jpg">
-        </div>
-        -->
-        <ul class="horizontal">
-          <li>Account Settings</li>
-          <li>Logout</li>
-        </ul>
-      </div>
-      <div id="logo" class="span-10">
-        <a href="/">eXO<sup>beta</sup></a>
-        <span> The Decentralized Social Network</span>
-      </div>
-      <div id="global-menu" class="span-14 last">
-        <ul class="horizontal">
-          <li><a href="#">Network Status</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Help</a></li>
-        </ul>
-      </div>
-    </div><!-- END HEADER-CONTAINER -->
-  </div><!-- END HEADER-WRAPPER -->
-
-  <div id="middle-wrapper">
-    <div id="middle-container" class="container">
-      <div id="breadcrumb" class="span-24"></div>
-
-      <div id="content-header-wrapper" class="container">
-      <div id="content-header">
-        <div id="content_title" class="span-14">
-          <h2>
-            <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
-            <span id="username">Incognito</span>
-            <span id="at">/</span>
-            <span id="resource">Home</span>
-          </h2>
-        </div>
-        <div id="content_nav" class="span-10 last">
-          <ul class="horizontal">
-            <li>
-              <a href="/">My Profile</a>
-            </li>
-            <li>
-              <a href="/search">Search</a>
-            </li>
-            <li class="current">
-              <a href="/content">Share Content</a>
-            </li>
-            <li>
-              <a href="/friends">Friends</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      </div>
-
-      <div id="content-main" class="span-24">
-        <div id="upload-body" class="content-body">
-          <h2>File upload</h2>
-          <div id="upload-wrapper">
-            <div id="upload-element"></div>
-            <div class="info quiet">
-              Note: By uploading a file, it is immediately shared all over the network!
+        <div id="userbox">
+            <!--
+            <div id="avatar-wrapper">
+            <img height="20" width="20" alt="" src="/site_media/images/generic.jpg">
             </div>
-          </div>
-          <div id="file-list-wrapper" class="clear">
-            <div id="file-list"> 
-            </div>
-            <div id="content-main-loading">
-              <p>
-                <img src="/site_media/images/loading.gif" />
-              </p>
-              <p>Loading Content</p>
-            </div>
-          </div>
+            -->
+            <ul class="horizontal">
+                <li>Account Settings</li>
+                <li>Logout</li>
+            </ul>
         </div>
-      </div>
-
-      <div id="content_footer" class="span-24"></div>
-
-    </div><!-- END MIDDLE-CONTAINER -->
-  </div><!-- END MIDDLE-WRAPPER -->
-
-  <div id="footer-wrapper">
-    <div id="footer-container" class="container">
-        <div class="span-6">
-          <ul>
-            <li class="title">Service</li>
-            <li>Privacy Policy</li>
-            <li>Terms of Service</li>
-          </ul>
+        <div id="logo" class="span-10">
+            <a href="/">eXO<sup>beta</sup></a>
+            <span> The Decentralized Social Network</span>
         </div>
-        <div class="span-6">
-          <ul>
-            <li class="title">Resources</li>
-            <li>FAQ</li>
-            <li>API Documentation</li>
-          </ul>
-        </div>
-        <div class="span-6 last">
-          <ul>
-            <li class="title">About</li>
-            <li>Team</li>
-            <li>Follow us on Twitter</li>
-            <li>Blog</li>
-          </ul>
+        <div id="global-menu" class="span-14 last">
+            <ul class="horizontal">
+                <li><a href="#">Network Status</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Help</a></li>
+            </ul>
         </div>
     </div>
-  </div>
+    <!-- END HEADER-CONTAINER -->
+</div>
+<!-- END HEADER-WRAPPER -->
+
+<div id="middle-wrapper">
+    <div id="middle-container" class="container">
+        <div id="breadcrumb" class="span-24"></div>
+
+        <div id="content-header-wrapper" class="container">
+            <div id="content-header">
+                <div id="content_title" class="span-14">
+                    <h2>
+                        <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
+                        <span id="username">Incognito</span>
+                        <span id="at">/</span>
+                        <span id="resource">Home</span>
+                    </h2>
+                </div>
+                <div id="content_nav" class="span-10 last">
+                    <ul class="horizontal">
+                        <li>
+                            <a href="/">My Profile</a>
+                        </li>
+                        <li>
+                            <a href="/search">Search</a>
+                        </li>
+                        <li class="current">
+                            <a href="/content">Share Content</a>
+                        </li>
+                        <li>
+                            <a href="/friends">Friends</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-main" class="span-24">
+            <div id="upload-body" class="content-body">
+                <h2>File upload</h2>
+
+                <div id="upload-wrapper">
+                    <div id="upload-element"></div>
+                    <div class="info quiet">
+                        Note: By uploading a file, it is immediately shared all over the network!
+                    </div>
+                </div>
+                <div id="file-list-wrapper" class="clear">
+                    <div id="file-list">
+                    </div>
+                    <div id="content-main-loading">
+                        <p>
+                            <img src="/site_media/images/loading.gif"/>
+                        </p>
+
+                        <p>Loading Content</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content_footer" class="span-24"></div>
+
+    </div>
+    <!-- END MIDDLE-CONTAINER -->
+</div>
+<!-- END MIDDLE-WRAPPER -->
+
+<div id="footer-wrapper">
+    <div id="footer-container" class="container">
+        <div class="span-6">
+            <ul>
+                <li class="title">Service</li>
+                <li>Privacy Policy</li>
+                <li>Terms of Service</li>
+            </ul>
+        </div>
+        <div class="span-6">
+            <ul>
+                <li class="title">Resources</li>
+                <li>FAQ</li>
+                <li>API Documentation</li>
+            </ul>
+        </div>
+        <div class="span-6 last">
+            <ul>
+                <li class="title">About</li>
+                <li>Team</li>
+                <li>Follow us on Twitter</li>
+                <li>Blog</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

@@ -1,616 +1,629 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title> Search | eXO - Social freedom</title>
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title> Search | eXO - Social freedom</title>
+<!-- Favicon -->
+<link rel="shortcut icon" href="/site_media/images/favicon.ico" type="image/x-icon"/>
 
-  <!-- Stylesheets -->
-  <link href="/site_media/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <link href="/site_media/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
-  <!--[if lt IE 8]>
-      <link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <![endif]-->
-  <link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet" />
-  <link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet" />
+<!-- Stylesheets -->
+<link href="/site_media/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<link href="/site_media/stylesheets/print.css" media="print" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 8]>
+<link href="/site_media/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<![endif]-->
+<link media="screen, projection" href="/site_media/stylesheets/base.css" type="text/css" rel="stylesheet"/>
+<link media="screen, projection" href="/site_media/stylesheets/jquery.jgrowl.css" type="text/css" rel="stylesheet"/>
 
-  <!-- Javascripts -->
-  <script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
-  <script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
-  <script type="text/javascript">
-  function message_notification(msg) {
+<!-- Javascripts -->
+<script type="text/javascript" src="/site_media/javascripts/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="/site_media/javascripts/sammy/sammy.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/sammy/plugins/sammy.mustache.js" charset="utf-8"></script>
+<script type="text/javascript" src="/site_media/javascripts/jquery.jgrowl.js" charset="utf-8"></script>
+<script type="text/javascript">
+function message_notification(msg) {
     $.jGrowl(msg, { position: "bottom-right"});
-  }
+}
 
-  function start_polling(reqID, url, redirect_callback){
+function start_polling(reqID, url, redirect_callback) {
     $.ajax({
-      type: 'POST',
-      url: url,
-      data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
-      success: function(data){
-        polling_callback(data, reqID, url, redirect_callback);
-        return true;
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-        return false;
-      }
+        type: 'POST',
+        url: url,
+        data: {eXO_data: JSON.stringify({"eXO::reqID" : reqID})},
+        success: function(data) {
+            polling_callback(data, reqID, url, redirect_callback);
+            return true;
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
+            return false;
+        }
     });
-  }
-  function polling_callback(polling_data, reqID, url, redirect_callback){
-    if("eXO::Status" in polling_data){
-      if(polling_data["eXO::Status"]=="eXO::Processing"){
-        // Continue polling after 100ms
-        setTimeout(function(){ start_polling(reqID, url, redirect_callback); }, 100);
+}
+function polling_callback(polling_data, reqID, url, redirect_callback) {
+    if ("eXO::Status" in polling_data) {
+        if (polling_data["eXO::Status"] == "eXO::Processing") {
+            // Continue polling after 100ms
+            setTimeout(function() {
+                start_polling(reqID, url, redirect_callback);
+            }, 100);
+            return true;
+        } else {
+            // Let the callback handle the notifications.
+            redirect_callback(polling_data);
+        }
+        // TODO: On stop of processing trigger other events
         return true;
-      } else {
-        // Let the callback handle the notifications.
-        redirect_callback(polling_data);
-      }
-      // TODO: On stop of processing trigger other events
-      return true;
     }
-  }
+}
 
-  var app = $.sammy('#content-main', function() {
+var app = $.sammy('#content-main', function() {
     // include the plugin and alias mustache() to ms()
     this.use(Sammy.Mustache, 'ms');
 
     this.post('#/searching', function() {
-      var obj_type = $('#search-obj-type').val();
-      var net_type = $('#search-net-type').val();
-      this.query = $('input#search').val();
+        var obj_type = $('#search-obj-type').val();
+        var net_type = $('#search-net-type').val();
+        this.query = $('input#search').val();
 
-      // UnComment to Debug
-      //Sammy.log("Object type:"+obj_type);
-      //Sammy.log("Network type:"+net_type);
-      //Sammy.log("Raw Query:"+query);
+        // UnComment to Debug
+        //Sammy.log("Object type:"+obj_type);
+        //Sammy.log("Network type:"+net_type);
+        //Sammy.log("Raw Query:"+query);
 
-      // Redirect to the appropriate handler
-      this.redirect('#/searching', net_type, obj_type);
-      return false;
+        // Redirect to the appropriate handler
+        this.redirect('#/searching', net_type, obj_type);
+        return false;
     });
 
     this.post('#/friend_request/create', function() {
-      var context = this;
-      if("uid" in context.params && context.params["uid"]!=""){
-        $.ajax({
-          type: 'POST',
-          url:  "/servlet/SendFriendRequest/",
-          dataType: 'json',
-          data: {eXO_data: JSON.stringify({"eXO::UID" : context.params["uid"]})},
-          success: function(data){
-            start_polling(data["eXO::reqID"], "/servlet/SendFriendRequest/",
-              function(response_data){
-                if (response_data["eXO::Status"]=="eXO::Success"){
-                  // TODO: Notify about success
-                  $("#"+context.params["entry_id"]).find('.friend-request').
-                    parent().html("<img src=\"/site_media/images/accept.png\">");
-                  message_notification("Friend request was successfully sent!")
-                } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                  alert("Friend request failed!");
-                } else {
-                  alert("Friend request failed!");
+        var context = this;
+        if ("uid" in context.params && context.params["uid"] != "") {
+            $.ajax({
+                type: 'POST',
+                url:  "/servlet/SendFriendRequest/",
+                dataType: 'json',
+                data: {eXO_data: JSON.stringify({"eXO::UID" : context.params["uid"]})},
+                success: function(data) {
+                    start_polling(data["eXO::reqID"], "/servlet/SendFriendRequest/",
+                            function(response_data) {
+                                if (response_data["eXO::Status"] == "eXO::Success") {
+                                    // TODO: Notify about success
+                                    $("#" + context.params["entry_id"]).find('.friend-request').
+                                            parent().html("<img src=\"/site_media/images/accept.png\">");
+                                    message_notification("Friend request was successfully sent!")
+                                } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                    alert("Friend request failed!");
+                                } else {
+                                    alert("Friend request failed!");
+                                }
+                                return true;
+                            });
+                    return true;
+                },error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("An error occurred : " + textStatus);
+                },
+                complete: function() {
                 }
-                return true;
             });
-            return true;
-          },error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert("An error occurred : "+textStatus);
-          },
-          complete: function(){}
-        });
-      }
+        }
     });
 
     this.get('#/searching/dht/content', function() {
-      this.query = $('input#search').val();
-      var context = this;
-      $("#content-main-loading").show();
-      $('#results-list').hide();
-      $.ajax({
-        type: 'GET',
-        url:  "/servlet/SearchContentDHT/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({
+        this.query = $('input#search').val();
+        var context = this;
+        $("#content-main-loading").show();
+        $('#results-list').hide();
+        $.ajax({
+            type: 'GET',
+            url:  "/servlet/SearchContentDHT/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({
                 "eXO::SearchQuery" : context.query,
                 "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
-              })},
-        success: function(data){
-          if ("eXO::reqID" in data) {
-            start_polling(data["eXO::reqID"], "/servlet/SearchContentDHT/",
-            function(response_data) {
-              if (response_data["eXO::Status"]=="eXO::Success"){
-                // TODO: Notify about success
-              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                alert("Search failed!");
-                return false;
-              } else {
-                alert("Search failed!");
-                return false;
-              }
-              templ = response_data["eXO::Data"];
-              // Interpolate with counters
-              for(i in templ["eXO::ScoreBoard"]){
-                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
-                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
-                  return (this.index%2==0?"even-row":"odd-row");
-                };
-              }
-              context.render(
-                "/site_media/templates/results_content.ms",
-                templ,
-                function(content){
-                  $('#results-list').html(content).hide();
-                  // Bind new events here
-                  $('.friend-request').click(function(){
-                    var uid = $(this).parents(".entry").find("span.uid").text();
-                    var entry_id = $(this).parents(".entry").attr('id');
-                    context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid, "entry_id" : entry_id });
+            })},
+            success: function(data) {
+                if ("eXO::reqID" in data) {
+                    start_polling(data["eXO::reqID"], "/servlet/SearchContentDHT/",
+                            function(response_data) {
+                                if (response_data["eXO::Status"] == "eXO::Success") {
+                                    // TODO: Notify about success
+                                } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                    alert("Search failed!");
+                                    return false;
+                                } else {
+                                    alert("Search failed!");
+                                    return false;
+                                }
+                                templ = response_data["eXO::Data"];
+                                // Interpolate with counters
+                                for (i in templ["eXO::ScoreBoard"]) {
+                                    templ["eXO::ScoreBoard"][i]["index"] = parseInt(i) + 1;
+                                    templ["eXO::ScoreBoard"][i]["zebra"] = function() {
+                                        return (this.index % 2 == 0 ? "even-row" : "odd-row");
+                                    };
+                                }
+                                context.render(
+                                        "/site_media/templates/results_content.ms",
+                                        templ,
+                                        function(content) {
+                                            $('#results-list').html(content).hide();
+                                            // Bind new events here
+                                            $('.friend-request').click(function() {
+                                                var uid = $(this).parents(".entry").find("span.uid").text();
+                                                var entry_id = $(this).parents(".entry").attr('id');
+                                                context.app.runRoute("post", "#/friend_request/create",
+                                                        {"uid" : uid, "entry_id" : entry_id });
+                                                return false;
+                                            });
+                                            $(".entry ").hover(function() {
+                                                $(".actions-wrapper", this).show();
+                                            }, function() {
+                                                $(".actions-wrapper", this).hide();
+                                            });
+                                            setTimeout(function() {
+                                                        $('#results-list').show();
+                                                    }, 500
+                                            );
+                                        }
+                                );
+                            });
+                    return true;
+                } else {
+                    alert("Error search the network!");
                     return false;
-                  });
-                  $(".entry ").hover(function(){
-                    $(".actions-wrapper", this).show();
-                  },function(){
-                    $(".actions-wrapper", this).hide();
-                  });
-                  setTimeout(function(){
-                    $('#results-list').show();
-                    }, 500
-                  );
                 }
-              );
-            });
-            return true;
-          } else {
-            alert("Error search the network!");
-            return false;
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        },
-        complete: function(){
-          setTimeout(function(){
-            $("#content-main-loading").hide();
-            $('#results-list').show();
-          }, 500);
-        }
-      });
-      return true;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            },
+            complete: function() {
+                setTimeout(function() {
+                    $("#content-main-loading").hide();
+                    $('#results-list').show();
+                }, 500);
+            }
+        });
+        return true;
     });
     this.get('#/searching/dht/user', function() {
-      this.query = $('input#search').val();
-      var context = this;
-      $("#content-main-loading").show();
-      $('#results-list').hide();
-      $.ajax({
-        type: 'GET',
-        url:  "/servlet/SearchUserDHT/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({
+        this.query = $('input#search').val();
+        var context = this;
+        $("#content-main-loading").show();
+        $('#results-list').hide();
+        $.ajax({
+            type: 'GET',
+            url:  "/servlet/SearchUserDHT/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({
                 "eXO::SearchQuery" : context.query,
                 "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
-              })},
-        success: function(data){
-          if ("eXO::reqID" in data) {
-            start_polling(data["eXO::reqID"], "/servlet/SearchUserDHT/",
-            function(response_data) {
-              if (response_data["eXO::Status"]=="eXO::Success"){
-                // TODO: Notify about success
-              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                alert("Search failed!");
-                return false;
-              } else {
-                alert("Search failed!");
-                return false;
-              }
-              templ = response_data["eXO::Data"];
-              // Interpolate with counters
-              for(i in templ["eXO::ScoreBoard"]){
-                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
-                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
-                  return (this.index%2==0?"even-row":"odd-row");
-                };
-              }
-              context.render(
-                "/site_media/templates/results_user.ms",
-                templ,
-                function(content){
-                  $('#results-list').html(content).hide();
-                  // Bind new events here
-                  $('.friend-request').click(function(){
-                    var uid = $(this).parents(".entry").find("span.uid").text();
-                    var entry_id = $(this).parents(".entry").attr('id');
-                    context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid, "entry_id" : entry_id });
+            })},
+            success: function(data) {
+                if ("eXO::reqID" in data) {
+                    start_polling(data["eXO::reqID"], "/servlet/SearchUserDHT/",
+                            function(response_data) {
+                                if (response_data["eXO::Status"] == "eXO::Success") {
+                                    // TODO: Notify about success
+                                } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                    alert("Search failed!");
+                                    return false;
+                                } else {
+                                    alert("Search failed!");
+                                    return false;
+                                }
+                                templ = response_data["eXO::Data"];
+                                // Interpolate with counters
+                                for (i in templ["eXO::ScoreBoard"]) {
+                                    templ["eXO::ScoreBoard"][i]["index"] = parseInt(i) + 1;
+                                    templ["eXO::ScoreBoard"][i]["zebra"] = function() {
+                                        return (this.index % 2 == 0 ? "even-row" : "odd-row");
+                                    };
+                                }
+                                context.render(
+                                        "/site_media/templates/results_user.ms",
+                                        templ,
+                                        function(content) {
+                                            $('#results-list').html(content).hide();
+                                            // Bind new events here
+                                            $('.friend-request').click(function() {
+                                                var uid = $(this).parents(".entry").find("span.uid").text();
+                                                var entry_id = $(this).parents(".entry").attr('id');
+                                                context.app.runRoute("post", "#/friend_request/create",
+                                                        {"uid" : uid, "entry_id" : entry_id });
+                                                return false;
+                                            });
+                                            $(".entry ").hover(function() {
+                                                $(".actions-wrapper", this).show();
+                                            }, function() {
+                                                $(".actions-wrapper", this).hide();
+                                            });
+                                            setTimeout(function() {
+                                                        $('#results-list').show();
+                                                    }, 500
+                                            );
+                                        }
+                                );
+                            });
+                    return true;
+                } else {
+                    alert("Error search the network!");
                     return false;
-                  });
-                  $(".entry ").hover(function(){
-                    $(".actions-wrapper", this).show();
-                  },function(){
-                    $(".actions-wrapper", this).hide();
-                  });
-                  setTimeout(function(){
-                    $('#results-list').show();
-                    }, 500
-                  );
                 }
-              );
-            });
-            return true;
-          } else {
-            alert("Error search the network!");
-            return false;
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        },
-        complete: function(){
-          setTimeout(function(){
-            $("#content-main-loading").hide();
-            $('#results-list').show();
-          }, 500);
-        }
-      });
-      return true;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            },
+            complete: function() {
+                setTimeout(function() {
+                    $("#content-main-loading").hide();
+                    $('#results-list').show();
+                }, 500);
+            }
+        });
+        return true;
     });
     this.get('#/searching/psn/content', function() {
-      this.query = $('input#search').val();
-      var context = this;
-      $("#content-main-loading").show();
-      $('#results-list').hide();
-      $.ajax({
-        type: 'GET',
-        url:  "/servlet/SearchContentPN/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({
+        this.query = $('input#search').val();
+        var context = this;
+        $("#content-main-loading").show();
+        $('#results-list').hide();
+        $.ajax({
+            type: 'GET',
+            url:  "/servlet/SearchContentPN/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({
                 "eXO::SearchQuery" : context.query,
                 "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
-              })},
-        success: function(data){
-          if ("eXO::reqID" in data) {
-            start_polling(data["eXO::reqID"], "/servlet/SearchContentPN/",
-            function(response_data) {
-              if (response_data["eXO::Status"]=="eXO::Success"){
-                // TODO: Notify about success
-              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                alert("Search failed!");
-                return false;
-              } else {
-                alert("Search failed!");
-                return false;
-              }
-              templ = response_data["eXO::Data"];
-              // Interpolate with counters
-              for(i in templ["eXO::ScoreBoard"]){
-                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
-                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
-                  return (this.index%2==0?"even-row":"odd-row");
-                };
-              }
-              context.render(
-                "/site_media/templates/results_content.ms",
-                templ,
-                function(content){
-                  $('#results-list').html(content).hide();
-                  // Bind new events here
-                  $('.friend-request').click(function(){
-                    var uid = $(this).parents(".entry").find("span.uid").text();
-                    var entry_id = $(this).parents(".entry").attr('id');
-                    context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid, "entry_id" : entry_id });
+            })},
+            success: function(data) {
+                if ("eXO::reqID" in data) {
+                    start_polling(data["eXO::reqID"], "/servlet/SearchContentPN/",
+                            function(response_data) {
+                                if (response_data["eXO::Status"] == "eXO::Success") {
+                                    // TODO: Notify about success
+                                } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                    alert("Search failed!");
+                                    return false;
+                                } else {
+                                    alert("Search failed!");
+                                    return false;
+                                }
+                                templ = response_data["eXO::Data"];
+                                // Interpolate with counters
+                                for (i in templ["eXO::ScoreBoard"]) {
+                                    templ["eXO::ScoreBoard"][i]["index"] = parseInt(i) + 1;
+                                    templ["eXO::ScoreBoard"][i]["zebra"] = function() {
+                                        return (this.index % 2 == 0 ? "even-row" : "odd-row");
+                                    };
+                                }
+                                context.render(
+                                        "/site_media/templates/results_content.ms",
+                                        templ,
+                                        function(content) {
+                                            $('#results-list').html(content).hide();
+                                            // Bind new events here
+                                            $('.friend-request').click(function() {
+                                                var uid = $(this).parents(".entry").find("span.uid").text();
+                                                var entry_id = $(this).parents(".entry").attr('id');
+                                                context.app.runRoute("post", "#/friend_request/create",
+                                                        {"uid" : uid, "entry_id" : entry_id });
+                                                return false;
+                                            });
+                                            $(".entry ").hover(function() {
+                                                $(".actions-wrapper", this).show();
+                                            }, function() {
+                                                $(".actions-wrapper", this).hide();
+                                            });
+                                            setTimeout(function() {
+                                                        $('#results-list').show();
+                                                    }, 500
+                                            );
+                                        }
+                                );
+                            });
+                    return true;
+                } else {
+                    alert("Error search the network!");
                     return false;
-                  });
-                  $(".entry ").hover(function(){
-                    $(".actions-wrapper", this).show();
-                  },function(){
-                    $(".actions-wrapper", this).hide();
-                  });
-                  setTimeout(function(){
-                    $('#results-list').show();
-                    }, 500
-                  );
                 }
-              );
-            });
-            return true;
-          } else {
-            alert("Error search the network!");
-            return false;
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        },
-        complete: function(){
-          setTimeout(function(){
-            $("#content-main-loading").hide();
-            $('#results-list').show();
-          }, 500);
-        }
-      });
-      return true;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            },
+            complete: function() {
+                setTimeout(function() {
+                    $("#content-main-loading").hide();
+                    $('#results-list').show();
+                }, 500);
+            }
+        });
+        return true;
     });
     this.get('#/searching/psn/user', function() {
-      this.query = $('input#search').val();
-      var context = this;
-      $("#content-main-loading").show();
-      $('#results-list').hide();
-      $.ajax({
-        type: 'GET',
-        url:  "/servlet/SearchUserPN/",
-        dataType: 'json',
-        data: {eXO_data: JSON.stringify({
+        this.query = $('input#search').val();
+        var context = this;
+        $("#content-main-loading").show();
+        $('#results-list').hide();
+        $.ajax({
+            type: 'GET',
+            url:  "/servlet/SearchUserPN/",
+            dataType: 'json',
+            data: {eXO_data: JSON.stringify({
                 "eXO::SearchQuery" : context.query,
                 "eXO::TopK" : "20", // FIXME: this should not be hardcoded!
-              })},
-        success: function(data){
-          if ("eXO::reqID" in data) {
-            start_polling(data["eXO::reqID"], "/servlet/SearchUserPN/",
-            function(response_data) {
-              if (response_data["eXO::Status"]=="eXO::Success"){
-                // TODO: Notify about success
-              } else if (response_data["eXO::Status"]=="eXO::Unknown"){
-                alert("Search failed!");
-                return false;
-              } else {
-                alert("Search failed!");
-                return false;
-              }
-              templ = response_data["eXO::Data"];
-              // Interpolate with counters
-              for(i in templ["eXO::ScoreBoard"]){
-                templ["eXO::ScoreBoard"][i]["index"]=parseInt(i)+1;
-                templ["eXO::ScoreBoard"][i]["zebra"]= function(){
-                  return (this.index%2==0?"even-row":"odd-row");
-                };
-              }
-              context.render(
-                "/site_media/templates/results_user.ms",
-                templ,
-                function(content){
-                  $('#results-list').html(content).hide();
-                  // Bind new events here
-                  $('.friend-request').click(function(){
-                    var uid = $(this).parents(".entry").find("span.uid").text();
-                    var entry_id = $(this).parents(".entry").attr('id');
-                    context.app.runRoute("post", "#/friend_request/create",
-                                         {"uid" : uid, "entry_id" : entry_id });
+            })},
+            success: function(data) {
+                if ("eXO::reqID" in data) {
+                    start_polling(data["eXO::reqID"], "/servlet/SearchUserPN/",
+                            function(response_data) {
+                                if (response_data["eXO::Status"] == "eXO::Success") {
+                                    // TODO: Notify about success
+                                } else if (response_data["eXO::Status"] == "eXO::Unknown") {
+                                    alert("Search failed!");
+                                    return false;
+                                } else {
+                                    alert("Search failed!");
+                                    return false;
+                                }
+                                templ = response_data["eXO::Data"];
+                                // Interpolate with counters
+                                for (i in templ["eXO::ScoreBoard"]) {
+                                    templ["eXO::ScoreBoard"][i]["index"] = parseInt(i) + 1;
+                                    templ["eXO::ScoreBoard"][i]["zebra"] = function() {
+                                        return (this.index % 2 == 0 ? "even-row" : "odd-row");
+                                    };
+                                }
+                                context.render(
+                                        "/site_media/templates/results_user.ms",
+                                        templ,
+                                        function(content) {
+                                            $('#results-list').html(content).hide();
+                                            // Bind new events here
+                                            $('.friend-request').click(function() {
+                                                var uid = $(this).parents(".entry").find("span.uid").text();
+                                                var entry_id = $(this).parents(".entry").attr('id');
+                                                context.app.runRoute("post", "#/friend_request/create",
+                                                        {"uid" : uid, "entry_id" : entry_id });
+                                                return false;
+                                            });
+                                            $(".entry ").hover(function() {
+                                                $(".actions-wrapper", this).show();
+                                            }, function() {
+                                                $(".actions-wrapper", this).hide();
+                                            });
+                                            setTimeout(function() {
+                                                        $('#results-list').show();
+                                                    }, 500
+                                            );
+                                        }
+                                );
+                            });
+                    return true;
+                } else {
+                    alert("Error search the network!");
                     return false;
-                  });
-                  $(".entry ").hover(function(){
-                    $(".actions-wrapper", this).show();
-                  },function(){
-                    $(".actions-wrapper", this).hide();
-                  });
-                  setTimeout(function(){
-                    $('#results-list').show();
-                    }, 500
-                  );
                 }
-              );
-            });
-            return true;
-          } else {
-            alert("Error search the network!");
-            return false;
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("An error occurred : "+textStatus);
-        },
-        complete: function(){
-          setTimeout(function(){
-            $("#content-main-loading").hide();
-            $('#results-list').show();
-          }, 500);
-        }
-      });
-      return true;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("An error occurred : " + textStatus);
+            },
+            complete: function() {
+                setTimeout(function() {
+                    $("#content-main-loading").hide();
+                    $('#results-list').show();
+                }, 500);
+            }
+        });
+        return true;
     });
-  });
+});
 
 
-  $(function (){
+$(function () {
     // Show/hide the Loading indicator
-    $("#loading-indicator").ajaxStart(function(){
-       $(this).show();
-    }).ajaxStop(function(){
-      var indicator = $(this);
-      setTimeout(function(){ indicator.fadeOut() }, 500);
-    });
-    
+    $("#loading-indicator").ajaxStart(
+            function() {
+                $(this).show();
+            }).ajaxStop(function() {
+                var indicator = $(this);
+                setTimeout(function() {
+                    indicator.fadeOut()
+                }, 500);
+            });
+
     // Get username and resource
     $.ajax({
-      type: 'POST',
-      url: "/servlet/GetUserProfile/",
-      dataType: 'json',
-      data: "",
-      success: function(data){
-        if("eXO::Status" in data && data["eXO::Status"]!="eXO::Success"){
-          alert("Failed to access user profile data!");
-          return false;
+        type: 'POST',
+        url: "/servlet/GetUserProfile/",
+        dataType: 'json',
+        data: "",
+        success: function(data) {
+            if ("eXO::Status" in data && data["eXO::Status"] != "eXO::Success") {
+                alert("Failed to access user profile data!");
+                return false;
+            }
+            profile_dict = data["eXO::Data"]["eXO::Profile"];
+            // Fill in the data to the corresponding places
+            var username = "Incognito", resource = "Home";
+            for (dict in profile_dict) {
+                if (profile_dict[dict]["eXO::FieldName"] == "Username") {
+                    username = profile_dict[dict]["eXO::FieldData"];
+                } else if (profile_dict[dict]["eXO::FieldName"] == "Resource") {
+                    resource = profile_dict[dict]["eXO::FieldData"];
+                }
+            }
+            if (username != null)
+                $("#username").html(username);
+            if (resource != null)
+                $("#resource").html(resource);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("An error occurred : " + textStatus);
         }
-        profile_dict = data["eXO::Data"]["eXO::Profile"];
-        // Fill in the data to the corresponding places
-        var username="Incognito", resource="Home";
-        for(dict in profile_dict){
-          if(profile_dict[dict]["eXO::FieldName"]=="Username"){
-            username = profile_dict[dict]["eXO::FieldData"];
-          }else if(profile_dict[dict]["eXO::FieldName"]=="Resource"){
-            resource = profile_dict[dict]["eXO::FieldData"];
-          }
-        }
-        if(username!=null)
-          $("#username").html(username);
-        if(resource!=null)
-          $("#resource").html(resource);
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert("An error occurred : "+textStatus);
-      }
     });
 
     app.run();
-  });
-  </script>
+});
+</script>
 </head>
 
 <body>
 
-  <div id="loading-indicator">
+<div id="loading-indicator">
     <div class="i16 waiting" onClick="$('#loading-indicator').slideUp()">
-    loading ...
+        loading ...
     </div>
-  </div>
+</div>
 
-  <div id="header-wrapper" >
+<div id="header-wrapper">
     <div id="header-container" class="container">
 
-      <div id="userbox">
-        <!--
-        <div id="avatar-wrapper">
-        <img height="20" width="20" alt="" src="/site_media/images/generic.jpg">
-        </div>
-        -->
-        <ul class="horizontal">
-          <li>Account Settings</li>
-          <li>Logout</li>
-        </ul>
-      </div>
-      <div id="logo" class="span-10">
-        <a href="/">eXO<sup>beta</sup></a>
-        <span> The Decentralized Social Network</span>
-      </div>
-      <div id="global-menu" class="span-14 last">
-        <ul class="horizontal">
-          <li><a href="#">Network Status</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Help</a></li>
-        </ul>
-      </div>
-    </div><!-- END HEADER-CONTAINER -->
-  </div><!-- END HEADER-WRAPPER -->
-
-  <div id="middle-wrapper">
-    <div id="middle-container" class="container">
-      <div id="breadcrumb" class="span-24"></div>
-
-      <div id="content-header-wrapper" class="container">
-      <div id="content-header">
-        <div id="content_title" class="span-14">
-          <h2>
-            <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
-            <span id="username">Incognito</span>
-            <span id="at">/</span>
-            <span id="resource">Home</span>
-          </h2>
-        </div>
-        <div id="content_nav" class="span-10 last">
-          <ul class="horizontal">
-            <li>
-              <a href="/">My Profile</a>
-            </li>
-            <li class="current">
-              <a href="/search">Search</a>
-            </li>
-            <li>
-              <a href="/content">Share Content</a>
-            </li>
-            <li>
-              <a href="/friends">Friends</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      </div>
-
-      <div id="content-main" class="span-24">
-        <div id="search-body" class="content-body">
-          <h2> Search Network </h2>
-          <div id="search-wrapper">
-          <form id="search_form" action="#/searching" method="post" name="search_form">
-            <div>
-              <span>Search for </span>
-              <span>
-                <select id="search-obj-type" name="object-type">
-                  <option value="user">Users</option>
-                  <option value="content" selected="selected">Content</option>
-                  <option value="friend">Friends</option>
-                  <option value="any">Everything</option>
-                </select>
-              </span>
-              <span> in </span>
-              <span>
-                <select id="search-net-type" name="network-type">
-                  <option value="dht">Global Network</option>
-                  <option value="psn">Friends Network</option>
-                  <option value="any">Everywhere</option>
-                </select>
-              </span>
+        <div id="userbox">
+            <!--
+            <div id="avatar-wrapper">
+            <img height="20" width="20" alt="" src="/site_media/images/generic.jpg">
             </div>
-            <table class="search-select" cellspacing="0" cellpadding="0">
-              <tr>
-                <td><input id="search" type="text" name="search" /></td>
-                <td><input id="submit-search" type="submit" style="display:none"/></td>
-              </tr>
-            </table>
-          </form>
-          </div>
-          <div id="results-wrapper">
-            <h3>Search Results</h3>
-            <div id="results-list">
-              <p class="quiet"> No results </p>
-            </div>
-            <div id="content-main-loading">
-              <p>
-                <img src="/site_media/images/loading2.gif" />
-              </p>
-              <p>Loading Results</p>
-            </div>
-          </div>
+            -->
+            <ul class="horizontal">
+                <li>Account Settings</li>
+                <li>Logout</li>
+            </ul>
         </div>
-      </div>
-
-      <div id="content_footer" class="span-24"></div>
-
-    </div><!-- END MIDDLE-CONTAINER -->
-  </div><!-- END MIDDLE-WRAPPER -->
-
-  <div id="footer-wrapper">
-    <div id="footer-container" class="container">
-        <div class="span-6">
-          <ul>
-            <li class="title">Service</li>
-            <li>Privacy Policy</li>
-            <li>Terms of Service</li>
-          </ul>
+        <div id="logo" class="span-10">
+            <a href="/">eXO<sup>beta</sup></a>
+            <span> The Decentralized Social Network</span>
         </div>
-        <div class="span-6">
-          <ul>
-            <li class="title">Resources</li>
-            <li>FAQ</li>
-            <li>API Documentation</li>
-          </ul>
-        </div>
-        <div class="span-6 last">
-          <ul>
-            <li class="title">About</li>
-            <li>Team</li>
-            <li>Follow us on Twitter</li>
-            <li>Blog</li>
-          </ul>
+        <div id="global-menu" class="span-14 last">
+            <ul class="horizontal">
+                <li><a href="#">Network Status</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Help</a></li>
+            </ul>
         </div>
     </div>
-  </div>
+    <!-- END HEADER-CONTAINER -->
+</div>
+<!-- END HEADER-WRAPPER -->
+
+<div id="middle-wrapper">
+    <div id="middle-container" class="container">
+        <div id="breadcrumb" class="span-24"></div>
+
+        <div id="content-header-wrapper" class="container">
+            <div id="content-header">
+                <div id="content_title" class="span-14">
+                    <h2>
+                        <img height="50" width="50" alt="" src="/site_media/images/generic.jpg">
+                        <span id="username">Incognito</span>
+                        <span id="at">/</span>
+                        <span id="resource">Home</span>
+                    </h2>
+                </div>
+                <div id="content_nav" class="span-10 last">
+                    <ul class="horizontal">
+                        <li>
+                            <a href="/">My Profile</a>
+                        </li>
+                        <li class="current">
+                            <a href="/search">Search</a>
+                        </li>
+                        <li>
+                            <a href="/content">Share Content</a>
+                        </li>
+                        <li>
+                            <a href="/friends">Friends</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-main" class="span-24">
+            <div id="search-body" class="content-body">
+                <h2> Search Network </h2>
+
+                <div id="search-wrapper">
+                    <form id="search_form" action="#/searching" method="post" name="search_form">
+                        <div>
+                            <span>Search for </span>
+              <span>
+                <select id="search-obj-type" name="object-type">
+                    <option value="user">Users</option>
+                    <option value="content" selected="selected">Content</option>
+                    <option value="friend">Friends</option>
+                    <option value="any">Everything</option>
+                </select>
+              </span>
+                            <span> in </span>
+              <span>
+                <select id="search-net-type" name="network-type">
+                    <option value="dht">Global Network</option>
+                    <option value="psn">Friends Network</option>
+                    <option value="any">Everywhere</option>
+                </select>
+              </span>
+                        </div>
+                        <table class="search-select" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td><input id="search" type="text" name="search"/></td>
+                                <td><input id="submit-search" type="submit" style="display:none"/></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div id="results-wrapper">
+                    <h3>Search Results</h3>
+
+                    <div id="results-list">
+                        <p class="quiet"> No results </p>
+                    </div>
+                    <div id="content-main-loading">
+                        <p>
+                            <img src="/site_media/images/loading2.gif"/>
+                        </p>
+
+                        <p>Loading Results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content_footer" class="span-24"></div>
+
+    </div>
+    <!-- END MIDDLE-CONTAINER -->
+</div>
+<!-- END MIDDLE-WRAPPER -->
+
+<div id="footer-wrapper">
+    <div id="footer-container" class="container">
+        <div class="span-6">
+            <ul>
+                <li class="title">Service</li>
+                <li>Privacy Policy</li>
+                <li>Terms of Service</li>
+            </ul>
+        </div>
+        <div class="span-6">
+            <ul>
+                <li class="title">Resources</li>
+                <li>FAQ</li>
+                <li>API Documentation</li>
+            </ul>
+        </div>
+        <div class="span-6 last">
+            <ul>
+                <li class="title">About</li>
+                <li>Team</li>
+                <li>Follow us on Twitter</li>
+                <li>Blog</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

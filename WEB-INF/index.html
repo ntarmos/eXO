@@ -632,11 +632,11 @@ $(function () {
             function() {
                 $(this).show();
             }).ajaxStop(function() {
-        var indicator = $(this);
-        setTimeout(function() {
-            indicator.fadeOut()
-        }, 500);
-    });
+                var indicator = $(this);
+                setTimeout(function() {
+                    indicator.fadeOut()
+                }, 500);
+            });
 
     $('.add-field').click(function() {
         var instance = $(this).parents(".profile-wrapper");

@@ -7,7 +7,9 @@
                 var fnBody = Handlebars.compileFunctionBody(string);
                 var fn = new Function("context", "fallback", "Handlebars", fnBody);
                 Handlebars.compilerCache[string] =
-                function(context, fallback) { return fn(context, fallback, Handlebars); };
+                    function(context, fallback) {
+                        return fn(context, fallback, Handlebars);
+                    };
             }
 
             return Handlebars.compilerCache[string];
@@ -49,7 +51,7 @@
             }
 
             return string.toString().replace(/&(?!\w+;)|["\\<>]/g, function(str) {
-                switch(str) {
+                switch (str) {
                     case "&":
                         return "&amp;";
                         break;
@@ -128,7 +130,7 @@
             var depth = 0;
             var dig = [];
             for (var i = 0, j = parts.length; i < j; i++) {
-                switch(parts[i]) {
+                switch (parts[i]) {
                     case "..":
                         if (readDepth) {
                             throw new Handlebars.Exception("Cannot jump out of context after moving into a context.");
@@ -157,7 +159,7 @@
                 return true;
             } else if (!value) {
                 return true;
-            } else if(Object.prototype.toString.call(value) === "[object Array]" && value.length == 0) {
+            } else if (Object.prototype.toString.call(value) === "[object Array]" && value.length == 0) {
                 return true;
             } else {
                 return false;
@@ -202,7 +204,7 @@
 
             if (Handlebars.isFunction(lookup)) {
                 out = out + Handlebars.filterOutput(lookup.call(context, arg), isEscaped);
-            } else if(!Handlebars.isEmpty(lookup)) {
+            } else if (!Handlebars.isEmpty(lookup)) {
                 out = out + Handlebars.filterOutput(lookup, isEscaped);
             }
 
@@ -211,7 +213,7 @@
 
         handleInvertedSection: function(lookup, context, fn) {
             var out = "";
-            if(Handlebars.isFunction(lookup) && Handlebars.isEmpty(lookup())) {
+            if (Handlebars.isFunction(lookup) && Handlebars.isEmpty(lookup())) {
                 out = out + fn(context);
             } else if (Handlebars.isEmpty(lookup)) {
                 out = out + fn(context);
@@ -249,12 +251,12 @@
     Handlebars.helperMissing = function(object, fn) {
         var ret = "";
 
-        if(object === true) {
+        if (object === true) {
             return fn(this);
-        } else if(object === false) {
+        } else if (object === false) {
             return "";
-        } else if(Object.prototype.toString.call(object) === "[object Array]") {
-            for(var i=0, j=object.length; i<j; i++) {
+        } else if (Object.prototype.toString.call(object) === "[object Array]") {
+            for (var i = 0, j = object.length; i < j; i++) {
                 ret = ret + fn(object[i]);
             }
             return ret;
@@ -283,13 +285,13 @@
             // if we're at the end condition already then we don't have to do any work!
             if (!endCondition || !endCondition(this)) {
                 var chr;
-                while(chr = this.getChar()) {
-                    if(chr === "{" && this.peek() === "{" && !this.mustache) {
+                while (chr = this.getChar()) {
+                    if (chr === "{" && this.peek() === "{" && !this.mustache) {
                         this.getChar();
                         this.parseMustache();
 
                     } else {
-                        if(chr === "\n") {
+                        if (chr === "\n") {
                             this.newlines = this.newlines + "\n";
                             chr = "\\n";
                         } else if (chr === "\r") {
@@ -306,7 +308,10 @@
                         this.getChar(5);
                         break;
                     }
-                    else if(endCondition && endCondition(this)) { break };
+                    else if (endCondition && endCondition(this)) {
+                        break
+                    }
+                    ;
                 }
             }
 
@@ -317,7 +322,7 @@
         },
 
         addText: function() {
-            if(this.text) {
+            if (this.text) {
                 this.fn = this.fn + "out = out + \"" + Handlebars.escapeText(this.text) + "\"; ";
                 this.fn = this.fn + this.newlines;
                 this.newlines = "";
@@ -367,7 +372,7 @@
             // sub-compile with a custom EOF instruction
             compiler.compile(function(compiler) {
                 if (compiler.peek(3) === "{{/") {
-                    if(compiler.peek(mustache.length + 5) === "{{/" + mustache + "}}") {
+                    if (compiler.peek(mustache.length + 5) === "{{/" + mustache + "}}") {
                         compiler.getChar(mustache.length + 5);
                         return true;
                     } else {
@@ -420,10 +425,10 @@
 
             var next = this.peek();
 
-            if(next === "!") {
+            if (next === "!") {
                 this.comment = true;
                 this.getChar();
-            } else if(next === "#") {
+            } else if (next === "#") {
                 this.openBlock = true;
                 this.getChar();
             } else if (next === ">") {
@@ -433,7 +438,7 @@
                 this.inverted = true;
                 this.openBlock = true;
                 this.getChar();
-            } else if(next === "{" || next === "&") {
+            } else if (next === "{" || next === "&") {
                 this.escaped = false;
                 this.getChar();
             }
@@ -441,8 +446,8 @@
             this.addText();
             this.mustache = " ";
 
-            while(chr = this.getChar()) {
-                if(this.mustache && chr === "}" && this.peek() === "}") {
+            while (chr = this.getChar()) {
+                if (this.mustache && chr === "}" && this.peek() === "}") {
                     var parts = Handlebars.trim(this.mustache).split(/\s+/);
                     mustache = parts[0];
                     param = this.lookupFor(parts[1]);
@@ -457,7 +462,7 @@
                         this.getChar();
                     }
 
-                    if(this.comment) {
+                    if (this.comment) {
                         this.comment = false;
                         return;
                     } else if (this.partial) {
@@ -468,7 +473,7 @@
                         this.addInvertedSection(mustache);
                         this.inverted = false;
                         return;
-                    } else if(this.openBlock) {
+                    } else if (this.openBlock) {
                         this.addBlock(mustache, param, parts)
                         return;
                     } else {
@@ -476,7 +481,7 @@
                     }
 
                     this.escaped = true;
-                } else if(this.comment) {
+                } else if (this.comment) {
                     ;
                 } else {
                     this.mustache = this.mustache + chr;
@@ -597,7 +602,7 @@
                 fn = handlebars_cache[name] = Handlebars.compile(template);
             }
 
-            data     = $.extend({}, this, data);
+            data = $.extend({}, this, data);
             partials = $.extend({}, data.partials, partials);
 
             return fn(data, {"partials":partials});

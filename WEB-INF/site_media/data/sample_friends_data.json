@@ -1,15 +1,15 @@
-{ 
-    "eXO::Status":"eXO::Success", 
-    "eXO::Data":{ 
+{
+    "eXO::Status":"eXO::Success",
+    "eXO::Data":{
         "eXO::Friends":[
-           { 
-            "UID": "736172746170752E646965634073616572646E61", 
-            "ScreenName": "Dude"
-           },
-           { 
-            "UID": "953212746170752A64AA6563AAA3616572646A61", 
-            "ScreenName": "Sofos"
-           }
-       ]
+            {
+                "UID": "736172746170752E646965634073616572646E61",
+                "ScreenName": "Dude"
+            },
+            {
+                "UID": "953212746170752A64AA6563AAA3616572646A61",
+                "ScreenName": "Sofos"
+            }
+        ]
     }
 }
