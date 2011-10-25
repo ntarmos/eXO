@@ -75,6 +75,7 @@ div.jGrowl.center {
 
 .pri-status-jgrowl{
     background-color: #ff9900 !important;
+    background-image: url('../images/lock.png');
 }
 
 .pub-status-jgrowl{

@@ -95,11 +95,11 @@ function message_notification(msg) {
 }
 
 function pub_message_notification(name, msg) {
-    $.jGrowl(msg, { theme: 'pub-status-jgrowl', position: "bottom-right", header: + name, life:10000});
+    $.jGrowl(msg, { theme: 'pub-status-jgrowl', position: "bottom-right", header:  name, life:10000});
 }
 
 function pri_message_notification(name, msg) {
-    $.jGrowl(msg, { theme: 'pri-status-jgrowl', position: "bottom-right", header: + name , life:10000});
+    $.jGrowl(msg, { theme: 'pri-status-jgrowl', position: "bottom-right", header:  name , life:10000});
 }
 
 function start_polling(reqID, url, redirect_callback) {
