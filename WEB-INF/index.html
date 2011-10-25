@@ -294,7 +294,7 @@ function do_get_profile() {
         dataType: 'json',
         data: "",
         success: function(data) {
-            console.log(data);
+            //console.log(data);
 
 
             if (("eXO::Status" in data) && data["eXO::Status"] != "eXO::Success") {
@@ -444,16 +444,13 @@ function do_get_profile() {
 
             if (public_statuses != null) {
                 var sortedStatus = new Array();
-                console.log("Public Statuses");
                 for (status in public_statuses) {
                     sortedStatus.push(status);
                 }
                 sortedStatus = sortedStatus.sort(sortNumber);
                 for (var i = 0; i < sortedStatus.length; i++) {
-                    console.log(public_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']));
                     tags_template = '<span class="pub-status-message">'
                             + public_statuses[sortedStatus[i]]['eXO::UserStatus']
-                            + '  <a class="close" href="#">1</a>'
                             + '</span>&nbsp;';
 
                     var date = new Date(public_statuses[sortedStatus[i]]['eXO::StatusDate']);
@@ -476,22 +473,19 @@ function do_get_profile() {
                             + tags_template
                             + '  </div>'
                             + '</div>';
-                    console.log(pub_statuses);
                 }
             }
             if (private_statuses != null) {
                 var sortedStatus = new Array();
-                console.log("Private Statuses");
+                //console.log("Private Statuses");
                 for (status in private_statuses) {
                     sortedStatus.push(status);
                 }
                 sortedStatus = sortedStatus.sort(sortNumber);
-                console.log(sortedStatus.toString());
+
                 for (var i = 0; i < sortedStatus.length; i++) {
-                    console.log(private_statuses[sortedStatus[i]]['eXO::UserStatus'] + " : " + new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']));
                     tags_template = '<span class="pri-status-message">'
                             + private_statuses[sortedStatus[i]]['eXO::UserStatus']
-                            + '  <a class="close" href="#">1</a>'
                             + '</span>&nbsp;';
 
                     var date = new Date(private_statuses[sortedStatus[i]]['eXO::StatusDate']);
@@ -504,7 +498,7 @@ function do_get_profile() {
                             + '    <div class="row-actions">'
                             + '      <div class="buttons">'
                             + '        <span class="button-action">'
-                            + '          <a class="delete-status close" id="pri-delete-action-' + private_statuses[sortedStatus[i]]['eXO::StatusDate'] + '" href="#">1</a>'
+                            + '          <a class="delete-status close" id="pri-delete-action-'+private_statuses[sortedStatus[i]]['eXO::StatusDate'] +'\" href=\"#\">1</a>'
                             + '        </span>'
                             + '      </div>'
                             + '    </div>'

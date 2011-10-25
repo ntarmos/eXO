@@ -29,7 +29,7 @@ var friends_statuses = {};
 
 function do_get_profile() {
     // Get username and resource
-    console.log("do_get_profile");
+    //  console.log("do_get_profile");
     var accept_uid;
     $.ajax({
         type: 'POST',
@@ -41,25 +41,25 @@ function do_get_profile() {
                     function(response_data) {
                         if (response_data["eXO::Status"] == "eXO::Success") {
                             // Notify about success
-                            console.log(response_data);
+                            // console.log(response_data);
                             //message_notification("Successfully accepted!");
                             // Rerender friend list after 100ms
 
                             if (response_data["eXO::Data"].length > 0) {
                                 for (var i = 0; i < response_data["eXO::Data"].length; i++) {
                                     var public_statuses = null, private_statuses = null, profile_dict = null, uid = null;
-                                    console.log(response_data["eXO::Data"][i]["eXO::Profile"]);
+                                    // console.log(response_data["eXO::Data"][i]["eXO::Profile"]);
                                     profile_dict = response_data["eXO::Data"][i]["eXO::Profile"];
                                     for (dict in profile_dict) {
                                         if (profile_dict[dict]["eXO::FieldName"] == "Username") {
-                                            console.log(profile_dict[dict]["eXO::FieldData"]);
+                                            // console.log(profile_dict[dict]["eXO::FieldData"]);
                                         } else if (profile_dict[dict]["eXO::FieldName"] == "eXO:UID") {
-                                            console.log(profile_dict[dict]["eXO::FieldData"]);
+                                            //console.log(profile_dict[dict]["eXO::FieldData"]);
                                             uid = profile_dict[dict]["eXO::FieldData"];
-                                            console.log(uid);
+                                            // console.log(uid);
                                         } else if (profile_dict[dict]["eXO::UserStatus"] != null) {
-                                            console.log(profile_dict[dict]["eXO::UserStatus"]);
-                                            console.log(profile_dict[dict]);
+                                            // console.log(profile_dict[dict]["eXO::UserStatus"]);
+                                            // console.log(profile_dict[dict]);
                                             if (public_statuses == null) {
                                                 public_statuses = {};
                                             }
@@ -94,12 +94,12 @@ function message_notification(msg) {
     $.jGrowl(msg, { position: "bottom-right"});
 }
 
-function pub_message_notification(msg) {
-    $.jGrowl(msg, { theme: 'pub-status-jgrowl', position: "bottom-right", header:"Public Status", life:10000});
+function pub_message_notification(name, msg) {
+    $.jGrowl(msg, { theme: 'pub-status-jgrowl', position: "bottom-right", header: + name, life:10000});
 }
 
-function pri_message_notification(msg) {
-    $.jGrowl(msg, { theme: 'pri-status-jgrowl', position: "bottom-right", header:"Private Status", life:10000});
+function pri_message_notification(name, msg) {
+    $.jGrowl(msg, { theme: 'pri-status-jgrowl', position: "bottom-right", header: + name , life:10000});
 }
 
 function start_polling(reqID, url, redirect_callback) {
@@ -263,23 +263,22 @@ var app = $.sammy('#content-main', function() {
                                 // Bind events here
                                 $('.show-status').click(function() {
                                     var uid = $(this).parents(".friends-row").find("span.friend-uid").text();
-                                    console.log(uid);
+                                    var name = $(this).parents(".friends-row").find("a.show-status").text();
                                     if (friends_statuses[uid] != null) {
-                                        console.log("Statuses:");
-                                        console.log(friends_statuses[uid][statusDate]);
+                                        //   console.log("Statuses:");
+                                        // console.log(friends_statuses[uid][statusDate]);
                                         for (var statusDate in friends_statuses[uid]) {
-                                            console.log(new Date(friends_statuses[uid][statusDate]["eXO::StatusDate"]) + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
+                                            //   console.log(new Date(friends_statuses[uid][statusDate]["eXO::StatusDate"]) + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
                                             var date = new Date(friends_statuses[uid][statusDate]["eXO::StatusDate"]);
                                             var niceDate = "" + date.getDate() + "/"
-                                            + date.getMonth().toString() + "/"
-                                            + date.getFullYear().toString();
-
-                                            if(friends_statuses[uid][statusDate]["eXO::FieldIsPublic"] == true){
-                                            pub_message_notification( niceDate
-                                                    + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
+                                                    + date.getMonth().toString() + "/"
+                                                    + date.getFullYear().toString();
+                                            //alert(friends_statuses[uid][statusDate]["eXO::UserStatus"]);
+                                            if (friends_statuses[uid][statusDate]["eXO::FieldIsPublic"] == true) {
+                                                pub_message_notification(name, niceDate + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
                                             } else {
-                                            pri_message_notification( niceDate
-                                                    + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);}
+                                                pri_message_notification(name, niceDate + " : " + friends_statuses[uid][statusDate]["eXO::UserStatus"]);
+                                            }
                                         }
 
                                     }

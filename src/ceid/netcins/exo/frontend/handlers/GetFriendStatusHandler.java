@@ -60,6 +60,7 @@ public class GetFriendStatusHandler extends AbstractHandler {
                             }
                         }
 
+
                         Collections.sort(statusList);
 
                         if (statusList.size() > 0) {
